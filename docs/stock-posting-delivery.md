@@ -1,5 +1,17 @@
 # Native stock posting: phase 6 implementation record
 
+## Ubuntu activation, 2026-11-05
+
+The single-VM Ubuntu deployment now aligns the four stock owner connections,
+checks the three delivery worker configurations, enables Accounting stock posting
+and Vouchers stock execution for new installations, and installs/enables the
+Vouchers source/execution and Accounting posting-delivery workers. The same
+idempotent step runs during upgrades; an explicit existing `false` admission flag
+is preserved. This is the user's requested deployment activation of native stock
+posting and the company opening setup gate. It does not activate ordinary money
+or invoice execution, or the separate inventory report cards. The earlier
+disabled-admission statements below record the state before this activation.
+
 Scope explicitly confirmed by the user on 2026-10-28: build the native stock engine
 with batch/serial management. Maintain the parent checklist in
 [batch-serial-delivery](batch-serial-delivery.md). Stock capture/storage and voucher
