@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-31T11:41:30.273Z",
+  "surface": "http://127.0.0.1:4418",
+  "results": [
+    {
+      "channel": "msedge",
+      "browser": "156.0.4314.50",
+      "checks": [
+        "Keyboard-only blank supplier/account bill saved to the tab adapter; no calculation evidence invented",
+        "Real Back cancellation and native reload dismissal preserve the dirty draft",
+        "Delayed actual supplier lookup, query cancellation, current results, explicit failure/retry and recovery",
+        "Invalid raw value survives resize; explicit card switch restores focus; keyboard mobile edit applies once and remains visible",
+        "Read-only review body is keyboard-scrollable, Tab stays trapped and Escape restores entry"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "channel": "chrome",
+      "browser": "156.0.8078.48",
+      "checks": [
+        "Keyboard-only blank supplier/account bill saved to the tab adapter; no calculation evidence invented",
+        "Real Back cancellation and native reload dismissal preserve the dirty draft",
+        "Delayed actual supplier lookup, query cancellation, current results, explicit failure/retry and recovery",
+        "Invalid raw value survives resize; explicit card switch restores focus; keyboard mobile edit applies once and remains visible",
+        "Read-only review body is keyboard-scrollable, Tab stays trapped and Escape restores entry"
+      ],
+      "runtimeErrors": []
+    }
+  ]
+}

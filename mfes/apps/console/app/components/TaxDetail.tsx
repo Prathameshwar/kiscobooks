@@ -1,0 +1,54 @@
+'use client';
+import { useState } from 'react';
+import { Button, Card, CardBody, CardHeader, ConfirmDialog, DataTable, Menu, Notice, PageHeader, Pager, ReviewList, Select, TextField, useFormatters, type Column, type MenuItem } from '@janso/ui';
+import { assertTaxReceipt, assertTaxRow, taxBase, taxRequest, useTaxContext, useTaxMetadata } from '../lib/tax-api';
+import { useServiceCommand, useServiceList, useServiceRead, type ServicePage } from '../lib/service-resource';
+import { taxLabel, taxLink, taxReturn, taxRoot, taxSupplyLabel, taxTitle, type TaxConfig, type TaxRow } from '../lib/tax-masters';
+import { TaxFailure, TaxField, TaxNavigation } from './TaxCommon';
+import { useAccessDraft } from './AccessCommon';
+
+function TaxChildren({ company, config, id, here, onLeave }: { company: string; config: TaxConfig; id: string; here: string; onLeave?: React.MouseEventHandler<HTMLAnchorElement> }) {
+  const resource = config.key === 'rates' ? 'tax-rate-components' : config.key === 'rules' ? 'tax-rule-applicabilities' : 'tax-history-actions';
+  const filter = config.key === 'rates' ? 'rate_id' : config.key === 'rules' ? 'rule_id' : 'target_id';
+  const list = useServiceList<TaxRow>(taxBase(company, resource), new URLSearchParams({ [filter]: id }).toString(), taxRequest);
+  const format = useFormatters();
+  const keys = config.key === 'rates' ? ['component_key', 'component', 'kind', 'percentage', 'amount', 'basis_quantity', 'rounding_mode'] : config.key === 'rules' ? ['code_system', 'code', 'match_kind'] : ['action', 'business_date'];
+  const columns: Column<TaxRow>[] = keys.map(key => ({ key, header: key.replaceAll('_', ' '), type: 'custom', render: row => row[key] == null ? 'Not applicable / protected' : key === 'business_date' ? format.date(String(row[key])) : String(row[key]).replaceAll('_', ' ') }));
+  return <Card><CardHeader title={config.key === 'rates' ? 'Published rate components' : config.key === 'rules' ? 'Classification applicability' : 'Publication history'} /><TaxFailure failure={list.failure} retry={list.first} /><DataTable caption={resource} columns={columns} rows={list.data?.items ?? []} rowId={row => row.id} loading={list.loading} emptyTitle={config.key === 'rules' ? 'No classification restrictions' : 'No readable records'} /><Pager count={list.data?.items.length ?? 0} limit={list.limit} busy={list.loading} hasPrevious={list.hasPrevious} hasNext={!!list.data?.page.has_more} onPrevious={list.previous} onNext={list.next} onLimitChange={list.setLimit} noun="record" />{config.key === 'rules' && <CardBody><a className="janso-link" onClick={onLeave} href={taxLink('/tax/rates?rule_id=' + id, here)}>View rate series for this rule</a></CardBody>}</Card>;
+}
+export function TaxDetail({ company, config, id, canManage, canPublish, returnTo }: { company: string; config: TaxConfig; id: string; canManage: boolean; canPublish: boolean; returnTo?: string }) {
+  const root = taxRoot + '/' + config.key, back = taxReturn(returnTo, root), here = taxLink(root + '/' + id, back);
+  const metadata = useTaxMetadata(company, config), context = useTaxContext(company), record = useServiceRead<TaxRow>(taxBase(company, config.resource) + '/' + id, taxRequest, row => assertTaxRow(row, company, id));
+  const history = useServiceRead<ServicePage<TaxRow>>(config.dated ? taxBase(company, 'tax-history-actions') + '?' + new URLSearchParams({ target_id: id, limit: '50', sort: '-id' }) : undefined, taxRequest);
+  const command = useServiceCommand(taxRequest, 'tax service'), [withdrawing, setWithdrawing] = useState(false), [reason, setReason] = useState(''), [restore, setRestore] = useState(true), [reasonError, setReasonError] = useState(''), [message, setMessage] = useState(''), [withdrawn, setWithdrawn] = useState(false);
+  const guard = useAccessDraft(withdrawing || command.uncertain, command.pending), format = useFormatters(), row = record.data;
+  const retired = withdrawn || !!history.data?.items.some(item => item.action === 'WITHDRAW');
+  const fields = metadata.data?.fields ?? [], canWithdraw = config.dated && !retired && !history.loading && !history.failure && !!row && typeof row.valid_from === 'string' && !!context.data && row.valid_from > context.data.business_date;
+  const blocked = command.pending || command.uncertain, actions: MenuItem[] = [
+    ...(canManage && !config.dated ? [{ id: 'edit', label: 'Edit details', href: taxLink(root + '/' + id + '/edit', here), disabledReason: blocked ? 'Recover the unconfirmed request first' : undefined }] : []),
+    ...(canManage && canPublish && config.dated && !retired ? [{ id: 'replace', label: 'Publish replacement', href: taxLink(root + '/' + id + '/replace', here), disabledReason: history.loading || history.failure ? 'Publication history must be verified first' : blocked ? 'Recover the unconfirmed request first' : undefined }, { id: 'withdraw', label: 'Withdraw future definition', destructive: true, disabledReason: !canWithdraw ? 'Only a verified definition starting after today can be withdrawn' : blocked ? 'Recover the unconfirmed request first' : undefined }] : []),
+    ...(canManage && config.key === 'rules' ? [{ id: 'applicability', label: 'Add classification applicability', href: taxLink(root + '/' + id + '/applicability/new', here) }, { id: 'series', label: 'Create rate series', href: taxLink('/tax/rates/series/new?rule_id=' + id, here) }] : []),
+  ];
+  async function withdraw() {
+    if (!row || !context.data || !canManage || !canPublish || command.pending) return;
+    if (command.failure && !command.uncertain) { command.clear(); setWithdrawing(false); context.refresh(); record.refresh(); return; }
+    if (!reason.trim() || reason.length > 500 || /[\x00-\x1f]/.test(reason)) { setReasonError('Enter a printable reason with up to 500 characters.'); return; }
+    const result = await command.execute<TaxRow>({ path: taxBase(company, 'tax-withdrawals'), method: 'POST', body: { resource: config.entity.slice(8), target_id: id, expected_version: row.row_version, expected_generation: context.data.policy_generation, expected_source_version: context.data.source_version, reason: reason.trim(), restore_predecessor: restore } }, assertTaxReceipt);
+    if (result) { setWithdrawn(true); setWithdrawing(false); setMessage('Future definition withdrawn. Its publication history is retained.'); }
+  }
+  return <div className="janso-page"><TaxNavigation title={config.singular + ' details'} back={back} onLeave={guard.leave} /><PageHeader title={row ? taxTitle(row, config.singular) : config.singular + ' details'} lede="Review the saved tax definition and its supported actions." actions={row && actions.length > 0 ? <Menu label="Tax record actions" items={actions} onSelect={action => { if (action === 'withdraw') { command.clear(); setWithdrawing(true); } }} /> : undefined} />
+    <TaxFailure failure={metadata.failure ?? record.failure ?? context.failure} retry={() => { metadata.refresh(); record.refresh(); context.refresh(); }} />
+    {metadata.loading || record.loading || context.loading ? <p role="status">Loading tax record...</p> : row && metadata.data && <>{message && <Notice tone="success">{message}</Notice>}{retired && <Notice>This definition is withdrawn. Its details remain available as publication evidence.</Notice>}{config.dated && <Notice>Published definitions use date history. Create a future replacement to change them; future definitions can be withdrawn with a reason.</Notice>}
+      <Card><CardHeader title="Tax record details" /><CardBody><ReviewList items={[{ label: 'Version', value: row.row_version == null ? 'Protected' : String(row.row_version) }, ...(row.created_at ? [{ label: 'Created', value: format.dateTime(String(row.created_at)) }] : [])]} /><div className="janso-form-grid">{fields.filter(field => field.control && field.key in row && field.key !== 'series_id').map(field => <TaxField key={field.key} company={company} field={field} value={row[field.key]} disabled onChange={() => {}} />)}</div>{typeof row.valid_from === 'string' && <ReviewList items={[{ label: 'Effective from', value: format.date(row.valid_from) }, { label: 'Effective through', value: row.valid_to ? format.date(String(row.valid_to)) : 'Open ended' }]} />}{row.custom_fields && <ReviewList items={fields.filter(field => field.source === 'custom' && field.visible && field.key in row.custom_fields!).map(field => ({ label: taxLabel(field), value: String(row.custom_fields![field.key] ?? 'Not set') }))} />}</CardBody></Card>
+      {config.key !== 'categories' && <TaxChildren company={company} config={config} id={id} here={here} onLeave={guard.leave} />}
+      {config.key === 'rates' && typeof row.series_id === 'string' && <TaxRateParent company={company} seriesId={row.series_id} here={here} onLeave={guard.leave} />}
+      {config.key === 'categories' && <Notice>Rules select this category during creation. An inactive category cannot be used by new definitions.</Notice>}
+    </>}
+    {!withdrawing && command.uncertain && <Notice tone="warning">The withdrawal result is unconfirmed. <Button onClick={() => setWithdrawing(true)}>Recover same withdrawal</Button></Notice>}
+    <ConfirmDialog open={withdrawing} title="Withdraw this future definition?" confirmLabel={command.uncertain ? 'Retry same withdrawal' : command.failure ? 'Reload and review' : 'Withdraw definition'} busy={command.pending} onCancel={() => { if (!command.pending) setWithdrawing(false); }} onConfirm={() => void withdraw()}><p>The service checks the current date, version and dependent definitions. Published evidence remains in the history.</p><TextField label="Reason for withdrawal" required maxLength={500} value={reason} error={reasonError} disabled={blocked} onChange={event => { setReason(event.target.value); setReasonError(''); }} /><Select label="Restore previous definition" value={String(restore)} disabled={blocked} options={[{ value: 'true', label: 'Restore its previous end date' }, { value: 'false', label: 'Keep the shortened end date' }]} onChange={value => setRestore(value === 'true')} /><TaxFailure failure={command.failure} write /></ConfirmDialog>{guard.confirmation}
+  </div>;
+}
+function TaxRateParent({ company, seriesId, here, onLeave }: { company: string; seriesId: string; here: string; onLeave?: React.MouseEventHandler<HTMLAnchorElement> }) {
+  const series = useServiceRead<TaxRow>(taxBase(company, 'tax-rate-series') + '/' + seriesId, taxRequest, row => assertTaxRow(row, company, seriesId));
+  return <Card><CardHeader title="Tax rule and supply context" /><CardBody><TaxFailure failure={series.failure} retry={series.refresh} />{series.data && <><p>{taxSupplyLabel(series.data.applicability)}</p>{typeof series.data.rule_id === 'string' && <a className="janso-link" onClick={onLeave} href={taxLink('/tax/rules/' + series.data.rule_id, here)}>View tax rule</a>}</>}</CardBody></Card>;
+}

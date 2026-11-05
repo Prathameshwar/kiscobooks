@@ -1,0 +1,7229 @@
+{
+  "accounts": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "accounts",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "group_id",
+        "label": "Account group",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "reference": "account-groups",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "account-groups",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "kind",
+        "label": "Kind",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "GENERAL",
+          "enum": [
+            "GENERAL",
+            "CASH",
+            "BANK",
+            "PARTY",
+            "TAX",
+            "INVENTORY_CONTROL",
+            "ASSET_CONTROL"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "GENERAL",
+            "CASH",
+            "BANK",
+            "PARTY",
+            "TAX",
+            "INVENTORY_CONTROL",
+            "ASSET_CONTROL"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "GENERAL"
+      },
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "party_role",
+        "label": "Party role",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER",
+                "OTHER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Role"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": true,
+          "choices": [
+            "CUSTOMER",
+            "SUPPLIER",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "currency_mode",
+        "label": "Currency mode",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "FIXED",
+            "MULTI"
+          ],
+          "title": "Currency Mode",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "BASE",
+            "FIXED",
+            "MULTI"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "BASE"
+      },
+      {
+        "key": "currency",
+        "label": "Currency",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "posting_policy",
+        "label": "Posting policy",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "MANUAL_ALLOWED",
+          "enum": [
+            "MANUAL_ALLOWED",
+            "SOURCE_ONLY"
+          ],
+          "title": "Posting Policy",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "MANUAL_ALLOWED",
+            "SOURCE_ONLY"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "MANUAL_ALLOWED"
+      },
+      {
+        "key": "description",
+        "label": "Description",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "inventory_affected",
+        "label": "Inventory affected",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Inventory Affected",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "rounding_method",
+        "label": "Rounding method",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "NONE",
+          "enum": [
+            "NONE",
+            "NORMAL",
+            "UP",
+            "DOWN"
+          ],
+          "title": "Rounding Method",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "NONE",
+            "NORMAL",
+            "UP",
+            "DOWN"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "NONE"
+      },
+      {
+        "key": "rounding_limit",
+        "label": "Rounding limit",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rounding Limit"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "exclusiveMinimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "sort_order",
+        "label": "Sort order",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": 0,
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Sort Order",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": 0
+      }
+    ],
+    "filter_keys": [
+      "code",
+      "group_id",
+      "kind",
+      "party_id",
+      "status",
+      "currency",
+      "currency_mode"
+    ],
+    "searchable": true
+  },
+  "account-heads": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-heads",
+    "operation": "create",
+    "lifecycle": "fixed",
+    "can_create": false,
+    "can_manage": false,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "nature",
+        "label": "Nature",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "enum": [
+            "ASSET",
+            "LIABILITY",
+            "EQUITY",
+            "INCOME",
+            "EXPENSE"
+          ],
+          "title": "Nature",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "ASSET",
+            "LIABILITY",
+            "EQUITY",
+            "INCOME",
+            "EXPENSE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "code"
+    ],
+    "searchable": true
+  },
+  "account-groups": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-groups",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "head_id",
+        "label": "Account head",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Head Id",
+          "type": "string"
+        },
+        "reference": "account-heads",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "account-heads",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "parent_id",
+        "label": "Parent group",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Id"
+        },
+        "reference": "account-groups",
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "account-groups",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "affects_gross_profit",
+        "label": "Affects gross profit",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Affects Gross Profit"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "sub_ledger_behaviour",
+        "label": "Sub ledger behaviour",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Sub Ledger Behaviour",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "nett_balances",
+        "label": "Nett balances",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Nett Balances",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "used_for_calculation",
+        "label": "Used for calculation",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Used For Calculation",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "allocation_method",
+        "label": "Allocation method",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "NOT_APPLICABLE",
+          "enum": [
+            "NOT_APPLICABLE",
+            "BY_QTY",
+            "BY_VALUE"
+          ],
+          "title": "Allocation Method",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "NOT_APPLICABLE",
+            "BY_QTY",
+            "BY_VALUE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "NOT_APPLICABLE"
+      },
+      {
+        "key": "sort_order",
+        "label": "Sort order",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": 0,
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Sort Order",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": 0
+      }
+    ],
+    "filter_keys": [
+      "code",
+      "head_id",
+      "parent_id",
+      "status"
+    ],
+    "searchable": true
+  },
+  "account-group-aliases": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-group-aliases",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "group_id",
+        "label": "Account group",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "reference": "account-groups",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "account-groups",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "alias",
+        "label": "Alias",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Alias",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "alias",
+      "group_id",
+      "status"
+    ],
+    "searchable": false
+  },
+  "account-aliases": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-aliases",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "alias",
+        "label": "Alias",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Alias",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "account_id",
+      "alias",
+      "status"
+    ],
+    "searchable": false
+  },
+  "account-external-keys": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-external-keys",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "source_namespace",
+        "label": "Source namespace",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Source Namespace",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "external_key",
+        "label": "External key",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Key",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "account_id",
+      "status"
+    ],
+    "searchable": false
+  },
+  "account-tax-profiles": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-tax-profiles",
+    "operation": "create",
+    "lifecycle": "none",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "company_registration_id",
+        "label": "Company tax registration",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Company Registration Id"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "identity:tax-registrations",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "scheme",
+        "label": "Scheme",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "GST_IN",
+            "VAT",
+            "OTHER"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "GST_IN",
+            "VAT",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "component",
+        "label": "Component",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "CGST",
+            "SGST",
+            "UTGST",
+            "IGST",
+            "CESS",
+            "VAT",
+            "OTHER"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "CGST",
+            "SGST",
+            "UTGST",
+            "IGST",
+            "CESS",
+            "VAT",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "purpose",
+        "label": "Purpose",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "INPUT_RECOVERABLE",
+            "INPUT_PENDING",
+            "OUTPUT_PAYABLE",
+            "RCM_PAYABLE",
+            "DEPOSIT",
+            "ADJUSTMENT"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "INPUT_RECOVERABLE",
+            "INPUT_PENDING",
+            "OUTPUT_PAYABLE",
+            "RCM_PAYABLE",
+            "DEPOSIT",
+            "ADJUSTMENT"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "duty_type",
+        "label": "Duty type",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "OTHER",
+          "enum": [
+            "GST",
+            "VAT",
+            "TDS",
+            "TCS",
+            "CESS",
+            "EXCISE",
+            "OTHER"
+          ],
+          "title": "Duty Type",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "GST",
+            "VAT",
+            "TDS",
+            "TCS",
+            "CESS",
+            "EXCISE",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "OTHER"
+      }
+    ],
+    "filter_keys": [
+      "account_id",
+      "purpose"
+    ],
+    "searchable": false
+  },
+  "account-bank-profiles": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-bank-profiles",
+    "operation": "create",
+    "lifecycle": "none",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "company_bank_id",
+        "label": "Company bank",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Company Bank Id",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "identity:bank-accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "reconciliation_start_date",
+        "label": "Reconciliation start date",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reconciliation Start Date"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "account_id"
+    ],
+    "searchable": false
+  },
+  "account-tax-defaults": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "account-tax-defaults",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "direction",
+        "label": "Direction",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "SALE",
+            "PURCHASE"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "SALE",
+            "PURCHASE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "supply_kind",
+        "label": "Supply kind",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "GOODS",
+            "SERVICE"
+          ],
+          "title": "Supply Kind",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "GOODS",
+            "SERVICE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "code_system",
+        "label": "Code system",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "SAC",
+            "HSN"
+          ],
+          "title": "Code System",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "SAC",
+            "HSN"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[0-9]{4,8}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "rule_id",
+        "label": "Tax rule",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "catalog:tax-rules",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "treatment",
+        "label": "Treatment",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "TAXABLE",
+            "NIL_RATED",
+            "EXEMPT",
+            "NON_GST"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "TAXABLE",
+            "NIL_RATED",
+            "EXEMPT",
+            "NON_GST"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "itc_eligibility",
+        "label": "Itc eligibility",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "enum": [
+                "ELIGIBLE",
+                "INELIGIBLE",
+                "BLOCKED"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Itc Eligibility"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": true,
+          "choices": [
+            "ELIGIBLE",
+            "INELIGIBLE",
+            "BLOCKED"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "rcm_applicable",
+        "label": "Rcm applicable",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Rcm Applicable",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "assessable_inclusion",
+        "label": "Assessable inclusion",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "NONE",
+          "enum": [
+            "NONE",
+            "GOODS",
+            "SERVICES",
+            "BOTH"
+          ],
+          "title": "Assessable Inclusion",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "NONE",
+            "GOODS",
+            "SERVICES",
+            "BOTH"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "NONE"
+      },
+      {
+        "key": "apportion_by",
+        "label": "Apportion by",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "enum": [
+                "VALUE",
+                "QUANTITY"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Apportion By"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": true,
+          "choices": [
+            "VALUE",
+            "QUANTITY"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "account_id",
+      "code",
+      "direction",
+      "as_of"
+    ],
+    "searchable": true
+  },
+  "posting-mappings": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "posting-mappings",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "purpose",
+        "label": "Purpose",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "SALES_REVENUE",
+            "SERVICE_REVENUE",
+            "SALES_RETURN",
+            "PURCHASE_EXPENSE",
+            "OUTPUT_CGST",
+            "OUTPUT_SGST",
+            "OUTPUT_UTGST",
+            "OUTPUT_IGST",
+            "OUTPUT_CESS",
+            "INPUT_CGST",
+            "INPUT_SGST",
+            "INPUT_UTGST",
+            "INPUT_IGST",
+            "INPUT_CESS",
+            "PENDING_CGST",
+            "PENDING_SGST",
+            "PENDING_UTGST",
+            "PENDING_IGST",
+            "PENDING_CESS",
+            "RCM_CGST",
+            "RCM_SGST",
+            "RCM_UTGST",
+            "RCM_IGST",
+            "RCM_CESS",
+            "TDS_PAYABLE",
+            "TCS_PAYABLE",
+            "TDS_RECEIVABLE",
+            "TCS_RECEIVABLE",
+            "CASH_RECEIPT",
+            "BANK_RECEIPT",
+            "INVENTORY_VALUE",
+            "COST_OF_GOODS",
+            "ROUNDING_GAIN",
+            "ROUNDING_LOSS"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "SALES_REVENUE",
+            "SERVICE_REVENUE",
+            "SALES_RETURN",
+            "PURCHASE_EXPENSE",
+            "OUTPUT_CGST",
+            "OUTPUT_SGST",
+            "OUTPUT_UTGST",
+            "OUTPUT_IGST",
+            "OUTPUT_CESS",
+            "INPUT_CGST",
+            "INPUT_SGST",
+            "INPUT_UTGST",
+            "INPUT_IGST",
+            "INPUT_CESS",
+            "PENDING_CGST",
+            "PENDING_SGST",
+            "PENDING_UTGST",
+            "PENDING_IGST",
+            "PENDING_CESS",
+            "RCM_CGST",
+            "RCM_SGST",
+            "RCM_UTGST",
+            "RCM_IGST",
+            "RCM_CESS",
+            "TDS_PAYABLE",
+            "TCS_PAYABLE",
+            "TDS_RECEIVABLE",
+            "TCS_RECEIVABLE",
+            "CASH_RECEIPT",
+            "BANK_RECEIPT",
+            "INVENTORY_VALUE",
+            "COST_OF_GOODS",
+            "ROUNDING_GAIN",
+            "ROUNDING_LOSS"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "company_registration_id",
+        "label": "Company tax registration",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Company Registration Id"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "identity:tax-registrations",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "currency",
+        "label": "Currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "account_id",
+      "purpose",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "parties": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "parties",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "legal_name",
+        "label": "Legal name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Legal Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "party_type",
+        "label": "Party type",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "ORGANISATION",
+          "enum": [
+            "ORGANISATION",
+            "PERSON"
+          ],
+          "title": "Party Type",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "ORGANISATION",
+            "PERSON"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "ORGANISATION"
+      },
+      {
+        "key": "country_code",
+        "label": "Country code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "countries",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "notes",
+        "label": "Notes",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "code",
+      "status",
+      "role"
+    ],
+    "searchable": true
+  },
+  "party-roles": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-roles",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "role",
+        "label": "Role",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "CUSTOMER",
+            "SUPPLIER",
+            "OTHER",
+            "BROKER"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "CUSTOMER",
+            "SUPPLIER",
+            "OTHER",
+            "BROKER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "role",
+      "status"
+    ],
+    "searchable": false
+  },
+  "party-addresses": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-addresses",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "label",
+        "label": "Label",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "mailing_name",
+        "label": "Mailing name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Mailing Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "line1",
+        "label": "Line1",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Line1",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "line2",
+        "label": "Line2",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line2"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "locality",
+        "label": "Locality",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locality"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "city",
+        "label": "City",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "City",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "state_code",
+        "label": "State code",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "State Code"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "states",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "country_code",
+        "label": "Country code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "countries",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "postal_code",
+        "label": "Postal code",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Postal Code"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "delivery_instructions",
+        "label": "Delivery instructions",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delivery Instructions"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "status"
+    ],
+    "searchable": true
+  },
+  "party-address-uses": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-address-uses",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "address_id",
+        "label": "Address",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Address Id",
+          "type": "string"
+        },
+        "reference": "party-addresses",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "party-addresses",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "purpose",
+        "label": "Purpose",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "REGISTERED",
+            "BILLING",
+            "SHIPPING",
+            "CORRESPONDENCE",
+            "DISPATCH",
+            "REMITTANCE"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "REGISTERED",
+            "BILLING",
+            "SHIPPING",
+            "CORRESPONDENCE",
+            "DISPATCH",
+            "REMITTANCE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "registration_id",
+        "label": "Tax registration",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Registration Id"
+        },
+        "reference": "party-tax-registrations",
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "party-tax-registrations",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "is_default",
+        "label": "Is default",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Is Default",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      }
+    ],
+    "filter_keys": [
+      "address_id",
+      "party_id",
+      "purpose",
+      "registration_id",
+      "status"
+    ],
+    "searchable": false
+  },
+  "party-contacts": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-contacts",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "designation",
+        "label": "Designation",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Designation"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "department",
+        "label": "Department",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Department"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "email",
+        "label": "Email",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 254,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Email"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "phone",
+        "label": "Phone",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phone"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "mobile",
+        "label": "Mobile",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mobile"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "language",
+        "label": "Language",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "status"
+    ],
+    "searchable": true
+  },
+  "party-contact-uses": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-contact-uses",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "contact_id",
+        "label": "Contact",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Contact Id",
+          "type": "string"
+        },
+        "reference": "party-contacts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "party-contacts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "purpose",
+        "label": "Purpose",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "GENERAL",
+            "INVOICING",
+            "PAYMENTS",
+            "DELIVERY"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "GENERAL",
+            "INVOICING",
+            "PAYMENTS",
+            "DELIVERY"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "is_default",
+        "label": "Is default",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Is Default",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "purpose",
+      "status"
+    ],
+    "searchable": false
+  },
+  "party-identifiers": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-identifiers",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "scheme",
+        "label": "Scheme",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "PAN",
+            "TAN",
+            "CIN",
+            "EIN",
+            "UDYAM",
+            "BUSINESS_REGISTRATION"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "PAN",
+            "TAN",
+            "CIN",
+            "EIN",
+            "UDYAM",
+            "BUSINESS_REGISTRATION"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "value",
+        "label": "Value",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "country_code",
+        "label": "Country code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "countries",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "verification_reference",
+        "label": "Verification reference",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification Reference"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "party-tax-registrations": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-tax-registrations",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "scheme",
+        "label": "Scheme",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "GST_IN",
+            "VAT",
+            "OTHER"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "GST_IN",
+            "VAT",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "registration_number",
+        "label": "Registration number",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Registration Number"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "registration_type",
+        "label": "Registration type",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "REGULAR",
+          "enum": [
+            "REGULAR",
+            "COMPOSITION",
+            "UNREGISTERED",
+            "SEZ_UNIT",
+            "SEZ_DEVELOPER",
+            "UIN",
+            "OVERSEAS",
+            "CASUAL",
+            "NRTP",
+            "OTHER"
+          ],
+          "title": "Registration Type",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "REGULAR",
+            "COMPOSITION",
+            "UNREGISTERED",
+            "SEZ_UNIT",
+            "SEZ_DEVELOPER",
+            "UIN",
+            "OVERSEAS",
+            "CASUAL",
+            "NRTP",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "REGULAR"
+      },
+      {
+        "key": "country_code",
+        "label": "Country code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "countries",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "state_code",
+        "label": "State code",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "State Code"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "states",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid From"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "party-registration-addresses": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-registration-addresses",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "registration_id",
+        "label": "Tax registration",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Registration Id",
+          "type": "string"
+        },
+        "reference": "party-tax-registrations",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "party-tax-registrations",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "address_id",
+        "label": "Address",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Address Id",
+          "type": "string"
+        },
+        "reference": "party-addresses",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "party-addresses",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "address_id",
+      "party_id",
+      "registration_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "party-bank-accounts": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-bank-accounts",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "label",
+        "label": "Label",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "beneficiary_name",
+        "label": "Beneficiary name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Beneficiary Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "bank_name",
+        "label": "Bank name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Bank Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "country_code",
+        "label": "Country code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "countries",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "currency",
+        "label": "Currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "routing_code",
+        "label": "Routing code",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Routing Code"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "account_number",
+        "label": "Account number",
+        "required": true,
+        "visible": true,
+        "readable": false,
+        "writable": true,
+        "definition": {
+          "maxLength": 64,
+          "minLength": 4,
+          "title": "Account Number",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": true,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "verification_reference",
+        "label": "Verification reference",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification Reference"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "status"
+    ],
+    "searchable": true
+  },
+  "party-commercial-types": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-commercial-types",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "role",
+        "label": "Role",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "code",
+      "role",
+      "status"
+    ],
+    "searchable": true
+  },
+  "party-commercial-type-memberships": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-commercial-type-memberships",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "commercial_type_id",
+        "label": "Commercial type",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Commercial Type Id",
+          "type": "string"
+        },
+        "reference": "party-commercial-types",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "party-commercial-types",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "party-accounting-policies": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-accounting-policies",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "role",
+        "label": "Role",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "payment_term_id",
+        "label": "Payment term",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Payment Term Id",
+          "type": "string"
+        },
+        "reference": "payment-terms",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "payment-terms",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "bill_wise",
+        "label": "Bill wise",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": true,
+          "title": "Bill Wise",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": true
+      },
+      {
+        "key": "settlement_currency",
+        "label": "Settlement currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Settlement Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "transaction_hold",
+        "label": "Transaction hold",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Transaction Hold",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "payment_hold",
+        "label": "Payment hold",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Payment Hold",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "payment_term_id",
+      "role",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "party-credit-policies": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-credit-policies",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "role",
+        "label": "Role",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "CUSTOMER",
+          "enum": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "CUSTOMER"
+      },
+      {
+        "key": "limit_mode",
+        "label": "Limit mode",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "LIMITED",
+          "enum": [
+            "INHERIT",
+            "UNLIMITED",
+            "LIMITED"
+          ],
+          "title": "Limit Mode",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "INHERIT",
+            "UNLIMITED",
+            "LIMITED"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "LIMITED"
+      },
+      {
+        "key": "limit_amount",
+        "label": "Limit amount",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Limit Amount"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "minimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "currency",
+        "label": "Currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "enforcement",
+        "label": "Enforcement",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "BLOCK",
+          "enum": [
+            "WARN",
+            "BLOCK",
+            "OVERRIDE"
+          ],
+          "title": "Enforcement",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "WARN",
+            "BLOCK",
+            "OVERRIDE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "BLOCK"
+      },
+      {
+        "key": "overdue_days",
+        "label": "Overdue days",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": 0,
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Overdue Days",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": 0
+      },
+      {
+        "key": "overdue_tolerance",
+        "label": "Overdue tolerance",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "0",
+          "title": "Overdue Tolerance",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "minimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "0"
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "role",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "party-withholding-profiles": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "party-withholding-profiles",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "kind",
+        "label": "Kind",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "TDS",
+            "TCS"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "TDS",
+            "TCS"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "deductible",
+        "label": "Deductible",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": true,
+          "title": "Deductible",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": true
+      },
+      {
+        "key": "deductee_type",
+        "label": "Deductee type",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "INDIVIDUAL",
+            "HUF",
+            "COMPANY",
+            "FIRM",
+            "AOP_BOI",
+            "LOCAL_AUTHORITY",
+            "ARTIFICIAL_JURIDICAL_PERSON",
+            "GOVERNMENT",
+            "COOPERATIVE",
+            "TRUST",
+            "NON_RESIDENT_COMPANY",
+            "NON_RESIDENT_OTHER",
+            "OTHER"
+          ],
+          "title": "Deductee Type",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "INDIVIDUAL",
+            "HUF",
+            "COMPANY",
+            "FIRM",
+            "AOP_BOI",
+            "LOCAL_AUTHORITY",
+            "ARTIFICIAL_JURIDICAL_PERSON",
+            "GOVERNMENT",
+            "COOPERATIVE",
+            "TRUST",
+            "NON_RESIDENT_COMPANY",
+            "NON_RESIDENT_OTHER",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "pan_status",
+        "label": "Pan status",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "VERIFIED",
+            "NOT_AVAILABLE",
+            "INOPERATIVE"
+          ],
+          "title": "Pan Status",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "VERIFIED",
+            "NOT_AVAILABLE",
+            "INOPERATIVE"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "pan_identifier_id",
+        "label": "PAN business identifier",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pan Identifier Id"
+        },
+        "reference": "party-identifiers",
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "party-identifiers",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "default_section_id",
+        "label": "Default withholding section",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Default Section Id"
+        },
+        "reference": "withholding-sections",
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "withholding-sections",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "deductee_type",
+      "kind",
+      "party_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "withholding-sections": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "withholding-sections",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z0-9][A-Z0-9()./ -]{0,39}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "kind",
+        "label": "Kind",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "TDS",
+            "TCS"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "TDS",
+            "TCS"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "description",
+        "label": "Description",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "code",
+      "kind",
+      "status"
+    ],
+    "searchable": true
+  },
+  "withholding-rates": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "withholding-rates",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "section_id",
+        "label": "Withholding section",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Section Id",
+          "type": "string"
+        },
+        "reference": "withholding-sections",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "withholding-sections",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "deductee_type",
+        "label": "Deductee type",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "INDIVIDUAL",
+            "HUF",
+            "COMPANY",
+            "FIRM",
+            "AOP_BOI",
+            "LOCAL_AUTHORITY",
+            "ARTIFICIAL_JURIDICAL_PERSON",
+            "GOVERNMENT",
+            "COOPERATIVE",
+            "TRUST",
+            "NON_RESIDENT_COMPANY",
+            "NON_RESIDENT_OTHER",
+            "OTHER"
+          ],
+          "title": "Deductee Type",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "INDIVIDUAL",
+            "HUF",
+            "COMPANY",
+            "FIRM",
+            "AOP_BOI",
+            "LOCAL_AUTHORITY",
+            "ARTIFICIAL_JURIDICAL_PERSON",
+            "GOVERNMENT",
+            "COOPERATIVE",
+            "TRUST",
+            "NON_RESIDENT_COMPANY",
+            "NON_RESIDENT_OTHER",
+            "OTHER"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "rate_percent",
+        "label": "Rate percent",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "title": "Rate Percent",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "minimum": "0",
+            "maximum": "100"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "no_pan_rate_percent",
+        "label": "No pan rate percent",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "title": "No Pan Rate Percent",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "minimum": "0",
+            "maximum": "100"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "single_transaction_threshold",
+        "label": "Single transaction threshold",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Single Transaction Threshold"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "exclusiveMinimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "aggregate_annual_threshold",
+        "label": "Aggregate annual threshold",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aggregate Annual Threshold"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "exclusiveMinimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "threshold_currency",
+        "label": "Threshold currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Threshold Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "threshold_basis",
+        "label": "Threshold basis",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "TRANSACTION",
+          "enum": [
+            "TRANSACTION",
+            "AGGREGATE",
+            "EXCESS"
+          ],
+          "title": "Threshold Basis",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "TRANSACTION",
+            "AGGREGATE",
+            "EXCESS"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "TRANSACTION"
+      },
+      {
+        "key": "source_reference",
+        "label": "Source reference",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source Reference",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "source_url",
+        "label": "Source url",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "source_sha256",
+        "label": "Source sha256",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "supersedes_id",
+        "label": "Replaces rate",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Id"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "withholding-rates",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "deductee_type",
+      "section_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "withholding-certificates": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "withholding-certificates",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "party_id",
+        "label": "Party",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Party Id",
+          "type": "string"
+        },
+        "reference": "parties",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "parties",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "section_id",
+        "label": "Withholding section",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Section Id",
+          "type": "string"
+        },
+        "reference": "withholding-sections",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "withholding-sections",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "certificate_reference",
+        "label": "Certificate reference",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9/-]{0,79}$",
+          "title": "Certificate Reference",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "rate_percent",
+        "label": "Rate percent",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "title": "Rate Percent",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "minimum": "0",
+            "maximum": "100"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "amount_limit",
+        "label": "Amount limit",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount Limit"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "exclusiveMinimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "currency",
+        "label": "Currency",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": true,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "source_reference",
+        "label": "Source reference",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source Reference",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "source_url",
+        "label": "Source url",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "source_sha256",
+        "label": "Source sha256",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "party_id",
+      "section_id",
+      "as_of"
+    ],
+    "searchable": false
+  },
+  "payment-terms": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "payment-terms",
+    "operation": "create",
+    "lifecycle": "status",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "code",
+        "label": "Code",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "name",
+        "label": "Name",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "description",
+        "label": "Description",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "code",
+      "status"
+    ],
+    "searchable": true
+  },
+  "payment-term-lines": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "payment-term-lines",
+    "operation": "create",
+    "lifecycle": "none",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "payment_term_id",
+        "label": "Payment term",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Payment Term Id",
+          "type": "string"
+        },
+        "reference": "payment-terms",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "payment-terms",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "sequence",
+        "label": "Sequence",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "percentage",
+        "label": "Percentage",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "title": "Percentage",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "exclusiveMinimum": "0",
+            "maximum": "100"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "basis",
+        "label": "Basis",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "INVOICE_DATE",
+          "enum": [
+            "INVOICE_DATE",
+            "MONTH_END"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "INVOICE_DATE",
+            "MONTH_END"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "INVOICE_DATE"
+      },
+      {
+        "key": "days",
+        "label": "Days",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": 0,
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Days",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": 0
+      }
+    ],
+    "filter_keys": [
+      "payment_term_id"
+    ],
+    "searchable": false
+  },
+  "accounting-setup": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "accounting-setup",
+    "operation": "create",
+    "lifecycle": "none",
+    "can_create": false,
+    "can_manage": false,
+    "fields": [
+      {
+        "key": "base_currency",
+        "label": "Base currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Base Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "generation",
+        "label": "Generation",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "default": 1,
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Generation",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": 1
+      },
+      {
+        "key": "template_version",
+        "label": "Template version",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "anyOf": [
+            {
+              "maxLength": 30,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Template Version"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [],
+    "searchable": false
+  },
+  "template-installations": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "template-installations",
+    "operation": "create",
+    "lifecycle": "none",
+    "can_create": false,
+    "can_manage": false,
+    "fields": [
+      {
+        "key": "template_key",
+        "label": "Template key",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "maxLength": 60,
+          "minLength": 1,
+          "title": "Template Key",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "template_version",
+        "label": "Template version",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "maxLength": 30,
+          "minLength": 1,
+          "title": "Template Version",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "content_hash",
+        "label": "Content hash",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [],
+    "searchable": false
+  },
+  "template-bindings": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "template-bindings",
+    "operation": "create",
+    "lifecycle": "none",
+    "can_create": false,
+    "can_manage": false,
+    "fields": [
+      {
+        "key": "installation_id",
+        "label": "Installation id",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "format": "uuid",
+          "title": "Installation Id",
+          "type": "string"
+        },
+        "reference": "template-installations",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "template-installations",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "object_type",
+        "label": "Object type",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "enum": [
+            "HEAD",
+            "GROUP",
+            "ACCOUNT"
+          ],
+          "title": "Object Type",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "HEAD",
+            "GROUP",
+            "ACCOUNT"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "object_id",
+        "label": "Object id",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": false,
+        "definition": {
+          "format": "uuid",
+          "title": "Object Id",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": false,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [],
+    "searchable": false
+  },
+  "charge-policies": {
+    "company_id": "01990000-0000-7000-8000-000000000001",
+    "resource": "charge-policies",
+    "operation": "create",
+    "lifecycle": "dates",
+    "can_create": true,
+    "can_manage": true,
+    "fields": [
+      {
+        "key": "account_id",
+        "label": "Account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "offset_account_id",
+        "label": "Offset ledger account",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "uuid",
+          "title": "Offset Account Id",
+          "type": "string"
+        },
+        "reference": "accounts",
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "accounts",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "currency",
+        "label": "Currency",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "reference",
+          "nullable": false,
+          "choices": [],
+          "reference": "currencies",
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_from",
+        "label": "Valid from",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "valid_to",
+        "label": "Valid to",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "accrual_start_date",
+        "label": "Accrual start date",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "format": "date",
+          "title": "Accrual Start Date",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "date",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "method",
+        "label": "Method",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "FIXED",
+            "INTEREST"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "FIXED",
+            "INTEREST"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "title": "Rate",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "exclusiveMinimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "rate_period",
+        "label": "Rate period",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "ANNUAL",
+          "enum": [
+            "ANNUAL",
+            "MONTHLY",
+            "DAILY"
+          ],
+          "title": "Rate Period",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "ANNUAL",
+            "MONTHLY",
+            "DAILY"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "ANNUAL"
+      },
+      {
+        "key": "compound",
+        "label": "Compound",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "SIMPLE",
+          "enum": [
+            "SIMPLE",
+            "DAILY"
+          ],
+          "title": "Compound",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "SIMPLE",
+            "DAILY"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "SIMPLE"
+      },
+      {
+        "key": "basis",
+        "label": "Basis",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "OUTSTANDING",
+          "enum": [
+            "OUTSTANDING",
+            "ORIGINAL"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "OUTSTANDING",
+            "ORIGINAL"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "OUTSTANDING"
+      },
+      {
+        "key": "day_basis",
+        "label": "Day basis",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": 365,
+          "enum": [
+            360,
+            365
+          ],
+          "title": "Day Basis",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "360",
+            "365"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": 365
+      },
+      {
+        "key": "grace_days",
+        "label": "Grace days",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": 0,
+          "maximum": 3650,
+          "minimum": 0,
+          "title": "Grace Days",
+          "type": "integer"
+        },
+        "reference": null,
+        "control": {
+          "kind": "integer",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": 0
+      },
+      {
+        "key": "minimum",
+        "label": "Minimum",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": "0",
+          "title": "Minimum",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {
+            "minimum": "0"
+          }
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": "0"
+      },
+      {
+        "key": "cap",
+        "label": "Cap",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cap"
+        },
+        "reference": null,
+        "control": {
+          "kind": "decimal",
+          "nullable": true,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": {}
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "charge_on_charge",
+        "label": "Charge on charge",
+        "required": false,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "default": false,
+          "title": "Charge On Charge",
+          "type": "boolean"
+        },
+        "reference": null,
+        "control": {
+          "kind": "boolean",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": false
+      },
+      {
+        "key": "tax_treatment",
+        "label": "Tax treatment",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "enum": [
+            "NON_TAXABLE",
+            "EXTERNAL"
+          ],
+          "title": "Tax Treatment",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "select",
+          "nullable": false,
+          "choices": [
+            "NON_TAXABLE",
+            "EXTERNAL"
+          ],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      },
+      {
+        "key": "tax_reason",
+        "label": "Tax reason",
+        "required": true,
+        "visible": true,
+        "readable": true,
+        "writable": true,
+        "definition": {
+          "maxLength": 500,
+          "minLength": 3,
+          "title": "Tax Reason",
+          "type": "string"
+        },
+        "reference": null,
+        "control": {
+          "kind": "text",
+          "nullable": false,
+          "choices": [],
+          "reference": null,
+          "write_only": false,
+          "decimal_bounds": null
+        },
+        "editable": true,
+        "conditional_access": false,
+        "initial": null
+      }
+    ],
+    "filter_keys": [
+      "account_id",
+      "as_of"
+    ],
+    "searchable": false
+  }
+}

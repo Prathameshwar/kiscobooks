@@ -1,0 +1,100 @@
+# Include inside http{}. TLS terminates here; replace server_name/certificate paths.
+# Service ports are private: only this gateway and authenticated service principals reach them.
+# This is the first proxy a client reaches, so it OVERWRITES X-Forwarded-For with the address it saw.
+# Passing the client's header through would let anyone choose the address Identity throttles on
+# (uvicorn takes the right-most entry). Behind a load balancer, restore the real client address with
+# the realip module first and keep overwriting here.
+limit_req_zone $binary_remote_addr zone=identity_auth:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=notification_callbacks:10m rate=5r/s;
+log_format bill_safe '$remote_addr [$time_local] "$request_method $uri $server_protocol" '
+                     '$status $body_bytes_sent rt=$request_time trace=$request_id';
+access_log /var/log/nginx/access.log bill_safe;
+upstream identity { server 127.0.0.1:8001; }
+upstream catalog { server 127.0.0.1:8003; }
+upstream audit { server 127.0.0.1:8002; }
+upstream notification { server 127.0.0.1:8010; }
+server {
+    listen 443 ssl;
+    server_name api.example.invalid;
+    ssl_certificate /run/secrets/api.crt;
+    ssl_certificate_key /run/secrets/api.key;
+    client_max_body_size 1m;
+    large_client_header_buffers 4 32k;
+
+    location = /_identity_auth {
+        internal;
+        proxy_pass http://identity/internal/v1/gateway/authorize;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Authorization $http_authorization;
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_set_header X-Original-Method $notification_original_method;
+        proxy_set_header X-Company-Step-Up $http_x_company_step_up;
+        proxy_set_header X-Impersonation-Session $http_x_impersonation_session;
+        proxy_set_header X-Actor-Context "";
+        proxy_set_header X-Actor-Signature "";
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+    location /internal/ { return 404; }
+    location /notification/internal/ { return 404; }
+    location ^~ /notification/v1/callbacks/ {
+        limit_req zone=notification_callbacks burst=60 nodelay;
+        limit_req_status 429;
+        access_log off; # Never log Meta's verification token query.
+        client_max_body_size 1m;
+        proxy_set_header X-Actor-Context "";
+        proxy_set_header X-Actor-Signature "";
+        proxy_pass http://notification/v1/callbacks/;
+    }
+    location = /notification/health/live { proxy_pass http://notification/health/live; }
+    location = /notification/health/ready { proxy_pass http://notification/health/ready; }
+    location /notification/ {
+        set $notification_original_method $request_method;
+        auth_request /_identity_auth;
+        auth_request_set $notification_actor $upstream_http_x_actor_context;
+        auth_request_set $notification_signature $upstream_http_x_actor_signature;
+        proxy_set_header X-Actor-Context $notification_actor;
+        proxy_set_header X-Actor-Signature $notification_signature;
+        proxy_set_header Authorization "";
+        proxy_pass http://notification/;
+    }
+    # The local sign-in provider's OpenID Connect endpoints (AUTH_PROVIDER=local, the default):
+    # discovery, key set, authorize, token and revoke. Public by design — the issuer in every token is
+    # https://<this host>/oidc. The Auth app's own server calls /oidc/token and /oidc/revoke; the
+    # BFF-only /internal/ surface stays a 404 above and is reached on the private network instead.
+    location /oidc/ {
+        limit_req zone=identity_auth burst=30 nodelay;
+        limit_req_status 429;
+        client_max_body_size 16k;
+        proxy_set_header X-Actor-Context "";
+        proxy_set_header X-Actor-Signature "";
+        proxy_set_header X-Original-URI "";
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_pass http://identity;
+    }
+    # Identity validates provider/PAT credentials itself, including invitation acceptance
+    # before a local account exists. Caller-supplied actor context is always stripped.
+    location /v1/ {
+        limit_req zone=identity_auth burst=30 nodelay;
+        limit_req_status 429;
+        proxy_set_header X-Actor-Context "";
+        proxy_set_header X-Actor-Signature "";
+        proxy_set_header X-Original-URI "";
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Authorization $http_authorization;
+        proxy_set_header X-Company-Step-Up $http_x_company_step_up;
+        proxy_set_header X-Impersonation-Session $http_x_impersonation_session;
+        proxy_pass http://identity;
+    }
+    # Repeat this location for each public downstream namespace. The generated context
+    # comes only from Identity's verified live grants; never use client header values.
+    location /catalog/ {
+        auth_request /_identity_auth;
+        auth_request_set $actor_context $upstream_http_x_actor_context;
+        auth_request_set $actor_signature $upstream_http_x_actor_signature;
+        proxy_set_header X-Actor-Context $actor_context;
+        proxy_set_header X-Actor-Signature $actor_signature;
+        proxy_set_header Authorization "";
+        proxy_pass http://catalog/;
+    }
+}

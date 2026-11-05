@@ -1,0 +1,117 @@
+{
+  "verifiedAt": "2026-10-31T12:11:07.787Z",
+  "scope": "Purchase synthetic UI completion; API integration and print excluded.",
+  "console": {
+    "tests": 178,
+    "files": 18,
+    "exitCode": 0
+  },
+  "sharedUI": {
+    "tests": 606,
+    "files": 8,
+    "exitCode": 0,
+    "version": "0.1.44"
+  },
+  "typechecks": {
+    "fullConsole": 0,
+    "purchaseHarness": 0,
+    "sharedUI": 0
+  },
+  "applicationBuild": {
+    "framework": "Next.js 15.5.25",
+    "command": "node docs/testing/purchase-ui/interactive/application-build.cjs",
+    "exitCode": 0,
+    "buildId": "PRWxQpe_hq-GubWej0mbu",
+    "output": "mfes/apps/console/.next/purchase-review",
+    "normalChecksEnabled": true,
+    "sourceConfigurationRestored": true
+  },
+  "browserAudit": {
+    "cases": 74,
+    "violations": 0,
+    "runtimeErrors": 0,
+    "overflowFindings": 0,
+    "axe": "4.10.3",
+    "engines": [
+      {
+        "name": "msedge",
+        "version": "156.0.4314.50",
+        "interactionSequences": 5
+      },
+      {
+        "name": "chrome",
+        "version": "156.0.8078.48",
+        "interactionSequences": 5
+      },
+      {
+        "name": "firefox",
+        "version": "157.0",
+        "interactionSequences": 5
+      },
+      {
+        "name": "webkit",
+        "version": "27.2",
+        "interactionSequences": 5
+      }
+    ],
+    "nativeZoom": "100/200/400% Edge and Chrome; all themes; isolated profiles; physical browser captures"
+  },
+  "browserAccessibility": {
+    "cases": 4,
+    "passed": true,
+    "method": "Actual Chromium AX trees; separate from semantic snapshots and axe"
+  },
+  "performance": {
+    "asset": "/assets/index-C4Muz4GH.js",
+    "sha256": "0feae3ab9317966f10b7badd405bb31e21c7638419f9646fe4e22d7f4beb922c",
+    "warmP95BudgetMs": 250,
+    "results": [
+      {
+        "lines": 1,
+        "readyMs": 3092.2,
+        "medianMs": 34.8,
+        "p95Ms": 50.8
+      },
+      {
+        "lines": 50,
+        "readyMs": 1384.1,
+        "medianMs": 50.1,
+        "p95Ms": 66.8
+      },
+      {
+        "lines": 200,
+        "readyMs": 1898.7,
+        "medianMs": 96.7,
+        "p95Ms": 166.8
+      }
+    ]
+  },
+  "sourceHashes": {
+    "mfes/apps/console/app/components/PurchaseWorkspaceGrid.tsx": "fca579f030b54a0f653c72d89ee797b3658f72595141622f9445ef22f5f8fe95",
+    "mfes/apps/console/app/components/VoucherEntry.tsx": "37efed83883f6306c2ddc118f1831c94f9db9df2667e619fde9115141f59c677",
+    "mfes/apps/console/app/activity/page.tsx": "c91d2c19abc90869d62feecb96fc584adfe19bb16e62ae17b61599a90bbde6b8",
+    "mfes/packages/ui/src/components/Overlay.tsx": "17e2266c6d0fa218257ada5c970e27a017d60ff0df53f9aacb7d1fa703738ad7",
+    "mfes/packages/ui/src/styles/entry.css": "2085148d3508c781560f19016b38ebf05b5a07df9bcb8725ca6ff7c8d83db775"
+  },
+  "existingDevRouteSmoke": {
+    "route": "/vouchers/new/purchase-preview",
+    "unauthenticatedStatus": 307
+  },
+  "reviews": {
+    "simplification": "Completed manually against CLAUDE.md; no unresolved blocking finding in supported synthetic UI scope.",
+    "security": "Sections 5/6 walked: exact money, deny behavior, scoped drafts, unchanged service boundary; no API or print implementation.",
+    "incompleteAxe": "Primary gradients and decorative glyph only; reviewed in incomplete-review.json with the 308-test contrast suite."
+  },
+  "externalAcceptance": [
+    "Physical Safari/iOS and supported hardware",
+    "Human NVDA/VoiceOver session; NVDA unavailable in this environment"
+  ],
+  "deferred": [
+    "API/effective policy and scoped live masters",
+    "Authoritative duplicate/calculation acceptance",
+    "Durable drafts, revisions, approvals, corrections and command recovery",
+    "Financial/stock/tax/report end-to-end effects and release activation",
+    "Secure attachment transport",
+    "Immutable print/PDF layouts and verification"
+  ]
+}

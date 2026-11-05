@@ -1,0 +1,1523 @@
+﻿finding_id,severity,category,status,test_id,area,company,steps,expected,actual,evidence,fix_scope,retest_acceptance
+TAF-0001,MEDIUM,RECOVERED_UI_CONFLICT,RECOVERED,TA-CONFIG-retail-PRODUCT,Product configuration,01a186e5-f0c5-729d-9cca-0ac3d2487f40,"Create/open Company scope, save a draft with profile-specific entry option, preview and publish",Separate dated product configuration revision saved for this company,409: configuration preview is stale; preview again,.test_artifacts/tenant-admin-20261029/live/TA-CONFIG-retail-PRODUCT.png,Draft published after refreshed UI review; retain original stale-preview UX evidence,Separate dated product configuration revision saved for this company
+TAF-0005,MEDIUM,RECOVERED_UI_CONFLICT,RECOVERED,TA-CONFIG-services-PRODUCT,Product configuration,01a186e7-5d0a-75f9-b774-b6096ea2c87c,"Create/open Company scope, save a draft with profile-specific entry option, preview and publish",Separate dated product configuration revision saved for this company,409: configuration preview is stale; preview again,.test_artifacts/tenant-admin-20261029/live/TA-CONFIG-services-PRODUCT.png,Draft published after refreshed UI review; retain original stale-preview UX evidence,Separate dated product configuration revision saved for this company
+TAF-0012,MEDIUM,CONFIGURATION_PREREQUISITE,BLOCKED,TA-VOUCHER-sales-ENTRY,Sales entry,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Choose Sales from New through UI; wait for navigation and up to 60 seconds for connected loading state to resolve,Sales form works or an explicit voucher/configuration prerequisite is displayed,"No Sales bill type is set up
+
+A sales bill is raised under an active Sales voucher type. Set one up in voucher configuration, then come back.",.test_artifacts/tenant-admin-20261029/live/TA-VOUCHER-sales-ENTRY.png,"Complete the listed published inventory/tax/voucher configuration through UI, then rerun; this is not evidence of an activation defect",Sales form works or an explicit voucher/configuration prerequisite is displayed
+TAF-0013,MEDIUM,BLOCKED_CAPABILITY,OPEN,TA-VOUCHER-receipt-ENTRY,Voucher entry,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open top-bar New menu and choose receipt,Entry screen opens; supported controls available or clear admission/prerequisite reason shown,"New menu navigated to receipt entry; Receipt entry is not built yet
+
+The sales bill is the first kind. The top bar offers the others so the set is visible, and this says plainly which one exists.",.test_artifacts/tenant-admin-20261029/live/workflows-results.json,Application unchanged; investigate using evidence before fixing,Entry screen opens; supported controls available or clear admission/prerequisite reason shown
+TAF-0014,MEDIUM,BLOCKED_CAPABILITY,OPEN,TA-VOUCHER-purchase-ENTRY,Voucher entry,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open top-bar New menu and choose purchase,Entry screen opens; supported controls available or clear admission/prerequisite reason shown,"New menu navigated to purchase entry; Purchase entry is not built yet
+
+The sales bill is the first kind. The top bar offers the others so the set is visible, and this says plainly which one exists.",.test_artifacts/tenant-admin-20261029/live/workflows-results.json,Application unchanged; investigate using evidence before fixing,Entry screen opens; supported controls available or clear admission/prerequisite reason shown
+TAF-0015,MEDIUM,BLOCKED_CAPABILITY,OPEN,TA-VOUCHER-payment-ENTRY,Voucher entry,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open top-bar New menu and choose payment,Entry screen opens; supported controls available or clear admission/prerequisite reason shown,"New menu navigated to payment entry; Payment entry is not built yet
+
+The sales bill is the first kind. The top bar offers the others so the set is visible, and this says plainly which one exists.",.test_artifacts/tenant-admin-20261029/live/workflows-results.json,Application unchanged; investigate using evidence before fixing,Entry screen opens; supported controls available or clear admission/prerequisite reason shown
+TAF-0016,MEDIUM,BLOCKED_CAPABILITY,OPEN,TA-VOUCHER-stock-adjustment-ENTRY,Voucher entry,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open top-bar New menu and choose stock-adjustment,Entry screen opens; supported controls available or clear admission/prerequisite reason shown,"New menu navigated to stock-adjustment entry; Stock adjustment entry is not built yet
+
+The sales bill is the first kind. The top bar offers the others so the set is visible, and this says plainly which one exists.",.test_artifacts/tenant-admin-20261029/live/workflows-results.json,Application unchanged; investigate using evidence before fixing,Entry screen opens; supported controls available or clear admission/prerequisite reason shown
+TAF-0017,MEDIUM,LIVE_FAILURE,OPEN,TA-SHELL-PALETTE,Command palette,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Press Ctrl+K; search Masters inside its dialog; select the option; wait for navigation,Masters destination reached through keyboard command dialog,"locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for getByRole('dialog').getByRole('option').filter({ hasText: 'Masters' }).first()
+    - locator resolved to <li role=""option"" id=""_r_0_-option-0"" aria-selected=""true"" class=""janso-command__option"">…</li>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is not stable
+  - retrying click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+    - click action done
+    - waiting for scheduled navigations to finish
+",.test_artifacts/tenant-admin-20261029/live/TA-SHELL-PALETTE.png,Application unchanged; investigate using evidence before fixing,Masters destination reached through keyboard command dialog
+TAF-0018,MEDIUM,BOUNDARY_ERROR_RESPONSE,OPEN,TA-BOUNDARY-RANDOM-COMPANY-CONTEXT,Company isolation,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Submit a random inaccessible company through authenticated context API; compare selected-company cookies before/after,403/404/422 refusal; previous authorized company remains selected,HTTP 502; Company selection could not be verified. Try again.; previous company cookie retained,.test_artifacts/tenant-admin-20261029/live/TA-BOUNDARY-RANDOM-COMPANY-CONTEXT.png,"Inaccessible random company returned 502 while the previous authorized company cookie was retained. Inspect Identity session selection and Company context refusal semantics; this is a response/UX defect, not evidence of cross-tenant data access.",403/404/422 refusal; previous authorized company remains selected
+TAF-0019,MEDIUM,CONFIGURATION_PREREQUISITE,BLOCKED,TA-PRODUCT-retail-ACTIVATE,Product activation,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Open the UI-created product; request activation through its record action; verify persisted status,Product becomes active or reports an exact unmet prerequisite,"Activation prerequisites: Review product activation
+
+Activation checks the complete product, pricing, tax and configuration for today. Review the result before confirming.
+
+The service found requirements that block this change.
+Select a published inventory profile in product configuration.
+Assign an HSN/SAC classification for purchases.
+Assign a published tax rule for purchases.
+Assign the tax treatment for purchases.
+Assign an HSN/SAC classification for sales.
+Assign a published tax rule for sales.
+Assign the tax treatment for sales.
+Adjust and review again
+Cancel
+Review again",.test_artifacts/tenant-admin-20261029/live/TA-PRODUCT-retail-ACTIVATE.png,"Complete the listed published inventory/tax/voucher configuration through UI, then rerun; this is not evidence of an activation defect",Product becomes active or reports an exact unmet prerequisite
+TAF-0020,MEDIUM,CONFIGURATION_PREREQUISITE,BLOCKED,TA-PRODUCT-services-ACTIVATE,Product activation,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Open the UI-created product; request activation through its record action; verify persisted status,Product becomes active or reports an exact unmet prerequisite,"Activation prerequisites: Review product activation
+
+Activation checks the complete product, pricing, tax and configuration for today. Review the result before confirming.
+
+The service found requirements that block this change.
+Assign an HSN/SAC classification for purchases.
+Assign a published tax rule for purchases.
+Assign the tax treatment for purchases.
+Assign an HSN/SAC classification for sales.
+Assign a published tax rule for sales.
+Assign the tax treatment for sales.
+Adjust and review again
+Cancel
+Review again",.test_artifacts/tenant-admin-20261029/live/TA-PRODUCT-services-ACTIVATE.png,"Complete the listed published inventory/tax/voucher configuration through UI, then rerun; this is not evidence of an activation defect",Product becomes active or reports an exact unmet prerequisite
+TAF-0021,MEDIUM,CONFIGURATION_PREREQUISITE,BLOCKED,TA-PRODUCT-distribution-ACTIVATE,Product activation,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open the UI-created product; request activation through its record action; verify persisted status,Product becomes active or reports an exact unmet prerequisite,"Activation prerequisites: Review product activation
+
+Activation checks the complete product, pricing, tax and configuration for today. Review the result before confirming.
+
+The service found requirements that block this change.
+Select a published inventory profile in product configuration.
+Assign an HSN/SAC classification for purchases.
+Assign a published tax rule for purchases.
+Assign the tax treatment for purchases.
+Assign an HSN/SAC classification for sales.
+Assign a published tax rule for sales.
+Assign the tax treatment for sales.
+Adjust and review again
+Cancel
+Review again",.test_artifacts/tenant-admin-20261029/live/TA-PRODUCT-distribution-ACTIVATE.png,"Complete the listed published inventory/tax/voucher configuration through UI, then rerun; this is not evidence of an activation defect",Product becomes active or reports an exact unmet prerequisite
+TAF-0022,HIGH,TRANSIENT_ROUTE_FAILURE,RECOVERED,TA-ROUTE-distribution-/masters/inventory-templates,Routes and menus,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open /masters/inventory-templates as new tenant administrator; inspect rendered state and linked controls,"Page renders intended authorized state, with no HTTP/browser/server error",HTTP 500 for /masters/inventory-templates,.test_artifacts/tenant-admin-20261029/crawl-live/TA-ROUTE-distribution-_masters_inventory-templates.png,Application unchanged; investigate using evidence before fixing,"Page renders intended authorized state, with no HTTP/browser/server error"
+TAF-0023,MEDIUM,LIVE_FAILURE,OPEN,TA-ROUTE-distribution-/inventory/stock?view=positions,Routes and menus,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open /inventory/stock?view=positions as new tenant administrator; inspect rendered state and linked controls,"Page renders intended authorized state, with no HTTP/browser/server error","page.goto: net::ERR_ABORTED at http://localhost:4320/inventory/stock?view=positions
+Call log:
+  - navigating to ""http://localhost:4320/inventory/stock?view=positions"", waiting until ""domcontentloaded""
+",.test_artifacts/tenant-admin-20261029/crawl-live/TA-ROUTE-distribution-_inventory_stock_view_positions.png,Application unchanged; investigate using evidence before fixing,"Page renders intended authorized state, with no HTTP/browser/server error"
+TAF-0024,REVIEW,BROWSER_EXECUTION_FAILURE,NEEDS_UI_RETEST,TA-ROUTE-distribution-/inventory/stock?view=movements,Routes and menus,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open /inventory/stock?view=movements as new tenant administrator; inspect rendered state and linked controls,"Page renders intended authorized state, with no HTTP/browser/server error","page.goto: Page crashed
+Call log:
+  - navigating to ""http://localhost:4320/inventory/stock?view=movements"", waiting until ""domcontentloaded""
+",.test_artifacts/tenant-admin-20261029/crawl-live/TA-ROUTE-distribution-_inventory_stock_view_movements.png,"The browser page crashed during a prolonged development-server run, before the stated page assertions completed. Investigate browser/environment stability and rerun in a fresh isolated UI session. A later HTTP-only link check does not establish that this UI workflow passed.","Page renders intended authorized state, with no HTTP/browser/server error"
+TAF-0025,REVIEW,BROWSER_EXECUTION_FAILURE,NEEDS_UI_RETEST,TA-ROUTE-distribution-/inventory/stock?view=account-policies,Routes and menus,01a186e7-fee7-73f0-951b-a81e2188ddd8,Open /inventory/stock?view=account-policies as new tenant administrator; inspect rendered state and linked controls,"Page renders intended authorized state, with no HTTP/browser/server error","page.goto: Page crashed
+Call log:
+  - navigating to ""http://localhost:4320/inventory/stock?view=account-policies"", waiting until ""domcontentloaded""
+",.test_artifacts/tenant-admin-20261029/crawl-live/TA-ROUTE-distribution-_inventory_stock_view_account-policies.png,"The browser page crashed during a prolonged development-server run, before the stated page assertions completed. Investigate browser/environment stability and rerun in a fresh isolated UI session. A later HTTP-only link check does not establish that this UI workflow passed.","Page renders intended authorized state, with no HTTP/browser/server error"
+TAF-0026,REVIEW,BROWSER_EXECUTION_FAILURE,NEEDS_UI_RETEST,TA-RUN-finish,Execution,01a186e7-fee7-73f0-951b-a81e2188ddd8,Execute requested phase,Phase completes,page.waitForTimeout: Page crashed,.test_artifacts/tenant-admin-20261029/live/TA-RUN-finish.png,"The browser page crashed during a prolonged development-server run, before the stated page assertions completed. Investigate browser/environment stability and rerun in a fresh isolated UI session. A later HTTP-only link check does not establish that this UI workflow passed.",Phase completes
+TAF-0027,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/accounting/accounts/01a186e6-6e7f-7019-8634-f1e7f14ca0d4,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /accounting/accounts/01a186e6-6e7f-7019-8634-f1e7f14ca0d4 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_accounting_accounts_01a186e6-6e7f-7019-8634-f1e7f14ca0d4.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0028,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/tax/classifications/01a186e6-67ee-715f-8e43-bc0e1989ef56,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /tax/classifications/01a186e6-67ee-715f-8e43-bc0e1989ef56 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_tax_classifications_01a186e6-67ee-715f-8e43-bc0e1989ef56.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0029,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/tax/classifications/01a186e6-67dd-702d-a850-a43df8995773,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /tax/classifications/01a186e6-67dd-702d-a850-a43df8995773 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_tax_classifications_01a186e6-67dd-702d-a850-a43df8995773.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0030,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/tax/classifications/01a186e6-67d3-7314-927f-7c8b01f5ec61,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /tax/classifications/01a186e6-67d3-7314-927f-7c8b01f5ec61 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_tax_classifications_01a186e6-67d3-7314-927f-7c8b01f5ec61.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0031,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/tax/classifications/01a186e6-67c8-73cc-8ad0-a3f61e067fac,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /tax/classifications/01a186e6-67c8-73cc-8ad0-a3f61e067fac through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_tax_classifications_01a186e6-67c8-73cc-8ad0-a3f61e067fac.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0032,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/tax/classifications/01a186e6-67bd-713b-aaed-84508f6db2b7,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /tax/classifications/01a186e6-67bd-713b-aaed-84508f6db2b7 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_tax_classifications_01a186e6-67bd-713b-aaed-84508f6db2b7.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0033,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-62d2-73c3-8883-c4def8fa0846,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-62d2-73c3-8883-c4def8fa0846 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-62d2-73c3-8883-c4def8fa0846.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0034,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-628e-77e7-94ce-be8ebf61dffa,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-628e-77e7-94ce-be8ebf61dffa through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-628e-77e7-94ce-be8ebf61dffa.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0035,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-63bf-732f-a9e6-e165a1b6aeed,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-63bf-732f-a9e6-e165a1b6aeed through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-63bf-732f-a9e6-e165a1b6aeed.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0036,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-61fd-7300-a0f5-48e077dc9879,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-61fd-7300-a0f5-48e077dc9879 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-61fd-7300-a0f5-48e077dc9879.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0037,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-6454-75b8-9e0a-7a6166845a76,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-6454-75b8-9e0a-7a6166845a76 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-6454-75b8-9e0a-7a6166845a76.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0038,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-6155-713a-8699-e75db9e17f2f,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-6155-713a-8699-e75db9e17f2f through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-6155-713a-8699-e75db9e17f2f.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0039,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-612d-75c9-b854-23bb8a6946ba,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-612d-75c9-b854-23bb8a6946ba through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-612d-75c9-b854-23bb8a6946ba.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0040,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-633f-77cc-9536-e277668db21e,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-633f-77cc-9536-e277668db21e through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-633f-77cc-9536-e277668db21e.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0041,HIGH,LIVE_FAILURE,OPEN,TA-LINK-retail-/masters/unit-conversions?from_unit_id=01a186e6-6430-7241-9769-fc73899ad130,Discovered links,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Follow /masters/unit-conversions?from_unit_id=01a186e6-6430-7241-9769-fc73899ad130 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-retail-_masters_unit-conversions_from_unit_id_01a186e6-6430-7241-9769-fc73899ad130.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0042,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/account-groups/01a186e7-a67c-77d7-84d9-e104af08c1ff,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/account-groups/01a186e7-a67c-77d7-84d9-e104af08c1ff through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_account-groups_01a186e7-a67c-77d7-84d9-e104af08c1ff.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0043,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/account-groups/01a186e7-a658-73f3-bba6-27300e1e9054,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/account-groups/01a186e7-a658-73f3-bba6-27300e1e9054 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_account-groups_01a186e7-a658-73f3-bba6-27300e1e9054.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0044,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/account-groups/01a186e7-a634-7284-abbc-1b49994b8e68,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/account-groups/01a186e7-a634-7284-abbc-1b49994b8e68 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_account-groups_01a186e7-a634-7284-abbc-1b49994b8e68.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0045,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a1870f-1152-77e2-b576-7e8f3901f9ef,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a1870f-1152-77e2-b576-7e8f3901f9ef through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a1870f-1152-77e2-b576-7e8f3901f9ef.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0046,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b2ff-7520-9d0a-fa4b91853cea,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b2ff-7520-9d0a-fa4b91853cea through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b2ff-7520-9d0a-fa4b91853cea.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0047,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b2b0-76fe-863c-4d9fd25e6d61,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b2b0-76fe-863c-4d9fd25e6d61 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b2b0-76fe-863c-4d9fd25e6d61.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0048,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b250-70b7-bc9c-4188bf5b8bfb,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b250-70b7-bc9c-4188bf5b8bfb through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b250-70b7-bc9c-4188bf5b8bfb.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0049,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b1fb-74e6-86dd-5920357e8c5c,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b1fb-74e6-86dd-5920357e8c5c through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b1fb-74e6-86dd-5920357e8c5c.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0050,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b1a3-723c-a13a-008c71228c27,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b1a3-723c-a13a-008c71228c27 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b1a3-723c-a13a-008c71228c27.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0051,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b147-7082-af3f-d0f5c6d6ab99,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b147-7082-af3f-d0f5c6d6ab99 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b147-7082-af3f-d0f5c6d6ab99.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0052,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b0e4-73e2-83af-a23a841bda25,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b0e4-73e2-83af-a23a841bda25 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b0e4-73e2-83af-a23a841bda25.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0053,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-b066-70c9-9756-b1d55c8e0944,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-b066-70c9-9756-b1d55c8e0944 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-b066-70c9-9756-b1d55c8e0944.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0054,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-af3b-7453-9d46-c98db1a1af0d,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-af3b-7453-9d46-c98db1a1af0d through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-af3b-7453-9d46-c98db1a1af0d.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0055,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-adff-71e9-a167-0e9a3376942f,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-adff-71e9-a167-0e9a3376942f through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-adff-71e9-a167-0e9a3376942f.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0056,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-ad5c-7328-9fe9-d866d955bff1,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-ad5c-7328-9fe9-d866d955bff1 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-ad5c-7328-9fe9-d866d955bff1.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0057,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/accounts/01a186e7-accf-7600-aac1-36fb502346b4,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/accounts/01a186e7-accf-7600-aac1-36fb502346b4 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_accounts_01a186e7-accf-7600-aac1-36fb502346b4.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0058,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/template-bindings/01a186e7-b2de-75fb-a7c9-9f50ac34d9bd,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/template-bindings/01a186e7-b2de-75fb-a7c9-9f50ac34d9bd through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_template-bindings_01a186e7-b2de-75fb-a7c9-9f50ac34d9bd.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0059,HIGH,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/template-bindings/01a186e7-b28e-75e9-a393-e7bc82b38a2c,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/template-bindings/01a186e7-b28e-75e9-a393-e7bc82b38a2c through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_template-bindings_01a186e7-b28e-75e9-a393-e7bc82b38a2c.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0060,MEDIUM,DEPLOYMENT_AND_SOURCE_PREREQUISITE,BLOCKED,TA-REPORTS-retail-RUN-READINESS,Report execution,01a186e5-f0c5-729d-9cca-0ac3d2487f40,Inspect run admission and READY source snapshots after loading all report settings,A ready source and enabled execution allow an actual report run,38 definitions loaded; 0 enabled for new runs; 0 READY source snapshots. Report execution/export cannot be exercised until the deployment/source prerequisites exist.,.test_artifacts/tenant-admin-20261029/live/TA-REPORTS-retail-RUN-READINESS.png,"Provide released report-run configuration and a READY source snapshot through the supported deployment/source workflow, then execute typed-parameter runs and exports. The current metadata explicitly disables new runs and contains no READY snapshots.",A ready source and enabled execution allow an actual report run
+TAF-0061,MEDIUM,DEPLOYMENT_AND_SOURCE_PREREQUISITE,BLOCKED,TA-REPORTS-services-RUN-READINESS,Report execution,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Inspect run admission and READY source snapshots after loading all report settings,A ready source and enabled execution allow an actual report run,38 definitions loaded; 0 enabled for new runs; 0 READY source snapshots. Report execution/export cannot be exercised until the deployment/source prerequisites exist.,.test_artifacts/tenant-admin-20261029/live/TA-REPORTS-services-RUN-READINESS.png,"Provide released report-run configuration and a READY source snapshot through the supported deployment/source workflow, then execute typed-parameter runs and exports. The current metadata explicitly disables new runs and contains no READY snapshots.",A ready source and enabled execution allow an actual report run
+TAF-0062,MEDIUM,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/opening?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/opening?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,"apiRequestContext.get: Timeout 120000ms exceeded.
+Call log:
+  - → GET http://localhost:4320/accounting/opening?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - cookie: next-auth.csrf-token=34ac3e7b677ef75f0a869900ab9bf3f34240ab5afa4a9a96a296fba37bc95635%7Cd7f638f15e5e286746ac817b1bc219f5306defefe23057ed61295be772fec245; next-auth.callback-url=http%3A%2F%2Flocalhost%3A4310%2Fonboarding%3FreturnTo%3Dhttp%253A%252F%252Flocalhost%253A4320%252F; authentik_user_switching=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWsiLCJzdWIiOiJ1c2VyX3N3aXRjaGluZyIsInVzZXJfc3dpdGNoaW5nIjoiOGVwaFdGWU1xWHBwMVp1bTlhVThEQlBlVHZON1c2eDUifQ.WCArbDL1Vbfm7cXAL8aVmK5phWWaum8hINjda2V_PJE; authentik_device=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzgyYTE2ZGE5ODlkOTA0M2YxYTg3NzRlYWNlY2Q5Y2VlZjliMzJiYjZhMTY1ZTIzYTA3NWVmYWM0YjEwZjFmIiwiZXhwIjoxNzk1ODY1MzM2LjU1MjYyMn0._T0XLCogrC_oNs-5ALQtwan-fS0klSdpAmI-xA6M7UY; authentik_csrf=grFER66NzymQWtzklpT5DiZ2ivXNLE6e; authentik_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiJsZXBldXQzcmlpcXc1OTAzdmt6NnlzMWo2OHBoY2VxMiIsImlzcyI6ImF1dGhlbnRpayIsInN1YiI6IjBjODJhMTZkYTk4OWQ5MDQzZjFhODc3NGVhY2VjZDljZWVmOWIzMmJiNmExNjVlMjNhMDc1ZWZhYzRiMTBmMWYiLCJhdXRoZW50aWNhdGVkIjp0cnVlLCJhY3IiOiJnb2F1dGhlbnRpay5pby9jb3JlL2RlZmF1bHQifQ.pQJAx3rwjWmu95efLHp9Te1RcFl53-tP_5qfqZZ7OtM; janso-company=01a186e7-5d0a-75f9-b774-b6096ea2c87c; next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..LSKWpdhqIEXKs85c.kpd-BSCrtBbISiv1uEte2Lyz5OwLwjlvvW2EQhTmI1ky1loyvvD3YoYHj03cEyQuqzfkVCP3eJw0FNdfB3rq9r0TYUecAPU4z27Sf5J-2Qj2jPYeTpKryQPuQnM_OP5GZgrm4gWTqMQ6zAP_9USV8lA5oA-qY5pqOVgwL12m6P0qCaSTs1-tgdDSlv00zk56JNmkLx6rhhS715Cibs0-ribdHkuTqrVwzeedQQEBPLQlNkldHgOP0SGgvWiYIsiZ95LCyrBBjDry983CP83EgK8vjoaddulkISOpbYgVJe35sIoa04nABd00GYU7RJppgaKrEDX5kZxNk0LqVWFs1WS5gSLEtiiiZ8CigIoB3iVVL8PRuWlOahkDkrjgf8j5lbLLk97snBcR5-DUeoKR6-oRXqR-zh-xZvkaatS22qMHx2_nbluXr3aXZFfLsH3mMqWme75JMBmm3OnndvNCC1HEzdz3bi1vqi5WNPNOCLS1jIYpvIqJR-6LEWohTkOpHgOZK0JN_7Qdowu1FTdFDtmUSwkUAhChhl-UK5dnYg8fGk9a-iL3jAqrvPR6nym9jKfXe33avJbvUcJLVBaMss9R_ZSvX6ZQd4aPLvyZScvOgDDn_yyMQzg_MTR_TJJDiM09ec-k_zygz0nwMI5alUl-g-0Xbm5SHECorjj1SV9OAE5cAoCVlp7p-UFbSYKnHRQ-4q-toxqBPoRDWpxHkp6lOUYI5uJTYrQcK9e6kaNdArqd5EyJbKlont_dbFvvDcibjAGaxJSumAFxltfaay1kzURAK-hO",.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_opening_party_id_01a1871d-e42a-7329-99c5-07f6f305ca68.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0063,MEDIUM,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/party-roles?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/party-roles?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,"apiRequestContext.get: Timeout 120000ms exceeded.
+Call log:
+  - → GET http://localhost:4320/accounting/party-roles?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - cookie: next-auth.csrf-token=34ac3e7b677ef75f0a869900ab9bf3f34240ab5afa4a9a96a296fba37bc95635%7Cd7f638f15e5e286746ac817b1bc219f5306defefe23057ed61295be772fec245; next-auth.callback-url=http%3A%2F%2Flocalhost%3A4310%2Fonboarding%3FreturnTo%3Dhttp%253A%252F%252Flocalhost%253A4320%252F; authentik_user_switching=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWsiLCJzdWIiOiJ1c2VyX3N3aXRjaGluZyIsInVzZXJfc3dpdGNoaW5nIjoiOGVwaFdGWU1xWHBwMVp1bTlhVThEQlBlVHZON1c2eDUifQ.WCArbDL1Vbfm7cXAL8aVmK5phWWaum8hINjda2V_PJE; authentik_device=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzgyYTE2ZGE5ODlkOTA0M2YxYTg3NzRlYWNlY2Q5Y2VlZjliMzJiYjZhMTY1ZTIzYTA3NWVmYWM0YjEwZjFmIiwiZXhwIjoxNzk1ODY1MzM2LjU1MjYyMn0._T0XLCogrC_oNs-5ALQtwan-fS0klSdpAmI-xA6M7UY; authentik_csrf=grFER66NzymQWtzklpT5DiZ2ivXNLE6e; authentik_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiJsZXBldXQzcmlpcXc1OTAzdmt6NnlzMWo2OHBoY2VxMiIsImlzcyI6ImF1dGhlbnRpayIsInN1YiI6IjBjODJhMTZkYTk4OWQ5MDQzZjFhODc3NGVhY2VjZDljZWVmOWIzMmJiNmExNjVlMjNhMDc1ZWZhYzRiMTBmMWYiLCJhdXRoZW50aWNhdGVkIjp0cnVlLCJhY3IiOiJnb2F1dGhlbnRpay5pby9jb3JlL2RlZmF1bHQifQ.pQJAx3rwjWmu95efLHp9Te1RcFl53-tP_5qfqZZ7OtM; janso-company=01a186e7-5d0a-75f9-b774-b6096ea2c87c; next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..LSKWpdhqIEXKs85c.kpd-BSCrtBbISiv1uEte2Lyz5OwLwjlvvW2EQhTmI1ky1loyvvD3YoYHj03cEyQuqzfkVCP3eJw0FNdfB3rq9r0TYUecAPU4z27Sf5J-2Qj2jPYeTpKryQPuQnM_OP5GZgrm4gWTqMQ6zAP_9USV8lA5oA-qY5pqOVgwL12m6P0qCaSTs1-tgdDSlv00zk56JNmkLx6rhhS715Cibs0-ribdHkuTqrVwzeedQQEBPLQlNkldHgOP0SGgvWiYIsiZ95LCyrBBjDry983CP83EgK8vjoaddulkISOpbYgVJe35sIoa04nABd00GYU7RJppgaKrEDX5kZxNk0LqVWFs1WS5gSLEtiiiZ8CigIoB3iVVL8PRuWlOahkDkrjgf8j5lbLLk97snBcR5-DUeoKR6-oRXqR-zh-xZvkaatS22qMHx2_nbluXr3aXZFfLsH3mMqWme75JMBmm3OnndvNCC1HEzdz3bi1vqi5WNPNOCLS1jIYpvIqJR-6LEWohTkOpHgOZK0JN_7Qdowu1FTdFDtmUSwkUAhChhl-UK5dnYg8fGk9a-iL3jAqrvPR6nym9jKfXe33avJbvUcJLVBaMss9R_ZSvX6ZQd4aPLvyZScvOgDDn_yyMQzg_MTR_TJJDiM09ec-k_zygz0nwMI5alUl-g-0Xbm5SHECorjj1SV9OAE5cAoCVlp7p-UFbSYKnHRQ-4q-toxqBPoRDWpxHkp6lOUYI5uJTYrQcK9e6kaNdArqd5EyJbKlont_dbFvvDcibjAGaxJSumAFxltfaay1kzURA",.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_party-roles_party_id_01a1871d-e42a-7329-99c5-07f6f305ca68.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0064,MEDIUM,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/party-commercial-type-memberships?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/party-commercial-type-memberships?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,"apiRequestContext.get: Timeout 120000ms exceeded.
+Call log:
+  - → GET http://localhost:4320/accounting/party-commercial-type-memberships?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - cookie: next-auth.csrf-token=34ac3e7b677ef75f0a869900ab9bf3f34240ab5afa4a9a96a296fba37bc95635%7Cd7f638f15e5e286746ac817b1bc219f5306defefe23057ed61295be772fec245; next-auth.callback-url=http%3A%2F%2Flocalhost%3A4310%2Fonboarding%3FreturnTo%3Dhttp%253A%252F%252Flocalhost%253A4320%252F; authentik_user_switching=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWsiLCJzdWIiOiJ1c2VyX3N3aXRjaGluZyIsInVzZXJfc3dpdGNoaW5nIjoiOGVwaFdGWU1xWHBwMVp1bTlhVThEQlBlVHZON1c2eDUifQ.WCArbDL1Vbfm7cXAL8aVmK5phWWaum8hINjda2V_PJE; authentik_device=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzgyYTE2ZGE5ODlkOTA0M2YxYTg3NzRlYWNlY2Q5Y2VlZjliMzJiYjZhMTY1ZTIzYTA3NWVmYWM0YjEwZjFmIiwiZXhwIjoxNzk1ODY1MzM2LjU1MjYyMn0._T0XLCogrC_oNs-5ALQtwan-fS0klSdpAmI-xA6M7UY; authentik_csrf=grFER66NzymQWtzklpT5DiZ2ivXNLE6e; authentik_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiJsZXBldXQzcmlpcXc1OTAzdmt6NnlzMWo2OHBoY2VxMiIsImlzcyI6ImF1dGhlbnRpayIsInN1YiI6IjBjODJhMTZkYTk4OWQ5MDQzZjFhODc3NGVhY2VjZDljZWVmOWIzMmJiNmExNjVlMjNhMDc1ZWZhYzRiMTBmMWYiLCJhdXRoZW50aWNhdGVkIjp0cnVlLCJhY3IiOiJnb2F1dGhlbnRpay5pby9jb3JlL2RlZmF1bHQifQ.pQJAx3rwjWmu95efLHp9Te1RcFl53-tP_5qfqZZ7OtM; janso-company=01a186e7-5d0a-75f9-b774-b6096ea2c87c; next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..LSKWpdhqIEXKs85c.kpd-BSCrtBbISiv1uEte2Lyz5OwLwjlvvW2EQhTmI1ky1loyvvD3YoYHj03cEyQuqzfkVCP3eJw0FNdfB3rq9r0TYUecAPU4z27Sf5J-2Qj2jPYeTpKryQPuQnM_OP5GZgrm4gWTqMQ6zAP_9USV8lA5oA-qY5pqOVgwL12m6P0qCaSTs1-tgdDSlv00zk56JNmkLx6rhhS715Cibs0-ribdHkuTqrVwzeedQQEBPLQlNkldHgOP0SGgvWiYIsiZ95LCyrBBjDry983CP83EgK8vjoaddulkISOpbYgVJe35sIoa04nABd00GYU7RJppgaKrEDX5kZxNk0LqVWFs1WS5gSLEtiiiZ8CigIoB3iVVL8PRuWlOahkDkrjgf8j5lbLLk97snBcR5-DUeoKR6-oRXqR-zh-xZvkaatS22qMHx2_nbluXr3aXZFfLsH3mMqWme75JMBmm3OnndvNCC1HEzdz3bi1vqi5WNPNOCLS1jIYpvIqJR-6LEWohTkOpHgOZK0JN_7Qdowu1FTdFDtmUSwkUAhChhl-UK5dnYg8fGk9a-iL3jAqrvPR6nym9jKfXe33avJbvUcJLVBaMss9R_ZSvX6ZQd4aPLvyZScvOgDDn_yyMQzg_MTR_TJJDiM09ec-k_zygz0nwMI5alUl-g-0Xbm5SHECorjj1SV9OAE5cAoCVlp7p-UFbSYKnHRQ-4q-toxqBPoRDWpxHkp6lOUYI5uJTYrQcK9e6kaNdArqd5EyJbKlont_dbFvvDcibjA",.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_party-commercial-type-memberships_party_id_01a1871d-e42a-7329-99c5-07f6f305ca68.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0065,MEDIUM,LIVE_FAILURE,OPEN,TA-LINK-services-/accounting/party-addresses?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68,Discovered links,01a186e7-5d0a-75f9-b774-b6096ea2c87c,Follow /accounting/party-addresses?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,"apiRequestContext.get: Timeout 120000ms exceeded.
+Call log:
+  - → GET http://localhost:4320/accounting/party-addresses?party_id=01a1871d-e42a-7329-99c5-07f6f305ca68
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - cookie: next-auth.csrf-token=34ac3e7b677ef75f0a869900ab9bf3f34240ab5afa4a9a96a296fba37bc95635%7Cd7f638f15e5e286746ac817b1bc219f5306defefe23057ed61295be772fec245; next-auth.callback-url=http%3A%2F%2Flocalhost%3A4310%2Fonboarding%3FreturnTo%3Dhttp%253A%252F%252Flocalhost%253A4320%252F; authentik_user_switching=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWsiLCJzdWIiOiJ1c2VyX3N3aXRjaGluZyIsInVzZXJfc3dpdGNoaW5nIjoiOGVwaFdGWU1xWHBwMVp1bTlhVThEQlBlVHZON1c2eDUifQ.WCArbDL1Vbfm7cXAL8aVmK5phWWaum8hINjda2V_PJE; authentik_device=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzgyYTE2ZGE5ODlkOTA0M2YxYTg3NzRlYWNlY2Q5Y2VlZjliMzJiYjZhMTY1ZTIzYTA3NWVmYWM0YjEwZjFmIiwiZXhwIjoxNzk1ODY1MzM2LjU1MjYyMn0._T0XLCogrC_oNs-5ALQtwan-fS0klSdpAmI-xA6M7UY; authentik_csrf=grFER66NzymQWtzklpT5DiZ2ivXNLE6e; authentik_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiJsZXBldXQzcmlpcXc1OTAzdmt6NnlzMWo2OHBoY2VxMiIsImlzcyI6ImF1dGhlbnRpayIsInN1YiI6IjBjODJhMTZkYTk4OWQ5MDQzZjFhODc3NGVhY2VjZDljZWVmOWIzMmJiNmExNjVlMjNhMDc1ZWZhYzRiMTBmMWYiLCJhdXRoZW50aWNhdGVkIjp0cnVlLCJhY3IiOiJnb2F1dGhlbnRpay5pby9jb3JlL2RlZmF1bHQifQ.pQJAx3rwjWmu95efLHp9Te1RcFl53-tP_5qfqZZ7OtM; janso-company=01a186e7-5d0a-75f9-b774-b6096ea2c87c; next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..LSKWpdhqIEXKs85c.kpd-BSCrtBbISiv1uEte2Lyz5OwLwjlvvW2EQhTmI1ky1loyvvD3YoYHj03cEyQuqzfkVCP3eJw0FNdfB3rq9r0TYUecAPU4z27Sf5J-2Qj2jPYeTpKryQPuQnM_OP5GZgrm4gWTqMQ6zAP_9USV8lA5oA-qY5pqOVgwL12m6P0qCaSTs1-tgdDSlv00zk56JNmkLx6rhhS715Cibs0-ribdHkuTqrVwzeedQQEBPLQlNkldHgOP0SGgvWiYIsiZ95LCyrBBjDry983CP83EgK8vjoaddulkISOpbYgVJe35sIoa04nABd00GYU7RJppgaKrEDX5kZxNk0LqVWFs1WS5gSLEtiiiZ8CigIoB3iVVL8PRuWlOahkDkrjgf8j5lbLLk97snBcR5-DUeoKR6-oRXqR-zh-xZvkaatS22qMHx2_nbluXr3aXZFfLsH3mMqWme75JMBmm3OnndvNCC1HEzdz3bi1vqi5WNPNOCLS1jIYpvIqJR-6LEWohTkOpHgOZK0JN_7Qdowu1FTdFDtmUSwkUAhChhl-UK5dnYg8fGk9a-iL3jAqrvPR6nym9jKfXe33avJbvUcJLVBaMss9R_ZSvX6ZQd4aPLvyZScvOgDDn_yyMQzg_MTR_TJJDiM09ec-k_zygz0nwMI5alUl-g-0Xbm5SHECorjj1SV9OAE5cAoCVlp7p-UFbSYKnHRQ-4q-toxqBPoRDWpxHkp6lOUYI5uJTYrQcK9e6kaNdArqd5EyJbKlont_dbFvvDcibjAGaxJSumAFxltfaay1k",.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-services-_accounting_party-addresses_party_id_01a1871d-e42a-7329-99c5-07f6f305ca68.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0080,REVIEW,ENVIRONMENT_AUTHENTICATION_FAILURE,RECOVERED,TA-RUN-reports,Execution,01a186e7-fee7-73f0-951b-a81e2188ddd8,Execute requested phase,Phase completes,Real provider sign-in did not reach Console; path=/login,.test_artifacts/tenant-admin-20261029/live/TA-RUN-reports.png,The Authentik forwarding listener was restored through the existing managed helper. Preserve the failed execution attempt; use the later successful authenticated route/report checks for feature conclusions.,Phase completes
+TAF-0081,MEDIUM,DEPLOYMENT_AND_SOURCE_PREREQUISITE,BLOCKED,TA-REPORTS-distribution-RUN-READINESS,Report execution,01a186e7-fee7-73f0-951b-a81e2188ddd8,Inspect run admission and READY source snapshots after loading all report settings,A ready source and enabled execution allow an actual report run,38 definitions loaded; 0 enabled for new runs; 0 READY source snapshots. Report execution/export cannot be exercised until the deployment/source prerequisites exist.,.test_artifacts/tenant-admin-20261029/live/TA-REPORTS-distribution-RUN-READINESS.png,"Provide released report-run configuration and a READY source snapshot through the supported deployment/source workflow, then execute typed-parameter runs and exports. The current metadata explicitly disables new runs and contains no READY snapshots.",A ready source and enabled execution allow an actual report run
+TAF-0082,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-heads/01a186e8-a71a-76ee-ba22-18a91d61c194,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-heads/01a186e8-a71a-76ee-ba22-18a91d61c194 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-heads_01a186e8-a71a-76ee-ba22-18a91d61c194.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0083,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-heads/01a186e8-a70f-74f3-86b3-bd323814e332,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-heads/01a186e8-a70f-74f3-86b3-bd323814e332 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-heads_01a186e8-a70f-74f3-86b3-bd323814e332.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0084,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-heads/01a186e8-a705-7618-b178-2758df67369a,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-heads/01a186e8-a705-7618-b178-2758df67369a through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-heads_01a186e8-a705-7618-b178-2758df67369a.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0085,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-aca1-72ab-87be-2edf6fd6d952,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-aca1-72ab-87be-2edf6fd6d952 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-aca1-72ab-87be-2edf6fd6d952.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0086,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-ac66-7216-bfa5-57b0c27ab2fb,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-ac66-7216-bfa5-57b0c27ab2fb through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-ac66-7216-bfa5-57b0c27ab2fb.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0087,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-ac22-74e6-b8d5-bb26d8968c8f,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-ac22-74e6-b8d5-bb26d8968c8f through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-ac22-74e6-b8d5-bb26d8968c8f.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0088,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-abe1-7375-b2a1-96a36fc2b927,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-abe1-7375-b2a1-96a36fc2b927 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-abe1-7375-b2a1-96a36fc2b927.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0089,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-ab9d-7015-80a0-e6718619fcd9,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-ab9d-7015-80a0-e6718619fcd9 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-ab9d-7015-80a0-e6718619fcd9.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0090,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-ab5c-74db-98f8-191c3f50c3c6,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-ab5c-74db-98f8-191c3f50c3c6 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-ab5c-74db-98f8-191c3f50c3c6.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0091,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-ab31-7714-9d71-f9e6a5c8d367,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-ab31-7714-9d71-f9e6a5c8d367 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-ab31-7714-9d71-f9e6a5c8d367.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0092,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-aafd-735a-ba96-43db0260b845,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-aafd-735a-ba96-43db0260b845 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-aafd-735a-ba96-43db0260b845.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0093,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-aacb-7401-95de-067f46a19722,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-aacb-7401-95de-067f46a19722 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-aacb-7401-95de-067f46a19722.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0094,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-aa9f-740a-8c91-f99aea6541f2,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-aa9f-740a-8c91-f99aea6541f2 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-aa9f-740a-8c91-f99aea6541f2.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0095,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-aa6c-7167-a4ff-c9b8f90ba227,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-aa6c-7167-a4ff-c9b8f90ba227 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-aa6c-7167-a4ff-c9b8f90ba227.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0096,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-aa19-7246-8ea8-5d8d521e7f10,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-aa19-7246-8ea8-5d8d521e7f10 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-aa19-7246-8ea8-5d8d521e7f10.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0097,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a9f6-7659-926c-9ff5a0f2443c,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a9f6-7659-926c-9ff5a0f2443c through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a9f6-7659-926c-9ff5a0f2443c.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0098,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a9c8-7505-bbe2-483432f70176,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a9c8-7505-bbe2-483432f70176 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a9c8-7505-bbe2-483432f70176.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0099,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a99c-765a-b310-0a713abf3074,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a99c-765a-b310-0a713abf3074 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a99c-765a-b310-0a713abf3074.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0100,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a978-77d3-bb4f-9ba90d682e65,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a978-77d3-bb4f-9ba90d682e65 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a978-77d3-bb4f-9ba90d682e65.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0101,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a950-7296-8735-8eabb779baf7,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a950-7296-8735-8eabb779baf7 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a950-7296-8735-8eabb779baf7.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0102,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a91a-7282-a840-84ef6ac9c109,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a91a-7282-a840-84ef6ac9c109 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a91a-7282-a840-84ef6ac9c109.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0103,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a8d8-7499-ace6-0412a11ae2d3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a8d8-7499-ace6-0412a11ae2d3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a8d8-7499-ace6-0412a11ae2d3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0104,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a8be-76e5-95c8-68a627f78706,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a8be-76e5-95c8-68a627f78706 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a8be-76e5-95c8-68a627f78706.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0105,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a896-760d-aa58-97178be79e87,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a896-760d-aa58-97178be79e87 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a896-760d-aa58-97178be79e87.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0106,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a874-7778-b268-5424db3a670e,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a874-7778-b268-5424db3a670e through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a874-7778-b268-5424db3a670e.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0107,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a854-744f-8eb5-8ca702833fd3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a854-744f-8eb5-8ca702833fd3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a854-744f-8eb5-8ca702833fd3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0108,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/account-groups/01a186e8-a831-71d8-8f08-9d5561b03ba8,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/account-groups/01a186e8-a831-71d8-8f08-9d5561b03ba8 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_account-groups_01a186e8-a831-71d8-8f08-9d5561b03ba8.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0109,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a18715-9512-7219-9c83-8770f4648f4e,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a18715-9512-7219-9c83-8770f4648f4e through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a18715-9512-7219-9c83-8770f4648f4e.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0110,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-b264-73ad-97a4-de9497881388,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-b264-73ad-97a4-de9497881388 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-b264-73ad-97a4-de9497881388.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0111,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-b1de-7795-bcd7-b7f1dcfc11f9,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-b1de-7795-bcd7-b7f1dcfc11f9 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-b1de-7795-bcd7-b7f1dcfc11f9.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0112,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-b163-73f5-94f4-f5201a67fdbd,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-b163-73f5-94f4-f5201a67fdbd through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-b163-73f5-94f4-f5201a67fdbd.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0113,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-b0f9-766a-8bd2-db7602f0b3ef,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-b0f9-766a-8bd2-db7602f0b3ef through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-b0f9-766a-8bd2-db7602f0b3ef.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0114,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-b092-7745-b2d5-acb79c6fe44a,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-b092-7745-b2d5-acb79c6fe44a through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-b092-7745-b2d5-acb79c6fe44a.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0115,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-b038-764d-b2c1-280c822adc21,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-b038-764d-b2c1-280c822adc21 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-b038-764d-b2c1-280c822adc21.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0116,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-afdc-7779-bd43-82e7dfcbdd05,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-afdc-7779-bd43-82e7dfcbdd05 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-afdc-7779-bd43-82e7dfcbdd05.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0117,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-af63-7042-94c9-ee3a8d8310cf,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-af63-7042-94c9-ee3a8d8310cf through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-af63-7042-94c9-ee3a8d8310cf.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0118,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-aef1-73ff-9fff-cf1f26f04e4d,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-aef1-73ff-9fff-cf1f26f04e4d through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-aef1-73ff-9fff-cf1f26f04e4d.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0119,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/accounts/01a186e8-ae6e-73b8-8950-b020d7c076c6,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/accounts/01a186e8-ae6e-73b8-8950-b020d7c076c6 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_accounts_01a186e8-ae6e-73b8-8950-b020d7c076c6.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0120,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-aa25-77eb-a8bb-5fa133eba4c8,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-aa25-77eb-a8bb-5fa133eba4c8 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-aa25-77eb-a8bb-5fa133eba4c8.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0121,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a9f8-76a6-9ad8-b89558cc9c1d,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a9f8-76a6-9ad8-b89558cc9c1d through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a9f8-76a6-9ad8-b89558cc9c1d.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0122,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a9c2-7054-8f38-bd9ed040eeb0,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a9c2-7054-8f38-bd9ed040eeb0 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a9c2-7054-8f38-bd9ed040eeb0.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0123,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a999-703a-9da6-4b8317c8a8c2,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a999-703a-9da6-4b8317c8a8c2 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a999-703a-9da6-4b8317c8a8c2.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0124,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a96c-767a-9031-deaa8490d55a,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a96c-767a-9031-deaa8490d55a through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a96c-767a-9031-deaa8490d55a.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0125,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a92a-765f-8983-53ebab8faaf0,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a92a-765f-8983-53ebab8faaf0 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a92a-765f-8983-53ebab8faaf0.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0126,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a902-770c-b163-3e192ad15ae7,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a902-770c-b163-3e192ad15ae7 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a902-770c-b163-3e192ad15ae7.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0127,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a8d2-7206-beae-87014a475b93,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a8d2-7206-beae-87014a475b93 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a8d2-7206-beae-87014a475b93.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0128,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a89d-7008-8682-dcfde8e14bc9,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a89d-7008-8682-dcfde8e14bc9 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a89d-7008-8682-dcfde8e14bc9.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0129,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a86f-74ef-9955-855556abe541,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a86f-74ef-9955-855556abe541 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a86f-74ef-9955-855556abe541.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0130,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a84a-70bc-b3a5-9ec0aa83a523,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a84a-70bc-b3a5-9ec0aa83a523 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a84a-70bc-b3a5-9ec0aa83a523.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0131,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a815-7319-a630-929ab2239157,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a815-7319-a630-929ab2239157 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a815-7319-a630-929ab2239157.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0132,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a7ed-7314-8479-e1b71db482c9,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a7ed-7314-8479-e1b71db482c9 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a7ed-7314-8479-e1b71db482c9.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0133,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a7c3-76e4-9238-2ee82a18b3d1,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a7c3-76e4-9238-2ee82a18b3d1 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a7c3-76e4-9238-2ee82a18b3d1.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0134,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/tax/rates/01a186e8-a78b-747e-aff9-b60db48a4079,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /tax/rates/01a186e8-a78b-747e-aff9-b60db48a4079 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_tax_rates_01a186e8-a78b-747e-aff9-b60db48a4079.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0135,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/party-address-uses/01a1871f-2d27-73ba-8818-a23d09b59824,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/party-address-uses/01a1871f-2d27-73ba-8818-a23d09b59824 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_party-address-uses_01a1871f-2d27-73ba-8818-a23d09b59824.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0136,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-b22b-77ae-8221-b096707a999c,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-b22b-77ae-8221-b096707a999c through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-b22b-77ae-8221-b096707a999c.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0137,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-b19f-7092-8a4b-b19e5689baa3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-b19f-7092-8a4b-b19e5689baa3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-b19f-7092-8a4b-b19e5689baa3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0138,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-b136-70a9-a585-6193e9c425ea,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-b136-70a9-a585-6193e9c425ea through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-b136-70a9-a585-6193e9c425ea.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0139,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-b0c9-76e6-a99b-5970d8bff5b9,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-b0c9-76e6-a99b-5970d8bff5b9 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-b0c9-76e6-a99b-5970d8bff5b9.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0140,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-b06a-72ff-8c72-28d1562d22ee,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-b06a-72ff-8c72-28d1562d22ee through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-b06a-72ff-8c72-28d1562d22ee.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0141,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-b00f-772b-8cd7-8cd3f3710962,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-b00f-772b-8cd7-8cd3f3710962 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-b00f-772b-8cd7-8cd3f3710962.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0142,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-afa0-7458-b950-5e0f12abb1b4,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-afa0-7458-b950-5e0f12abb1b4 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-afa0-7458-b950-5e0f12abb1b4.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0143,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-af31-7402-9c8f-1516bdecb8b3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-af31-7402-9c8f-1516bdecb8b3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-af31-7402-9c8f-1516bdecb8b3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0144,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-aeb0-75e9-ae46-71b7fc4075af,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-aeb0-75e9-ae46-71b7fc4075af through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-aeb0-75e9-ae46-71b7fc4075af.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0145,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ae3a-77ac-877b-59453815fc4a,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ae3a-77ac-877b-59453815fc4a through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ae3a-77ac-877b-59453815fc4a.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0146,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ada8-756b-bbcc-117cb394220b,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ada8-756b-bbcc-117cb394220b through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ada8-756b-bbcc-117cb394220b.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0147,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-acd9-7629-98fc-0963612fbcd6,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-acd9-7629-98fc-0963612fbcd6 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-acd9-7629-98fc-0963612fbcd6.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0148,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-acaf-7327-b18a-27c1e02bc25e,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-acaf-7327-b18a-27c1e02bc25e through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-acaf-7327-b18a-27c1e02bc25e.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0149,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ac73-74f2-9b50-3447be841069,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ac73-74f2-9b50-3447be841069 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ac73-74f2-9b50-3447be841069.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0150,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ac35-75b7-8297-5a86738fd8bf,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ac35-75b7-8297-5a86738fd8bf through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ac35-75b7-8297-5a86738fd8bf.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0151,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-abf6-7279-9913-0d198b19adb3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-abf6-7279-9913-0d198b19adb3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-abf6-7279-9913-0d198b19adb3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0152,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-abaf-7767-a4c8-48593d1ea9d3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-abaf-7767-a4c8-48593d1ea9d3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-abaf-7767-a4c8-48593d1ea9d3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0153,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ab6c-751f-84ec-34c991e17bf4,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ab6c-751f-84ec-34c991e17bf4 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ab6c-751f-84ec-34c991e17bf4.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0154,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ab3d-7580-915f-03eaef2665d2,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ab3d-7580-915f-03eaef2665d2 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ab3d-7580-915f-03eaef2665d2.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0155,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-ab0d-748a-9404-69e7a0ae721e,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-ab0d-748a-9404-69e7a0ae721e through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-ab0d-748a-9404-69e7a0ae721e.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0156,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-aae3-705c-b842-b9a4f843cfb5,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-aae3-705c-b842-b9a4f843cfb5 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-aae3-705c-b842-b9a4f843cfb5.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0157,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-aaaf-7452-839c-24689d6cf84a,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-aaaf-7452-839c-24689d6cf84a through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-aaaf-7452-839c-24689d6cf84a.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0158,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-aa80-7047-84c2-8f96bb24d7f1,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-aa80-7047-84c2-8f96bb24d7f1 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-aa80-7047-84c2-8f96bb24d7f1.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0159,HIGH,LIVE_FAILURE,OPEN,TA-LINK-distribution-/accounting/template-bindings/01a186e8-aa34-740a-9d27-35bd1289aab3,Discovered links,01a186e7-fee7-73f0-951b-a81e2188ddd8,Follow /accounting/template-bindings/01a186e8-aa34-740a-9d27-35bd1289aab3 through the authenticated app HTTP route; its UI shape was rendered separately,Authorized link resolves without server error or sign-in redirect,HTTP 500,.test_artifacts/tenant-admin-20261029/crawl-live/TA-LINK-distribution-_accounting_template-bindings_01a186e8-aa34-740a-9d27-35bd1289aab3.png,Application unchanged; investigate using evidence before fixing,Authorized link resolves without server error or sign-in redirect
+TAF-0160,MEDIUM,AUTOMATED_REGRESSION_FAILURE,OPEN,"tests/invoice-designer-gallery.test.tsx::publishing > restores a version it published, as one undoable edit",console,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite console,Existing regression passes against current unchanged implementation,"Test timed out in 5000ms. If this is a long-running test, pass a timeout value as the last argument or configure it globally with ""testTimeout"". 
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with ""testTimeout"".
+            ",.test_artifacts/tenant-admin-20261029/console-retest/console.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0161,MEDIUM,AUTOMATED_REGRESSION_FAILURE,OPEN,tests/product-attributes.test.tsx::protects unsaved declaration changes when changing company or navigating away,console,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite console,Existing regression passes against current unchanged implementation,"expect(element).toBeEnabled()  Received element is not enabled:   <button   aria-busy=""false""   class=""janso-btn janso-btn--primary""   disabled="""" />  Ignored nodes: comments, script, style [36m<html>[39m   [36m<head />[39m   [36m<body>[39m     [36m<div>[39m       [36m<section[39m         [33maria-label[39m=[32m""Product attributes""[39m         [33mclass[39m=[32m""janso-page""[39m       [36m>[39m         [36m<div[39m           [33mclass[39m=[32m""janso-page-navigation""[39m         [36m>[39m           [36m<a[39m             [33maria-label[39m=[32m""Back to products / SKUs""[39m             [33mclass[39m=[32m""janso-page-navigation__back""[39m             [33mhref[39m=[32m""/masters/items""[39m           [36m>[39m             [36m<svg[39m               [33maria-hidden[39m=[32m""true""[39m               [33mfill[39m=[32m""none""[39m               [33mheight[39m=[32m""18""[39m               [33mviewBox[39m=[32m""0 0 24 24""[39m               [33mwidth[39m=[32m""18""[39m             [36m>[39m               [36m<path[39m                 [33md[39m=[32m""M14.5 6 8.5 12 14.5 18""[39m                 [33mstroke[39m=[32m""currentColor""[39m                 [33mstroke-linecap[39m=[32m""round""[39m                 [33mstroke-linejoin[39m=[32m""round""[39m                 [33mstroke-width[39m=[32m""2.2""[39m               [36m/>[39m             [36m</svg>[39m             [36m<span>[39m               [0mBack[0m             [36m</span>[39m           [36m</a>[39m           [36m<nav[39m             [33maria-label[39m=[32m""Breadcrumb""[39m             [33mclass[39m=[32m""janso-breadcrumbs""[39m           [36m>[39m             [36m<ol>[39m               [36m<li>[39m                 [36m<a[39m                   [33mhref[39m=[32m""/""[39m                 [36m>[39m                   [0mBusiness overview[0m                 [36m</a>[39m               [36m</li>[39m               [36m<li>[39m                 [36m<a[39m                   [33mhref[39m=[32m""/inventory""[39m                 [36m>[39m                   [0mInventory masters[0m                 [36m</a>[39m               [36m</li>[39m               [36m<li>[39m                 [36m<a[39m                   [33mhref[39m=[32m""/inventory/products""[39m                 [36m>[39m                   [0mProducts and classification[0m                 [36m</a>[39m               [36m</li>[39m               [36m<li>[39m                 [36m<span[39m                   [33maria-current[39m=[32m""page""[39m                 [36m>[39m                   [0mProduct attributes[0m                 [36m</span>[39m               [36m</li>[39m             [36m</ol>[39m           [36m</nav>[39m         [36m</div>[39m         [36m<header[39m           [33mclass[39m=[32m""janso-page-header""[39m         [36m>[39m           [36m<div[39m             [33mclass[39m=[32m""janso-page-header__text""[39m           [36m>[39m             [36m<h1[39m               [33mclass[39m=[32m""janso-h1""[39m             [36m>[39m               [0mProduct attributes[0m             [36m</h1>[39m             [36m<p[39m               [33mclass[39m=[32m""janso-lede""[39m             [36m>[39m               [0mMaintain product specifications and the attribute combinations that distinguish sellable SKUs.[0m             [36m</p>[39m           [36m</div>[39m         [36m</header>[39m         [36m<div[39m           [33mclass[39m=[32m""janso-grid janso-grid--split janso-grid--start""[39m         [36m>[39m           [36m<div[39m             [33mclass[39m=[32m""janso-flow""[39m           [36m>[39m             [36m<div[39m               [33mclass[39m=[32m""janso-card""[39m             [36m>[39m               [36m<div[39m                 [33mclass[39m=[32m""janso-card__body""[39m               [36m>[39m                 [36m<button[39m                   [33mtype[39m=[32m""button""[39m                 [36m>[39m                   [0mFind a SKU[0m                 [36m</button>[39m                 [36m<button[39m                   [33mtype[39m=[32m""button""[39m                 [36m>[39m                   [0mClear [0m                   [0mFind a SKU[0m                 [36m</button>[39m               [36m</div>[39m             [36m</div>[39m             [36m<header[39m               [33mclass[39m=[32m""janso-section-header""[39m             [36m>[39m               [36m<div[39m                 [33mclass[39m=[32m""janso-section-header__row""[39m               [36m>[39m                 [36m<h2[39m                   [33mclass[39m=[32m""janso-section-header__title""[39m                 [36m>[39m                   [0mShirts / Blue shirt[0m                 [36m</h2>[39m               [36m</div>[39m               [36m<p[39m                 [33mclass[39m=[32m""janso-section-header__desc""[39m               [36m>[39m                 [0mFamily: DRAFT. SKU: DRAFT.[0m               [36m</p>[39m             [36m</header>[39m             [36m<section[39m               [33maria-label[39m=[32m""SKU values""[39m             [36m>[39m               [36m<div[39m                 [33mclass[39m=[32m""janso-card""[39m               [36m>",.test_artifacts/tenant-admin-20261029/console-retest/console.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0162,LOW,STALE_TEST_EXPECTATION,OPEN,tests.test_framework_api::test_discovery_has_typed_parameters_and_only_ready_capabilities,reports,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite reports,Existing regression passes against current unchanged implementation,"AssertionError: assert 38 == 37
+ +  where 38 = len([{'definition': {'code': 'ACCOUNT_LEDGER', 'datasets': ['journal_line'], 'description': 'Account Ledger from a reconci...entries', 'version': 1}], ...}, 'execution_limits': {'STANDARD': 20000}, 'export_limits': [], 'formats': [], ...}, ...]) client = <httpx.AsyncClient object at 0x00000207889843B0>
+v2 = '/v2/companies/01a186f5-dfc9-7291-a379-31e7578bc992/report-definitions'
+
+    async def test_discovery_has_typed_parameters_and_only_ready_capabilities(client, v2):
+        response = await client.get(v2, headers=headers())
+        assert response.status_code == 200, response.text
+        items = response.json()[""items""]
+>       assert len(items) == 37
+E       AssertionError: assert 38 == 37
+E        +  where 38 = len([{'definition': {'code': 'ACCOUNT_LEDGER', 'datasets': ['journal_line'], 'description': 'Account Ledger from a reconci...entries', 'version': 1}], ...}, 'execution_limits': {'STANDARD': 20000}, 'export_limits': [], 'formats': [], ...}, ...])
+
+tests\test_framework_api.py:16: AssertionError",.test_artifacts/tenant-admin-20261029/suites/reports.xml,Update stale 37-report/version-5 expectations against the current documented 38-report/version-6 catalogue in a later authorized test fix,Run the named test and affected suite; preserve original failure evidence
+TAF-0163,LOW,STALE_TEST_EXPECTATION,OPEN,tests.test_framework_api::test_corrected_definition_defaults_to_latest_and_rejects_retired_version,reports,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite reports,Existing regression passes against current unchanged implementation,"AssertionError: assert 6 == 5
+ +  where 6 = <built-in method get of dict object at 0x0000020789C4E480>('version', 6)
+ +    where <built-in method get of dict object at 0x0000020789C4E480> = {'definition': {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconc...group entries', 'version': 1}], ...}, 'execution_limits': {'STANDARD': 20000}, 'export_limits': [], 'formats': [], ...}.get
+ +    and   6 = <built-in method get of dict object at 0x0000020789EF8540>('version')
+ +      where <built-in method get of dict object at 0x0000020789EF8540> = {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconciled, immutable...'version': 1}, {'key': 'group_entries', 'target': 'ACCOUNT_LEDGER', 'title': 'View group entries', 'version': 1}], ...}.get
+ +        where {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconciled, immutable...'version': 1}, {'key': 'group_entries', 'target': 'ACCOUNT_LEDGER', 'title': 'View group entries', 'version': 1}], ...} = <built-in method get of dict object at 0x0000020789C4E480>('definition', {})
+ +          where <built-in method get of dict object at 0x0000020789C4E480> = {'definition': {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconc...group entries', 'version': 1}], ...}, 'execution_limits': {'STANDARD': 20000}, 'export_limits': [], 'formats': [], ...}.get client = <httpx.AsyncClient object at 0x0000020789EE8830>
+v2 = '/v2/companies/01a186f5-dfc9-7291-a379-31e7578bc992/report-definitions'
+
+    async def test_corrected_definition_defaults_to_latest_and_rejects_retired_version(client, v2):
+        for suffix in ("""", ""/field-set""):
+            response = await client.get(v2 + ""/ACCOUNT_SUMMARY"" + suffix, headers=headers())
+            assert response.status_code == 200, response.text
+            value = response.json()
+>           assert value.get(""version"", value.get(""definition"", {}).get(""version"")) == 5
+E           AssertionError: assert 6 == 5
+E            +  where 6 = <built-in method get of dict object at 0x0000020789C4E480>('version', 6)
+E            +    where <built-in method get of dict object at 0x0000020789C4E480> = {'definition': {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconc...group entries', 'version': 1}], ...}, 'execution_limits': {'STANDARD': 20000}, 'export_limits': [], 'formats': [], ...}.get
+E            +    and   6 = <built-in method get of dict object at 0x0000020789EF8540>('version')
+E            +      where <built-in method get of dict object at 0x0000020789EF8540> = {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconciled, immutable...'version': 1}, {'key': 'group_entries', 'target': 'ACCOUNT_LEDGER', 'title': 'View group entries', 'version': 1}], ...}.get
+E            +        where {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconciled, immutable...'version': 1}, {'key': 'group_entries', 'target': 'ACCOUNT_LEDGER', 'title': 'View group entries', 'version': 1}], ...} = <built-in method get of dict object at 0x0000020789C4E480>('definition', {})
+E            +          where <built-in method get of dict object at 0x0000020789C4E480> = {'definition': {'code': 'ACCOUNT_SUMMARY', 'datasets': ['journal_line'], 'description': 'Account Summary from a reconc...group entries', 'version': 1}], ...}, 'execution_limits': {'STANDARD': 20000}, 'export_limits': [], 'formats': [], ...}.get
+
+tests\test_framework_api.py:42: AssertionError",.test_artifacts/tenant-admin-20261029/suites/reports.xml,Update stale 37-report/version-5 expectations against the current documented 38-report/version-6 catalogue in a later authorized test fix,Run the named test and affected suite; preserve original failure evidence
+TAF-0164,MEDIUM,AUTOMATED_REGRESSION_FAILURE,OPEN,tests.test_bulk_api_security::test_release_metadata_marks_native_history_and_bulk_evidence_readonly,catalog,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite catalog,Existing regression passes against current unchanged implementation,"AssertionError: return_policy_condition
+assert False
+ +  where False = all(<generator object test_release_metadata_marks_native_history_and_bulk_evidence_readonly.<locals>.<genexpr> at 0x000001FB4E80DF20>) client = <httpx.AsyncClient object at 0x000001FB4FC03200>
+factory = async_sessionmaker(class_='AsyncSession', sync_session_class=<class 'sqlalchemy.orm.session.Session'>, bind=<sqlalchemy.ext.asyncio.engine.AsyncEngine object at 0x000001FB4FC90C10>, autoflush=False, expire_on_commit=False)
+tenant_a = UUID('01a1871e-7080-7274-a8b6-9f4c70f743f2')
+
+    async def test_release_metadata_marks_native_history_and_bulk_evidence_readonly(
+        client: httpx.AsyncClient,
+        factory: async_sessionmaker[AsyncSession],
+        tenant_a: uuid.UUID,
+    ) -> None:
+        company, _, auth = await setup(factory, tenant_a)
+        expected = {
+            ""item_price"": {""amount"", ""series_id"", ""row_version""},
+            ""product_type_revision"": {""revision"", ""product_type_id"", ""kind"", ""published_at""},
+            ""attribute_set_revision"": {""revision"", ""attribute_set_id"", ""published_at""},
+            ""attribute_set_member"": {""revision_id""},
+            ""identifier_profile"": {""normalization_version""},
+            ""identifier_profile_requirement"": {""profile_id""},
+            ""inventory_profile_template_revision"": {""template_id"", ""revision"", ""published_at""},
+            ""warranty_policy_revision"": {""policy_id"", ""revision"", ""published_at""},
+            ""return_policy_revision"": {""policy_id"", ""revision"", ""published_at"", ""condition_count""},
+            ""return_policy_condition"": {""revision_id""},
+            ""handling_profile_revision"": {""profile_id"", ""revision"", ""published_at""},
+            ""bulk_job"": {""state"", ""row_version"", ""input_hash""},
+        }
+        for entity, fields in expected.items():
+            response = await client.get(
+                f""/v1/companies/{company}/entities/catalog.{entity}/field-set"", headers=auth
+            )
+            assert response.status_code == 200, response.text
+            actual = {x[""key""]: x for x in response.json()[""fields""]}
+            assert fields <= actual.keys(), entity
+>           assert all(not actual[field][""writable""] for field in fields), entity
+E           AssertionError: return_policy_condition
+E           assert False
+E            +  where False = all(<generator object test_release_metadata_marks_native_history_and_bulk_evidence_readonly.<locals>.<genexpr> at 0x000001FB4E80DF20>)
+
+tests\test_bulk_api_security.py:114: AssertionError",.test_artifacts/tenant-admin-20261029/catalog-complete/catalog.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0165,LOW,STALE_TEST_MODEL_MAP,OPEN,tests.test_field_registry::test_registry_only_exposes_real_native_columns,catalog,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite catalog,Existing regression passes against current unchanged implementation,"assert [""catalog.bom: no model named 'Bom' was supplied"", ""catalog.bom_assignment: no model named 'BomAssignment' was supplied"", ""catalog.bom_component: no model named 'BomComponent' was supplied"", ""catalog.bom_draft: no model named 'BomDraft' was supplied"", ""catalog.bom_output: no model named 'BomOutput' was supplied"", ""catalog.bom_revision: no model named 'BomRevision' was supplied"", ""catalog.company_product_authoring_configuration: no model named 'CompanyProductAuthoringConfiguration' was supplied"", ""catalog.identifier_namespace: no model named 'IdentifierNamespace' was supplied"", ""catalog.identifier_type: no model named 'IdentifierType' was supplied"", ""catalog.item_regulatory_classification: no model named 'ItemRegulatoryClassification' was supplied"", ""catalog.manufacturing_operation: no model named 'ManufacturingOperation' was supplied"", ""catalog.manufacturing_operation_revision: no model named 'ManufacturingOperationRevision' was supplied"", ""catalog.manufacturing_route: no model named 'ManufacturingRoute' was supplied"", ""catalog.manufacturing_route_revision: no model named 'ManufacturingRouteRevision' was supplied"", ""catalog.manufacturing_route_step: no model named 'ManufacturingRouteStep' was supplied"", ""catalog.promotion_limit_definition: no model named 'PromotionLimitDefinition' was supplied"", ""catalog.promotion_limit_revision: no model named 'PromotionLimitRevision' was supplied"", ""catalog.promotion_stack_draft: no model named 'PromotionStackDraft' was supplied"", ""catalog.promotion_stack_draft_group: no model named 'PromotionStackDraftGroup' was supplied"", ""catalog.promotion_stack_draft_permission: no model named 'PromotionStackDraftPermission' was supplied"", ""catalog.promotion_stack_group: no model named 'PromotionStackGroup' was supplied"", ""catalog.promotion_stack_permission: no model named 'PromotionStackPermission' was supplied"", ""catalog.promotion_stack_policy: no model named 'PromotionStackPolicy' was supplied""] == []
+  
+  Left contains 23 more items, first extra item: ""catalog.bom: no model named 'Bom' was supplied""
+  
+  Full diff:
+  - []
+  + [
+  +     ""catalog.bom: no model named 'Bom' was supplied"",
+  +     ""catalog.bom_assignment: no model named 'BomAssignment' was supplied"",
+  +     ""catalog.bom_component: no model named 'BomComponent' was supplied"",
+  +     ""catalog.bom_draft: no model named 'BomDraft' was supplied"",
+  +     ""catalog.bom_output: no model named 'BomOutput' was supplied"",
+  +     ""catalog.bom_revision: no model named 'BomRevision' was supplied"",
+  +     'catalog.company_product_authoring_configuration: no model named '
+  +     ""'CompanyProductAuthoringConfiguration' was supplied"",
+  +     ""catalog.identifier_namespace: no model named 'IdentifierNamespace' was ""
+  +     'supplied',
+  +     ""catalog.identifier_type: no model named 'IdentifierType' was supplied"",
+  +     'catalog.item_regulatory_classification: no model named '
+  +     ""'ItemRegulatoryClassification' was supplied"",
+  +     ""catalog.manufacturing_operation: no model named 'ManufacturingOperation' ""
+  +     'was supplied',
+  +     'catalog.manufacturing_operation_revision: no model named '
+  +     ""'ManufacturingOperationRevision' was supplied"",
+  +     ""catalog.manufacturing_route: no model named 'ManufacturingRoute' was ""
+  +     'supplied',
+  +     'catalog.manufacturing_route_revision: no model named '
+  +     ""'ManufacturingRouteRevision' was supplied"",
+  +     ""catalog.manufacturing_route_step: no model named 'ManufacturingRouteStep' ""
+  +     'was supplied',
+  +     'catalog.promotion_limit_definition: no model named '
+  +     ""'PromotionLimitDefinition' was supplied"",
+  +     ""catalog.promotion_limit_revision: no model named 'PromotionLimitRevision' ""
+  +     'was supplied',
+  +     ""catalog.promotion_stack_draft: no model named 'PromotionStackDraft' was ""
+  +     'supplied',
+  +     'catalog.promotion_stack_draft_group: no model named '
+  +     ""'PromotionStackDraftGroup' was supplied"",
+  +     'catalog.promotion_stack_draft_permission: no model named '
+  +     ""'PromotionStackDraftPermission' was supplied"",
+  +     ""catalog.promotion_stack_group: no model named 'PromotionStackGroup' was ""
+  +     'supplied',
+  +     'catalog.promotion_stack_permission: no model named '
+  +     ""'PromotionStackPermission' was supplied"",
+  +     ""catalog.promotion_stack_policy: no model named 'PromotionStackPolicy' was ""
+  +     'supplied',
+  + ] def test_registry_only_exposes_real_native_columns() -> None:
+        from catalog.models.bulk import BULK_MODELS
+        from catalog.models.configuration import CONFIGURATION_MODELS
+        from catalog.models.pricing import PRICING_MODELS
+        from catalog.models.product_definitions import PRODUCT_DEFINITION_MODELS
+        from catalog.models.tax import ACTIVATION_MODELS, TAX_MODELS
+    
+        models = {
+            m.__name__: m
+            for m in (
+                *BULK_MODELS,
+                *CONFIGURATION_MODELS,
+                *PRODUCT_DEFINITION_MODELS,
+    ",.test_artifacts/tenant-admin-20261029/catalog-complete/catalog.xml,"The test supplies a manual model map that omits registered real BOM, authoring/configuration and promotion models. Update the fixture map against the current complete model catalogue before treating these missing-supplied-model errors as registry defects.",Run the named test and affected suite; preserve original failure evidence
+TAF-0166,LOW,STALE_TEST_INITIAL_STATE,OPEN,tests.test_completion_review_security::test_template_evidence_respects_write_denies_and_rolls_back,accounting,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite accounting,Existing regression passes against current unchanged implementation,"AssertionError: ('account_template_installation', '{""installation_id"":""01a18726-e087-775e-9c2f-a1fe736a25e9"",""groups_created"":0,""accounts_created"":0,""groups_updated"":0}')
+assert 200 == 403
+ +  where 200 = <Response [200 OK]>.status_code client = <httpx.AsyncClient object at 0x000002C49416A0C0>
+
+    async def test_template_evidence_respects_write_denies_and_rolls_back(
+        client: httpx.AsyncClient,
+    ) -> None:
+        await post(client, ""/accounting-setup/initialize"", {}, status=200)
+        for entity, field in [
+            (""account_template_installation"", ""template_key""),
+            (""account_template_binding"", ""object_id""),
+            (""accounting_setup"", ""template_version""),
+        ]:
+            result = await client.post(
+                BASE + ""/accounting-setup/install"",
+                json={},
+                headers=headers(
+                    policies=[policy(field, access=""write"", entity=""accounting."" + entity)]
+                ),
+            )
+>           assert result.status_code == 403, (entity, result.text)
+E           AssertionError: ('account_template_installation', '{""installation_id"":""01a18726-e087-775e-9c2f-a1fe736a25e9"",""groups_created"":0,""accounts_created"":0,""groups_updated"":0}')
+E           assert 200 == 403
+E            +  where 200 = <Response [200 OK]>.status_code
+
+tests\test_completion_review_security.py:67: AssertionError",.test_artifacts/tenant-admin-20261029/accounting-complete/accounting.xml,"accounting/tasks/commands.py initialize now calls seed_initial_chart. This test assumes no groups or template installation after initialize; the later install returned a no-change 200. Prepare an actually new installation to test field write-deny rollback, and retain separate coverage for idempotent no-change replay. Do not infer an authorization bypass from this no-op response.",Run the named test and affected suite; preserve original failure evidence
+TAF-0167,REVIEW,AUTOMATED_SKIP,BLOCKED,tests.test_financial_opening_api::test_concurrent_company_openings_have_one_owner,accounting,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite accounting,Existing regression passes against current unchanged implementation,company serialization requires native MySQL row locks C:\Pratham\Personal\softwares\bill\apis\accounting\tests\test_financial_opening_api.py:459: company serialization requires native MySQL row locks,.test_artifacts/tenant-admin-20261029/accounting-complete/accounting.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0168,REVIEW,AUTOMATED_SKIP,BLOCKED,tests.test_stock_opening_races::test_competing_finalizers_commit_one_reviewed_transition,accounting,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite accounting,Existing regression passes against current unchanged implementation,requires real native row locks C:\Pratham\Personal\softwares\bill\apis\accounting\tests\test_stock_opening_races.py:25: requires real native row locks,.test_artifacts/tenant-admin-20261029/accounting-complete/accounting.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0169,REVIEW,AUTOMATED_SKIP,BLOCKED,tests.test_stock_opening_races::test_competing_openings_cannot_post_one_cohort_twice,accounting,isolated test fixtures,Run python docs/testing/tenant-admin/run_suites.py --suite accounting,Existing regression passes against current unchanged implementation,requires real native row locks C:\Pratham\Personal\softwares\bill\apis\accounting\tests\test_stock_opening_races.py:48: requires real native row locks,.test_artifacts/tenant-admin-20261029/accounting-complete/accounting.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0170,MEDIUM,AUTOMATED_REGRESSION_FAILURE,OPEN,docs.testing.tenant-admin.test_audit_cursor_capacity::test_tenant_administrator_grants_fit_audit_pagination_cursor,audit-cursor-regression,isolated test fixtures,apis/audit/.venv/Scripts/python.exe -m pytest docs/testing/tenant-admin/test_audit_cursor_capacity.py,Existing regression passes against current unchanged implementation,"ValueError: cursor exceeds maximum size def test_tenant_administrator_grants_fit_audit_pagination_cursor():
+        permissions = frozenset(
+            {'audit.read', 'activity.read'}
+            | {f'catalogue_resource_{index:03}.read' for index in range(200)}
+        )
+        actor = Actor(
+            tenant_id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            grants=(Grant(permissions, Scope('tenant'), dt.date(2026, 1, 1)),),
+        )
+        request = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(settings=SimpleNamespace(
+                cursor_signing_secret=SecretStr(secrets.token_hex(32))
+            ))),
+            query_params=QueryParams('limit=1'),
+        )
+        codec = cursor_codec(request, 'audit-events', actor)
+>       token = codec.encode({'occurred_at': '2026-10-29T00:00:00+00:00', 'id': str(uuid.uuid4())})
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+docs\testing\tenant-admin\test_audit_cursor_capacity.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <billing_platform.pagination.CursorCodec object at 0x00000227AF9B08F0>
+values = {'id': 'c94bc79f-503c-4964-bae6-e91f402ba876', 'occurred_at': '2026-10-29T00:00:00+00:00'}
+
+    def encode(self, values: dict[str, Any]) -> str:
+        now = int(self._clock())
+        body = json.dumps(
+            {
+                ""v"": 2,
+                ""kid"": self._key_id,
+                ""ctx"": self._context,
+                ""iat"": now,
+                ""exp"": now + self._ttl_seconds,
+                ""values"": values,
+            },
+            sort_keys=True,
+            separators=("","", "":""),
+            allow_nan=False,
+        ).encode()
+        signature = hmac.digest(self._secret, body, hashlib.sha256)
+        token = base64.urlsafe_b64encode(body + signature).rstrip(b""="").decode(""ascii"")
+        if len(token) > 4096:
+>           raise ValueError(""cursor exceeds maximum size"")
+E           ValueError: cursor exceeds maximum size
+
+libs\platform\src\billing_platform\pagination.py:92: ValueError",.test_artifacts/tenant-admin-20261029/audit-cursor-regression.xml,Confirm implementation defect versus stale test/environment before fixing,Run the named test and affected suite; preserve original failure evidence
+TAF-0171,HIGH,LIVE_API_SERVER_ERROR,OPEN,TA-API-/api/audit/v1/activity,/audit,services,Login as broad tenant administrator; open /activity; request /api/audit/v1/activity with enough records for a next cursor,"200, page data and a bounded signed next cursor; recoverable safe response",HTTP 500 at /api/audit/v1/activity; live Audit log reports ValueError: cursor exceeds maximum size. Audit cursor context embeds the full serialized grants/policies; the shared encoder rejects tokens exceeding 4096 characters.,surface-inventory-services.json; start/win/logs/audit.stderr.log,Later fix: bound the audit cursor binding while retaining tenant/user/query/grant/policy isolation; apis/audit/src/audit/api/listing.py:29 and :95; libs/platform/src/billing_platform/pagination.py:92,New broad-admin cursor regression passes; audit and Activity pages paginate with built-in tenant/company grants; wrong-user/query/grant replay remains rejected
+TAF-0172,HIGH,LIVE_API_SERVER_ERROR,OPEN,TA-API-/api/audit/v1/audit-events,/invoice-designer,services,Login as broad tenant administrator; open /audit; request /api/audit/v1/audit-events with enough records for a next cursor,"200, page data and a bounded signed next cursor; recoverable safe response",HTTP 500 at /api/audit/v1/audit-events; live Audit log reports ValueError: cursor exceeds maximum size. Audit cursor context embeds the full serialized grants/policies; the shared encoder rejects tokens exceeding 4096 characters.,surface-inventory-services.json; start/win/logs/audit.stderr.log,Later fix: bound the audit cursor binding while retaining tenant/user/query/grant/policy isolation; apis/audit/src/audit/api/listing.py:29 and :95; libs/platform/src/billing_platform/pagination.py:92,New broad-admin cursor regression passes; audit and Activity pages paginate with built-in tenant/company grants; wrong-user/query/grant replay remains rejected
+TAF-0173,HIGH,SESSION_SERVICE_ERROR_HANDLING,OPEN,TA-SESSION-UPSTREAM-FAILURE,Server-rendered session resolution,QA tenant; repeated authenticated record-link reads,Run the repeated-link sweep with a signed-in tenant administrator; inspect the failing record URLs and Console server stderr,"Authorized pages render, or upstream/session unavailability gives a recoverable response rather than a server exception","Authenticated record URLs returned HTTP 500. Console server stderr reports Error: Unable to load your session at app/session.ts:54. The upstream status is not included in that exception, so expiry versus temporary service unavailability remains to be distinguished. Concurrent cold development compilation also caused long request times.",start/win/logs/web-console.stderr.log; start/win/logs/web-console.stdout.log; .test_artifacts/tenant-admin-20261029/crawl-live/crawl-second-results.json,Investigate the non-OK Identity response and getSession fallback in mfes/apps/console/app/session.ts:54; retain service/auth failure distinctions instead of converting them into an unhandled server error,Single-browser and concurrent authorized record navigation recover from an unavailable/expired session without HTTP 500; valid-company and wrong-tenant boundaries remain enforced
+TAF-0174,REVIEW,ENVIRONMENT_OUTAGE,RECOVERED,TA-ENV-AUTHENTIK-TUNNEL,Authentication test environment,QA tenant,Continue a long signed-in UI run; refresh/sign in after the provider forwarding listener stops,Existing Authentik tunnel/provider remains reachable; authenticated coverage is preserved,"Ports 9000 and 9443 refused connections, which blocked token refresh and fresh sign-in. Restored the existing managed SSH forwarder using start/win/authentik-vm/tunnel.ps1 -Action start, retaining pinned key/connection details. Application code, VM/provider configuration and databases were unchanged.",.test_artifacts/tenant-admin-20261029/authentik-tunnel-recovery.json; authentication-redirect-inventory.json; start/win/logs/authentik-tunnel.stderr.log,Keep the managed local provider tunnel available during long tests; review process/runtime supervision. Sign-in-page captures were invalidated and affected pages require fresh authenticated coverage.,Provider ports stay reachable; fresh sign-in succeeds; intended application origin is verified for every route and repeated link
+TAF-0175,MEDIUM,IMPLEMENTATION_GAP,OPEN,TA-OVERVIEW-LIVE-DATA,Business overview,distribution,Sign into the new empty tenant; open Business overview,"A working overview reflects the selected company transactions, including zero balances in a new company","The UI explicitly says Sample figures only and displays example invoices, amounts and customers for the new empty tenant",surface-inventory-distribution.json; route-distribution-_.png,Connect implemented overview controls to company-scoped live data in a later authorized fix,New company has zero live totals; known QA transaction appears only in its own company
+TAF-0176,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/,/,distribution,Open / and inspect the offered actions,Working actions complete against the live services,"Operate
+
+Business overview
+
+Invoicing, collections and open exposure for the fiscal period in progress.
+
+Sample figures only. This overview is a preview and is not connected to your company transactions.
+Overview
+Receivables
+Payments
+Inventory
+Audit
+
+Financial period
+
+Current period
+
+Posted documents only. Drafts hold no invoice number and carry no amount into these totals.
+
+Customers
+
+Search by the start of a name, or an exact customer code.
+
+INR
+Filters
+
+01-07-2026 – 11-09-2026 · FY 2026–27 · Q2 (open)
+
+Invoiced
+
+₹18,742,350
+
+412 posted invoices
+
+Collected
+
+₹14,208,901
+
+366 receipts
+
+Outstanding
+
+₹4,533,450
+
+143 invoices open
+
+Overdue
+
+₹1,128,740
+
+37 past due
+
+Revenue over time
+
+Bucketed by posting date, so a backdated invoice lands in the period it belongs to.
+
+Show
+Invoiced
+Collected
+Group by
+Weekly
+Monthly
+₹2,262,400
+1 Jul
+8 Jul
+15 Jul
+22 Jul
+29 Jul
+5 Aug
+12 Aug
+19 Aug
+26 Aug
+2 Sept
+9 Sept
+Invoiced amount per week for the current period
+Label	Value
+1 Jul	₹1,184,200
+8 Jul	₹1,521,750
+15 Jul	₹1,342,900
+22 Jul	₹1,806,400
+29 Jul	₹1,655,300
+5 Aug	₹2,014,850
+12 Aug	₹1,738,600
+19 Aug	₹2,262,400
+26 Aug	₹1,904,750
+2 Sept	₹1,587,200
+9 Sept	₹1,724,000
+Top customers
+
+Ranked by invoiced amount in the period.
+
+All customers
+1
+Meridian Wholesale
+4.2M
+
+64 invoices
+
+23%
+2
+Kavery Distributors
+3.1M
+
+51 invoices
+
+17%
+3
+Northline Traders
+2.3M
+
+43 invoices
+
+12%
+4
+Sunridge Foods
+1.6M
+
+38 invoices
+
+9%
+5
+Ashwin & Sons
+1.2M
+
+29 invoices
+
+6%
+Tax & compliance coverage
+
+Gaps that would leave a posted document without a defensible tax position.
+
+3 gaps
+HSN code missing
+gst
+
+catalog / 12 items / raised on 41 invoice lines · last seen 11-09-2026
+
+Tax rate expired
+gst
+
+tax / GST 12% slab / no rate active after 31 Aug 2026 · last seen 09-09-2026
+
+GSTIN unverified
+kyc
+
+customer / Sunridge Foods / verification never completed · last seen 04-09-2026
+
+Manage tax rates ",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0177,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books,/books,distribution,Open /books and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Books
+
+Browse posted company books, transaction registers and ledgers.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Daily and cash books
+
+Posted entries and cash or bank movements.
+
+Not available yet
+Day book
+
+Daily posted journals and voucher entries.
+
+Not available yet
+Not available yet
+Cash book
+
+Cash receipts, payments and running balances.
+
+Not available yet
+Not available yet
+Bank book
+
+Bank account entries and running balances.
+
+Not available yet
+Transaction registers
+
+Sales, purchases, payments and receipts.
+
+Not available yet
+Sales book
+
+Sales invoices, parties, reductions and recorded totals.
+
+Not available yet
+Not available yet
+Purchase book
+
+Supplier invoices and purchase transaction details.
+
+Not available yet
+Not available yet
+Payment book
+
+Payment vouchers, tender modes and references.
+
+Not available yet
+Not available yet
+Receipt book
+
+Receipt vouchers, tender modes and references.
+
+Not available yet
+Ledgers
+
+Account, party and stock movement history.
+
+Not available yet
+Account ledger
+
+Posted ledger entries with opening and running balances.
+
+Not available yet
+Not available yet
+Party ledger
+
+Customer and supplier account transaction details.
+
+Not available yet
+Not available yet
+Stock ledger
+
+Item movement history and running quantity/value balances.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0178,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/reports,/reports,distribution,Open /reports and inspect the offered actions,Working actions complete against the live services,"ing bills, advances and ageing.
+
+Not available yet
+Outstanding bills
+
+Bills receivable/payable, allocations and remaining balances.
+
+Not available yet
+Not available yet
+Advances
+
+Unapplied customer and supplier credits.
+
+Not available yet
+Not available yet
+Receivables and payables ageing
+
+Outstanding debt and credits grouped by due-date age. Aging report.
+
+Not available yet
+Banking and payments
+
+Receipts, payments and bank reconciliation evidence.
+
+Not available yet
+Payment register
+
+Payment vouchers, tender modes and references.
+
+Not available yet
+Not available yet
+Receipt register
+
+Receipt vouchers, tender modes and references.
+
+Not available yet
+Not available yet
+Bank balance agreement
+
+Compare book and statement balances; manual bank reconciliation.
+
+Not available yet
+Not available yet
+Finalised bank reconciliation
+
+Finalised bank-session balances and matching evidence.
+
+Not available yet
+Not available yet
+Unmatched bank transactions
+
+Bank and book transactions awaiting reconciliation.
+
+Not available yet
+Sales and purchases
+
+Invoice registers, components and settlement history.
+
+Not available yet
+Sales register
+
+Sales invoices, parties, reductions and recorded totals.
+
+Not available yet
+Not available yet
+Purchase register
+
+Supplier invoices and purchase transaction details.
+
+Not available yet
+Not available yet
+Invoice component register
+
+Invoice item, charge and allocation details.
+
+Not available yet
+Not available yet
+Invoice settlement register
+
+Invoice payment allocations and reversals.
+
+Not available yet
+Tax and credits
+
+Recorded invoice tax details and credit positions.
+
+Not available yet
+Invoice tax register
+
+Recorded taxable values, tax amounts and tax event dates.
+
+Not available yet
+Not available yet
+Input tax credit register
+
+Tax credit positions, decisions and dated events.
+
+Not available yet
+Inventory and warehouses
+
+Stock quantities, movements, valuation and availability.
+
+Not available yet
+Stock summary
+
+Opening, inward, outward, available stock and carrying values.
+
+Not available yet
+Not available yet
+Item stock ledger
+
+Item movement history and running quantity/value balances.
+
+Not available yet
+Not available yet
+Warehouse stock
+
+Stock by warehouse or location.
+
+Not available yet
+Not available yet
+Stock valuation
+
+Stock carrying values and valuation evidence.
+
+Not available yet
+Not available yet
+Batch summary
+
+Batch and lot stock quantities and values.
+
+Not available yet
+Not available yet
+Stock expiry
+
+Batch expiry dates and remaining shelf life.
+
+Not available yet
+Not available yet
+Stock reorder
+
+Stock availability and reorder requirements.
+
+Not available yet
+Not available yet
+Stock ageing
+
+Stock age and nonmoving inventory. Inventory aging report.
+
+Not available yet
+Not available yet
+Stock movement
+
+Inward, outward and transfer movement history.
+
+Not available yet
+Not available yet
+Stock group summary
+
+Stock totals grouped by item classification.
+
+Not available yet
+Controls and reconciliation
+
+Source completeness, year continuity and ledger bridges.
+
+Not available yet
+Balance continuity
+
+Reconcile opening balances with prior closing balances.
+
+Not available yet
+Not available yet
+Source reconciliation
+
+Source counts and ledger debit/credit control totals.
+
+Not available yet
+Not available yet
+Invoice to ledger reconciliation
+
+Reconcile invoice effects to general ledger entries.
+
+Not available yet
+Not available yet
+Tax to ledger reconciliation
+
+Reconcile recorded tax effects to general ledger entries.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0179,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/day-book,/books/day-book,distribution,Open /books/day-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Day book
+Day book
+
+Daily posted journals and voucher entries.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Daily and cash books
+
+Posted entries and cash or bank movements.
+
+Not available yet
+Day book
+
+Daily posted journals and voucher entries.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0180,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/cash-book,/books/cash-book,distribution,Open /books/cash-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Cash book
+Cash book
+
+Cash receipts, payments and running balances.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Daily and cash books
+
+Posted entries and cash or bank movements.
+
+Not available yet
+Cash book
+
+Cash receipts, payments and running balances.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0181,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/bank-book,/books/bank-book,distribution,Open /books/bank-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Bank book
+Bank book
+
+Bank account entries and running balances.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Daily and cash books
+
+Posted entries and cash or bank movements.
+
+Not available yet
+Bank book
+
+Bank account entries and running balances.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0182,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/sales-book,/books/sales-book,distribution,Open /books/sales-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Sales book
+Sales book
+
+Sales invoices, parties, reductions and recorded totals.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Transaction registers
+
+Sales, purchases, payments and receipts.
+
+Not available yet
+Sales book
+
+Sales invoices, parties, reductions and recorded totals.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0183,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/purchase-book,/books/purchase-book,distribution,Open /books/purchase-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Purchase book
+Purchase book
+
+Supplier invoices and purchase transaction details.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Transaction registers
+
+Sales, purchases, payments and receipts.
+
+Not available yet
+Purchase book
+
+Supplier invoices and purchase transaction details.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0184,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/payment-book,/books/payment-book,distribution,Open /books/payment-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Payment book
+Payment book
+
+Payment vouchers, tender modes and references.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Transaction registers
+
+Sales, purchases, payments and receipts.
+
+Not available yet
+Payment book
+
+Payment vouchers, tender modes and references.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0185,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/receipt-book,/books/receipt-book,distribution,Open /books/receipt-book and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Receipt book
+Receipt book
+
+Receipt vouchers, tender modes and references.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Transaction registers
+
+Sales, purchases, payments and receipts.
+
+Not available yet
+Receipt book
+
+Receipt vouchers, tender modes and references.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0186,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/account-ledger,/books/account-ledger,distribution,Open /books/account-ledger and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Account ledger
+Account ledger
+
+Posted ledger entries with opening and running balances.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Ledgers
+
+Account, party and stock movement history.
+
+Not available yet
+Account ledger
+
+Posted ledger entries with opening and running balances.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0187,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/party-ledger,/books/party-ledger,distribution,Open /books/party-ledger and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Party ledger
+Party ledger
+
+Customer and supplier account transaction details.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Ledgers
+
+Account, party and stock movement history.
+
+Not available yet
+Party ledger
+
+Customer and supplier account transaction details.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0188,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/books/stock-ledger,/books/stock-ledger,distribution,Open /books/stock-ledger and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Books
+Stock ledger
+Stock ledger
+
+Item movement history and running quantity/value balances.
+
+All books
+Day book
+Cash book
+Bank book
+Sales book
+Purchase book
+Payment book
+Receipt book
+Account ledger
+Party ledger
+Stock ledger
+Search books
+Book cards are currently disabled. Browse the sections or search to find the book you need.
+Ledgers
+
+Account, party and stock movement history.
+
+Not available yet
+Stock ledger
+
+Item movement history and running quantity/value balances.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0189,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/reports/inventory,/reports/inventory,distribution,Open /reports/inventory and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Reports
+Inventory reports
+Inventory reports
+
+Stock, warehouse, batch, movement and valuation reports.
+
+All reports
+Inventory reports
+Finance reports
+Tax reports
+Analytics
+Search reports
+Report cards are currently disabled. Browse the sections or search to find the report you need.
+Inventory and warehouses
+
+Stock quantities, movements, valuation and availability.
+
+Not available yet
+Stock summary
+
+Opening, inward, outward, available stock and carrying values.
+
+Not available yet
+Not available yet
+Item stock ledger
+
+Item movement history and running quantity/value balances.
+
+Not available yet
+Not available yet
+Warehouse stock
+
+Stock by warehouse or location.
+
+Not available yet
+Not available yet
+Stock valuation
+
+Stock carrying values and valuation evidence.
+
+Not available yet
+Not available yet
+Batch summary
+
+Batch and lot stock quantities and values.
+
+Not available yet
+Not available yet
+Stock expiry
+
+Batch expiry dates and remaining shelf life.
+
+Not available yet
+Not available yet
+Stock reorder
+
+Stock availability and reorder requirements.
+
+Not available yet
+Not available yet
+Stock ageing
+
+Stock age and nonmoving inventory. Inventory aging report.
+
+Not available yet
+Not available yet
+Stock movement
+
+Inward, outward and transfer movement history.
+
+Not available yet
+Not available yet
+Stock group summary
+
+Stock totals grouped by item classification.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0190,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/reports/finance,/reports/finance,distribution,Open /reports/finance and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Reports
+Finance reports
+Finance reports
+
+Statements, books, ledgers, receivables, payables and banking reports.
+
+All reports
+Inventory reports
+Finance reports
+Tax reports
+Analytics
+Search reports
+Report cards are currently disabled. Browse the sections or search to find the report you need.
+Financial statements
+
+Company balances, performance and financial position.
+
+Not available yet
+Trial balance
+
+Opening, period movement and closing debit/credit balances.
+
+Not available yet
+Not available yet
+Profit and loss
+
+Income, expenses, gross profit and net profit. P&L statement.
+
+Not available yet
+Not available yet
+Balance sheet
+
+Assets, liabilities, equity and accumulated earnings.
+
+Not available yet
+Not available yet
+Income and expenditure
+
+Income, expenditure and the net surplus or deficit.
+
+Not available yet
+Books and ledgers
+
+Account entries, running balances and period summaries.
+
+Not available yet
+Account ledger
+
+Posted ledger entries with opening and running balances.
+
+Not available yet
+Not available yet
+Day book
+
+Daily posted journals and voucher entries.
+
+Not available yet
+Not available yet
+Party ledger
+
+Customer and supplier account transaction details.
+
+Not available yet
+Not available yet
+Cash book
+
+Cash receipts, payments and running balances.
+
+Not available yet
+Not available yet
+Bank book
+
+Bank account entries and running balances.
+
+Not available yet
+Not available yet
+Account summary
+
+Daily or monthly account and group movement summaries.
+
+Not available yet
+Receivables and payables
+
+Outstanding bills, advances and ageing.
+
+Not available yet
+Outstanding bills
+
+Bills receivable/payable, allocations and remaining balances.
+
+Not available yet
+Not available yet
+Advances
+
+Unapplied customer and supplier credits.
+
+Not available yet
+Not available yet
+Receivables and payables ageing
+
+Outstanding debt and credits grouped by due-date age. Aging report.
+
+Not available yet
+Banking and payments
+
+Receipts, payments and bank reconciliation evidence.
+
+Not available yet
+Payment register
+
+Payment vouchers, tender modes and references.
+
+Not available yet
+Not available yet
+Receipt register
+
+Receipt vouchers, tender modes and references.
+
+Not available yet
+Not available yet
+Bank balance agreement
+
+Compare book and statement balances; manual bank reconciliation.
+
+Not available yet
+Not available yet
+Finalised bank reconciliation
+
+Finalised bank-session balances and matching evidence.
+
+Not available yet
+Not available yet
+Unmatched bank transactions
+
+Bank and book transactions awaiting reconciliation.
+
+Not available yet
+Sales and purchases
+
+Invoice registers, components and settlement history.
+
+Not available yet
+Sales register
+
+Sales invoices, parties, reductions and recorded totals.
+
+Not available yet
+Not available yet
+Purchase register
+
+Supplier invoices and purchase transaction details.
+
+Not available yet
+Not available yet
+Invoice component register
+
+Invoice item, charge and allocation details.
+
+Not available yet
+Not available yet
+Invoice settlement register
+
+Invoice payment allocations and reversals.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0191,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/reports/tax,/reports/tax,distribution,Open /reports/tax and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Reports
+Tax reports
+Tax reports
+
+Recorded tax, input credits and tax-to-ledger reconciliation.
+
+All reports
+Inventory reports
+Finance reports
+Tax reports
+Analytics
+Search reports
+Report cards are currently disabled. Browse the sections or search to find the report you need.
+Tax and credits
+
+Recorded invoice tax details and credit positions.
+
+Not available yet
+Invoice tax register
+
+Recorded taxable values, tax amounts and tax event dates.
+
+Not available yet
+Not available yet
+Input tax credit register
+
+Tax credit positions, decisions and dated events.
+
+Not available yet
+Tax reconciliation
+
+Compare recorded tax effects with their ledger entries.
+
+Not available yet
+Tax to ledger reconciliation
+
+Reconcile recorded tax effects to general ledger entries.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified
+TAF-0192,REVIEW,PREVIEW_OR_UNAVAILABLE_CAPABILITY,BLOCKED,TA-CAPABILITY-/reports/analytics,/reports/analytics,distribution,Open /reports/analytics and inspect the offered actions,Working actions complete against the live services,"Back
+Business overview
+Reports
+Analytics
+Analytics
+
+Balance continuity, source controls and reconciliation insights.
+
+All reports
+Inventory reports
+Finance reports
+Tax reports
+Analytics
+Search reports
+Report cards are currently disabled. Browse the sections or search to find the report you need.
+Controls and reconciliation
+
+Source completeness, year continuity and ledger bridges.
+
+Not available yet
+Balance continuity
+
+Reconcile opening balances with prior closing balances.
+
+Not available yet
+Not available yet
+Source reconciliation
+
+Source counts and ledger debit/credit control totals.
+
+Not available yet
+Not available yet
+Invoice to ledger reconciliation
+
+Reconcile invoice effects to general ledger entries.
+
+Not available yet",surface-inventory-distribution.json,Review planned capability/admission prerequisites before any application change,Documented implementation becomes executable through the UI and live output is verified

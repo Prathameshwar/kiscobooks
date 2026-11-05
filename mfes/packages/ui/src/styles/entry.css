@@ -1,0 +1,1282 @@
+/*
+ * The document entry surface: a sticky document bar, a dense line grid and a sticky totals rail.
+ *
+ * Its own stylesheet, loaded by the routes that need it, for the same reason `designer.css` is:
+ * forty-odd grid and cell rules have no business in every form page's bundle.
+ *
+ * Nothing here names a colour, a radius or a type size. Everything keys off `tokens.css`, so the
+ * three palettes and the contrast gate in `contrast.test.ts` apply without a second thought —
+ * and a row state uses the existing signal triples rather than inventing a fourth red.
+ *
+ * Density is the point. A billing clerk raises dozens of these a day, so the row height is set
+ * from the type scale rather than from the form-control height: a 44px list row (the read
+ * surface's height) puts eight lines on a laptop screen where this puts fourteen. It does not go
+ * below the 24px target-size floor, and it grows with the reader's font size because it is
+ * expressed in `rem`.
+ */
+
+/* ---------- the page ---------- */
+
+/* A document workspace, with a quieter header and progressive disclosure of line details.
+ * Purchase is its first consumer. These classes change no existing Sales entry styles. */
+.janso-entry-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-5);
+  color: var(--janso-ink);
+}
+.janso-entry-workspace h1,
+.janso-entry-workspace h2,
+.janso-entry-workspace__details h3 { margin: 0; }
+.janso-entry-workspace h1 { font-size: var(--janso-text-xl); font-weight: 650; }
+.janso-entry-workspace h2 { font-size: var(--janso-text-md); font-weight: 650; }
+.janso-entry-workspace__heading,
+.janso-entry-workspace__preview,
+.janso-entry-workspace__section-head,
+.janso-entry-workspace__mode-row,
+.janso-entry-workspace__grid-help {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  flex-wrap: wrap;
+}
+.janso-entry-workspace__heading p { margin: var(--janso-space-2) 0 0; color: var(--janso-ink-soft); }
+.janso-entry-workspace__eyebrow { font-size: var(--janso-text-xs); color: var(--janso-ink-soft); margin-bottom: var(--janso-space-2); }
+.janso-entry-workspace__preview {
+  padding: var(--janso-space-2) var(--janso-space-4);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-entry-workspace__preview strong { color: var(--janso-ink); }
+.janso-entry-workspace__layout { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: var(--janso-space-5); align-items: start; }
+.janso-entry-workspace__main,
+.janso-entry-workspace__details { display: flex; flex-direction: column; gap: var(--janso-space-5); min-width: 0; }
+.janso-entry-workspace__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-5);
+  padding: var(--janso-space-5);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-card);
+  background: var(--janso-surface);
+  min-width: 0;
+}
+.janso-entry-workspace__caption { margin: 0; font-size: var(--janso-text-xs); color: var(--janso-ink-soft); line-height: 1.6; }
+.janso-entry-workspace__section-head { align-items: baseline; }
+.janso-entry-workspace__section-head h2 + p { margin-top: var(--janso-space-1); }
+.janso-entry-workspace__supplier-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--janso-space-5); }
+.janso-entry-workspace__fields { display: grid; grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)); gap: var(--janso-space-4); }
+.janso-entry-workspace__resolved { display: flex; flex-direction: column; align-items: flex-start; gap: var(--janso-space-2); font-size: var(--janso-text-sm); }
+.janso-entry-workspace__resolved > span:first-child { color: var(--janso-ink-soft); }
+.janso-entry-workspace__mode-row { border-top: 1px solid var(--janso-line); padding-top: var(--janso-space-4); font-size: var(--janso-text-sm); }
+.janso-entry-workspace__mode { display: flex; flex-wrap: wrap; padding: var(--janso-space-1); gap: var(--janso-space-1); border-radius: var(--janso-radius-sm); background: var(--janso-paper); border: 1px solid var(--janso-line); }
+.janso-entry-workspace__mode button { font: inherit; padding: var(--janso-space-2) var(--janso-space-3); border: 1px solid transparent; border-radius: var(--janso-radius-sm); background: transparent; color: var(--janso-ink-soft); cursor: pointer; }
+.janso-entry-workspace__mode button[aria-pressed="true"] { color: var(--janso-ink); background: var(--janso-surface); border-color: var(--janso-line-strong); box-shadow: var(--janso-shadow-card); font-weight: 600; }
+.janso-entry-workspace__mode button:focus-visible { outline: 2px solid var(--janso-brand); outline-offset: 2px; }
+.janso-entry-workspace__mode button:disabled { opacity: 0.6; cursor: default; }
+.janso-entry-workspace__line-panel { --janso-entry-compact: 0; padding: 0; gap: 0; overflow: hidden; }
+.janso-entry-workspace__line-panel > .janso-entry-workspace__section-head { padding: var(--janso-space-4) var(--janso-space-5); }
+.janso-entry-workspace__line-panel .janso-entry-grid { border-inline: 0; border-radius: 0; }
+/* Anchor absolutely positioned accessible labels inside the scroller. Without this, a
+ * label in a distant column can enlarge the phone's document despite the clipped table. */
+.janso-entry-workspace .janso-entry-grid__scroll { position: relative; }
+.janso-entry-workspace .janso-entry-cell__numeric-wrap { width: var(--janso-entry-amount-w); }
+.janso-entry-workspace .janso-entry-cell__numeric-wrap:has([data-entry-col="received"], [data-entry-col="billed"]) { width: var(--janso-entry-quantity-w); }
+/* The wrapper is a fixed-width block in a cell that can be wider (a column takes its heading's or its
+ * widest row's width), and text-align moves text, not a block: without this the figure sits at the start
+ * of the cell, left of its right-aligned heading. Pushed to the end, they share an edge. */
+.janso-entry-grid td[data-align='end'] .janso-entry-cell__numeric-wrap { margin-inline-start: auto; }
+.janso-entry-workspace .janso-entry-cell__lookup { width: var(--janso-entry-subject-w); }
+.janso-entry-workspace .janso-entry-cell__lookup .janso-search-select__control { border-color: transparent; background: transparent; border-radius: 0; }
+.janso-entry-workspace .janso-entry-cell__lookup .janso-search-select__control:focus-within { background: var(--janso-selected); box-shadow: inset 0 0 0 2px var(--janso-focus); }
+/* A lookup with a small create action beside it: the cell keeps its width, the lookup gives the button its room. */
+.janso-entry-workspace .janso-entry-cell__with-action { display: flex; align-items: center; gap: var(--janso-space-1); width: var(--janso-entry-subject-w); padding-inline-end: var(--janso-space-1); }
+.janso-entry-workspace .janso-entry-cell__with-action .janso-entry-cell__lookup { flex: 1 1 auto; width: auto; }
+.janso-entry-workspace .janso-entry-cell__action { flex: none; display: inline-flex; }
+.janso-entry-workspace__kind { display: block; width: var(--janso-entry-kind-w); }
+.janso-entry-workspace__scroll-hint { display: none; margin: 0; padding: 0 var(--janso-space-4) var(--janso-space-3); font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+.janso-entry-workspace__grid-help { padding: var(--janso-space-3) var(--janso-space-5); border-top: 1px solid var(--janso-line); color: var(--janso-ink-soft); font-size: var(--janso-text-xs); }
+.janso-entry-workspace__grid-help kbd { font-family: var(--janso-font-body); font-weight: 600; }
+.janso-entry-workspace__aside { display: flex; flex-direction: column; gap: var(--janso-space-4); position: sticky; top: var(--janso-space-4); }
+.janso-entry-workspace__aside h2 { margin-bottom: var(--janso-space-2); }
+.janso-entry-workspace__aside .janso-entry__total { padding-block: var(--janso-space-1); }
+.janso-entry-workspace__issues { margin: 0; padding-inline-start: var(--janso-space-4); }
+.janso-entry-workspace__issues .janso-btn { height: auto; white-space: normal; text-align: start; justify-content: start; padding: var(--janso-space-2); }
+.janso-entry-workspace__actions { margin-top: 0; }
+.janso-entry-workspace__identity { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-3); position: sticky; top: 0; z-index: var(--janso-z-sticky); padding: var(--janso-space-3) var(--janso-space-4); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-sm); background: var(--janso-surface); font-size: var(--janso-text-sm); }
+.janso-entry-workspace__identity strong { min-width: 0; overflow-wrap: anywhere; }
+.janso-entry-workspace__identity span { flex-shrink: 0; color: var(--janso-ink-soft); }
+.janso-entry-workspace :is(input, button, select, textarea, [tabindex]) { scroll-margin-block: calc(var(--janso-control-h) + var(--janso-space-5)) calc(var(--janso-control-h) * 3 + var(--janso-space-5)); }
+.janso-entry-workflow { display: flex; flex-direction: column; gap: var(--janso-space-4); min-width: 0; }
+.janso-entry-workflow__bar, .janso-entry-workflow__buttons { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-3); flex-wrap: wrap; }
+.janso-entry-workflow__bar { padding: var(--janso-space-4); background: var(--janso-surface); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-md); }
+.janso-entry-workflow__bar > div { display: flex; flex-wrap: wrap; align-items: center; gap: var(--janso-space-3); }
+.janso-entry-workflow__examples { padding: var(--janso-space-4); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-sm); background: var(--janso-surface); }
+.janso-entry-workflow__examples > summary { font-size: var(--janso-text-sm); font-weight: 600; cursor: pointer; }
+.janso-entry-workflow__examples > div, .janso-entry-workflow__examples > p { margin-top: var(--janso-space-4); }
+.janso-entry-workflow__buttons > .janso-field { min-width: 0; flex: 1 1 auto; }
+.janso-entry-workflow__comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr)); gap: var(--janso-space-4); }
+.janso-entry-workflow__comparison > section { padding: var(--janso-space-4); background: var(--janso-paper); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-sm); overflow-wrap: anywhere; }
+.janso-entry-workflow__comparison h3 { margin: 0; font-size: var(--janso-text-md); }
+.janso-entry-workflow__review-lines { display: flex; flex-direction: column; gap: var(--janso-space-3); margin: 0; padding-inline-start: var(--janso-space-5); }
+.janso-entry-workflow__review-lines li > span { display: block; color: var(--janso-ink-soft); font-size: var(--janso-text-sm); margin-top: var(--janso-space-1); }
+.janso-entry-line-cards { display: flex; flex-direction: column; gap: var(--janso-space-3); padding: 0 var(--janso-space-4) var(--janso-space-4); }
+.janso-entry-line-list { display: flex; flex-direction: column; gap: var(--janso-space-3); list-style: none; padding: 0; margin: 0; }
+.janso-entry-line-card { display: flex; flex-direction: column; gap: var(--janso-space-3); padding: var(--janso-space-4); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-sm); background: var(--janso-surface); min-width: 0; }
+.janso-entry-line-card__head, .janso-entry-line-card__total { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-3); font-size: var(--janso-text-sm); }
+.janso-entry-line-card__name { margin: 0; color: var(--janso-ink); font-size: var(--janso-text-sm); line-height: 1.6; overflow-wrap: anywhere; }
+.janso-entry-line-card__figures { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--janso-space-2); margin: 0; font-size: var(--janso-text-sm); }
+.janso-entry-line-card__figures dt { color: var(--janso-ink-soft); }
+.janso-entry-line-card__figures dd { margin: 0; text-align: end; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.janso-entry-line-card__total { border-top: 1px solid var(--janso-line); padding-top: var(--janso-space-3); flex-wrap: wrap; }
+.janso-entry-line-cards .janso-btn { min-height: calc(var(--janso-control-h) + var(--janso-space-2)); }
+.janso-entry-line-card__head .janso-btn { min-width: calc(var(--janso-control-h) + var(--janso-space-2)); }
+@media (max-width: 48rem) {
+  .janso-modal__panel:has(.janso-entry-workflow__dialog) .janso-overlay-foot > .janso-btn,
+  .janso-drawer__panel:has(.janso-entry-detail) .janso-overlay-foot > .janso-btn { min-height: calc(var(--janso-control-h) + var(--janso-space-2)); }
+}
+/* At high browser zoom or in landscape, pinned chrome must not squeeze the
+ * editing area out of view. Scroll the whole Purchase sheet instead. */
+@media (max-height: 30rem) {
+  :is(.janso-modal__panel, .janso-drawer__panel):has(.janso-entry-detail, .janso-entry-workflow__dialog, .janso-entry-workspace__review) {
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  :is(.janso-modal__panel, .janso-drawer__panel):has(.janso-entry-detail, .janso-entry-workflow__dialog, .janso-entry-workspace__review) > .janso-overlay-body {
+    overflow: visible;
+    padding-block: var(--janso-space-4);
+  }
+}
+.janso-entry-workspace__review { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--janso-space-3); margin: 0; }
+.janso-entry-workspace__review dt { color: var(--janso-ink-soft); }
+.janso-entry-workspace__review dd { margin: 0; overflow-wrap: anywhere; }
+.janso-entry-detail-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--janso-space-3); }
+.janso-entry-detail-card { display: flex; flex-direction: column; align-items: flex-start; gap: var(--janso-space-2); padding: var(--janso-space-4); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-sm); background: var(--janso-surface); color: var(--janso-ink); font: inherit; text-align: start; cursor: pointer; min-width: 0; }
+.janso-entry-detail-card:hover { background: var(--janso-hover); border-color: var(--janso-line-strong); }
+.janso-entry-detail-card:focus-visible { outline: 2px solid var(--janso-focus); outline-offset: 2px; }
+.janso-entry-detail-card:disabled { opacity: 0.6; cursor: default; }
+.janso-entry-detail-card__title { display: flex; justify-content: space-between; gap: var(--janso-space-3); width: 100%; font-size: var(--janso-text-sm); font-weight: 600; }
+.janso-entry-detail-card__title > span { color: var(--janso-ink-soft); }
+.janso-entry-detail { display: flex; flex-direction: column; gap: var(--janso-space-5); container: entry-detail / inline-size; }
+.janso-entry-detail__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--janso-space-4); align-items: start; }
+.janso-entry-detail__group { display: flex; flex-direction: column; gap: var(--janso-space-4); margin: 0; padding: var(--janso-space-4); min-width: 0; border: 1px solid var(--janso-line); border-radius: var(--janso-radius-sm); }
+.janso-entry-detail__group legend { padding-inline: var(--janso-space-2); font-size: var(--janso-text-sm); font-weight: 600; max-width: 100%; overflow-wrap: anywhere; }
+.janso-entry-detail__group h3 { margin: 0; font-size: var(--janso-text-md); }
+.janso-entry-detail__group-row { display: flex; flex-direction: column; gap: var(--janso-space-3); padding-bottom: var(--janso-space-3); border-bottom: 1px solid var(--janso-line); }
+.janso-entry-detail__group-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.janso-entry-detail__checks { display: flex; flex-direction: column; gap: var(--janso-space-3); }
+.janso-entry-detail__calculation { padding: var(--janso-space-4); border-radius: var(--janso-radius-sm); background: var(--janso-surface-2); }
+.janso-entry-detail__calculation p, .janso-entry-detail__figure { display: flex; justify-content: space-between; gap: var(--janso-space-3); margin: 0; font-variant-numeric: tabular-nums; }
+.janso-entry-detail__calculation p + p { margin-top: var(--janso-space-3); }
+.janso-entry-detail__image { display: block; max-width: 100%; height: auto; }
+@container entry-detail (max-width: 32rem) { .janso-entry-detail__pair { grid-template-columns: minmax(0, 1fr); } }
+@container (max-width: 72rem) {
+  .janso-entry-workspace__layout { grid-template-columns: minmax(0, 1fr); }
+  .janso-entry-workspace__aside { position: static; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); align-items: start; }
+}
+@container (max-width: 42rem) {
+  .janso-entry-workspace { gap: var(--janso-space-3); }
+  .janso-entry-workflow { gap: var(--janso-space-3); }
+  .janso-entry-workflow__bar { padding: var(--janso-space-3); }
+  .janso-entry-workflow__bar > div { gap: var(--janso-space-2); }
+  .janso-entry-workspace__line-panel { --janso-entry-compact: 1; }
+  .janso-entry-workspace__supplier-grid,
+  .janso-entry-workspace__fields { grid-template-columns: minmax(0, 1fr); }
+  .janso-entry-workspace__panel { padding: var(--janso-space-4); }
+  .janso-entry-workspace__line-panel { padding: 0; }
+  .janso-entry-workspace__mode { width: 100%; }
+  .janso-entry-detail-cards { grid-template-columns: minmax(0, 1fr); }
+  .janso-entry-workspace__mode button { flex: 1 1 auto; min-height: calc(var(--janso-control-h) + var(--janso-space-2)); }
+  .janso-entry-workspace__scroll-hint { display: block; }
+  .janso-entry-workspace .janso-entry-workspace__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: var(--janso-space-3); gap: var(--janso-space-2); }
+  .janso-entry-workspace__actions .janso-entry__actions-total { border: 0; padding: 0; gap: var(--janso-space-1); flex-wrap: wrap; font-size: var(--janso-text-sm); }
+  .janso-entry-workspace__actions .janso-entry__actions-note { text-align: end; margin: 0; }
+  .janso-entry-workspace__actions > .janso-btn { flex: 1 1 auto; min-height: calc(var(--janso-control-h) + var(--janso-space-2)); }
+}
+
+/* The width the lines-and-rail layout answers to (see the container query under "narrow"). */
+.janso-entry-frame {
+  container-type: inline-size;
+}
+
+.janso-entry {
+  display: grid;
+  /* The rail is fixed-width and the lines take the rest: a proportional rail would make the
+     amount column drift as the window changes, and an amount that moves is hard to compare. */
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  gap: var(--janso-space-5);
+  align-items: start;
+}
+
+/*
+ * Both of these are sticky, and that is the single most important decision in this file.
+ *
+ * Scrolling a fifty-line invoice must not take away who you are billing or what the total has
+ * become. In Zoho Books and QuickBooks Online both scroll off the top, and re-finding the
+ * customer to check it is the most common complaint about long documents.
+ */
+.janso-entry__bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--janso-z-sticky);
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-4) var(--janso-space-5);
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-card);
+}
+.janso-entry__bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--janso-space-3);
+  /* Top, so every label sits on one line: a field's hint or error hangs below its own box
+     rather than lifting its label above its neighbours'. */
+  align-items: flex-start;
+  row-gap: var(--janso-space-4);
+}
+.janso-entry__bar-row--identity {
+  align-items: center;
+}
+/* The document's identity, which stays legible when the row wraps. */
+.janso-entry__bar-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  margin-inline-end: auto;
+}
+.janso-entry__number {
+  font-size: var(--janso-text-lg);
+  font-weight: 600;
+  color: var(--janso-ink);
+  font-variant-numeric: tabular-nums;
+}
+.janso-entry__number-note {
+  margin: 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-entry__bar-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-1);
+  min-width: 9rem;
+  flex: 0 1 auto;
+}
+/* A short figure — days, a count — does not need a date's width. */
+.janso-entry__bar-field--narrow {
+  min-width: 6rem;
+  max-width: 8rem;
+}
+/*
+ * A checkbox in a row of labelled boxes: dropped by one label row and centred on the box
+ * height, so it reads level with the inputs beside it rather than with their labels.
+ */
+.janso-entry__bar-field--check {
+  min-width: 0;
+  padding-block-start: calc(var(--janso-text-sm) * 1.5 + var(--janso-space-2));
+}
+.janso-entry__bar-field--check .janso-check {
+  min-height: 2.25rem;
+}
+/* The bill's mode beside its number: a compact choice at the form's type size. */
+.janso-entry__mode {
+  --janso-segment-h: 2rem;
+  --janso-segment-text: var(--janso-text-sm);
+  --janso-segment-pad: var(--janso-space-3);
+  --janso-segment-radius: var(--janso-radius-sm);
+  min-width: 15rem;
+}
+
+/* ---------- the line grid ---------- */
+
+.janso-entry__lines {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-3);
+}
+
+/*
+ * A horizontal scroller, because a twelve-column grid does not fit a laptop and the alternative
+ * — dropping columns silently — loses entry fields a reader is required to fill. `overflow` here
+ * is why every in-cell popover portals: an absolutely positioned one would be clipped to a
+ * sliver, which is the same bug the row kebab hit inside the data table.
+ */
+.janso-entry-grid__scroll {
+  /* The width the pinned columns answer to (see "pinning off on a narrow grid"). */
+  container: entry-grid / inline-size;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface);
+}
+
+.janso-entry-grid {
+  /*
+   * As wide as its columns, and never narrower than the scroller. `width: 100%` alone let the
+   * auto layout squeeze every column below its stated width once the grid overflowed — an input
+   * at `width: 100%` contributes nothing to a column's minimum — so a 2,450 rate showed as `2`
+   * and `bag` as `ba`.
+   */
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--janso-text-sm);
+}
+
+.janso-entry-grid thead th {
+  /* Not sticky to the top: the scroller's `overflow-x` makes it the sticky container on both
+     axes, and it never scrolls vertically, so a sticky header here pinned to nothing. */
+  padding: var(--janso-space-2) var(--janso-space-3);
+  background: var(--janso-surface-2);
+  border-bottom: 1px solid var(--janso-line);
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-ink-soft);
+  text-align: start;
+  white-space: nowrap;
+}
+/* A required entry column says so in its heading, not only on the cell that is empty. */
+.janso-entry-grid thead th[data-required='true']::after {
+  content: ' *';
+  color: var(--janso-danger-ink);
+}
+.janso-entry-grid thead th[data-align='end'],
+.janso-entry-grid td[data-align='end'] {
+  text-align: end;
+}
+
+.janso-entry-grid tbody td {
+  padding: 0;
+  border-bottom: 1px solid var(--janso-line);
+  vertical-align: middle;
+}
+.janso-entry-grid tbody tr:last-child td {
+  border-bottom: 0;
+}
+.janso-entry-grid tbody tr:hover td {
+  background: var(--janso-hover);
+}
+
+/*
+ * The row number and the row controls, which are not data and do not scroll with the columns.
+ *
+ * Neither do the two columns a reader orients by: what the line is (`data-pin="start"`) and
+ * what it comes to (`data-pin="end"`). Twelve columns do not fit a laptop beside the totals
+ * rail, and scrolling across to reach Billed should not take away which item it is on or the
+ * amount it makes. The offsets are the fixed widths of the frame columns, so they are custom
+ * properties rather than measurements.
+ *
+ * `td.` and `th.` in the selectors because `tbody td { padding: 0 }` outranks a bare class —
+ * which is how the row number came to sit flush against the row's state edge.
+ */
+.janso-entry-grid {
+  --janso-entry-ordinal-w: 3rem;
+  --janso-entry-controls-w: 6.5rem;
+}
+.janso-entry-grid th.janso-entry-grid__ordinal,
+.janso-entry-grid td.janso-entry-grid__ordinal {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  width: var(--janso-entry-ordinal-w);
+  min-width: var(--janso-entry-ordinal-w);
+  padding-inline: var(--janso-space-3);
+  color: var(--janso-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.janso-entry-grid th.janso-entry-grid__controls,
+.janso-entry-grid td.janso-entry-grid__controls {
+  position: sticky;
+  inset-inline-end: 0;
+  z-index: 1;
+  width: var(--janso-entry-controls-w);
+  min-width: var(--janso-entry-controls-w);
+  white-space: nowrap;
+  padding-inline: var(--janso-space-1) var(--janso-space-2);
+  text-align: end;
+}
+.janso-entry-grid [data-pin='start'] {
+  position: sticky;
+  inset-inline-start: var(--janso-entry-ordinal-w);
+  z-index: 1;
+  box-shadow: inset -1px 0 0 var(--janso-line);
+}
+.janso-entry-grid [data-pin='end'] {
+  position: sticky;
+  inset-inline-end: var(--janso-entry-controls-w);
+  z-index: 1;
+  box-shadow: inset 1px 0 0 var(--janso-line);
+}
+/* A pinned cell is opaque, or the columns scrolling under it show through. */
+.janso-entry-grid tbody td.janso-entry-grid__ordinal,
+.janso-entry-grid tbody td.janso-entry-grid__controls,
+.janso-entry-grid tbody td[data-pin] {
+  background: var(--janso-surface);
+}
+.janso-entry-grid tbody tr:hover td.janso-entry-grid__ordinal,
+.janso-entry-grid tbody tr:hover td.janso-entry-grid__controls,
+.janso-entry-grid tbody tr:hover td[data-pin] {
+  background: var(--janso-hover);
+}
+/*
+ * Pinning off on a narrow grid. On a phone the row number, the item, the amount and the row
+ * controls added up to the whole width, so nothing between them could ever scroll into view and
+ * the item itself was cut to two letters. Below 40rem every column scrolls.
+ */
+@container entry-grid (max-width: 40rem) {
+  .janso-entry-grid th.janso-entry-grid__ordinal,
+  .janso-entry-grid td.janso-entry-grid__ordinal,
+  .janso-entry-grid th.janso-entry-grid__controls,
+  .janso-entry-grid td.janso-entry-grid__controls,
+  .janso-entry-grid [data-pin] {
+    position: static;
+    box-shadow: none;
+  }
+}
+
+/* A row's note and the add control stay where the reader is looking, however far across. */
+.janso-entry-grid__note-text,
+.janso-entry-grid__add {
+  position: sticky;
+  inset-inline-start: var(--janso-space-3);
+}
+.janso-entry-grid__note-text {
+  width: max-content;
+}
+
+/* ---------- cells ---------- */
+
+/*
+ * A cell is its own focus target and the input fills it. The ring is **inset**: the grid is a
+ * scroll container, so an outer ring on an edge column is clipped by it.
+ */
+.janso-entry-cell {
+  display: block;
+  width: 100%;
+  min-height: 2.125rem;
+  padding: 0 var(--janso-space-3);
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+.janso-entry-cell:focus-visible {
+  outline: none;
+  background: var(--janso-selected);
+  box-shadow: inset 0 0 0 2px var(--janso-focus);
+}
+.janso-entry-cell::placeholder {
+  color: var(--janso-ink-faint);
+}
+
+/* Numbers line up on their decimal point, which is the only way a column of them is readable. */
+.janso-entry-cell--numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * A derived cell is not disabled — it is *not an input*. A disabled input invites the question
+ * "why can I not type here", and the answer ("the service resolves this") is not a permission
+ * problem. So it renders as text, in the ink that says "read this, do not touch it".
+ */
+.janso-entry-cell--derived {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 2.125rem;
+  padding: 0 var(--janso-space-3);
+  color: var(--janso-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.janso-entry-cell--derived[data-unresolved='true'] {
+  color: var(--janso-ink-faint);
+}
+
+/* ---------- row state ---------- */
+
+/*
+ * The existing signal triples, so a state means the same thing here as in a notice. The marker
+ * is an inline-start edge rather than a fill: a tinted row makes the numbers in it harder to
+ * read, and the numbers are the reason the row exists.
+ */
+.janso-entry-grid tbody tr[data-state] td:first-child {
+  box-shadow: inset 0.1875rem 0 0 var(--janso-entry-state, transparent);
+}
+.janso-entry-grid tbody tr[data-state='invalid'] {
+  --janso-entry-state: var(--janso-danger-ink);
+}
+.janso-entry-grid tbody tr[data-state='warn'] {
+  --janso-entry-state: var(--janso-warn-ink);
+}
+/* A reward row carries no consideration, so it is marked as deliberate rather than as wrong. */
+.janso-entry-grid tbody tr[data-state='reward'] {
+  --janso-entry-state: var(--janso-success-ink);
+}
+
+/* A figure the reader cannot change on this row reads as read, not as an empty box to fill. */
+.janso-entry-cell[readonly] {
+  color: var(--janso-ink-soft);
+  cursor: default;
+}
+.janso-entry-cell[readonly]:focus-visible {
+  background: transparent;
+}
+
+/* The per-row explanation, under the row it is about rather than collected elsewhere. */
+.janso-entry-grid__note td {
+  padding: 0 var(--janso-space-3) var(--janso-space-2);
+  border-bottom: 1px solid var(--janso-line);
+}
+.janso-entry-grid__note-text {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-danger-ink);
+}
+.janso-entry-grid__note-text[data-tone='warning'] {
+  color: var(--janso-warn-ink);
+}
+
+/* Where the rate came from, beside the rate. Quiet until it is an override. */
+.janso-entry__provenance {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-faint);
+}
+
+/* ---------- the totals rail ---------- */
+
+.janso-entry__rail {
+  position: sticky;
+  /*
+   * Below the document bar, which is sticky too and drawn above it: at `top: 0` the bar covered
+   * Subtotal, Discounts and Taxable value as soon as a long bill scrolled. The page measures the
+   * bar and sets the property. The rail scrolls within itself rather than running off the
+   * bottom, where its problem list would be out of reach until the end of the bill.
+   */
+  top: calc(var(--janso-entry-bar-h, 0px) + var(--janso-space-3));
+  max-height: calc(100dvh - var(--janso-entry-bar-h, 0px) - 10rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-4);
+  min-width: 0;
+}
+.janso-entry__rail-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+  padding: var(--janso-space-4);
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+}
+.janso-entry__total {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  font-size: var(--janso-text-sm);
+}
+.janso-entry__total-label {
+  color: var(--janso-ink-soft);
+}
+.janso-entry__total-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--janso-ink);
+}
+.janso-entry__total--grand {
+  margin-top: var(--janso-space-2);
+  padding-top: var(--janso-space-3);
+  border-top: 1px solid var(--janso-line-strong);
+}
+/* Alone at the top of its card — no advance, nothing received — it needs no rule above it. */
+.janso-entry__total--grand:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.janso-entry__total--grand .janso-entry__total-label,
+.janso-entry__total--grand .janso-entry__total-value {
+  font-size: var(--janso-text-base);
+  font-weight: 650;
+  color: var(--janso-ink);
+}
+/* A deduction reads as one without needing a colour to say it. */
+.janso-entry__total--deduct .janso-entry__total-value::before {
+  content: '−\00a0';
+}
+
+/*
+ * The provisional label, and it is not decoration.
+ *
+ * Calculation authority is the service's, in a versioned dependency sequence. Anything this
+ * screen adds up is an estimate, and a total that looks authoritative while being an estimate
+ * is the worst thing on the page.
+ */
+.janso-entry__provisional p {
+  margin: 0;
+}
+.janso-entry__provisional > svg {
+  flex: none;
+  margin-top: 0.125rem;
+}
+.janso-entry__provisional {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-2);
+  padding-top: var(--janso-space-2);
+  border-top: 1px dashed var(--janso-line);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- the action bar ---------- */
+
+.janso-entry__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--janso-z-sticky);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-3);
+  margin-top: var(--janso-space-5);
+  padding: var(--janso-space-3) var(--janso-space-5);
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+}
+/* The running total in the action bar, first, where the eye starts. */
+.janso-entry__actions-total {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--janso-space-2);
+  padding-inline-end: var(--janso-space-3);
+  border-inline-end: 1px solid var(--janso-line);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.janso-entry__actions-note {
+  flex: 1 1 18rem;
+  margin-inline-end: auto;
+  min-width: 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- narrow ---------- */
+
+/*
+ * The rail goes under the lines rather than away. It holds the total and the settlement, which
+ * are the two things a reader most needs, so hiding it to save width would be the wrong saving —
+ * and it is the pattern the ladder in `shell.css` already follows: shed what is redundant,
+ * reflow what is not.
+ */
+/*
+ * By the frame's width, not the window's. Twelve columns beside a 20rem rail left a laptop with
+ * about fifteen rem of scrolling middle between the pinned item and amount — two columns at a
+ * time. Below 90rem of content the rail goes under the lines and the action bar carries the
+ * running total, so the grid gets the whole width; on a wide monitor the rail stays beside.
+ */
+@container (max-width: 90rem) {
+  .janso-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .janso-entry__rail {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    align-items: start;
+  }
+}
+/*
+ * A short window lets the bar scroll away too. Kept sticky on a laptop's 760px of viewport, the
+ * bar and the action bar left the lines a third of the screen; the customer is one scroll up.
+ */
+@media (max-height: 720px) {
+  .janso-entry__bar {
+    position: static;
+  }
+}
+@media (max-width: 720px) {
+  .janso-entry__bar {
+    position: static;
+  }
+  .janso-entry__bar-field {
+    min-width: 100%;
+  }
+}
+
+/* ---------- the add control and the numeric wrap ---------- */
+
+/*
+ * "Add line" in the table's own footer, not above it or beside the page actions.
+ *
+ * It belongs where the next line will appear, which is the bottom of the rows — a button at the
+ * top adds a row the reader then has to scroll to find. The shortcut is named on it, because the
+ * keyboard path is the fast one and an unadvertised shortcut is a shortcut nobody uses.
+ */
+.janso-entry-grid__add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  margin: var(--janso-space-2) var(--janso-space-3);
+  padding: var(--janso-space-2) var(--janso-space-3);
+  border: 1px dashed var(--janso-control-line);
+  border-radius: var(--janso-radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+  cursor: pointer;
+}
+.janso-entry-grid__add:hover {
+  border-color: var(--janso-brand);
+  border-style: solid;
+  color: var(--janso-ink);
+}
+.janso-entry-grid__add:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+
+/* Holds a numeric cell so its unit, when it has one, cannot widen the column. */
+.janso-entry-cell__numeric-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+/*
+ * The unit that changes what a figure means — `10 %` against `10` rupees — shown after the box
+ * rather than in it, for the same reason the currency sits outside an `AmountField`: a symbol
+ * inside the input is a character the caret has to be driven past on every edit.
+ */
+.janso-entry-cell__unit {
+  flex: none;
+  padding-inline-end: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+/* The provenance chip sits after the figure and never shrinks it. */
+.janso-entry-cell__numeric-wrap .janso-entry__provenance {
+  flex: none;
+  margin-inline: 0 var(--janso-space-2);
+}
+
+/* A select in a cell carries the row's own choices and keeps the cell's density. */
+/* The native arrow is kept: without it a unit list reads as static text nobody thinks to open. */
+select.janso-entry-cell {
+  padding-inline-end: var(--janso-space-2);
+  cursor: pointer;
+}
+
+/*
+ * A lookup inside a cell.
+ *
+ * `SearchSelect` is a form control with a label row and form-control height; in a 34px entry row
+ * it has to lose both. Its list is already portalled and fixed-positioned, which is what makes
+ * it usable here at all — an absolutely positioned one would be clipped to a sliver by the
+ * grid's horizontal scroller.
+ */
+.janso-entry-cell__lookup {
+  display: block;
+  min-width: 0;
+  padding-inline: var(--janso-space-1);
+}
+.janso-entry-cell__lookup .janso-field {
+  gap: 0;
+}
+.janso-entry-cell__lookup .janso-input,
+.janso-entry-cell__lookup .janso-input-wrap {
+  min-height: 2.125rem;
+  border-color: transparent;
+  background: transparent;
+  font-size: var(--janso-text-sm);
+}
+.janso-entry-cell__lookup .janso-input-wrap:focus-within {
+  border-color: transparent;
+  background: var(--janso-selected);
+  box-shadow: inset 0 0 0 2px var(--janso-focus);
+}
+/*
+ * The field's own error text and hint would push the row's height around as a reader typed, so
+ * the row note under the line says it instead — one place per line, where it can be read.
+ */
+.janso-entry-cell__lookup .janso-error,
+.janso-entry-cell__lookup .janso-hint {
+  display: none;
+}
+
+/* ---------- the preview's detail ---------- */
+
+/* A tax component under its total: indented and quieter, so CGST and SGST read as the parts of
+   one figure rather than as two more figures competing with the total. */
+.janso-entry__total--detail {
+  padding-inline-start: var(--janso-space-3);
+  font-size: var(--janso-text-xs);
+}
+.janso-entry__total--detail .janso-entry__total-label {
+  color: var(--janso-ink-faint);
+}
+
+/* What the preview could not know, stated beside the figures it affects. */
+.janso-entry__unresolved {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-1);
+  margin: var(--janso-space-2) 0 0;
+  padding-inline-start: var(--janso-space-4);
+  list-style: disc;
+}
+
+/* ---------- settlement ---------- */
+
+/* What is left to settle, at the top of the payment drawer: the one number the drawer is for. */
+.janso-entry__settle-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-3) var(--janso-space-4);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface-2);
+}
+.janso-entry__settle-figure {
+  font-size: var(--janso-text-lg);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--janso-ink);
+}
+.janso-entry__settle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--janso-space-2);
+}
+
+.janso-entry__advances {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.janso-entry__advance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-2) var(--janso-space-3);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+}
+.janso-entry__advance-label {
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+
+/*
+ * Change to hand back. The one settlement fact the person at the counter must not miss, so it
+ * is given the success triple's edge — it is not a warning, it is an instruction.
+ */
+.janso-entry__change {
+  margin: 0;
+  padding: var(--janso-space-2) var(--janso-space-3);
+  border-inline-start: 0.1875rem solid var(--janso-success-ink);
+  background: var(--janso-surface-2);
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink);
+}
+
+/* What is wrong, one to a line, each with its way there. */
+.janso-entry__problems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-entry__rail-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  margin: 0;
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink);
+}
+
+/* "Line 4" in a problem list — a way to get there, styled as the link it behaves as. */
+.janso-entry__goto {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--janso-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.janso-entry__goto:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+  border-radius: var(--janso-radius-sm);
+}
+
+/* Why Save is disabled, beside it — the sentence a disabled button owes the reader. */
+.janso-entry__blocked {
+  color: var(--janso-danger-ink);
+}
+
+/* The party field takes the room the row has: a customer name is the longest thing in the bar. */
+.janso-entry__bar-field--party {
+  min-width: 16rem;
+  flex: 1 1 16rem;
+}
+@media (max-width: 720px) {
+  .janso-entry__bar-field--party {
+    min-width: 100%;
+  }
+}
+
+/* ---------- keyboard shortcuts ---------- */
+
+.janso-entry__keys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+}
+.janso-entry__keys + .janso-entry__keys {
+  margin-top: var(--janso-space-4);
+}
+.janso-entry__keys-title {
+  margin: 0;
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-ink-soft);
+}
+.janso-entry__keys-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-1);
+  margin: 0;
+}
+/* Keys in a fixed column so the descriptions line up and can be scanned down. */
+.janso-entry__keys-row {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--janso-space-3);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+.janso-entry__keys-row dd {
+  margin: 0;
+}
+
+/* The first-run hint over an empty grid: how entry works, said once, where entry starts. */
+.janso-entry__hint {
+  margin: 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- drawers and dialogs ---------- */
+
+/*
+ * The body of an entry drawer or dialog, as one stack. The overlay body is a plain block, and the
+ * form library spaces only a field that follows a field — so a choice, a section heading or a
+ * Remove button met whatever came before it with no space at all.
+ */
+.janso-entry__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-4);
+  padding-block-start: var(--janso-space-1);
+}
+.janso-entry__panel > .janso-field + .janso-field {
+  margin-top: 0;
+}
+/* A row action is the size of its words, not the width of the drawer. */
+.janso-entry__panel .janso-form-grid > .janso-btn,
+.janso-entry__panel > .janso-btn {
+  justify-self: start;
+  align-self: flex-start;
+}
+
+/* The read-only sentence where the add control would be, inset like the control it replaces. */
+.janso-entry-grid tfoot .janso-entry__number-note {
+  padding: var(--janso-space-3);
+}
+
+/* The action bar's buttons: one group, kept together, at the trailing edge. */
+.janso-entry__actions-buttons {
+  display: flex;
+  flex: none;
+  /* On a phone the group is wider than the bar: it takes the full width and wraps inside it,
+     rather than running off the edge. */
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-3);
+  margin-inline-start: auto;
+}
+
+/* ---------- the review's line list ---------- */
+
+.janso-entry__review-lines {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+.janso-entry__review-lines th {
+  padding: var(--janso-space-2) var(--janso-space-3);
+  border-bottom: 1px solid var(--janso-line);
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-ink-soft);
+  text-align: start;
+}
+.janso-entry__review-lines td {
+  padding: var(--janso-space-2) var(--janso-space-3);
+  border-bottom: 1px solid var(--janso-line);
+  vertical-align: top;
+}
+.janso-entry__review-lines [data-align='end'] {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.janso-entry__review-flag {
+  margin-inline-start: var(--janso-space-2);
+}
+
+/* ---------- the party details under the bar ---------- */
+
+/* Who is billed and where it goes: read once, so outside the sticky band. */
+.janso-entry__party {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--janso-space-4) var(--janso-space-3);
+  padding: var(--janso-space-4) var(--janso-space-5);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface);
+}
+.janso-entry__party > .janso-entry__bar-field {
+  flex: 1 1 14rem;
+}
+.janso-entry__supply {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- the live Purchase page ---------- */
+
+/*
+ * The connected account-Purchase screen. Header, notices, bill and lifecycle share one
+ * `janso-page` column, so the page has the same gutter, width cap and rhythm as every other
+ * page; what follows is only what that column and the workspace do not already provide.
+ *
+ * Tokens only. Status is never colour alone: every track step carries a mark and a word.
+ */
+
+/* One column. The old second column held a calculation that did not exist until the bill was saved. */
+.janso-entry-workspace__layout--single { grid-template-columns: minmax(0, 1fr); }
+
+/* A twelve-column field grid, so a bill's header reads as rows instead of a stack of full-width boxes. */
+.janso-purchase-fields {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--janso-space-4) var(--janso-space-5);
+  align-items: start;
+}
+.janso-purchase-fields > * { grid-column: span 3; min-width: 0; }
+.janso-purchase-fields > [data-span='6'] { grid-column: span 6; }
+@container (max-width: 60rem) {
+  .janso-purchase-fields > * { grid-column: span 6; }
+}
+@container (max-width: 42rem) {
+  .janso-purchase-fields > *,
+  .janso-purchase-fields > [data-span='6'] { grid-column: span 12; }
+}
+
+/* A value the person reads but does not type, sitting in a field's slot: same label, same height. */
+.janso-purchase-static { display: flex; flex-direction: column; gap: var(--janso-space-2); min-width: 0; margin: 0; }
+.janso-purchase-static dt, .janso-purchase-static dd { margin: 0; }
+.janso-purchase-static__label { font-size: var(--janso-text-sm); font-weight: 500; color: var(--janso-ink); }
+.janso-purchase-static__value {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  flex-wrap: wrap;
+  min-height: var(--janso-control-h);
+  padding: var(--janso-space-1) var(--janso-space-3);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-paper);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  overflow-wrap: anywhere;
+}
+.janso-purchase-static__hint { margin: 0; font-size: var(--janso-text-xs); color: var(--janso-ink-soft); line-height: 1.5; }
+
+/* The supplier's balance, one line under the Supplier field. Quiet: it informs the entry and never competes with it. */
+.janso-purchase-balance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-1) var(--janso-space-3);
+  min-height: calc(var(--janso-control-h) * 0.75);
+  margin-block-start: var(--janso-space-2);
+  padding: var(--janso-space-1) var(--janso-space-3);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  overflow-wrap: anywhere;
+}
+.janso-purchase-balance__label { font-size: var(--janso-text-xs); font-weight: 500; color: var(--janso-ink-soft); }
+.janso-purchase-balance__amount { font-size: var(--janso-text-md); font-weight: 600; font-variant-numeric: tabular-nums; }
+.janso-purchase-balance__side { font-weight: 500; color: var(--janso-ink-soft); }
+.janso-purchase-balance__note { font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+
+/* Label and value pairs: terms, tax, notes. Wraps by available width, not by breakpoint. */
+.janso-purchase-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--janso-space-4) var(--janso-space-5);
+  margin: 0;
+}
+.janso-purchase-facts > div { min-width: 0; }
+.janso-purchase-facts dt { margin: 0 0 var(--janso-space-1); font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+.janso-purchase-facts dd { margin: 0; font-size: var(--janso-text-sm); color: var(--janso-ink); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+
+/* The required "no tax" confirmation. It reads as a statement the person signs, not a field. */
+.janso-purchase-confirm {
+  padding: var(--janso-space-4);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-paper);
+}
+.janso-purchase-confirm[data-invalid='true'] { border-color: var(--janso-danger-line); background: var(--janso-danger-tint); }
+.janso-purchase-confirm .janso-error { margin: var(--janso-space-2) 0 0; }
+
+/* How GST applies to the bill, under the "no tax" box: a few facts to confirm, then what each expense account says. */
+.janso-purchase-tax { display: flex; flex-direction: column; gap: var(--janso-space-4); margin-top: var(--janso-space-4); padding-top: var(--janso-space-4); border-top: 1px solid var(--janso-line); }
+.janso-purchase-tax__lede { margin: 0; font-size: var(--janso-text-sm); color: var(--janso-ink-soft); max-width: 60ch; }
+.janso-purchase-tax__fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--janso-space-4) var(--janso-space-5); align-items: start; }
+.janso-purchase-tax__fields > * { min-width: 0; }
+.janso-purchase-tax__accounts h3 { margin: 0 0 var(--janso-space-2); font-size: var(--janso-text-sm); font-weight: 600; color: var(--janso-ink); }
+.janso-purchase-tax__lines { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--janso-line); }
+.janso-purchase-tax__lines > li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--janso-space-1) var(--janso-space-5); padding: var(--janso-space-3) 0; border-bottom: 1px solid var(--janso-line); font-size: var(--janso-text-sm); }
+.janso-purchase-tax__account { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.janso-purchase-tax__where { font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+.janso-purchase-tax__status { max-width: 36rem; color: var(--janso-ink-soft); }
+.janso-purchase-tax__lines > li[data-tone='ok'] .janso-purchase-tax__status { color: var(--janso-success-ink); }
+.janso-purchase-tax__lines > li[data-tone='bad'] .janso-purchase-tax__status { color: var(--janso-danger-ink); }
+.janso-purchase-tax__note { margin: 0; font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+.janso-purchase-figures__component { padding-inline-start: var(--janso-space-4); font-size: var(--janso-text-xs); }
+.janso-purchase-tax-table { width: 100%; margin-top: var(--janso-space-4); border-collapse: collapse; font-size: var(--janso-text-sm); font-variant-numeric: tabular-nums; }
+.janso-purchase-tax-table caption { padding-bottom: var(--janso-space-2); text-align: start; font-weight: 600; color: var(--janso-ink); }
+.janso-purchase-tax-table th, .janso-purchase-tax-table td { padding: var(--janso-space-2) var(--janso-space-3); border-top: 1px solid var(--janso-line); text-align: end; }
+.janso-purchase-tax-table th:first-child, .janso-purchase-tax-table thead th { text-align: start; font-weight: 500; color: var(--janso-ink-soft); }
+.janso-purchase-tax-table thead th:not(:first-child) { text-align: end; }
+.janso-purchase-tax-table tbody th { color: var(--janso-ink); overflow-wrap: anywhere; }
+
+/* Accounting's calculation: figures right-aligned and tabular so they can be compared by eye. */
+.janso-purchase-figures { display: flex; flex-direction: column; gap: var(--janso-space-2); margin: 0; font-size: var(--janso-text-sm); }
+.janso-purchase-figures > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--janso-space-5); }
+.janso-purchase-figures dt { color: var(--janso-ink-soft); min-width: 0; }
+.janso-purchase-figures dd { margin: 0; text-align: end; font-variant-numeric: tabular-nums; color: var(--janso-ink); }
+.janso-purchase-figures > [data-emphasis='true'] {
+  /* the payable, set off from the components above it */
+  margin-block: var(--janso-space-1);
+  padding-top: var(--janso-space-3);
+  border-top: 1px solid var(--janso-line-strong);
+  font-weight: 650;
+}
+.janso-purchase-figures > [data-emphasis='true'] dt, .janso-purchase-figures > [data-emphasis='true'] dd { color: var(--janso-ink); }
+
+/* Where the bill is in its life. Each step has a mark and a word; colour only reinforces. */
+.janso-purchase-status__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--janso-space-2) var(--janso-space-3); font-size: var(--janso-text-sm); color: var(--janso-ink-soft); }
+.janso-purchase-track { display: flex; flex-wrap: wrap; gap: var(--janso-space-2); margin: 0; padding: 0; list-style: none; }
+.janso-purchase-track > li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  padding-block: var(--janso-space-1);
+  padding-inline: var(--janso-space-2) var(--janso-space-3);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-surface);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-purchase-track__mark { display: inline-grid; place-items: center; inline-size: 1.25rem; block-size: 1.25rem; border-radius: var(--janso-radius-pill); border: 1px solid currentColor; font-size: var(--janso-text-xs); line-height: 1; }
+.janso-purchase-track > li[data-state='done'] { color: var(--janso-success-ink); background: var(--janso-success-tint); border-color: var(--janso-success-line); }
+.janso-purchase-track > li[data-state='current'] { color: var(--janso-brand-ink); background: var(--janso-brand-tint); border-color: var(--janso-brand-line); font-weight: 600; }
+.janso-purchase-track > li[data-state='stopped'] { color: var(--janso-danger-ink); background: var(--janso-danger-tint); border-color: var(--janso-danger-line); font-weight: 600; }
+.janso-purchase-track > li[data-state='current'] .janso-purchase-track__mark { background: var(--janso-brand); border-color: var(--janso-brand); color: var(--janso-ink-invert); }
+.janso-purchase-lifecycle-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--janso-space-3); }
+.janso-purchase-lifecycle-actions > .janso-field { flex: 1 1 16rem; min-width: 0; max-width: 30rem; }
+.janso-purchase-lifecycle-actions__buttons { display: flex; flex-wrap: wrap; gap: var(--janso-space-2); }
+
+/* History as a plain ruled list: one saved change per row. */
+.janso-purchase-history { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--janso-line); }
+.janso-purchase-history > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--janso-space-2) var(--janso-space-4); padding: var(--janso-space-3) 0; border-bottom: 1px solid var(--janso-line); font-size: var(--janso-text-sm); }
+.janso-purchase-history__what { min-width: 0; }
+.janso-purchase-duplicates { margin: var(--janso-space-2) 0 0; padding-inline-start: var(--janso-space-4); font-size: var(--janso-text-sm); }
+.janso-purchase-duplicates > li { overflow-wrap: anywhere; }
+.janso-purchase-history__what span { color: var(--janso-ink-soft); }
+
+/* Saved drafts, in the drawer. Whole rows are the targets. */
+.janso-purchase-drafts { display: flex; flex-direction: column; gap: var(--janso-space-2); margin: 0; padding: 0; list-style: none; }
+.janso-purchase-drafts .janso-btn { width: 100%; justify-content: space-between; height: auto; min-height: calc(var(--janso-control-h) + var(--janso-space-2)); padding-block: var(--janso-space-2); text-align: start; white-space: normal; }
+.janso-purchase-drafts__id { font-family: var(--janso-font-mono); font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+.janso-purchase-open-by-id { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--janso-space-3); padding-top: var(--janso-space-4); border-top: 1px solid var(--janso-line); }
+.janso-purchase-open-by-id > .janso-field { flex: 1 1 14rem; min-width: 0; }
+
+/* Setup needed: the type chooser, before there is a bill. */
+.janso-purchase-setup { display: flex; flex-direction: column; gap: var(--janso-space-4); max-width: 40rem; }
+.janso-purchase-setup__links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--janso-space-4); }
+.janso-purchase-loading { display: flex; flex-direction: column; gap: var(--janso-space-3); }
+
+@container (max-width: 42rem) {
+  .janso-purchase-lifecycle-actions__buttons > .janso-btn { flex: 1 1 auto; min-height: calc(var(--janso-control-h) + var(--janso-space-2)); }
+  .janso-purchase-track > li { flex: 1 1 auto; }
+}

@@ -1,0 +1,10 @@
+import {randomBytes} from 'node:crypto';
+import {beforeEach,expect,it,vi} from 'vitest';
+import Layout from '../../app/change-password/layout';
+const {token,redirect}=vi.hoisted(()=>({token:vi.fn(),redirect:vi.fn(()=>{throw Error('redirected')})}));
+vi.mock('next-auth/jwt',()=>({getToken:token}));
+vi.mock('next/headers',()=>({headers:async()=>new Headers()}));
+vi.mock('next/navigation',()=>({redirect}));
+beforeEach(()=>{vi.stubEnv('NEXTAUTH_URL','https://auth.test');vi.stubEnv('NEXTAUTH_SECRET',randomBytes(32).toString('hex'));token.mockResolvedValue({accessToken:randomBytes(32).toString('hex'),accessTokenExpires:Date.now()+300000});redirect.mockClear()});
+it('renders the authenticated screen',async()=>{expect(await Layout({children:'Password screen'})).toBe('Password screen')});
+it('redirects an expired session to explicit reauthentication',async()=>{token.mockResolvedValue(null);await expect(Layout({children:'hidden'})).rejects.toThrow('redirected');expect(redirect).toHaveBeenCalledWith('/login?reauth=1')});

@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 30,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "is_active": {
+          "title": "Is Active",
+          "type": "boolean"
+        },
+        "item_kind": {
+          "enum": [
+            "GOODS",
+            "SERVICE"
+          ],
+          "title": "Item Kind",
+          "type": "string"
+        },
+        "jurisdiction": {
+          "const": "IN",
+          "title": "Jurisdiction",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "source_reference": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source Reference",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "tax_category_id": {
+          "format": "uuid",
+          "title": "Tax Category Id",
+          "type": "string"
+        },
+        "tax_system": {
+          "const": "gst_in",
+          "title": "Tax System",
+          "type": "string"
+        },
+        "treatment": {
+          "enum": [
+            "TAXABLE",
+            "NIL_RATED",
+            "EXEMPT",
+            "NON_GST"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "name",
+        "tax_system",
+        "jurisdiction",
+        "item_kind",
+        "treatment",
+        "tax_category_id",
+        "is_active",
+        "source_reference",
+        "source_sha256"
+      ],
+      "title": "Rule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "PUBLISH",
+        "UPDATE",
+        "WITHDRAW"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "company_id": {
+      "format": "uuid",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "rule": {
+      "$ref": "#/$defs/Rule"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_version": {
+      "maximum": 9223372036854775807,
+      "minimum": 1,
+      "title": "Source Version",
+      "type": "integer"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "company_id",
+    "source_version",
+    "action",
+    "rule"
+  ],
+  "title": "RuleChanged",
+  "type": "object"
+}

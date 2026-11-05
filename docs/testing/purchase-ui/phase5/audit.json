@@ -1,0 +1,1549 @@
+{
+  "browser": "156.0.4314.50",
+  "axe": "4.10.3",
+  "checkedAt": "2026-10-31T12:07:37.455Z",
+  "surface": "http://127.0.0.1:4418",
+  "zoom": "200% layout equivalent: 720x500 CSS pixels at DPR 2, corresponding to a 1440x1000 display; not browser-toolbar automation.",
+  "results": [
+    {
+      "name": "desktop-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 951,
+            "height": 36
+          },
+          {
+            "y": 951,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2,
+            "details": [
+              {
+                "target": [
+                  "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+                ],
+                "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+              },
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 44
+      }
+    },
+    {
+      "name": "desktop-dark",
+      "theme": "dark",
+      "width": 1440,
+      "height": 1000,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 951,
+            "height": 36
+          },
+          {
+            "y": 951,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2,
+            "details": [
+              {
+                "target": [
+                  "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+                ],
+                "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+              },
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 44
+      }
+    },
+    {
+      "name": "desktop-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 951,
+            "height": 36
+          },
+          {
+            "y": 951,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2,
+            "details": [
+              {
+                "target": [
+                  "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+                ],
+                "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+              },
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 44
+      }
+    },
+    {
+      "name": "tablet-light",
+      "theme": "light",
+      "width": 1024,
+      "height": 900,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1024,
+        "document": 1024,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 851,
+            "height": 36
+          },
+          {
+            "y": 851,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 45
+      }
+    },
+    {
+      "name": "tablet-dark",
+      "theme": "dark",
+      "width": 1024,
+      "height": 900,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1024,
+        "document": 1024,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 851,
+            "height": 36
+          },
+          {
+            "y": 851,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 45
+      }
+    },
+    {
+      "name": "tablet-ledger",
+      "theme": "ledger",
+      "width": 1024,
+      "height": 900,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1024,
+        "document": 1024,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 851,
+            "height": 36
+          },
+          {
+            "y": 851,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 45
+      }
+    },
+    {
+      "name": "mobile-light",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "mobile-dark",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "mobile-ledger",
+      "theme": "ledger",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "narrow-320",
+      "theme": "light",
+      "width": 320,
+      "height": 740,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 320,
+        "document": 320,
+        "dialogs": [],
+        "footerHeight": 121,
+        "actionPositions": [
+          {
+            "y": 683,
+            "height": 44
+          },
+          {
+            "y": 683,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "landscape-dark",
+      "theme": "dark",
+      "width": 844,
+      "height": 390,
+      "query": "workflow=DRAFT",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 844,
+        "document": 844,
+        "dialogs": [],
+        "footerHeight": 110,
+        "actionPositions": [
+          {
+            "y": 293,
+            "height": 36
+          },
+          {
+            "y": 293,
+            "height": 36
+          },
+          {
+            "y": 341,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 45
+      }
+    },
+    {
+      "name": "reflow-200-light",
+      "theme": "light",
+      "width": 720,
+      "height": 500,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 720,
+        "document": 720,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 443,
+            "height": 44
+          },
+          {
+            "y": 443,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "reflow-200-dark",
+      "theme": "dark",
+      "width": 720,
+      "height": 500,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 720,
+        "document": 720,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 443,
+            "height": 44
+          },
+          {
+            "y": 443,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "reflow-200-ledger",
+      "theme": "ledger",
+      "width": 720,
+      "height": 500,
+      "query": "workflow=NEW",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 720,
+        "document": 720,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 443,
+            "height": 44
+          },
+          {
+            "y": 443,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "locale-long-desktop",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "query": "workflow=NEW&long&locale",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 951,
+            "height": 36
+          },
+          {
+            "y": 951,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2,
+            "details": [
+              {
+                "target": [
+                  "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+                ],
+                "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+              },
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 44
+      }
+    },
+    {
+      "name": "locale-long-mobile",
+      "theme": "ledger",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&long&locale",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "empty-validation",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&blank",
+      "panel": "validate",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  "#_r_3_-row-2 > .janso-search-select__text > .janso-search-select__meta"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+              }
+            ]
+          }
+        ],
+        "passes": 47
+      }
+    },
+    {
+      "name": "components-mobile",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "panel": "Discounts & charges",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      }
+    },
+    {
+      "name": "receipt-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&scenario=receipt",
+      "panel": "Goods receipt",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      }
+    },
+    {
+      "name": "tracking-mobile",
+      "theme": "ledger",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&scenario=tracking",
+      "panel": "Line tracking",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      }
+    },
+    {
+      "name": "settlement-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "panel": "Payment & terms",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      }
+    },
+    {
+      "name": "evidence-mobile",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "panel": "Supplier bill & attachments",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      }
+    },
+    {
+      "name": "tax-recipient",
+      "theme": "light",
+      "width": 720,
+      "height": 500,
+      "query": "workflow=NEW&scenario=recipient",
+      "panel": "Tax details",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 720,
+        "document": 720,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639,
+            "height": 500
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 443,
+            "height": 44
+          },
+          {
+            "y": 443,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      }
+    },
+    {
+      "name": "submission-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=DRAFT",
+      "panel": "submit",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 356,
+            "scroll": 356,
+            "height": 780
+          }
+        ],
+        "footerHeight": 149.5,
+        "actionPositions": [
+          {
+            "y": 735,
+            "height": 44
+          },
+          {
+            "y": 735,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-overlay-foot > .janso-btn--primary.janso-btn"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 49
+      }
+    },
+    {
+      "name": "correction-mobile",
+      "theme": "ledger",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=REJECTED",
+      "panel": "correct",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 356,
+            "scroll": 356,
+            "height": 360.5625
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2,
+            "details": [
+              {
+                "target": [
+                  ".janso-entry-workflow__dialog"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+              },
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 47
+      }
+    },
+    {
+      "name": "approved-mobile",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=APPROVED",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 42
+      }
+    },
+    {
+      "name": "line-editor-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "panel": "line",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      }
+    },
+    {
+      "name": "line-editor-dark",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW",
+      "panel": "line",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      }
+    },
+    {
+      "name": "line-editor-long-locale",
+      "theme": "ledger",
+      "width": 320,
+      "height": 740,
+      "query": "workflow=NEW&long&locale",
+      "panel": "line",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 320,
+        "document": 320,
+        "dialogs": [
+          {
+            "width": 319,
+            "scroll": 319,
+            "height": 740
+          }
+        ],
+        "footerHeight": 121,
+        "actionPositions": [
+          {
+            "y": 683,
+            "height": 44
+          },
+          {
+            "y": 683,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      }
+    },
+    {
+      "name": "mixed-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&scenario=mixed",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 43
+      }
+    },
+    {
+      "name": "bundle-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "query": "workflow=NEW&scenario=bundle",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "footerHeight": 62,
+        "actionPositions": [
+          {
+            "y": 951,
+            "height": 36
+          },
+          {
+            "y": 951,
+            "height": 36
+          }
+        ],
+        "actionHeights": [
+          36,
+          36
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2,
+            "details": [
+              {
+                "target": [
+                  "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+                ],
+                "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+              },
+              {
+                "target": [
+                  ".janso-btn--primary"
+                ],
+                "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          }
+        ],
+        "passes": 44
+      }
+    },
+    {
+      "name": "supplier-mismatch",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&scenario=mismatch",
+      "panel": "validate",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389,
+            "height": 844
+          }
+        ],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44,
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 1,
+            "details": [
+              {
+                "target": [
+                  ".janso-numeric__unit"
+                ],
+                "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+              }
+            ]
+          }
+        ],
+        "passes": 50
+      }
+    },
+    {
+      "name": "suspected-duplicate",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=NEW&scenario=duplicate",
+      "panel": "validate",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "footerHeight": 97.5,
+        "actionPositions": [
+          {
+            "y": 787,
+            "height": 44
+          },
+          {
+            "y": 787,
+            "height": 44
+          }
+        ],
+        "actionHeights": [
+          44,
+          44
+        ]
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 43
+      }
+    },
+    {
+      "name": "restricted-cost",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "query": "workflow=APPROVED&restricted",
+      "runtimeErrors": [],
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "actionPositions": [],
+        "actionHeights": []
+      },
+      "audit": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 21
+      }
+    }
+  ]
+}

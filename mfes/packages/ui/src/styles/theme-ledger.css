@@ -1,0 +1,152 @@
+/*
+ * JANSO — LEDGER palette. Warm paper, warm near-black ink, the same indigo brand.
+ * Same key set as theme-light.css.
+ *
+ * This is the account-book vernacular taken literally: the colour of a ruled paper
+ * ledger. It exists because people who read figures all day often prefer warm paper
+ * to white, and it is a genuinely distinct palette — not a tinted `light`.
+ */
+
+[data-theme='ledger'] {
+  /* — Surfaces — */
+  --janso-paper: #faf6ee;
+  --janso-surface: #fffdf8;
+  --janso-surface-2: #f5f0e5;
+  --janso-overlay: #fffdf8;
+  --janso-panel: #f3eee2;
+  --janso-panel-2: #ebe4d5;
+  --janso-hover: #f1ebdd;
+  --janso-active: #e8e0cf;
+  --janso-selected: #edeef8;
+  --janso-disabled-surface: #f2ede2;
+  --janso-disabled-ink: #726859;
+  --janso-scrim: rgba(38, 34, 28, 0.5);
+
+  /* — Ink: warm, so it sits on paper rather than on top of it — */
+  --janso-ink: #26221c;
+  --janso-ink-soft: #5d564a;
+  --janso-ink-faint: #70685a; /* ≥4.6:1 on warm paper, the nested tile and a hovered row —
+                                 lifted from #736b5d, which measured 4.43:1 under the entry
+                                 grid's row hover (sales bill S7) */
+  --janso-ink-invert: #fffdf8;
+
+  /* — Brand: the same indigo; it reads well against warm paper — */
+  --janso-brand: #4246c4;
+  --janso-brand-strong: #383caf;
+  --janso-brand-bright: #6266e6;
+  --janso-brand-ink: #2c2f86;
+  --janso-wordmark-books: #2b603d;
+  --janso-brand-tint: #edeef8;
+  --janso-brand-line: #d2d5ec;
+  --janso-brand-glow: rgba(58, 79, 176, 0.09);
+
+  /* — Lines & structure: the ruled lines of the book — */
+  --janso-line: #e2dac9;
+  --janso-line-strong: #cabfa8;
+  --janso-control-line: #96845c; /* the edge of an input, checkbox or outline button — 3:1 */
+  --janso-overlay-line: #ddd4c1; /* menu, dialog, toast edge — the shadow does the lifting */
+
+  /* — Signals — */
+  --janso-success-ink: #2f6b45;
+  --janso-success-tint: #eaf1e6;
+  --janso-success-line: #cbdcc2;
+  --janso-warn-ink: #8a5a12;
+  --janso-warn-tint: #f8eeda;
+  --janso-warn-line: #e6d3ac;
+  --janso-danger-ink: #a33528;
+  --janso-danger-tint: #f8e8e3;
+  --janso-danger-line: #ebcdc3;
+  --janso-info-ink: #2a5680;
+  --janso-info-tint: #e8eff6;
+  --janso-info-line: #c9d9e7;
+  --janso-neutral-ink: #5d564a;
+  --janso-neutral-tint: #f2ede2;
+  --janso-neutral-line: #e2dac9;
+
+  /* — Gradients — */
+  --janso-grad-mark: linear-gradient(150deg, #6366f1 0%, #4338ca 100%);
+  --janso-grad-action: linear-gradient(180deg, #4b4fd0 0%, #3e42bd 100%);
+  --janso-grad-action-press: linear-gradient(180deg, #3e42bd 0%, #3438a6 100%);
+  --janso-grad-panel: linear-gradient(168deg, #f7f2e7 0%, #ebe4d5 100%);
+
+  /* — Focus — */
+  --janso-focus: #4246c4;
+  --janso-focus-ring: 0 0 0 1px var(--janso-surface), 0 0 0 3px var(--janso-focus), 0 0 0 6px rgba(66, 70, 196, 0.16);
+  --janso-focus-ring-danger: 0 0 0 1px var(--janso-surface), 0 0 0 3px var(--janso-danger-ink), 0 0 0 6px rgba(163, 53, 40, 0.16);
+
+  /* — Elevation: warm shadows, or they read as grey smudges on cream — */
+  --janso-shadow-action: 0 1px 1px rgba(60, 48, 30, 0.14), 0 6px 16px rgba(44, 60, 140, 0.2);
+  --janso-shadow-card: 0 1px 2px rgba(60, 48, 30, 0.06);
+  --janso-shadow-popover: 0 16px 36px -12px rgba(60, 48, 30, 0.22), 0 4px 10px -4px rgba(60, 48, 30, 0.08);
+  --janso-shadow-inset-mark: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 1px 2px rgba(60, 48, 30, 0.28);
+
+  /* — Components with no other home — */
+  --janso-meter-track: #e7dfcd;
+  --janso-meter-fill: #4246c4;
+  --janso-spinner-track: rgba(255, 253, 248, 0.45);
+  --janso-spinner-head: #fffdf8;
+
+  /* — Charts: the light series, re-validated against warm paper — it passes unchanged
+   *   (ΔE 10.7 deuteranopia, 18.9 normal, all ≥ 3:1 vs #fffdf8). Deliberately NOT warmed
+   *   per palette: the series exist to stay distinguishable, and re-tinting them to match
+   *   the paper would trade a measured property for a cosmetic one. The grid and axis are
+   *   what carry the warmth. Verify with --mode light --surface "#fffdf8". — */
+  --janso-chart-1: #4a4fd4; /* indigo — the brand */
+  --janso-chart-2: #c28412; /* amber */
+  --janso-chart-3: #009394; /* teal */
+  --janso-chart-4: #aa3f4e; /* rose */
+  --janso-chart-5: #419bd4; /* sky */
+  --janso-chart-6: #5b6c00; /* olive */
+  --janso-chart-7: #97549b; /* plum */
+  --janso-chart-8: #88470d; /* bronze */
+  --janso-chart-grid: #ebe3d2;
+  --janso-chart-axis: #857c6c;
+
+  /* — Invoice designer. Two groups, and the distinction is the point:
+   *
+   *   The CHROME (backdrop, rulers, rail, inspector, status bar) is part of the app, so it
+   *   follows the palette like everything else.
+   *
+   *   Everything drawn ON the paper — the page itself, its ink and rules, the layout grid,
+   *   margin guides, zone outlines, the selection ring, handles and guides — holds the
+   *   SAME value in all three palettes, because the paper does. A page is white stock in
+   *   every theme: a dark-mode invoice preview would be a lie about what prints, and a
+   *   selection ring tuned for a dark surface would vanish on it. Only edge and shadow
+   *   differ, because those sit between paper and backdrop. — */
+  --janso-canvas-backdrop: #e7e1d4;
+  --janso-canvas-backdrop-2: #ddd6c6;
+  --janso-canvas-page-edge: #cbc3b2;
+  --janso-canvas-page-shadow: rgba(40, 34, 22, 0.16);
+  --janso-canvas-ruler-bg: #f6f1e5;
+  --janso-canvas-ruler-ink: #6f6757;
+  --janso-canvas-ruler-tick: #c0b8a6;
+  --janso-canvas-ruler-marker: #4246c4;
+  --janso-editor-chrome: #fffdf8;
+  --janso-editor-chrome-2: #f4eee1;
+  --janso-editor-chrome-line: #e0d8c6;
+  --janso-editor-chrome-ink: #231d12;
+  --janso-editor-chrome-ink-soft: #5f5747;
+
+  --janso-canvas-page: #ffffff;
+  --janso-canvas-page-ink: #101114;
+  --janso-canvas-page-ink-soft: #4a4f59;
+  --janso-canvas-page-line: #d8dade;
+  --janso-canvas-page-line-strong: #9aa0aa;
+  --janso-canvas-page-tint: #f1f2f5;
+  --janso-canvas-grid-dot: #c6cad2;
+  --janso-canvas-margin-line: #7f88d0; /* the printable-area guide — 3:1 */
+  --janso-canvas-bleed: rgba(170, 63, 78, 0.08);
+  --janso-canvas-zone-line: #7f84ee; /* a zone boundary on paper — 3:1 */
+  --janso-canvas-zone-tint: rgba(74, 79, 212, 0.05);
+  --janso-canvas-zone-label-bg: #4a4fd4;
+  --janso-canvas-zone-label-ink: #ffffff;
+  --janso-canvas-ring: #4a4fd4;
+  --janso-canvas-ring-muted: #9a9df0;
+  --janso-canvas-marquee-tint: rgba(74, 79, 212, 0.10);
+  --janso-canvas-handle-fill: #ffffff;
+  --janso-canvas-handle-line: #4a4fd4;
+  --janso-canvas-guide: #c28412;
+  --janso-canvas-badge-bg: rgba(16, 18, 26, 0.82);
+  --janso-canvas-badge-ink: #ffffff;
+  --janso-canvas-copy-mark: rgba(16, 18, 26, 0.07);
+}

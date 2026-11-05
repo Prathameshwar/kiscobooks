@@ -1,0 +1,66 @@
+case_id,area,test_case,result,evidence,note
+BRAND-SYNC-001,tests.test_branding_seed,test_cli_reads_private_file_without_requiring_provider_configuration,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-002,tests.test_branding_seed,test_cli_failure_is_nonzero_and_keeps_exception_details_private,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-003,tests.test_branding_seed,test_fresh_installation_uses_brand_default_and_stays_uncompleted,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-004,tests.test_branding_seed,test_completed_installation_rebrands_once_and_preserves_proof[JANSO],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-005,tests.test_branding_seed,test_completed_installation_rebrands_once_and_preserves_proof[Janso],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-006,tests.test_branding_seed,test_completed_installation_rebrands_once_and_preserves_proof[ janso ],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-007,tests.test_branding_seed,test_completed_custom_or_unknown_name_is_preserved[KiscoBooks],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-008,tests.test_branding_seed,test_completed_custom_or_unknown_name_is_preserved[Custom Books],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-009,tests.test_branding_seed,test_completed_custom_or_unknown_name_is_preserved[JANSO Retail],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-010,tests.test_branding_seed,test_completed_custom_or_unknown_name_is_preserved[None],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-011,tests.test_branding_seed,test_completed_custom_or_unknown_name_is_preserved[],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-012,tests.test_branding_seed,test_uncompleted_defaults_sync_without_creating_operator_or_completion[None],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-013,tests.test_branding_seed,test_uncompleted_defaults_sync_without_creating_operator_or_completion[],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-014,tests.test_branding_seed,test_uncompleted_defaults_sync_without_creating_operator_or_completion[  ],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-015,tests.test_branding_seed,test_uncompleted_defaults_sync_without_creating_operator_or_completion[JANSO],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-016,tests.test_branding_seed,test_seed_refuses_missing_control_record,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-017,tests.test_branding_seed,test_seed_refuses_completed_control_record_without_tenant,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-018,tests.test_branding_seed,test_dry_run_and_audit_failure_roll_back_all_changes,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-019,tests.test_platform_setup,test_complete_replay_restart_and_isolation,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-020,tests.test_platform_setup,test_bootstrap_denies_missing_authority[False-claims0-403],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-021,tests.test_platform_setup,test_bootstrap_denies_missing_authority[True-None-401],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-022,tests.test_platform_setup,test_bootstrap_denies_missing_authority[True-claims2-401],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-023,tests.test_platform_setup,test_bootstrap_denies_missing_authority[True-claims3-403],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-024,tests.test_platform_setup,test_bootstrap_denies_missing_authority[True-claims4-403],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-025,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change0],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-026,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change1],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-027,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change2],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-028,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change3],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-029,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change4],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-030,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change5],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-031,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change6],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-032,tests.test_platform_setup,test_invalid_input_keeps_installation_unclaimed[change7],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-033,tests.test_platform_setup,test_failure_rolls_back_and_retry_recovers,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-034,tests.test_platform_setup,test_existing_tenant_disables_first_run,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-035,tests.test_platform_setup,test_checks_report_outages_without_details,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-036,tests.test_platform_setup,test_inactive_defaults_are_not_offered_or_provisioned[country],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-037,tests.test_platform_setup,test_inactive_defaults_are_not_offered_or_provisioned[currency],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-038,tests.test_platform_setup,test_replay_normalizes_surrounding_text_whitespace,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-039,tests.test_platform_details,test_tenant_edit_rejects_invalid_names[   ],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-040,tests.test_platform_details,test_tenant_edit_rejects_invalid_names[bad\x00name],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-041,tests.test_platform_details,test_tenant_edit_rejects_invalid_names[bad\nname],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-042,tests.test_platform_details,test_platform_update_rolls_back_when_audit_fails,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-043,tests.test_platform_details,test_platform_details_update_preserves_bootstrap_and_audits,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-044,tests.test_platform_details,test_details_denies_missing_and_revoked_authority[get],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-045,tests.test_platform_details,test_details_denies_missing_and_revoked_authority[patch],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-046,tests.test_platform_details,test_details_requires_fresh_authentication,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-047,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload0],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-048,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload1],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-049,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload2],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-050,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload3],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-051,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload4],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-052,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload5],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-053,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload6],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-054,tests.test_platform_details,test_details_invalid_input_has_no_effect[payload7],PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-055,tests.test_platform_lifecycle_revision,test_lifecycle_returns_the_displayed_revision_and_replays_exactly,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-056,tests.test_platform_lifecycle_revision,test_stale_activation_cannot_overwrite_a_newer_access_decision,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-057,tests.test_platform_lifecycle_revision,test_lifecycle_requires_a_reason_revision_and_replay_key,PASS,.test_artifacts/kiscobooks-db-final.xml,Isolated backend regression
+BRAND-SYNC-058,Native MySQL,Persisted platform name is KiscoBooks,PASS,.test_artifacts/kiscobooks-native-db.json,Old JANSO value changed through deployment seed
+BRAND-SYNC-059,Native MySQL,Name and public URL model/schema match,PASS,.test_artifacts/kiscobooks-native-db.json,"Native lengths, nullability and defaults match ORM"
+BRAND-SYNC-060,Native MySQL,Dry run leaves native database unchanged,PASS,.test_artifacts/kiscobooks-native-db.json,"Metadata, customers and outbox compared before/after"
+BRAND-SYNC-061,Native MySQL,Customer companies and tenants preserved,PASS,.test_artifacts/kiscobooks-native-db.json,16 tenants and 12 companies retained names and relationships
+BRAND-SYNC-062,Native MySQL,Installation proof and public URL preserved,PASS,.test_artifacts/kiscobooks-native-db.json,All non-name installation fields stayed identical
+BRAND-SYNC-063,Native MySQL,One atomic system audit event recorded,PASS,.test_artifacts/kiscobooks-native-db.json,"Identity source, system attribution, bounded name change"
+BRAND-SYNC-064,Native MySQL,Schema revision unchanged,PASS,.test_artifacts/kiscobooks-native-db.json,Revision 0089; unrelated migrations not applied
+BRAND-SYNC-065,Native MySQL,Replay is a no-op,PASS,.test_artifacts/kiscobooks-native-db.json,No metadata change or duplicate audit event

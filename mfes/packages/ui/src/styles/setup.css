@@ -1,0 +1,145 @@
+/* First-run layout uses the same tokens and palettes as every JANSO application. */
+/*
+ * The wizard owns the viewport and scrolls inside itself, exactly as `.janso-shell` does
+ * (shell.css: `height: 100dvh` on the frame, `overflow-y: auto` on the region that grows).
+ *
+ * **Why it cannot leave the scrolling to the document.** The console sets
+ * `body { overflow: hidden }` so the shell's own main region is the only scrollbar on a page —
+ * right for a shell, and inherited by every full-page route that has no shell. `/companies/new`
+ * is one: a six-step form taller than a 768px viewport on five of its six steps, inside a body
+ * that had been told not to scroll. `overflow: hidden` on the body propagates to the viewport,
+ * which does not clip the content and does not stop `scrollTo` — so the page was its full
+ * height (1940px on the Presentation step) with everything past the first screen unreachable by
+ * wheel, trackpad or scrollbar, while Tab still scrolled focus into view.
+ *
+ * Making the layout its own scroll container fixes it in every host, rather than depending on
+ * what an app's `globals.css` says about the body — the same reason the shell does not rely on
+ * it either.
+ */
+.janso-setup {
+  block-size: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--janso-paper);
+}
+.janso-setup__header { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-4); padding: var(--janso-space-5); border-bottom: 1px solid var(--janso-line); }
+.janso-setup__layout { display: grid; grid-template-columns: var(--janso-rail-w) minmax(0, 1fr); gap: var(--janso-space-6); max-width: var(--janso-page-max); margin: auto; padding: var(--janso-space-6); }
+.janso-setup__content { min-width: 0; display: grid; align-content: start; gap: var(--janso-space-5); }
+.janso-setup__title { font: 600 var(--janso-text-xl)/1.3 var(--janso-font-display); color: var(--janso-ink); margin: 0; }
+.janso-setup__subtitle { color: var(--janso-ink-soft); margin: var(--janso-space-2) 0 0; }
+.janso-setup__fields { display: grid; gap: var(--janso-space-4); }
+fieldset.janso-setup__fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+/* Grid gaps replace the margin used by fields in ordinary stacked forms. */
+.janso-setup__fields > .janso-field + .janso-field { margin-top: 0; }
+.janso-setup__fields > p { margin: 0; }
+.janso-setup__actions { display: flex; justify-content: space-between; gap: var(--janso-space-3); margin-top: var(--janso-space-6); }
+/* A long step must not hide its own Next button below the fold. The bar sits on the paper
+ * rather than floating, so the card's last field stays readable behind nothing. */
+/*
+ * The pinned action bar, and the room the form needs to pass under it.
+ *
+ * It is sticky so Next is always in reach on a long step, which is right. What was missing is
+ * the consequence: a 68px bar pinned to the bottom of the viewport sits over whatever field
+ * happens to be behind it — one at a time, measured on the Presentation step. No field is
+ * hidden *by the bar*, because at full scroll it returns to its static position, but you could
+ * be reading one with its lower half behind it, and `scrollIntoView` on a validation
+ * failure could park the invalid field underneath it.
+ *
+ * `scroll-padding-bottom` fixes the second, which is the one that matters: every programmatic
+ * scroll, and every browser scroll-to-focus, now stops short of the bar. The clearance padding
+ * fixes the first. The top border is the other half — a bar that content passes beneath has to
+ * read as a surface, not as the end of the form.
+ */
+.janso-setup__actions--sticky {
+  position: sticky;
+  bottom: 0;
+  margin-top: var(--janso-space-5);
+  padding: var(--janso-space-4) 0;
+  border-top: 1px solid var(--janso-line);
+  background: var(--janso-paper);
+}
+
+/*
+ * The scroll padding belongs on the scroll container, which is the layout itself — it was on
+ * `html` while the document was assumed to scroll, and `html` is not the scrollport any more.
+ */
+.janso-setup {
+  scroll-padding-bottom: 7rem;
+}
+
+.janso-setup__content:has(> form > .janso-setup__actions--sticky),
+.janso-setup__content:has(> .janso-setup__actions--sticky) {
+  padding-bottom: var(--janso-space-6);
+}
+.janso-setup__progress { margin: 0 0 var(--janso-space-2); font-size: var(--janso-text-overline); letter-spacing: 0.09em; text-transform: uppercase; color: var(--janso-ink-soft); }
+.janso-stepper__text { display: grid; gap: 1px; min-width: 0; overflow-wrap: anywhere; }
+.janso-stepper__note { font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
+/* A visited step with something still missing. The glyph carries it as well as the colour:
+ * a tone alone is not a status (design-system §3.2). */
+.janso-stepper [data-state='incomplete'] button { color: var(--janso-ink); }
+.janso-stepper [data-state='incomplete'] .janso-stepper__marker { color: var(--janso-warn-ink); border-color: var(--janso-warn-line); background: var(--janso-warn-tint); }
+.janso-setup__checks { display: grid; gap: var(--janso-space-3); margin: 0; padding: 0; list-style: none; }
+.janso-setup__check { display: flex; justify-content: space-between; gap: var(--janso-space-4); padding-bottom: var(--janso-space-3); border-bottom: 1px solid var(--janso-line); }
+/*
+ * The label column is sized to a label, not to a third of the card. `1fr` gave "Tax" 357px
+ * of a 1070px summary and put 260px of white space between every label and its own value,
+ * which is a long way for an eye to travel eleven times.
+ */
+.janso-setup__review { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: var(--janso-space-3) var(--janso-space-5); margin: 0; }
+.janso-setup__review dt { color: var(--janso-ink-soft); }
+.janso-setup__review dd { margin: 0; overflow-wrap: anywhere; }
+.janso-setup__review > div { display: contents; }
+.janso-setup__review--stacked { grid-template-columns: minmax(0, 1fr); }
+.janso-setup__review--stacked dd { margin-bottom: var(--janso-space-3); }
+.janso-stepper ol { display: grid; gap: var(--janso-space-2); padding: 0; margin: 0; list-style: none; }
+.janso-stepper button { display: flex; width: 100%; align-items: center; gap: var(--janso-space-3); padding: var(--janso-space-3); border: 1px solid transparent; border-radius: var(--janso-radius-sm); background: transparent; color: var(--janso-ink-soft); font: inherit; text-align: left; cursor: pointer; }
+.janso-stepper button:disabled { cursor: default; }
+.janso-stepper button:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); }
+.janso-stepper [data-state='current'] button { background: var(--janso-selected); color: var(--janso-ink); border-color: var(--janso-control-line); font-weight: 600; }
+.janso-stepper [data-state='complete'] button { color: var(--janso-ink); }
+.janso-stepper__marker { display: grid; place-items: center; min-width: var(--janso-space-6); height: var(--janso-space-6); border: 1px solid var(--janso-control-line); border-radius: var(--janso-radius-pill); }
+.janso-stepper--horizontal ol { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+@media (max-width: 720px) {
+  .janso-setup__layout { grid-template-columns: 1fr; padding: var(--janso-space-4); gap: var(--janso-space-5); }
+  .janso-stepper ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .janso-stepper--horizontal ol { grid-auto-flow: row; grid-auto-columns: auto; }
+  .janso-stepper button { font-size: var(--janso-text-sm); padding: var(--janso-space-2); }
+  .janso-setup__review { grid-template-columns: 1fr; }
+  .janso-setup__review dd { margin-bottom: var(--janso-space-3); }
+  .janso-setup__check { flex-wrap: wrap; }
+}
+
+/*
+ * A review row carries its value and a way back to it. The value takes the space and the
+ * action sits at the end of the row, so a column of Edits lines up and the eye can ignore
+ * them until it needs one.
+ */
+/* Only a row that carries an action needs the flex row; a plain value keeps its default. */
+.janso-setup__review dd:has(.janso-setup__review-edit) {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+}
+
+.janso-setup__review-value {
+  min-inline-size: 0;
+}
+
+.janso-setup__review-edit {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--janso-brand);
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.janso-setup__review-edit:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

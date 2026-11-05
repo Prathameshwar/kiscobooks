@@ -1,0 +1,529 @@
+/*
+ * Auth MFE layout — specific to @janso/auth, not shared.
+ * A light brand panel (what KiscoBooks does, as icon-led rows kept meaningful before login)
+ * beside the paper form. The split reads through a subtle tint and a dividing rule,
+ * not a dark side. The account-book vernacular is the identity: the panel is a sheet of
+ * ruled paper with a margin rule, and the form column is a quiet card beside it.
+ *
+ * Everything is token-driven, so the screen renders correctly in all three palettes; the
+ * pre-paint script in layout.tsx means a returning user never sees the wrong one first.
+ */
+
+.auth {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  /* row 1 is the split; row 2 is the legal strip under the brand column only */
+  grid-template-rows: 1fr auto;
+  background: var(--janso-paper);
+}
+
+/* ============ left: the brand / value panel (a sheet of account-book paper) ============ */
+.auth__brand {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--janso-grad-panel);
+  color: var(--janso-ink);
+  /* the seam between the columns: a hairline, since the panel's tint already separates them */
+  border-right: 1px solid var(--janso-line);
+  /* content starts to the right of the margin rule (see .auth__sheet) */
+  padding: var(--janso-space-8) var(--janso-space-8) var(--janso-space-6) 5rem;
+  display: flex;
+  flex-direction: column;
+}
+/* a faint indigo glow for depth — professional, not a decorative wash */
+.auth__brand::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -15%;
+  width: 80%;
+  height: 70%;
+  background: radial-gradient(closest-side, var(--janso-brand-glow), transparent 75%);
+  pointer-events: none;
+  z-index: -1;
+}
+.auth__brand > * { position: relative; z-index: 1; }
+
+/*
+ * The sheet itself: three layers that never carry meaning, so all of them sit behind the text at
+ * a contrast too low to read as content in any palette. Everything is mixed from existing
+ * tokens — no colour of its own — so a re-colour of a palette re-colours the sheet.
+ *
+ *   ::before  the double margin rule, in the brand's own line colour
+ *   ::after   ruled lines across, fading out toward the foot
+ *   svg       the logomark's strokes at sheet scale, cropped by the panel edge
+ */
+.auth__brand > .auth__sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  --auth-rule: 2.75rem;
+  /* how much of the palette's rule colour shows: the dark palette's rules are bright, so less of them */
+  --auth-rule-mix: 45%;
+}
+[data-theme='dark'] .auth__brand > .auth__sheet { --auth-rule-mix: 24%; }
+.auth__sheet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3.25rem;
+  width: 5px;
+  background: linear-gradient(
+    to right,
+    var(--janso-brand-line) 0 1px,
+    transparent 1px 4px,
+    var(--janso-brand-line) 4px 5px
+  );
+}
+.auth__sheet::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--auth-rule) - 1px),
+    color-mix(in srgb, var(--janso-line) var(--auth-rule-mix), transparent) calc(var(--auth-rule) - 1px),
+    color-mix(in srgb, var(--janso-line) var(--auth-rule-mix), transparent) var(--auth-rule)
+  );
+  /* ruled behind the heading, gone before the rows begin: the rows carry their own rules */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 12%, black 34%, transparent 46%);
+  mask-image: linear-gradient(to bottom, transparent 0, black 12%, black 34%, transparent 46%);
+}
+.auth__balance {
+  position: absolute;
+  top: 2rem;
+  right: -2rem;
+  width: 20rem;
+  max-width: 120%;
+  height: auto;
+  overflow: visible;
+}
+/*
+ * Outlines, not fills: a ledger rule is a line, and a solid wash this size reads as a blob. The
+ * stroke is in the mark's own user units (0.11 of a 40-unit tile is about 1.2px at this size), so
+ * the one normalised dash animation draws each outline end to end.
+ */
+.auth__balance :is(rect, circle) {
+  fill: none;
+  stroke: var(--janso-brand);
+  stroke-width: 0.11;
+  opacity: 0.42;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: auth-draw 1.2s cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s forwards;
+}
+.auth__balance .auth__balance-base { animation-delay: 0.6s; }
+.auth__balance .auth__balance-point { animation-delay: 1s; }
+@keyframes auth-draw { to { stroke-dashoffset: 0; } }
+
+.auth__brand-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+  margin-bottom: var(--janso-space-7);
+}
+/*
+ * The one piece of display type on the panel. It stays at the design system's auth display size
+ * (`--janso-text-2xl`, 32px): the sign-in form is the point of this screen and a statement much
+ * larger than that out-shouts it. Inter's optical-size axis already gives it the tight display
+ * cut at this scale; `balance` keeps the two lines even instead of leaving a stray word.
+ */
+.auth__tagline {
+  margin: var(--janso-space-7) 0 0;
+  font-family: var(--janso-font-display);
+  font-weight: 650;
+  font-size: var(--janso-text-2xl);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  color: var(--janso-ink);
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+/*
+ * what KiscoBooks does — meaningful before sign-in, unlike a fake balance. The gap under the
+ * heading follows the window's height, not the panel's: the panel grows with the form beside it
+ * (the sign-up form is taller than most screens), and a gap that grew with it would leave the rows
+ * stranded halfway down the page.
+ */
+.auth__features {
+  margin-top: clamp(var(--janso-space-7), 12vh, 7rem);
+  display: flex;
+  flex-direction: column;
+  max-width: 31rem;
+  border-top: 1px solid var(--janso-line);
+}
+.auth__feature {
+  display: flex;
+  gap: var(--janso-space-4);
+  padding: var(--janso-space-4) 0;
+  border-bottom: 1px solid var(--janso-line);
+}
+/* A raised tile holding the glyph: the brand tint and line, so the three rows read as one set,
+   and the card shadow so each sits on the sheet instead of printing on it. */
+.auth__feature__icon {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-brand-tint);
+  border: 1px solid var(--janso-brand-line);
+  box-shadow: var(--janso-shadow-card);
+  color: var(--janso-brand);
+}
+.auth__feature__title {
+  margin: 0;
+  font-weight: 600;
+  font-size: var(--janso-text-md);
+  letter-spacing: -0.012em;
+  color: var(--janso-ink);
+}
+.auth__feature__body {
+  margin: 0.1875rem 0 0;
+  font-size: var(--janso-text-sm);
+  line-height: 1.5;
+  color: var(--janso-ink-soft);
+  max-width: 42ch;
+}
+
+.auth__trust {
+  margin-top: auto;
+  padding-top: var(--janso-space-7);
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-xs);
+}
+.auth__trust svg { flex: none; color: var(--janso-brand); }
+
+/* a quiet legal strip under the brand column — the form column stays uncrowded.
+   Same panel background and border, so it reads as the panel's own foot. */
+.auth__legal {
+  grid-column: 1;
+  grid-row: 2;
+  background: var(--janso-panel-2);
+  border-right: 1px solid var(--janso-line);
+  border-top: 1px solid var(--janso-line);
+  padding: var(--janso-space-4) var(--janso-space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-4);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-faint);
+}
+.auth__legal-links {
+  margin-left: auto;
+  display: flex;
+  gap: var(--janso-space-4);
+}
+.auth__legal a { color: var(--janso-ink-soft); text-decoration: none; }
+.auth__legal a:hover { color: var(--janso-brand); text-decoration: underline; }
+.auth__legal a:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); border-radius: 3px; }
+
+/* — the one orchestrated motion: rows settle in on load — */
+.auth__feature {
+  opacity: 0;
+  transform: translateY(4px);
+  animation: janso-settle 0.5s ease forwards;
+}
+.auth__feature:nth-child(1) { animation-delay: 0.12s; }
+.auth__feature:nth-child(2) { animation-delay: 0.24s; }
+.auth__feature:nth-child(3) { animation-delay: 0.36s; }
+@keyframes janso-settle { to { opacity: 1; transform: none; } }
+
+/* ============ right: the paper form ============ */
+.auth__panel {
+  grid-column: 2;
+  grid-row: 1 / span 2; /* the form column runs past the legal strip, uninterrupted */
+  /* switcher row, then the form — see AuthShell for why this isn't a centred flex box */
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: var(--janso-space-5) var(--janso-space-6) var(--janso-space-7);
+}
+.auth__panel-bar {
+  display: flex;
+  justify-content: flex-end;
+}
+.auth__form-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+/*
+ * The form is a surface, not free-floating text on the page. `--janso-surface` sits above
+ * `--janso-paper` in all three palettes, so the sheet reads without needing a heavy shadow —
+ * the hairline and the surface step do the work, and elevation stays spent on the primary
+ * action (design-system §3.2). The measure grows with the padding so the fields keep the
+ * same line length as before.
+ */
+.auth__form {
+  /* one number drives the padding and the footer band that reaches the card's edges */
+  --auth-pad: 2.5rem;
+  width: 100%;
+  max-width: 26.5rem;
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+  padding: var(--auth-pad);
+}
+.auth__form-head { margin-bottom: var(--janso-space-6); }
+/*
+ * The form's heading is set larger and tighter than the shared `.janso-h1`: on this screen it
+ * is one of only two pieces of display type, and it has to hold the column on its own.
+ */
+.auth__title {
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-weight: 650;
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  color: var(--janso-ink);
+}
+.auth__subtitle {
+  margin: var(--janso-space-2) 0 0;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-md);
+  line-height: 1.45;
+}
+
+/*
+ * Scoped to this form rather than raised in `janso-ui.css`: a sign-in form is short and can
+ * afford the air, while a dense console form cannot. Changing the shared default would move
+ * every field in the product.
+ */
+.auth__form .janso-field + .janso-field {
+  margin-top: var(--janso-space-5);
+}
+/*
+ * Taller controls and a larger primary action than the console's dense 2.25rem: this is the one
+ * form a person meets every day, on any device, and it has two fields and one button to get right.
+ * The leading icons move with the extra height so they stay optically centred.
+ */
+.auth__form .janso-input {
+  min-height: 2.75rem;
+  font-size: var(--janso-text-md);
+  padding-block: 0.5625rem;
+}
+.auth__form .janso-input--leading { padding-left: 2.5rem; }
+.auth__form .janso-input__lead { left: 0.875rem; }
+.auth__form .janso-label { font-weight: 550; }
+.auth__form .janso-btn--block {
+  min-height: 2.875rem;
+  font-size: var(--janso-text-md);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+.auth__alert { margin-bottom: var(--janso-space-5); }
+.auth__invitation { width: 100%; }
+.auth__invitation .auth__form-head { margin-bottom: var(--janso-space-5); }
+.auth__invite-guide {
+  margin-bottom: var(--janso-space-5);
+  padding: var(--janso-space-4);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-panel-2);
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+  line-height: 1.55;
+}
+.auth__invite-option h2 {
+  margin: 0 0 var(--janso-space-1);
+  color: var(--janso-ink);
+  font-size: var(--janso-text-sm);
+  font-weight: 650;
+  line-height: 1.4;
+}
+.auth__invite-option p { margin: 0; }
+.auth__invite-option + .auth__invite-option {
+  margin-top: var(--janso-space-4);
+  padding-top: var(--janso-space-4);
+  border-top: 1px solid var(--janso-line);
+}
+.auth__invite-secondary { margin-top: var(--janso-space-3); }
+.auth__invite-links {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--janso-space-3);
+  margin-top: var(--janso-space-5);
+  padding-top: var(--janso-space-4);
+  border-top: 1px solid var(--janso-line);
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-xs);
+}
+.auth__field-action { font-size: var(--janso-text-xs); }
+.auth__remember { margin-top: var(--janso-space-4); }
+.auth__consent { margin-top: var(--janso-space-5); }
+.auth__mobile-brand { display: none; }
+
+.auth__actions { margin-top: var(--janso-space-6); }
+
+/* social sign-in */
+.auth__social {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-3);
+}
+
+.auth__hr {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-4);
+  margin: var(--janso-space-6) 0;
+  color: var(--janso-ink-faint);
+  font-size: var(--janso-text-xs);
+}
+.auth__hr::before,
+.auth__hr::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--janso-line);
+}
+.auth__foot {
+  margin: var(--janso-space-5) 0 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+/*
+ * The way off the sign-in path — create an account, set up the platform — as the card's own foot:
+ * a quieter surface that runs to the card's edges, so what is below the button is clearly
+ * "somewhere else" and the button stays the only thing in the card that asks for a decision.
+ */
+.auth__foot--band {
+  margin: var(--janso-space-6) calc(-1 * var(--auth-pad)) calc(-1 * var(--auth-pad));
+  padding: var(--janso-space-4) var(--auth-pad);
+  background: var(--janso-surface-2);
+  border-top: 1px solid var(--janso-line);
+  border-radius: 0 0 var(--janso-radius-md) var(--janso-radius-md);
+  font-size: var(--janso-text-sm);
+}
+.auth__foot--band > p { margin: 0; }
+.auth__foot--band > p + p { margin-top: var(--janso-space-2); }
+.auth__foot--links {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--janso-space-2);
+}
+.auth__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: var(--janso-space-5);
+  font-size: var(--janso-text-sm);
+}
+
+/* success confirmation (recover / signup screens) */
+.auth__note {
+  display: flex;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-4);
+  background: var(--janso-brand-tint);
+  border: 1px solid var(--janso-brand-line);
+  border-radius: var(--janso-radius-md);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-brand-ink);
+}
+.auth__note svg { flex: none; color: var(--janso-brand); margin-top: 1px; }
+
+/* The demo-credentials strip. Informational rather than branded, so it reads as scaffolding
+   to be removed and not as part of the product. */
+.auth__demo {
+  display: flex;
+  gap: var(--janso-space-3);
+  align-items: flex-start;
+  margin: 0 0 var(--janso-space-5);
+  padding: var(--janso-space-3) var(--janso-space-4);
+  background: var(--janso-info-tint);
+  border: 1px solid var(--janso-info-line);
+  border-radius: var(--janso-radius-sm);
+  font-size: var(--janso-text-xs);
+  line-height: 1.5;
+  color: var(--janso-info-ink);
+}
+.auth__demo svg { flex: none; margin-top: 1px; }
+.auth__demo strong { font-weight: 600; }
+
+/* ============ responsive ============ */
+/* On a narrower split the drawing would sit behind the heading, so it goes before that happens. */
+@media (max-width: 1180px) {
+  .auth__balance { display: none; }
+}
+
+@media (max-width: 860px) {
+  /* one column; every child flows in DOM order (header, form, legal) */
+  .auth { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .auth__brand { display: none; } /* the full value panel is desktop-only */
+  .auth__mobile-brand {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--janso-space-5) var(--janso-space-5) 0;
+    background: var(--janso-paper);
+  }
+  .auth__panel {
+    grid-column: 1;
+    grid-row: auto;
+    padding: var(--janso-space-5);
+  }
+  /* the palette switcher shares the header row with the wordmark instead of taking a row of its own */
+  .auth { position: relative; }
+  .auth__panel-bar {
+    position: absolute;
+    top: 1.25rem;
+    right: var(--janso-space-5);
+  }
+  .auth__form { --auth-pad: 1.75rem; margin: var(--janso-space-4) auto 0; }
+  /* the legal strip stays visible, now as the page's own footer */
+  .auth__legal {
+    grid-column: 1;
+    grid-row: auto;
+    background: transparent;
+    border-right: 0;
+    padding: var(--janso-space-4) var(--janso-space-5);
+  }
+}
+
+/*
+ * On a phone the form already fills the width, so a border and a shadow around it only draw a
+ * box around the whole screen. The surface goes back to the page.
+ */
+@media (max-width: 520px) {
+  .auth__foot--band {
+    background: transparent;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+  .auth__form {
+    --auth-pad: 0rem;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth__feature { opacity: 1; transform: none; animation: none; }
+  /* drawn already: the sheet is the same picture, minus the drawing of it */
+  .auth__balance :is(rect, circle) { stroke-dashoffset: 0; animation: none; }
+}

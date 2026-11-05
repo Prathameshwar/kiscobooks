@@ -1,0 +1,155 @@
+- main:
+  - text: Purchases / Workflow preview
+  - heading "New purchase" [level=1]
+  - paragraph: Capture your supplier bill, with every detail in its place.
+  - strong: Preview workspace
+  - text: · Synthetic examples in INR. Changes stay on this page and are lost on reload.
+  - region "Purchase workflow":
+    - text: New · demo
+    - paragraph: No demo record yet · Edits to save
+    - link "Back to vouchers":
+      - /url: /vouchers
+  - group: Explore workflow examples
+  - region "Supplier and invoice details":
+    - heading "Supplier & invoice" [level=2]
+    - text: Internal reference
+    - strong: Unassigned
+    - text: Supplier
+    - combobox "Supplier": Paper & Co. Supplies
+    - button "Clear Supplier"
+    - button "Toggle Supplier options"
+    - paragraph: Example suppliers only. No live supplier balances.
+    - status
+    - text: Supplier payable account
+    - strong: Trade payables
+    - text: Selected automatically Supplier invoice number
+    - textbox "Supplier invoice number":
+      - /placeholder: e.g. PC-261034
+      - text: EXAMPLE-TRACKING
+    - text: Supplier invoice date
+    - textbox "Supplier invoice date": 2026-10-31
+    - text: Posting date
+    - textbox "Posting date": 2026-10-31
+    - paragraph: Determines the accounting period.
+    - strong: Entry mode
+    - paragraph: Choose how this supplier bill is entered.
+    - group "Purchase entry mode":
+      - button "Items" [pressed]
+      - button "Accounts / services"
+      - button "Mixed"
+  - group "Current purchase bill":
+    - strong: EXAMPLE-TRACKING
+    - text: 2 lines · INR
+  - region "Purchase line entry":
+    - heading "Bill lines" [level=2]
+    - paragraph: Receipt and billed quantities stay separate. Rates are entered manually.
+    - text: 2 entered
+    - list "Purchase line cards":
+      - listitem:
+        - text: Line 1 · Item
+        - button "Actions for line 1"
+        - strong: Printer ink · tracked batch
+        - term: Receipt qty
+        - definition: 2.0000 each
+        - term: Billed qty
+        - definition: 2.0000 each
+        - term: Rate
+        - definition: ₹100.0000
+        - text: Line total before tax
+        - strong: ₹200.00
+        - button "Edit line 1"
+      - listitem:
+        - text: Line 2 · Item
+        - button "Actions for line 2"
+        - strong: Barcode scanner · tracked serial
+        - term: Receipt qty
+        - definition: 2.0000 each
+        - term: Billed qty
+        - definition: 2.0000 each
+        - term: Rate
+        - definition: ₹1,000.0000
+        - text: Line total before tax
+        - strong: ₹2,000.00
+        - button "Edit line 2"
+    - button "Add purchase line"
+  - region "Purchase details":
+    - heading "Purchase details" [level=2]
+    - text: Open only what this bill needs
+    - button "Discounts & charges Document discounts, freight and other charges"
+    - button "Tax details Supplied tax evidence · rates are read-only Example evidence"
+    - button "Goods receipt Receive with bill · planned quantities"
+    - button "Line tracking Location, batch, expiry and serial details by item"
+    - button "Payment & terms Due 30 Nov 2026 · advances and payment intentions"
+    - button "Supplier bill & attachments 0 local files · supplier total, notes and additional fields"
+  - complementary "Purchase totals":
+    - region "Bill summary":
+      - heading "Bill summary" [level=2]
+      - text: Provisional
+      - paragraph:
+        - text: Line subtotal
+        - strong: ₹2,200.00
+      - paragraph:
+        - text: Line discounts
+        - strong: ₹0.00
+      - paragraph:
+        - text: After line discounts
+        - strong: ₹2,200.00
+      - paragraph:
+        - text: Supplier charges
+        - strong: ₹0.00
+      - paragraph:
+        - text: Supplier tax · supplied example
+        - strong: ₹396.00
+      - paragraph:
+        - text: Bill total
+        - strong: ₹2,596.00
+      - paragraph: Uses a bounded supplied example recipe. Provisional only; no financial entry is created.
+    - region "Settlement intentions":
+      - heading "Payment & terms" [level=2]
+      - paragraph: Due 30 Nov 2026 · from invoice date
+      - paragraph:
+        - text: Advances to apply
+        - strong: ₹0.00
+      - paragraph:
+        - text: Payment to record
+        - strong: ₹0.00
+      - paragraph: Proposed only. Nothing has been applied, paid or cleared.
+    - region "Entry guidance":
+      - heading "Before you finish" [level=2]
+      - paragraph: Use the supplier’s own invoice number. Your internal voucher reference is assigned later.
+      - paragraph: Check receipt quantity against what arrived, and billed quantity against the supplier’s invoice.
+  - group "Purchase actions":
+    - text: Bill total
+    - strong: ₹2,596.00
+    - text: Provisional · Not saved
+    - button "Review bill"
+    - button "Save demo draft" [disabled]
+- dialog "Line tracking":
+  - banner:
+    - heading "Line tracking" [level=2]
+    - button "Close"
+  - region "Line tracking":
+    - paragraph: Changes stay in this panel until you apply them to the demo bill.
+    - paragraph: Tracking follows the item’s supplied requirements. Serial numbers are case-sensitive, one per line, and must match the whole units received.
+    - group "Line 1 · Printer ink · tracked batch":
+      - text: Line 1 · Printer ink · tracked batch Receipt location for line 1
+      - combobox "Receipt location for line 1":
+        - option "Choose a receipt location" [selected]
+        - option "Main store"
+        - option "Office supplies room"
+      - text: Batch number for line 1
+      - textbox "Batch number for line 1"
+      - text: Expiry date for line 1
+      - textbox "Expiry date for line 1"
+    - group "Line 2 · Barcode scanner · tracked serial":
+      - text: Line 2 · Barcode scanner · tracked serial Receipt location for line 2
+      - combobox "Receipt location for line 2":
+        - option "Choose a receipt location" [selected]
+        - option "Main store"
+        - option "Office supplies room"
+      - text: Serial numbers for line 2
+      - textbox "Serial numbers for line 2"
+      - paragraph: 0 entered · one per unit received (2).
+  - contentinfo:
+    - button "Cancel"
+    - button "Apply details"

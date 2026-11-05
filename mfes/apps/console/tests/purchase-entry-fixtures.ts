@@ -1,0 +1,7 @@
+import type { FieldSet } from '../app/lib/voucher-fields';
+import type { PurchaseDraft } from '../app/lib/purchase-entry';
+const id = (n: number) => '10000000-0000-7000-8000-' + String(n).padStart(12, '0');
+export const company = id(1);
+const properties = Object.fromEntries(['party_line_key', 'party_account_id', 'party_account_version', 'bill_reference', 'due_date', 'tax', 'supplier_declared_total'].map(key => [key, {}]));
+export const metadata: FieldSet = { native: { properties: { invoice: { anyOf: [{ properties: { ...properties, supplies: { items: { properties: Object.fromEntries(['line_key', 'account_id', 'account_version', 'description', 'amount', 'supply_kind'].map(key => [key, {}])) } } } }] }, parties: {}, references: {}, posting_date: {} } }, custom: [], configuration: { kind: 'PURCHASE', profile: 'STANDARD', type_revision_id: id(2), policy: { schema_version: 2, allowed_modes: ['ACCOUNTS'], allowed_party_roles: ['SUPPLIER'], invoice: { allowed_supply_kinds: ['ACCOUNT'] } } } };
+export const draft: PurchaseDraft = { party: { id: id(3), company, version: 2, label: 'Supplier' }, payable: { id: id(4), company, version: 3, label: 'Payable', partyId: id(3) }, partyLineKey: id(5), reference: 'SUP-42', dueDate: '2026-11-01', declaredTotal: '42.1234', supplies: [{ key: id(6), account: { id: id(7), company, version: 4, label: 'Expense' }, amount: '42.1234', description: 'Consulting account bill' }] };

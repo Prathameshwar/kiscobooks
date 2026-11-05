@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+  <!--
+    ============================================================================
+    WHAT THIS FILE IS
+
+    A dependency-free static preview of the invoice designer. Double-click it and
+    it opens from `file://` — no install, no build step, no framework, no CDN. It
+    exists so the editor's design can be reviewed in a real browser, in all three
+    palettes and at real millimetre scale, before anyone runs `pnpm dev`.
+
+    Same convention as `preview.html`, which previews the console dashboard.
+
+    WHY IT CANNOT DRIFT ON STYLE
+
+    Every `<link>` below points at the *real* stylesheet in
+    `packages/ui/src/styles/`, in the same order the app imports them
+    (`app/layout.tsx` plus the two the editor route group adds). No CSS is copied
+    into this page and there is no colour literal in any inline style — the
+    palette, spacing, type and canvas geometry all come from `--janso-*` tokens,
+    so a change to `canvas-tokens.css`, `designer.css` or any `theme-*.css` shows
+    up here on the next reload.
+
+    WHAT *CAN* DRIFT — READ THIS BEFORE TRUSTING THE PAGE
+
+    The markup is hand-mirrored from the React components. It is not generated
+    from them, so it is the one part of this file that can go stale.
+
+    Mirrored from (re-check whenever any of them changes):
+      packages/ui/src/components/DesignCanvas.tsx     canvas, grid, margins, chip
+      packages/ui/src/components/CanvasRuler.tsx      the millimetre bands
+      packages/ui/src/components/ZoomControl.tsx      the stepped zoom
+      app/(editor)/invoice-designer/DesignerShell.tsx the five-area frame
+      app/(editor)/invoice-designer/DocumentLayer.tsx what prints
+      app/(editor)/invoice-designer/sample-templates.ts  the GST A4 geometry
+      app/(editor)/invoice-designer/sample-document.ts   every figure below
+      packages/ui/src/components/SelectionLayer.tsx    outlines, ring, handles, chips
+      packages/ui/src/components/Inspector.tsx         group, row, empty state
+      app/(editor)/invoice-designer/ElementTree.tsx    the rail's page tree
+      app/(editor)/invoice-designer/SelectionInspector.tsx  the panel's controls
+      packages/ui/src/components/EditorControls.tsx     measure, segmented, colour, toggle
+
+    The real editor reports the cursor position live; this page shows a fixed
+    readout, because there is no React here to track a pointer.
+
+    PHASE 3 SCOPE: the paper is accurate, selection works from pointer and
+    keyboard, and the inspector's controls edit the layout live. This page pins
+    one zone hovered and one element selected, with the controls showing the
+    values that element actually carries; in the real editor they are live and
+    the page redraws as you change them. Dragging on the canvas, the column
+    designer and undo are the phases after this one.
+    ============================================================================
+  -->
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Invoice designer · KiscoBooks (design preview)</title>
+    <meta
+      name="description"
+      content="Static design preview of the KiscoBooks invoice designer — paper, rulers, grid, margins and a GST tax invoice at millimetre scale, in all three palettes."
+    />
+
+    <!-- Mirrors `themeScript`: applies the palette before first paint. -->
+    <script>
+      (function () {
+        try {
+          var v = ['light', 'dark', 'ledger'];
+          var s = null;
+          try {
+            s = localStorage.getItem('janso-theme');
+          } catch (e) {}
+          var r = v.indexOf(s) > -1 ? s : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', r);
+          document.documentElement.style.setProperty('color-scheme', r === 'dark' ? 'dark' : 'light');
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- The real stylesheets, in the app's order. The last two are what the editor
+         route group adds on top of the console's list. -->
+    <link rel="stylesheet" href="../../packages/ui/src/styles/tokens.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/theme-light.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/theme-dark.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/theme-ledger.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/janso-ui.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/controls.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/theme.css" />
+    <link rel="stylesheet" href="./app/globals.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/canvas-tokens.css" />
+    <link rel="stylesheet" href="../../packages/ui/src/styles/designer.css" />
+  </head>
+
+  <body class="janso-root">
+    <div class="janso-editor">
+      <!-- ============================ toolbar ============================ -->
+      <header class="janso-editor__toolbar">
+        <h1 class="janso-editor__title">
+          GST tax invoice — A4
+          <span class="janso-editor__subtitle">Live · version 4</span>
+        </h1>
+
+        <span class="janso-editor__spacer"></span>
+
+        <label class="janso-editor__stat">
+          <span class="janso-editor__stat-key">Copy</span>
+          <select class="janso-editor__select" id="copy" aria-label="Printed copy to preview">
+            <option value="">No mark</option>
+            <option value="Original for Recipient" selected>Original for Recipient</option>
+            <option value="Duplicate for Transporter">Duplicate for Transporter</option>
+            <option value="Triplicate for Supplier">Triplicate for Supplier</option>
+          </select>
+        </label>
+
+        <label class="janso-editor__stat">
+          <span class="janso-editor__stat-key">Theme</span>
+          <select class="janso-editor__select" id="theme" aria-label="Palette">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="ledger">Ledger</option>
+          </select>
+        </label>
+
+        <!-- ZoomControl -->
+        <div class="janso-zoom" role="group" aria-label="Canvas zoom">
+          <button type="button" class="janso-zoom__btn" id="out" aria-label="Zoom out">−</button>
+          <span class="janso-zoom__value" id="pct" aria-live="polite" aria-atomic="true">70%</span>
+          <button type="button" class="janso-zoom__btn" id="in" aria-label="Zoom in">+</button>
+          <button type="button" class="janso-zoom__btn" id="fit">Fit</button>
+        </div>
+      </header>
+
+      <!-- ============================= rail ============================= -->
+      <nav class="janso-editor__rail" aria-label="Templates">
+        <div class="janso-editor__group">
+          <p class="janso-editor__group-label" id="p-templates">Templates</p>
+          <ul class="janso-editor__list" aria-labelledby="p-templates">
+            <li>
+              <button type="button" class="janso-editor__item" aria-current="true">
+                GST tax invoice — A4<span class="janso-editor__item-meta">Live</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="janso-editor__item">
+                Compact invoice — A4<span class="janso-editor__item-meta">Draft</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="janso-editor__item">
+                Retail receipt — 80mm<span class="janso-editor__item-meta">Live</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="janso-editor__item">
+                Delivery challan — A4<span class="janso-editor__item-meta">Live</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="janso-editor__group">
+          <p class="janso-editor__group-label">Page structure</p>
+          <!-- ElementTree: roving tabindex, so the whole tree is one tab stop. -->
+          <ul class="janso-editor__tree" role="tree" aria-label="Page structure">
+            <li role="none">
+              <button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1">
+                <span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Header<span class="janso-editor__node-kind">7</span>
+              </button>
+              <ul class="janso-editor__tree" role="group">
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" tabindex="-1">image<span class="janso-editor__node-kind">image</span></button></li>
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" tabindex="-1">Nandini Trading Company<span class="janso-editor__node-kind">text</span></button></li>
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" tabindex="-1">company.address<span class="janso-editor__node-kind">field binding</span></button></li>
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" tabindex="-1">GSTIN<span class="janso-editor__node-kind">field binding</span></button></li>
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" aria-selected="true" tabindex="0">TAX INVOICE<span class="janso-editor__node-kind">text</span></button></li>
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" tabindex="-1">GST &#8212; rule 46<span class="janso-editor__node-kind">text</span></button></li>
+                <li role="none"><button type="button" class="janso-editor__node" role="treeitem" aria-level="2" tabindex="-1">divider<span class="janso-editor__node-kind">divider</span></button></li>
+              </ul>
+            </li>
+            <li role="none"><button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1"><span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Document details<span class="janso-editor__node-kind">8</span></button></li>
+            <li role="none"><button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1"><span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Billing shipping<span class="janso-editor__node-kind">8</span></button></li>
+            <li role="none"><button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1"><span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Item table<span class="janso-editor__node-kind">1</span></button></li>
+            <li role="none"><button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1"><span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Tax summary<span class="janso-editor__node-kind">1</span></button></li>
+            <li role="none"><button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1"><span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Totals<span class="janso-editor__node-kind">1</span></button></li>
+            <li role="none"><button type="button" class="janso-editor__node janso-editor__node--zone" role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1"><span class="janso-editor__twisty" aria-hidden="true">&#9662;</span>Footer<span class="janso-editor__node-kind">8</span></button></li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- ============================ stage ============================= -->
+      <div class="janso-editor__stage">
+        <div class="janso-canvas" id="canvas">
+          <div class="janso-canvas__corner" aria-hidden="true"></div>
+
+          <!-- CanvasRuler, horizontal. Ticks every 5mm, numerals every 10mm; the band
+               scales with the page, the numerals only move. -->
+          <div class="janso-canvas__ruler janso-canvas__ruler--h" aria-hidden="true">
+            <div class="janso-canvas__ruler-band" id="band-h" style="width: 210mm"></div>
+            <div id="num-h"></div>
+          </div>
+          <div class="janso-canvas__ruler janso-canvas__ruler--v" aria-hidden="true">
+            <div class="janso-canvas__ruler-band" id="band-v" style="height: 297mm"></div>
+            <div id="num-v"></div>
+          </div>
+
+          <div class="janso-canvas__scroll">
+            <div class="janso-canvas__page" id="page" style="--janso-zoom: 0.7">
+              <span class="janso-canvas__chip">A4 · 210 × 297 mm · <span id="chip-copy">Original for Recipient</span></span>
+
+              <div class="janso-canvas__paper" role="group" aria-label="GST tax invoice — A4 portrait" style="width: 210mm; height: 297mm">
+                <div class="janso-canvas__grid" style="background-size: 5mm 5mm"></div>
+                <div class="janso-canvas__margins" style="left: 10mm; top: 10mm; width: 190mm; height: 277mm"></div>
+
+                <div class="janso-canvas__content">
+                  <!-- ==================== DocumentLayer ==================== -->
+                  <div class="janso-doc" style="font-size: 9pt">
+                    <!-- copy mark, top-right -->
+                    <div class="janso-doc__el janso-doc-text--label" id="mark" style="left: 10mm; top: 2mm; width: 190mm; height: 4mm; text-align: right">
+                      Original for Recipient
+                    </div>
+
+                    <!-- HEADER -->
+                    <div class="janso-doc__section" style="left: 10mm; top: 10mm; width: 190mm; height: 28mm">
+                      <div class="janso-doc__el" style="left: 0; top: 1mm; width: 40mm; height: 18mm">
+                        <span class="janso-doc-image">
+                          <!-- The logomark fixture: a brand mark owns its own colour. -->
+                          <svg viewBox="0 0 160 72" style="max-width: 100%; max-height: 100%">
+                            <rect x="2" y="12" width="48" height="48" rx="10" fill="#1e40af" />
+                            <path d="M16 46V26l18 20V26" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <text x="60" y="38" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#1e40af">NANDINI</text>
+                            <text x="60" y="54" font-family="Inter, sans-serif" font-size="11" fill="#4a4f59" letter-spacing="2">TRADING CO.</text>
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="janso-doc__el" style="left: 44mm; top: 0; width: 96mm; height: 7mm; font-size: 14pt; font-weight: 700; color: #1e40af">
+                        <span class="janso-doc-text">Nandini Trading Company</span>
+                      </div>
+                      <div class="janso-doc__el" style="left: 44mm; top: 7mm; width: 96mm; height: 12mm; font-size: 7.5pt; color: #4a4f59">
+                        <span class="janso-doc-text">14/2 Shivaji Nagar, Bund Garden Road
+Pune, Maharashtra 411001
+India</span>
+                      </div>
+                      <div class="janso-doc__el" style="left: 44mm; top: 19mm; width: 96mm; height: 4mm; font-size: 8pt; font-weight: 600">
+                        <span class="janso-doc-text"><span class="janso-doc-text--label">GSTIN </span>27AABCN1234M1Z5</span>
+                      </div>
+                      <div class="janso-doc__el" style="left: 146mm; top: 0; width: 44mm; height: 7mm; font-size: 13pt; font-weight: 700; text-align: right; text-transform: uppercase">
+                        <span class="janso-doc-text">Tax Invoice</span>
+                      </div>
+                      <div class="janso-doc__el" style="left: 146mm; top: 7mm; width: 44mm; height: 4mm; font-size: 7pt; text-align: right; color: #4a4f59">
+                        <span class="janso-doc-text">GST — rule 46</span>
+                      </div>
+                      <div class="janso-doc__el" style="left: 0; top: 25mm; width: 190mm; height: 1mm">
+                        <span class="janso-doc-divider"></span>
+                      </div>
+                    </div>
+
+                    <!-- META -->
+                    <div class="janso-doc__section" style="left: 10mm; top: 40mm; width: 190mm; height: 16mm">
+                      <div class="janso-doc__el" style="left: 0; top: 0; width: 62mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Invoice no. </span>NTC/25-26/001847</span></div>
+                      <div class="janso-doc__el" style="left: 64mm; top: 0; width: 40mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Dated </span>25 Oct 2026</span></div>
+                      <div class="janso-doc__el" style="left: 106mm; top: 0; width: 40mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Due </span>24 Nov 2026</span></div>
+                      <div class="janso-doc__el" style="left: 148mm; top: 0; width: 42mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Place of supply </span>Maharashtra (27)</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 7mm; width: 62mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Vehicle </span>MH 12 QR 8841</span></div>
+                      <div class="janso-doc__el" style="left: 64mm; top: 7mm; width: 40mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Transport </span>Road</span></div>
+                      <div class="janso-doc__el" style="left: 106mm; top: 7mm; width: 40mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">e-Way bill </span>3819 4471 2205</span></div>
+                      <div class="janso-doc__el" style="left: 148mm; top: 7mm; width: 42mm; height: 5mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Reverse charge </span>No</span></div>
+                    </div>
+
+                    <!-- BILL / SHIP -->
+                    <div class="janso-doc__section" style="left: 10mm; top: 58mm; width: 190mm; height: 30mm">
+                      <div class="janso-doc__el" style="left: 0; top: 0; width: 92mm; height: 4mm; font-size: 7.5pt; text-transform: uppercase; color: #4a4f59"><span class="janso-doc-text">Bill to</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 4mm; width: 92mm; height: 5mm; font-size: 9.5pt; font-weight: 600"><span class="janso-doc-text">Sahyadri Retail Private Limited</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 9mm; width: 92mm; height: 10mm; font-size: 8pt"><span class="janso-doc-text">Unit 4, Phoenix Market City
+Viman Nagar, Pune, Maharashtra 411014</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 19mm; width: 92mm; height: 4mm; font-size: 8pt"><span class="janso-doc-text"><span class="janso-doc-text--label">GSTIN </span>27AAHCS9876K1ZT</span></div>
+
+                      <div class="janso-doc__el" style="left: 98mm; top: 0; width: 92mm; height: 4mm; font-size: 7.5pt; text-transform: uppercase; color: #4a4f59"><span class="janso-doc-text">Ship to</span></div>
+                      <div class="janso-doc__el" style="left: 98mm; top: 4mm; width: 92mm; height: 5mm; font-size: 9.5pt; font-weight: 600"><span class="janso-doc-text">Sahyadri Retail — Kothrud Warehouse</span></div>
+                      <div class="janso-doc__el" style="left: 98mm; top: 9mm; width: 92mm; height: 10mm; font-size: 8pt"><span class="janso-doc-text">Survey 112/3, Paud Road, Kothrud
+Pune, Maharashtra 411038</span></div>
+                      <div class="janso-doc__el" style="left: 98mm; top: 19mm; width: 92mm; height: 4mm; font-size: 8pt"><span class="janso-doc-text">Mr R. Deshpande · +91 98220 11447</span></div>
+                    </div>
+
+                    <!-- ITEM TABLE -->
+                    <div class="janso-doc__section" style="left: 10mm; top: 90mm; width: 190mm; height: 106mm">
+                      <div class="janso-doc__el" style="left: 0; top: 0; width: 190mm; height: 106mm">
+                        <table class="janso-doc-table">
+                          <thead>
+                            <tr>
+                              <th class="janso-doc-table__num" style="width: 8mm">#</th>
+                              <th style="width: 52mm">Description of goods</th>
+                              <th style="width: 16mm">HSN/SAC</th>
+                              <th class="janso-doc-table__num" style="width: 14mm">Qty</th>
+                              <th style="width: 10mm">Unit</th>
+                              <th class="janso-doc-table__num" style="width: 18mm">Rate</th>
+                              <th class="janso-doc-table__num" style="width: 22mm">Taxable value</th>
+                              <th class="janso-doc-table__num" style="width: 14mm">CGST</th>
+                              <th class="janso-doc-table__num" style="width: 14mm">SGST</th>
+                              <th class="janso-doc-table__num" style="width: 22mm">Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="janso-doc-table__num">1</td>
+                              <td>Basmati rice, aged 12 months, 25 kg jute bag<div class="janso-doc-table__desc">Lot NTC-RICE-0925 · packed 02 Sep 2026</div></td>
+                              <td>10063020</td>
+                              <td class="janso-doc-table__num">40.000</td>
+                              <td>BAG</td>
+                              <td class="janso-doc-table__num">2,450.00</td>
+                              <td class="janso-doc-table__num">98,000.00</td>
+                              <td class="janso-doc-table__num">2,450.00</td>
+                              <td class="janso-doc-table__num">2,450.00</td>
+                              <td class="janso-doc-table__num">1,02,900.00</td>
+                            </tr>
+                            <tr>
+                              <td class="janso-doc-table__num">2</td>
+                              <td>Refined sunflower oil, 15 litre tin</td>
+                              <td>15121110</td>
+                              <td class="janso-doc-table__num">60.000</td>
+                              <td>TIN</td>
+                              <td class="janso-doc-table__num">1,780.00</td>
+                              <td class="janso-doc-table__num">1,04,664.00</td>
+                              <td class="janso-doc-table__num">2,616.60</td>
+                              <td class="janso-doc-table__num">2,616.60</td>
+                              <td class="janso-doc-table__num">1,09,897.20</td>
+                            </tr>
+                            <tr>
+                              <td class="janso-doc-table__num">3</td>
+                              <td>Paracetamol IP 500 mg tablets, strip of 15</td>
+                              <td>30049099</td>
+                              <td class="janso-doc-table__num">500.000</td>
+                              <td>STRIP</td>
+                              <td class="janso-doc-table__num">18.40</td>
+                              <td class="janso-doc-table__num">9,200.00</td>
+                              <td class="janso-doc-table__num">552.00</td>
+                              <td class="janso-doc-table__num">552.00</td>
+                              <td class="janso-doc-table__num">10,304.00</td>
+                            </tr>
+                            <tr>
+                              <td class="janso-doc-table__num">4</td>
+                              <td>Oral rehydration salts, orange, 21.8 g sachet</td>
+                              <td>30049099</td>
+                              <td class="janso-doc-table__num">1,200.000</td>
+                              <td>SACHET</td>
+                              <td class="janso-doc-table__num">9.60</td>
+                              <td class="janso-doc-table__num">11,520.00</td>
+                              <td class="janso-doc-table__num">691.20</td>
+                              <td class="janso-doc-table__num">691.20</td>
+                              <td class="janso-doc-table__num">12,902.40</td>
+                            </tr>
+                            <tr>
+                              <td class="janso-doc-table__num">5</td>
+                              <td>Stainless steel storage container set, 5 pieces, induction base<div class="janso-doc-table__desc">Make: Prestige · model PSC-5 · 18/8 grade</div></td>
+                              <td>73239990</td>
+                              <td class="janso-doc-table__num">24.000</td>
+                              <td>SET</td>
+                              <td class="janso-doc-table__num">1,240.00</td>
+                              <td class="janso-doc-table__num">29,760.00</td>
+                              <td class="janso-doc-table__num">2,678.40</td>
+                              <td class="janso-doc-table__num">2,678.40</td>
+                              <td class="janso-doc-table__num">35,116.80</td>
+                            </tr>
+                            <tr>
+                              <td class="janso-doc-table__num">6</td>
+                              <td>Freight and handling — Pune to Kothrud</td>
+                              <td>996511</td>
+                              <td class="janso-doc-table__num">1.000</td>
+                              <td>JOB</td>
+                              <td class="janso-doc-table__num">3,400.00</td>
+                              <td class="janso-doc-table__num">3,400.00</td>
+                              <td class="janso-doc-table__num">306.00</td>
+                              <td class="janso-doc-table__num">306.00</td>
+                              <td class="janso-doc-table__num">4,012.00</td>
+                            </tr>
+                            <!-- blankRows: 2 — filler so a ruled box looks full -->
+                            <tr class="janso-doc-table__blank"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr class="janso-doc-table__blank"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <!-- TAX SUMMARY -->
+                    <div class="janso-doc__section" style="left: 10mm; top: 198mm; width: 112mm; height: 32mm">
+                      <div class="janso-doc__el" style="left: 0; top: 0; width: 112mm; height: 32mm">
+                        <table class="janso-doc-table">
+                          <thead>
+                            <tr>
+                              <th>HSN/SAC</th>
+                              <th class="janso-doc-table__num">Taxable value</th>
+                              <th class="janso-doc-table__num">CGST</th>
+                              <th class="janso-doc-table__num">SGST</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td>10063020</td><td class="janso-doc-table__num">98,000.00</td><td class="janso-doc-table__num">2,450.00</td><td class="janso-doc-table__num">2,450.00</td></tr>
+                            <tr><td>15121110</td><td class="janso-doc-table__num">1,04,664.00</td><td class="janso-doc-table__num">2,616.60</td><td class="janso-doc-table__num">2,616.60</td></tr>
+                            <tr><td>30049099</td><td class="janso-doc-table__num">20,720.00</td><td class="janso-doc-table__num">1,243.20</td><td class="janso-doc-table__num">1,243.20</td></tr>
+                            <tr><td>73239990</td><td class="janso-doc-table__num">29,760.00</td><td class="janso-doc-table__num">2,678.40</td><td class="janso-doc-table__num">2,678.40</td></tr>
+                            <tr><td>996511</td><td class="janso-doc-table__num">3,400.00</td><td class="janso-doc-table__num">306.00</td><td class="janso-doc-table__num">306.00</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <!-- TOTALS -->
+                    <div class="janso-doc__section" style="left: 126mm; top: 198mm; width: 74mm; height: 44mm">
+                      <div class="janso-doc__el" style="left: 0; top: 0; width: 74mm; height: 44mm">
+                        <div class="janso-doc-totals">
+                          <div class="janso-doc-totals__row"><span>Taxable value</span><span class="janso-doc-totals__amount">2,56,544.00</span></div>
+                          <div class="janso-doc-totals__row"><span>CGST</span><span class="janso-doc-totals__amount">9,294.20</span></div>
+                          <div class="janso-doc-totals__row"><span>SGST</span><span class="janso-doc-totals__amount">9,294.20</span></div>
+                          <div class="janso-doc-totals__row"><span>Round off</span><span class="janso-doc-totals__amount">-0.40</span></div>
+                          <div class="janso-doc-totals__row janso-doc-totals__row--grand"><span>Total</span><span class="janso-doc-totals__amount">2,75,132.00</span></div>
+                          <div class="janso-doc-totals__row janso-doc-totals__row--words">Amount in words: Indian Rupees Two Lakh Seventy-Five Thousand One Hundred Thirty-Two and Zero Paise Only</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="janso-doc__section" style="left: 10mm; top: 244mm; width: 190mm; height: 43mm">
+                      <div class="janso-doc__el" style="left: 0; top: 0; width: 88mm; height: 4mm; font-size: 7.5pt; text-transform: uppercase; color: #4a4f59"><span class="janso-doc-text">Bank details</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 4mm; width: 88mm; height: 4mm"><span class="janso-doc-text"><span class="janso-doc-text--label">Bank </span>HDFC Bank</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 8mm; width: 88mm; height: 4mm"><span class="janso-doc-text"><span class="janso-doc-text--label">A/C </span>50200071234567</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 12mm; width: 88mm; height: 4mm"><span class="janso-doc-text"><span class="janso-doc-text--label">IFSC </span>HDFC0000123</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 16mm; width: 88mm; height: 4mm"><span class="janso-doc-text"><span class="janso-doc-text--label">UPI </span>nandinitrading@hdfcbank</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 24mm; width: 120mm; height: 10mm; font-size: 7pt"><span class="janso-doc-text">We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span></div>
+                      <div class="janso-doc__el" style="left: 0; top: 35mm; width: 120mm; height: 4mm; font-size: 7pt; color: #4a4f59"><span class="janso-doc-text">Subject to Pune jurisdiction</span></div>
+                      <div class="janso-doc__el" style="left: 96mm; top: 2mm; width: 22mm; height: 22mm"><span class="janso-doc-qr">QR</span></div>
+                      <div class="janso-doc__el" style="left: 140mm; top: 14mm; width: 50mm; height: 24mm">
+                        <span class="janso-doc-sign">
+                          <svg viewBox="0 0 200 60" style="max-height: 60%">
+                            <path d="M8 44c14-26 22 6 34-10s16 18 28 2 18 10 30-6 20 12 34-6 24 8 30 0" stroke="#101114" stroke-width="2.2" fill="none" stroke-linecap="round" />
+                          </svg>
+                          <span>For Nandini Trading Company</span>
+                          <span class="janso-doc-text--label">Authorised Signatory</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--
+                  SelectionLayer. A listbox with one option per target, so the whole page is
+                  one tab stop and the arrow keys move the selection. Pinned here with the
+                  item-table zone hovered and the document title selected.
+                -->
+                <div class="janso-canvas__select" role="listbox" aria-label="Page elements" aria-activedescendant="target-el-title" tabindex="0">
+                  <div class="janso-canvas__target" role="option" aria-selected="false" aria-label="Item table" data-kind="zone" data-state="hovered" style="left: 10mm; top: 90mm; width: 190mm; height: 106mm">
+                    <span class="janso-canvas__label">Item table</span>
+                  </div>
+                  <div id="target-el-title" class="janso-canvas__target" role="option" aria-selected="true" aria-label="TAX INVOICE" data-kind="element" data-state="selected" style="left: 156mm; top: 10mm; width: 44mm; height: 7mm">
+                    <span class="janso-canvas__label">TAX INVOICE</span>
+                    <span class="janso-canvas__badge">44 &#215; 7 mm</span>
+                    <span class="janso-canvas__handle" data-at="nw" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="n" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="ne" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="e" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="se" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="s" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="sw" aria-hidden="true"></span>
+                    <span class="janso-canvas__handle" data-at="w" aria-hidden="true"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== inspector ========================== -->
+      <aside class="janso-editor__inspector" aria-label="Properties">
+        <section class="janso-editor__group">
+          <h2 class="janso-editor__group-label">Element</h2>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">Name</span><span class="janso-editor__row-value">TAX INVOICE</span></div>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">Type</span><span class="janso-editor__row-value">text</span></div>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">In zone</span><span class="janso-editor__row-value">header</span></div>
+        </section>
+        <section class="janso-editor__group">
+          <h2 class="janso-editor__group-label">Geometry</h2>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">X</span><span class="janso-editor__row-value">156 mm</span></div>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">Y</span><span class="janso-editor__row-value">10 mm</span></div>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">Width</span><span class="janso-editor__row-value">44 mm</span></div>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">Height</span><span class="janso-editor__row-value">7 mm</span></div>
+          <p class="janso-editor__row-hint">Millimetres from the top-left of the page, the same unit the printer uses.</p>
+        </section>
+        <section class="janso-editor__group">
+          <h2 class="janso-editor__group-label">Content</h2>
+          <div class="janso-editor__row"><span class="janso-editor__row-label">Text</span><span class="janso-editor__row-value">TAX INVOICE</span></div>
+        </section>
+        <section class="janso-editor__group">
+          <h2 class="janso-editor__group-label">Type</h2>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Size</span>
+            <span class="janso-editor__row-value">
+              <span class="janso-editor__control">
+                <input class="janso-editor__input janso-editor__input--measure" type="text" inputmode="decimal" aria-label="Font size" value="13" />
+                <span class="janso-editor__unit" aria-hidden="true">pt</span>
+              </span>
+            </span>
+          </div>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Weight</span>
+            <span class="janso-editor__row-value">
+              <div class="janso-editor__segmented" role="radiogroup" aria-label="Font weight">
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" aria-label="Regular" tabindex="-1">R</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" aria-label="Medium" tabindex="-1">M</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" aria-label="Semibold" tabindex="-1">S</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="true" aria-label="Bold" tabindex="0">B</button>
+              </div>
+            </span>
+          </div>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Align</span>
+            <span class="janso-editor__row-value">
+              <div class="janso-editor__segmented" role="radiogroup" aria-label="Text alignment">
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" aria-label="Left" tabindex="-1">&#9664;</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" aria-label="Centre" tabindex="-1">&#9632;</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="true" aria-label="Right" tabindex="0">&#9654;</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" aria-label="Justify" tabindex="-1">&#8801;</button>
+              </div>
+            </span>
+          </div>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Uppercase</span>
+            <span class="janso-editor__row-value">
+              <button type="button" class="janso-editor__toggle" role="switch" aria-checked="true" aria-label="Uppercase"></button>
+            </span>
+          </div>
+          <div class="janso-editor__row janso-editor__row--stack">
+            <span class="janso-editor__row-label">Colour</span>
+            <span class="janso-editor__row-value">
+              <span class="janso-editor__control">
+                <input class="janso-editor__swatch" type="color" aria-label="Text colour picker" value="#101114" />
+                <input class="janso-editor__input" type="text" aria-label="Text colour" value="" placeholder="#rrggbb" spellcheck="false" />
+              </span>
+              <span class="janso-editor__swatches" role="group" aria-label="Text colour presets">
+                <button type="button" class="janso-editor__swatch janso-editor__swatch--small" style="background: #101114" aria-label="#101114" aria-pressed="false"></button>
+                <button type="button" class="janso-editor__swatch janso-editor__swatch--small" style="background: #4a4f59" aria-label="#4a4f59" aria-pressed="false"></button>
+                <button type="button" class="janso-editor__swatch janso-editor__swatch--small" style="background: #1e40af" aria-label="#1e40af" aria-pressed="false"></button>
+                <button type="button" class="janso-editor__swatch janso-editor__swatch--small" style="background: #5b6c00" aria-label="#5b6c00" aria-pressed="false"></button>
+                <button type="button" class="janso-editor__swatch janso-editor__swatch--small" style="background: #8a4b10" aria-label="#8a4b10" aria-pressed="false"></button>
+                <button type="button" class="janso-editor__swatch janso-editor__swatch--small" style="background: #8c1f2f" aria-label="#8c1f2f" aria-pressed="false"></button>
+              </span>
+            </span>
+          </div>
+        </section>
+        <section class="janso-editor__group">
+          <h2 class="janso-editor__group-label">Page</h2>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Paper</span>
+            <span class="janso-editor__row-value">
+              <select class="janso-editor__select" aria-label="Paper size">
+                <option selected>A4 &#183; 210 &#215; 297</option>
+                <option>Letter &#183; 216 &#215; 279</option>
+                <option>A5 &#183; 148 &#215; 210</option>
+                <option>80mm roll</option>
+                <option>Custom</option>
+              </select>
+            </span>
+          </div>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Orientation</span>
+            <span class="janso-editor__row-value">
+              <div class="janso-editor__segmented" role="radiogroup" aria-label="Orientation">
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="true" tabindex="0">Portrait</button>
+                <button type="button" class="janso-editor__segment" role="radio" aria-checked="false" tabindex="-1">Landscape</button>
+              </div>
+            </span>
+          </div>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Top</span>
+            <span class="janso-editor__row-value">
+              <span class="janso-editor__control">
+                <input class="janso-editor__input janso-editor__input--measure" type="text" inputmode="decimal" aria-label="top margin" value="10" />
+                <span class="janso-editor__unit" aria-hidden="true">mm</span>
+              </span>
+            </span>
+          </div>
+          <div class="janso-editor__row">
+            <span class="janso-editor__row-label">Snap</span>
+            <span class="janso-editor__row-value">
+              <button type="button" class="janso-editor__toggle" role="switch" aria-checked="true" aria-label="Snap to grid"></button>
+            </span>
+          </div>
+          <p class="janso-editor__row-hint">Content outside the margins does not print.</p>
+        </section>
+        <section class="janso-editor__group">
+          <h2 class="janso-editor__group-label">Next</h2>
+          <p class="janso-editor__row-hint">
+            Dragging on the canvas, the column designer and undo arrive in the phases after
+            this one. These controls are live in the real editor: the page redraws as the
+            value changes.
+          </p>
+        </section>
+      </aside>
+
+      <!-- ========================== status bar ========================== -->
+      <footer class="janso-editor__status">
+        <span class="janso-editor__stat"><span class="janso-editor__stat-key">Cursor</span><span class="janso-editor__stat-value">off page</span></span>
+        <span class="janso-editor__stat"><span class="janso-editor__stat-key">Zoom</span><span class="janso-editor__stat-value" id="pct2">70%</span></span>
+        <span class="janso-editor__stat"><span class="janso-editor__stat-key">Selected</span><span class="janso-editor__stat-value" aria-live="polite">TAX INVOICE &#183; 44 &#215; 7 mm</span></span>
+        <span class="janso-editor__spacer"></span>
+        <span class="janso-editor__stat">Static preview — nothing is saved yet</span>
+      </footer>
+    </div>
+
+    <!--
+      The only script on the page: the ruler ticks (210 and 297 of them would be
+      unreadable as markup), the stepped zoom, the palette switch and the copy
+      mark. It mirrors ZoomControl's preset list and CanvasRuler's tick rule; it
+      is not a second implementation of anything the app ships.
+    -->
+    <script>
+      (function () {
+        var PX_PER_MM = 96 / 25.4;
+        var STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
+        var zoom = 0.7;
+
+        function ticks(axis, lengthMm) {
+          var band = document.getElementById('band-' + axis);
+          var numerals = document.getElementById('num-' + axis);
+          var tickHtml = '';
+          var numeralHtml = '';
+          for (var mm = 0; mm <= lengthMm; mm += 5) {
+            var major = mm % 10 === 0;
+            tickHtml +=
+              '<span class="janso-canvas__tick' +
+              (major ? ' janso-canvas__tick--major' : '') +
+              '" style="' +
+              (axis === 'h' ? 'left' : 'top') +
+              ':' +
+              mm +
+              'mm"></span>';
+            if (major) {
+              numeralHtml +=
+                '<span class="janso-canvas__numeral" data-mm="' +
+                mm +
+                '" style="' +
+                (axis === 'h' ? 'left' : 'top') +
+                ':' +
+                mm * zoom * PX_PER_MM +
+                'px">' +
+                mm +
+                '</span>';
+            }
+          }
+          band.innerHTML = tickHtml;
+          numerals.innerHTML = numeralHtml;
+        }
+
+        function apply() {
+          document.getElementById('page').style.setProperty('--janso-zoom', String(zoom));
+          var pct = Math.round(zoom * 100) + '%';
+          document.getElementById('pct').textContent = pct;
+          document.getElementById('pct2').textContent = pct;
+          ['h', 'v'].forEach(function (axis) {
+            var band = document.getElementById('band-' + axis);
+            band.style.transform = (axis === 'h' ? 'scaleX(' : 'scaleY(') + zoom + ')';
+            band.style.transformOrigin = axis === 'h' ? 'left' : 'top';
+          });
+          document.querySelectorAll('.janso-canvas__numeral').forEach(function (el) {
+            var mm = Number(el.getAttribute('data-mm'));
+            el.style[el.closest('.janso-canvas__ruler--h') ? 'left' : 'top'] =
+              mm * zoom * PX_PER_MM + 'px';
+          });
+        }
+
+        document.getElementById('in').addEventListener('click', function () {
+          for (var i = 0; i < STEPS.length; i += 1) {
+            if (STEPS[i] > zoom + 0.001) {
+              zoom = STEPS[i];
+              break;
+            }
+          }
+          apply();
+        });
+        document.getElementById('out').addEventListener('click', function () {
+          for (var i = STEPS.length - 1; i >= 0; i -= 1) {
+            if (STEPS[i] < zoom - 0.001) {
+              zoom = STEPS[i];
+              break;
+            }
+          }
+          apply();
+        });
+        document.getElementById('fit').addEventListener('click', function () {
+          var stage = document.getElementById('canvas');
+          var scale = Math.min(
+            (stage.clientWidth - 150) / (210 * PX_PER_MM),
+            (stage.clientHeight - 100) / (297 * PX_PER_MM),
+          );
+          zoom = Math.max(0.25, Math.min(2, Math.floor(scale * 100) / 100));
+          apply();
+        });
+
+        document.getElementById('theme').addEventListener('change', function (event) {
+          var value = event.target.value;
+          document.documentElement.setAttribute('data-theme', value);
+          document.documentElement.style.setProperty(
+            'color-scheme',
+            value === 'dark' ? 'dark' : 'light',
+          );
+          try {
+            localStorage.setItem('janso-theme', value);
+          } catch (e) {}
+        });
+        document.getElementById('theme').value =
+          document.documentElement.getAttribute('data-theme') || 'light';
+
+        document.getElementById('copy').addEventListener('change', function (event) {
+          var value = event.target.value;
+          document.getElementById('mark').textContent = value;
+          document.getElementById('chip-copy').textContent = value || 'no mark';
+        });
+
+        ticks('h', 210);
+        ticks('v', 297);
+        apply();
+      })();
+    </script>
+  </body>
+</html>

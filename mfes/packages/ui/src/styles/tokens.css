@@ -1,0 +1,100 @@
+/*
+ * JANSO design tokens — NON-COLOUR ONLY.
+ *
+ * Type, space, radius, motion, layout dimensions and stacking order are the same in
+ * every theme, so they live here once. Colour lives in `theme-light.css`,
+ * `theme-dark.css` and `theme-ledger.css`, selected by `data-theme` on <html>.
+ * See docs/design-system.md §3 — that doc is the contract for these names.
+ *
+ * Import order in every app's root layout:
+ *   fonts.css → tokens.css → theme-*.css (all three) → janso-ui.css → shell.css → data.css
+ */
+
+:root {
+  /* — Type families — */
+  /* One family, two roles. Inter's optical-size axis does the work a second display face
+   * used to: headings set at 24px+ pick up the tighter display cut automatically, so the
+   * page carries one voice and one webfont request (design-system §3.1, decision log). */
+  --janso-font-display: 'Inter', 'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --janso-font-body: 'Inter', 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* A system stack on purpose: a second webfont for a `USD` badge isn't worth the request. */
+  --janso-font-mono: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'SF Mono', Menlo, monospace;
+
+  /* — Type scale: a dense product scale on a 14px body. Work software is read for hours
+   *   at arm's length; 15–17px body copy spent a third of every screen on air. — */
+  --janso-text-overline: 0.6875rem; /* 11px — section labels, table heads */
+  --janso-text-xs: 0.75rem; /* 12px fine print, meta */
+  --janso-text-sm: 0.8125rem; /* 13px labels, nav, table cells */
+  --janso-text-base: 0.875rem; /* 14px inputs & body */
+  --janso-text-md: 0.9375rem; /* 15px card titles */
+  --janso-text-lg: 1.125rem; /* 18px section titles */
+  --janso-text-xl: 1.5rem; /* 24px h1 */
+  --janso-text-2xl: 2rem; /* 32px display h1 (auth) */
+
+  /* Figures in stat tiles — the number is the content, so it gets its own steps */
+  --janso-figure-sm: 1.25rem; /* 20px — a tile nested inside a card */
+  --janso-figure-lg: 1.75rem; /* 28px — a top-level KPI tile */
+
+  /* — Space (8pt-ish) — */
+  --janso-space-1: 0.25rem;
+  --janso-space-2: 0.5rem;
+  --janso-space-3: 0.75rem;
+  --janso-space-4: 1rem;
+  --janso-space-5: 1.5rem;
+  --janso-space-6: 2rem;
+  --janso-space-7: 3rem;
+  --janso-space-8: 4rem;
+
+  /* — Radius: tight and functional, never one big radius on everything. Controls take
+   *   `sm`, surfaces (cards, menus, dialogs) take `md` (design-system §3.1). — */
+  --janso-radius-sm: 6px;
+  --janso-radius-md: 10px;
+  --janso-radius-pill: 999px;
+
+  /* — Motion — */
+  --janso-dur-fast: 100ms;
+  --janso-dur: 160ms;
+  --janso-ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* — Layout dimensions — */
+  --janso-rail-w: 248px;
+  /* The compact rail must grow with the initials and padding when text is enlarged. */
+  --janso-rail-w-collapsed: 4rem;
+  /* rem, not px: the type scale is rem, so a px band clips its own text when the user
+   * raises their default font size (WCAG 1.4.4). */
+  --janso-topbar-h: 3.5rem;
+  --janso-page-gutter: 2rem;
+  --janso-action-card-compact-min: 16rem;
+  --janso-action-card-compact-height: 17rem;
+  --janso-page-max: 1440px;
+  --janso-form-max: 52rem;
+  --janso-control-h: 2.25rem;
+  --janso-entry-subject-w: 18rem;
+  --janso-entry-quantity-w: 6rem;
+  --janso-entry-amount-w: 7rem;
+  --janso-entry-kind-w: 7rem;
+  --janso-filter-control-h: var(--janso-control-h);
+  --janso-filter-controls-min: 18rem;
+  --janso-filter-search-min: 10rem;
+  --janso-filter-search-max: 26rem;
+  --janso-report-viewport-height: 65vh;
+  --janso-report-table-min: 56rem;
+  --janso-report-detail-min: 28rem;
+
+  /* — Stacking order, declared once so nothing invents a z-index — */
+  /*
+   * A region that sticks *within* the page: a document-entry bar, a totals rail, an action bar.
+   * Below the top bar on purpose — the company and financial-year chips must stay above a
+   * sticky bar that scrolls under them, because which company you are posting into is the one
+   * thing a money screen may never obscure.
+   */
+  --janso-z-sticky: 10;
+  --janso-z-topbar: 20;
+  --janso-z-rail: 30;
+  --janso-z-scrim: 40;
+  --janso-z-drawer: 50;
+  --janso-z-popover: 60;
+  --janso-z-tooltip: 70;
+  /* Above everything: a toast reporting a failed save must not be hidden behind an open menu. */
+  --janso-z-toast: 80;
+}

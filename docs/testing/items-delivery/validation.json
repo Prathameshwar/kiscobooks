@@ -1,0 +1,129 @@
+{
+  "observed_at": "2026-10-31T14:04:59.332Z",
+  "scope": "Items/Products authoring and proxy delivery review",
+  "console": {
+    "affected_cases": 285,
+    "suites": 19,
+    "status": "PASS after targeted rechecks",
+    "initial_run": {
+      "passed": 281,
+      "failed": 4
+    },
+    "rechecks": {
+      "transport_cases": 136,
+      "inventory_action_cases": 29,
+      "failed": 0
+    },
+    "typescript": "PASS"
+  },
+  "production_build": {
+    "status": "PASS",
+    "build_id": "T2r36pNKXUNeZBbZrbhFz",
+    "static_pages": 15,
+    "isolated_output": true,
+    "generated_configuration_restored": true
+  },
+  "native_catalog_mysql": {
+    "status": "PASS including status metadata/read-deny regression",
+    "simple_product_workflows": 7,
+    "concurrent_idempotency": "PASS",
+    "mode_axis_races": 3,
+    "model_parity": "PASS",
+    "migration_roundtrip": "upgrade/head, downgrade/0131, upgrade/head",
+    "status_metadata_red": "FAIL before fix (missing descriptor)"
+  },
+  "company_settings_voucher_card": {
+    "unit_cases": 23,
+    "unit_status": "PASS",
+    "typescript": "PASS",
+    "authenticated_navigation": "PASS: settings card to voucher types and New voucher type"
+  },
+  "review": {
+    "manual_simplify": "PASS",
+    "security_and_correctness": "PASS",
+    "financial_posting": "not performed",
+    "repository_publish": "not performed",
+    "metadata_authority": "Facade now forwards native read-only status and native field access"
+  },
+  "browser_report": "review.json",
+  "browser": {
+    "status": "PASS across full run and focused rechecks",
+    "unique_checks": 13,
+    "full_run": {
+      "passed": 11,
+      "failed": 2
+    },
+    "recovery_notes": [
+      "Repeated edit fixture initially supplied the existing name; Save changes correctly remained disabled. Runner now alternates two QA-only names.",
+      "Filtered return recheck passed after a prior run remained on Loading product settings.",
+      "A focused run encountered interrupted read navigation; runner retries that specific navigation failure only."
+    ],
+    "checks": [
+      {
+        "name": "authenticated-directory",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "short-search-bookmark",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "new-product-form",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "create-selectable-qa-type",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "create-selectable-qa-group",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "create-product-draft",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "saved-detail-reload",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "edit-draft-and-reload",
+        "status": "PASS",
+        "source": "review-recovery.json"
+      },
+      {
+        "name": "punctuation-search-and-mobile",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "filtered-detail-return",
+        "status": "PASS",
+        "source": "review-navigation-recovery.json"
+      },
+      {
+        "name": "company-settings-voucher-types",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "directory-network-failure-recovery",
+        "status": "PASS",
+        "source": "review.json"
+      },
+      {
+        "name": "mobile-validation-keyboard-and-discard",
+        "status": "PASS",
+        "source": "review.json"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5352 @@
+{
+  "BALANCE_CONTINUITY": {
+    "definition": {
+      "code": "BALANCE_CONTINUITY",
+      "version": 6,
+      "title": "Balance continuity",
+      "description": "Balance continuity from a reconciled, immutable company generation.",
+      "implementation_hash": "525e4762b29673c0e8c20bcfa54717f98dac35a5f63173ca8368bfc83f1d2213",
+      "parameter_schema_hash": "202054ef7a81432efaa084ead2c812013ab5e0a1eb12fbd88e1cc27cc04a46a6",
+      "datasets": [
+        "journal_line"
+      ],
+      "metrics": [
+        "debit",
+        "credit",
+        "balance"
+      ],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "ledger.read",
+        "period.read",
+        "report.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Year continuity",
+          "columns": [
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "previous_closing",
+              "title": "Previous Closing",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "next_opening",
+              "title": "Next Opening",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "difference",
+              "title": "Difference",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reconciled",
+              "title": "Reconciled",
+              "kind": "BOOLEAN",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "source",
+          "title": "Source details",
+          "columns": [
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "item_id",
+              "title": "Item Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "due_date",
+              "title": "Due Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "nature",
+              "title": "Nature",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "transaction_currency",
+              "title": "Transaction Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "previous_closing",
+              "title": "Previous Closing",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "next_opening",
+              "title": "Next Opening",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "difference",
+              "title": "Difference",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reconciled",
+              "title": "Reconciled",
+              "kind": "BOOLEAN",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "previous_year_code",
+              "title": "Previous Year Code",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "next_year_code",
+              "title": "Next Year Code",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "previous_closing_date",
+              "title": "Previous Closing Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "next_opening_date",
+              "title": "Next Opening Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_count",
+              "title": "Account Count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_count",
+              "title": "Bill Count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "advance_count",
+              "title": "Advance Count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "previous_debit",
+              "title": "Previous Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "previous_credit",
+              "title": "Previous Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "next_debit",
+              "title": "Next Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "next_credit",
+              "title": "Next Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "SHORT",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "View retained row detail",
+          "target": "BALANCE_CONTINUITY",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "View account entries",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "View carried bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "description": "The exact next-year calendar span, verified against the frozen company source.",
+      "properties": {
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "ContinuityParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "account_name",
+        "reference",
+        "account_code",
+        "nature"
+      ],
+      "filters": {
+        "row_kind": "TEXT",
+        "account_name": "TEXT",
+        "reference": "IDENTIFIER",
+        "currency": "TEXT",
+        "previous_closing": "MONEY",
+        "next_opening": "MONEY",
+        "difference": "MONEY",
+        "reconciled": "BOOLEAN",
+        "account_code": "IDENTIFIER",
+        "account_id": "IDENTIFIER",
+        "item_id": "IDENTIFIER",
+        "due_date": "DATE",
+        "nature": "TEXT",
+        "transaction_currency": "TEXT",
+        "previous_year_code": "TEXT",
+        "next_year_code": "TEXT",
+        "previous_closing_date": "DATE",
+        "next_opening_date": "DATE",
+        "account_count": "INTEGER",
+        "bill_count": "INTEGER",
+        "advance_count": "INTEGER",
+        "previous_debit": "MONEY",
+        "previous_credit": "MONEY",
+        "next_debit": "MONEY",
+        "next_credit": "MONEY",
+        "period": "TEXT",
+        "previous_closing_min": "MONEY",
+        "previous_closing_max": "MONEY",
+        "next_opening_min": "MONEY",
+        "next_opening_max": "MONEY",
+        "difference_min": "MONEY",
+        "difference_max": "MONEY",
+        "due_date_from": "DATE",
+        "due_date_to": "DATE",
+        "previous_closing_date_from": "DATE",
+        "previous_closing_date_to": "DATE",
+        "next_opening_date_from": "DATE",
+        "next_opening_date_to": "DATE",
+        "account_count_min": "INTEGER",
+        "account_count_max": "INTEGER",
+        "bill_count_min": "INTEGER",
+        "bill_count_max": "INTEGER",
+        "advance_count_min": "INTEGER",
+        "advance_count_max": "INTEGER",
+        "previous_debit_min": "MONEY",
+        "previous_debit_max": "MONEY",
+        "previous_credit_min": "MONEY",
+        "previous_credit_max": "MONEY",
+        "next_debit_min": "MONEY",
+        "next_debit_max": "MONEY",
+        "next_credit_min": "MONEY",
+        "next_credit_max": "MONEY"
+      },
+      "sort_fields": [
+        "row_kind",
+        "account_name",
+        "reference",
+        "currency",
+        "previous_closing",
+        "next_opening",
+        "difference",
+        "reconciled",
+        "account_code",
+        "account_id",
+        "item_id",
+        "due_date",
+        "nature",
+        "transaction_currency",
+        "previous_year_code",
+        "next_year_code",
+        "previous_closing_date",
+        "next_opening_date",
+        "account_count",
+        "bill_count",
+        "advance_count",
+        "previous_debit",
+        "previous_credit",
+        "next_debit",
+        "next_credit",
+        "ordinal",
+        "period"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "BUYER_PROFIT": {
+    "definition": {
+      "code": "BUYER_PROFIT",
+      "version": 2,
+      "title": "Party (buyer) wise profit",
+      "description": "Party (buyer) wise profit from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "aa0312770e34be3b4907f74a6b052c8e0f27b8525c0862bed1dffef0b766971b",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "item.read",
+        "ledger.read",
+        "period.read",
+        "report.read",
+        "warehouse.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Buyers",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Buyer",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost",
+              "title": "Cost",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_profit",
+              "title": "Gross profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "margin_percent",
+              "title": "Margin percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost_status",
+              "title": "Cost status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "invoices",
+          "title": "Invoices and returns",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Invoice / return",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost",
+              "title": "Cost",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_profit",
+              "title": "Gross profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "margin_percent",
+              "title": "Margin percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost_status",
+              "title": "Cost status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "BUYER_PROFIT",
+          "version": 1
+        },
+        {
+          "key": "analytics_sales",
+          "title": "Sales invoices and returns",
+          "target": "SALES_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "BuyerProfitParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "cost_status",
+        "account_name",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "currency": "TEXT",
+        "net_sales": "MONEY",
+        "cost": "MONEY",
+        "gross_profit": "MONEY",
+        "margin_percent": "DECIMAL",
+        "cost_status": "TEXT",
+        "account_name": "TEXT",
+        "posting_date": "DATE",
+        "row_kind": "TEXT",
+        "net_sales_min": "MONEY",
+        "net_sales_max": "MONEY",
+        "cost_min": "MONEY",
+        "cost_max": "MONEY",
+        "gross_profit_min": "MONEY",
+        "gross_profit_max": "MONEY",
+        "margin_percent_min": "DECIMAL",
+        "margin_percent_max": "DECIMAL",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "currency",
+        "net_sales",
+        "cost",
+        "gross_profit",
+        "margin_percent",
+        "cost_status",
+        "account_name",
+        "posting_date",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "CASH_WORKING_CAPITAL": {
+    "definition": {
+      "code": "CASH_WORKING_CAPITAL",
+      "version": 1,
+      "title": "Cash and working capital",
+      "description": "Cash and working capital from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "a750b3baddb33bc32e3f7c945c07cfef67d49ba82b4de462e062914920757c8e",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.bank.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "item.read",
+        "ledger.read",
+        "period.read",
+        "report.read",
+        "warehouse.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Cash and bank balances",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "opening",
+              "title": "Opening",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_movement",
+              "title": "Net movement",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "closing",
+              "title": "Closing",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "customers",
+          "title": "Customer collections and credits",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direction",
+              "title": "Direction",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "due_date",
+              "title": "Due date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "days_overdue",
+              "title": "Days overdue",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "aging_bucket",
+              "title": "Aging bucket",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "document_currency",
+              "title": "Document currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "suppliers",
+          "title": "Supplier dues and credits",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direction",
+              "title": "Direction",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "due_date",
+              "title": "Due date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "days_overdue",
+              "title": "Days overdue",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "aging_bucket",
+              "title": "Aging bucket",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "document_currency",
+              "title": "Document currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "stock",
+          "title": "Owned stock tied up",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "quantity",
+              "title": "Quantity",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "unit",
+              "title": "Unit",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "stock_status",
+              "title": "Stock status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "item_id",
+              "title": "Item id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "position_id",
+              "title": "Position id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "movements",
+          "title": "Net cash effects by journal",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "movement_kind",
+              "title": "Movement kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "journal_id",
+              "title": "Journal id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "CASH_WORKING_CAPITAL",
+          "version": 1
+        },
+        {
+          "key": "analytics_sales",
+          "title": "Sales invoices and returns",
+          "target": "SALES_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        },
+        "grain": {
+          "const": "MONTH",
+          "default": "MONTH",
+          "title": "Grain",
+          "type": "string"
+        },
+        "due_within_days": {
+          "default": 30,
+          "maximum": 365,
+          "minimum": 1,
+          "title": "Due Within Days",
+          "type": "integer"
+        },
+        "slow_stock_days": {
+          "default": 90,
+          "maximum": 730,
+          "minimum": 1,
+          "title": "Slow Stock Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "CashParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "reference",
+        "direction",
+        "aging_bucket",
+        "unit",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "opening": "MONEY",
+        "net_movement": "MONEY",
+        "closing": "MONEY",
+        "comparison_amount": "MONEY",
+        "change_amount": "MONEY",
+        "currency": "TEXT",
+        "account_id": "IDENTIFIER",
+        "reference": "TEXT",
+        "direction": "TEXT",
+        "amount": "MONEY",
+        "due_date": "DATE",
+        "days_overdue": "INTEGER",
+        "aging_bucket": "TEXT",
+        "document_currency": "TEXT",
+        "party_id": "IDENTIFIER",
+        "quantity": "DECIMAL",
+        "unit": "TEXT",
+        "stock_status": "TEXT",
+        "item_id": "IDENTIFIER",
+        "position_id": "IDENTIFIER",
+        "date": "DATE",
+        "movement_kind": "TEXT",
+        "journal_id": "IDENTIFIER",
+        "row_kind": "TEXT",
+        "opening_min": "MONEY",
+        "opening_max": "MONEY",
+        "net_movement_min": "MONEY",
+        "net_movement_max": "MONEY",
+        "closing_min": "MONEY",
+        "closing_max": "MONEY",
+        "comparison_amount_min": "MONEY",
+        "comparison_amount_max": "MONEY",
+        "change_amount_min": "MONEY",
+        "change_amount_max": "MONEY",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "due_date_from": "DATE",
+        "due_date_to": "DATE",
+        "days_overdue_min": "INTEGER",
+        "days_overdue_max": "INTEGER",
+        "quantity_min": "DECIMAL",
+        "quantity_max": "DECIMAL",
+        "date_from": "DATE",
+        "date_to": "DATE"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "opening",
+        "net_movement",
+        "closing",
+        "comparison_amount",
+        "change_amount",
+        "currency",
+        "account_id",
+        "reference",
+        "direction",
+        "amount",
+        "due_date",
+        "days_overdue",
+        "aging_bucket",
+        "document_currency",
+        "party_id",
+        "quantity",
+        "unit",
+        "stock_status",
+        "item_id",
+        "position_id",
+        "date",
+        "movement_kind",
+        "journal_id",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "CUSTOMER_INSIGHTS": {
+    "definition": {
+      "code": "CUSTOMER_INSIGHTS",
+      "version": 1,
+      "title": "Customer insights",
+      "description": "Customer insights from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "b5d2118f9efd9da3da1965f668c71852830387a55b16c1e91a8c1704bee1366a",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "ledger.read",
+        "period.read",
+        "report.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Customer activity",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "purchase_count",
+              "title": "Purchase count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "last_purchase_date",
+              "title": "Last purchase date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "segment",
+              "title": "Segment",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "history",
+          "title": "Observed customer history",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "recorded_sales",
+              "title": "Recorded sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "recorded_purchase_count",
+              "title": "Recorded purchase count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "first_observed_date",
+              "title": "First observed date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "last_purchase_date",
+              "title": "Last purchase date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "days_since_purchase",
+              "title": "Days since purchase",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "average_gap_days",
+              "title": "Average gap days",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "average_invoice",
+              "title": "Average invoice",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "purchases",
+          "title": "Invoices and returns",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill reference",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_kind",
+              "title": "Invoice kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_id",
+              "title": "Invoice id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "CUSTOMER_INSIGHTS",
+          "version": 1
+        },
+        {
+          "key": "analytics_sales",
+          "title": "Sales invoices and returns",
+          "target": "SALES_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        },
+        "grain": {
+          "default": "MONTH",
+          "enum": [
+            "DAY",
+            "MONTH"
+          ],
+          "title": "Grain",
+          "type": "string"
+        },
+        "inactive_days": {
+          "default": 90,
+          "maximum": 730,
+          "minimum": 1,
+          "title": "Inactive Days",
+          "type": "integer"
+        },
+        "segment": {
+          "default": "ALL",
+          "enum": [
+            "ALL",
+            "ACTIVE",
+            "REPEAT",
+            "FIRST_OBSERVED",
+            "INACTIVE",
+            "DECLINING"
+          ],
+          "title": "Segment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "CustomerParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "segment",
+        "bill_reference",
+        "account_name",
+        "invoice_kind",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "net_sales": "MONEY",
+        "purchase_count": "INTEGER",
+        "last_purchase_date": "DATE",
+        "segment": "TEXT",
+        "comparison_amount": "MONEY",
+        "change_amount": "MONEY",
+        "change_percent": "DECIMAL",
+        "currency": "TEXT",
+        "party_id": "IDENTIFIER",
+        "recorded_sales": "MONEY",
+        "recorded_purchase_count": "INTEGER",
+        "first_observed_date": "DATE",
+        "days_since_purchase": "INTEGER",
+        "average_gap_days": "DECIMAL",
+        "average_invoice": "MONEY",
+        "posting_date": "DATE",
+        "bill_reference": "TEXT",
+        "account_name": "TEXT",
+        "invoice_kind": "TEXT",
+        "invoice_id": "IDENTIFIER",
+        "row_kind": "TEXT",
+        "net_sales_min": "MONEY",
+        "net_sales_max": "MONEY",
+        "purchase_count_min": "INTEGER",
+        "purchase_count_max": "INTEGER",
+        "last_purchase_date_from": "DATE",
+        "last_purchase_date_to": "DATE",
+        "comparison_amount_min": "MONEY",
+        "comparison_amount_max": "MONEY",
+        "change_amount_min": "MONEY",
+        "change_amount_max": "MONEY",
+        "change_percent_min": "DECIMAL",
+        "change_percent_max": "DECIMAL",
+        "recorded_sales_min": "MONEY",
+        "recorded_sales_max": "MONEY",
+        "recorded_purchase_count_min": "INTEGER",
+        "recorded_purchase_count_max": "INTEGER",
+        "first_observed_date_from": "DATE",
+        "first_observed_date_to": "DATE",
+        "days_since_purchase_min": "INTEGER",
+        "days_since_purchase_max": "INTEGER",
+        "average_gap_days_min": "DECIMAL",
+        "average_gap_days_max": "DECIMAL",
+        "average_invoice_min": "MONEY",
+        "average_invoice_max": "MONEY",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "net_sales",
+        "purchase_count",
+        "last_purchase_date",
+        "segment",
+        "comparison_amount",
+        "change_amount",
+        "change_percent",
+        "currency",
+        "party_id",
+        "recorded_sales",
+        "recorded_purchase_count",
+        "first_observed_date",
+        "days_since_purchase",
+        "average_gap_days",
+        "average_invoice",
+        "posting_date",
+        "bill_reference",
+        "account_name",
+        "invoice_kind",
+        "invoice_id",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "EXPENSE_PROFIT_LEAKAGE": {
+    "definition": {
+      "code": "EXPENSE_PROFIT_LEAKAGE",
+      "version": 1,
+      "title": "Expense and profit leakage",
+      "description": "Expense and profit leakage from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "ac98839d58e8c78f74e65fe027aed41cecf667ae64aee9966a1f4573638c2cc2",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "item.read",
+        "ledger.read",
+        "period.read",
+        "report.read",
+        "warehouse.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Expense accounts",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "classification",
+              "title": "Classification",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "exception",
+              "title": "Exception",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "groups",
+          "title": "Expense groups",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "group_id",
+              "title": "Group id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "exceptions",
+          "title": "Material spending changes",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "classification",
+              "title": "Classification",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "exception",
+              "title": "Exception",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "suppliers",
+          "title": "Supplier purchase spending",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "purchases",
+              "title": "Purchases",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "purchase_returns",
+              "title": "Purchase returns",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_count",
+              "title": "Invoice count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "periods",
+          "title": "Expense trend",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direct_costs",
+              "title": "Direct costs",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "operating_expenses",
+              "title": "Operating expenses",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posted_income",
+              "title": "Posted income",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "reductions",
+          "title": "Sales returns and discounts",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "writeoffs",
+          "title": "Recorded stock losses",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "action",
+              "title": "Action",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "item_id",
+              "title": "Item id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "EXPENSE_PROFIT_LEAKAGE",
+          "version": 1
+        },
+        {
+          "key": "analytics_purchases",
+          "title": "Purchase invoices and returns",
+          "target": "PURCHASE_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        },
+        "grain": {
+          "const": "MONTH",
+          "default": "MONTH",
+          "title": "Grain",
+          "type": "string"
+        },
+        "increase_percent": {
+          "default": 25,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Increase Percent",
+          "type": "integer"
+        },
+        "material_amount": {
+          "default": "1000",
+          "pattern": "^\\d{1,15}(\\.\\d{1,4})?$",
+          "title": "Material Amount",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "ExpenseParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "exception",
+        "action",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "classification": "TEXT",
+        "amount": "MONEY",
+        "comparison_amount": "MONEY",
+        "change_amount": "MONEY",
+        "change_percent": "DECIMAL",
+        "exception": "TEXT",
+        "currency": "TEXT",
+        "account_id": "IDENTIFIER",
+        "group_id": "IDENTIFIER",
+        "purchases": "MONEY",
+        "purchase_returns": "MONEY",
+        "invoice_count": "INTEGER",
+        "party_id": "IDENTIFIER",
+        "date": "DATE",
+        "direct_costs": "MONEY",
+        "operating_expenses": "MONEY",
+        "posted_income": "MONEY",
+        "action": "TEXT",
+        "item_id": "IDENTIFIER",
+        "row_kind": "TEXT",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "comparison_amount_min": "MONEY",
+        "comparison_amount_max": "MONEY",
+        "change_amount_min": "MONEY",
+        "change_amount_max": "MONEY",
+        "change_percent_min": "DECIMAL",
+        "change_percent_max": "DECIMAL",
+        "purchases_min": "MONEY",
+        "purchases_max": "MONEY",
+        "purchase_returns_min": "MONEY",
+        "purchase_returns_max": "MONEY",
+        "invoice_count_min": "INTEGER",
+        "invoice_count_max": "INTEGER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "direct_costs_min": "MONEY",
+        "direct_costs_max": "MONEY",
+        "operating_expenses_min": "MONEY",
+        "operating_expenses_max": "MONEY",
+        "posted_income_min": "MONEY",
+        "posted_income_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "classification",
+        "amount",
+        "comparison_amount",
+        "change_amount",
+        "change_percent",
+        "exception",
+        "currency",
+        "account_id",
+        "group_id",
+        "purchases",
+        "purchase_returns",
+        "invoice_count",
+        "party_id",
+        "date",
+        "direct_costs",
+        "operating_expenses",
+        "posted_income",
+        "action",
+        "item_id",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "INVOICE_GL_BRIDGE": {
+    "definition": {
+      "code": "INVOICE_GL_BRIDGE",
+      "version": 6,
+      "title": "Invoice to ledger reconciliation",
+      "description": "Invoice to ledger reconciliation from a reconciled, immutable company generation.",
+      "implementation_hash": "525e4762b29673c0e8c20bcfa54717f98dac35a5f63173ca8368bfc83f1d2213",
+      "parameter_schema_hash": "17d2a8f7e8d38d654c2ce7d00d3aaa452dd28d569d85d2cbde509d2cf0e63772",
+      "datasets": [
+        "invoice"
+      ],
+      "metrics": [
+        "debit",
+        "credit",
+        "balance"
+      ],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "ledger.read",
+        "period.read",
+        "report.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Posted invoice effects",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "side",
+              "title": "Side",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "source",
+          "title": "Source details",
+          "columns": [
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_id",
+              "title": "Invoice Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "journal_id",
+              "title": "Journal Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "line_id",
+              "title": "Line Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "component_id",
+              "title": "Component Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "tax_code",
+              "title": "Tax Code",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "tax_purpose",
+              "title": "Tax Purpose",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "event_date",
+              "title": "Event Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account Id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "side",
+              "title": "Side",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "signed_debit",
+              "title": "Signed Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "SHORT",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "View retained row detail",
+          "target": "INVOICE_GL_BRIDGE",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "View journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "View invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_taxes",
+          "title": "View invoice tax detail",
+          "target": "INVOICE_TAX_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_settlements",
+          "title": "View invoice settlements",
+          "target": "INVOICE_SETTLEMENT_REGISTER",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "invoice_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invoice Id"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "InvoiceParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "bill_reference",
+        "account_code",
+        "account_name",
+        "row_kind",
+        "tax_code",
+        "tax_purpose"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "posting_date": "DATE",
+        "bill_reference": "IDENTIFIER",
+        "account_code": "IDENTIFIER",
+        "account_name": "TEXT",
+        "side": "TEXT",
+        "currency": "TEXT",
+        "amount": "MONEY",
+        "row_kind": "TEXT",
+        "invoice_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "line_id": "IDENTIFIER",
+        "component_id": "IDENTIFIER",
+        "tax_code": "TEXT",
+        "tax_purpose": "TEXT",
+        "event_date": "DATE",
+        "account_id": "IDENTIFIER",
+        "signed_debit": "MONEY",
+        "party_account_id": "IDENTIFIER",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "event_date_from": "DATE",
+        "event_date_to": "DATE",
+        "signed_debit_min": "MONEY",
+        "signed_debit_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "posting_date",
+        "bill_reference",
+        "account_code",
+        "account_name",
+        "side",
+        "currency",
+        "amount",
+        "row_kind",
+        "invoice_id",
+        "journal_id",
+        "line_id",
+        "component_id",
+        "tax_code",
+        "tax_purpose",
+        "event_date",
+        "account_id",
+        "signed_debit",
+        "ordinal",
+        "party_account_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "PRODUCT_PROFIT": {
+    "definition": {
+      "code": "PRODUCT_PROFIT",
+      "version": 2,
+      "title": "Product wise profit",
+      "description": "Product wise profit from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "0bf32db9723a9152b9ffdcc2ec6c8031a6dcf039fa5ead17dfcd79d00c5d959f",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "item.read",
+        "ledger.read",
+        "period.read",
+        "report.read",
+        "warehouse.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Products",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Product",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost",
+              "title": "Cost",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_profit",
+              "title": "Gross profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "margin_percent",
+              "title": "Margin percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost_status",
+              "title": "Cost status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "groups",
+          "title": "Product groups",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Product group",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost",
+              "title": "Cost",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_profit",
+              "title": "Gross profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "margin_percent",
+              "title": "Margin percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost_status",
+              "title": "Cost status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "profit_group_products",
+          "title": "Products in this group",
+          "target": "PRODUCT_PROFIT",
+          "version": 1
+        },
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "PRODUCT_PROFIT",
+          "version": 1
+        },
+        {
+          "key": "analytics_sales",
+          "title": "Sales invoices and returns",
+          "target": "SALES_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        },
+        "item_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Item Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "ProductProfitParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "cost_status",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "currency": "TEXT",
+        "net_sales": "MONEY",
+        "cost": "MONEY",
+        "gross_profit": "MONEY",
+        "margin_percent": "DECIMAL",
+        "cost_status": "TEXT",
+        "row_kind": "TEXT",
+        "net_sales_min": "MONEY",
+        "net_sales_max": "MONEY",
+        "cost_min": "MONEY",
+        "cost_max": "MONEY",
+        "gross_profit_min": "MONEY",
+        "gross_profit_max": "MONEY",
+        "margin_percent_min": "DECIMAL",
+        "margin_percent_max": "DECIMAL"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "currency",
+        "net_sales",
+        "cost",
+        "gross_profit",
+        "margin_percent",
+        "cost_status",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "PROFIT_MARGIN_ANALYSIS": {
+    "definition": {
+      "code": "PROFIT_MARGIN_ANALYSIS",
+      "version": 1,
+      "title": "Profit and margin analysis",
+      "description": "Profit and margin analysis from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "fe556fade5ad63e685f05a67d758544e06e0536e5695d62dccc539a05b31eff7",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "item.read",
+        "ledger.read",
+        "period.read",
+        "report.read",
+        "warehouse.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Profit drivers",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "products",
+          "title": "Product gross margins",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost",
+              "title": "Cost",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_profit",
+              "title": "Gross profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "margin_percent",
+              "title": "Margin percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cost_status",
+              "title": "Cost status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "unit",
+              "title": "Unit",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "item_id",
+              "title": "Item id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "accounts",
+          "title": "P&L accounts",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "group_name",
+              "title": "Group name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "nature",
+              "title": "Nature",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_id",
+              "title": "Account id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "periods",
+          "title": "Period trend",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posted_income",
+              "title": "Posted income",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direct_costs",
+              "title": "Direct costs",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_profit",
+              "title": "Gross profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "operating_expenses",
+              "title": "Operating expenses",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_profit",
+              "title": "Net profit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "gross_margin_percent",
+              "title": "Gross margin percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "PROFIT_MARGIN_ANALYSIS",
+          "version": 1
+        },
+        {
+          "key": "analytics_sales",
+          "title": "Sales invoices and returns",
+          "target": "SALES_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        },
+        "grain": {
+          "const": "MONTH",
+          "default": "MONTH",
+          "title": "Grain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "ProfitParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "cost_status",
+        "unit",
+        "account_name",
+        "group_name",
+        "nature",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "amount": "MONEY",
+        "comparison_amount": "MONEY",
+        "change_amount": "MONEY",
+        "change_percent": "DECIMAL",
+        "currency": "TEXT",
+        "net_sales": "MONEY",
+        "cost": "MONEY",
+        "gross_profit": "MONEY",
+        "margin_percent": "DECIMAL",
+        "cost_status": "TEXT",
+        "unit": "TEXT",
+        "item_id": "IDENTIFIER",
+        "account_name": "TEXT",
+        "group_name": "TEXT",
+        "nature": "TEXT",
+        "account_id": "IDENTIFIER",
+        "date": "DATE",
+        "posted_income": "MONEY",
+        "direct_costs": "MONEY",
+        "operating_expenses": "MONEY",
+        "net_profit": "MONEY",
+        "gross_margin_percent": "DECIMAL",
+        "row_kind": "TEXT",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "comparison_amount_min": "MONEY",
+        "comparison_amount_max": "MONEY",
+        "change_amount_min": "MONEY",
+        "change_amount_max": "MONEY",
+        "change_percent_min": "DECIMAL",
+        "change_percent_max": "DECIMAL",
+        "net_sales_min": "MONEY",
+        "net_sales_max": "MONEY",
+        "cost_min": "MONEY",
+        "cost_max": "MONEY",
+        "gross_profit_min": "MONEY",
+        "gross_profit_max": "MONEY",
+        "margin_percent_min": "DECIMAL",
+        "margin_percent_max": "DECIMAL",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "posted_income_min": "MONEY",
+        "posted_income_max": "MONEY",
+        "direct_costs_min": "MONEY",
+        "direct_costs_max": "MONEY",
+        "operating_expenses_min": "MONEY",
+        "operating_expenses_max": "MONEY",
+        "net_profit_min": "MONEY",
+        "net_profit_max": "MONEY",
+        "gross_margin_percent_min": "DECIMAL",
+        "gross_margin_percent_max": "DECIMAL"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "amount",
+        "comparison_amount",
+        "change_amount",
+        "change_percent",
+        "currency",
+        "net_sales",
+        "cost",
+        "gross_profit",
+        "margin_percent",
+        "cost_status",
+        "unit",
+        "item_id",
+        "account_name",
+        "group_name",
+        "nature",
+        "account_id",
+        "date",
+        "posted_income",
+        "direct_costs",
+        "operating_expenses",
+        "net_profit",
+        "gross_margin_percent",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "SALES_PERFORMANCE": {
+    "definition": {
+      "code": "SALES_PERFORMANCE",
+      "version": 1,
+      "title": "Sales performance",
+      "description": "Sales performance from verified posted and commercial evidence.",
+      "implementation_hash": "f2d725aa6ed0dc80641c8bd4a4959a6b53cd1d7126bec1edb7ba9224de58a314",
+      "parameter_schema_hash": "bdb9b61cce16ed6167f9a3c3ed4313d818b3fe4b2d752a29e1ba75ddf7369a67",
+      "datasets": [
+        "invoice",
+        "inventory",
+        "journal_line"
+      ],
+      "metrics": [],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "item.read",
+        "ledger.read",
+        "period.read",
+        "report.read",
+        "warehouse.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Customers",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_count",
+              "title": "Invoice count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "returns",
+              "title": "Returns",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "discounts",
+              "title": "Discounts",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "average_invoice",
+              "title": "Average invoice",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "contribution_percent",
+              "title": "Contribution percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "products",
+          "title": "Products",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "quantity",
+              "title": "Quantity",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "unit",
+              "title": "Unit",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_count",
+              "title": "Invoice count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "contribution_percent",
+              "title": "Contribution percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "item_id",
+              "title": "Item id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "categories",
+          "title": "Supply categories",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "label",
+              "title": "Label",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_count",
+              "title": "Invoice count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "contribution_percent",
+              "title": "Contribution percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "comparison_amount",
+              "title": "Comparison amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_amount",
+              "title": "Change amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "change_percent",
+              "title": "Change percent",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "periods",
+          "title": "Period trend",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_count",
+              "title": "Invoice count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "returns",
+              "title": "Returns",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "discounts",
+              "title": "Discounts",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "average_invoice",
+              "title": "Average invoice",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "invoices",
+          "title": "Invoices and returns",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill reference",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_kind",
+              "title": "Invoice kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_sales",
+              "title": "Net sales",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_id",
+              "title": "Invoice id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "party_id",
+              "title": "Party id",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "BULK",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "Frozen row details",
+          "target": "SALES_PERFORMANCE",
+          "version": 1
+        },
+        {
+          "key": "analytics_sales",
+          "title": "Sales invoices and returns",
+          "target": "SALES_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "invoice_components",
+          "title": "Invoice components",
+          "target": "INVOICE_COMPONENT_REGISTER",
+          "version": 1
+        },
+        {
+          "key": "account_entries",
+          "title": "Account ledger",
+          "target": "ACCOUNT_LEDGER",
+          "version": 1
+        },
+        {
+          "key": "journal_entries",
+          "title": "Journal entries",
+          "target": "DAY_BOOK",
+          "version": 1
+        },
+        {
+          "key": "party_bills",
+          "title": "Outstanding bills",
+          "target": "OUTSTANDING_BILLS",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "search": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Search",
+          "type": "string"
+        },
+        "grain": {
+          "default": "MONTH",
+          "enum": [
+            "DAY",
+            "MONTH"
+          ],
+          "title": "Grain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "AnalyticsParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "label",
+        "unit",
+        "bill_reference",
+        "account_name",
+        "invoice_kind",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "label": "TEXT",
+        "net_sales": "MONEY",
+        "invoice_count": "INTEGER",
+        "returns": "MONEY",
+        "discounts": "MONEY",
+        "average_invoice": "MONEY",
+        "contribution_percent": "DECIMAL",
+        "comparison_amount": "MONEY",
+        "change_amount": "MONEY",
+        "change_percent": "DECIMAL",
+        "currency": "TEXT",
+        "party_id": "IDENTIFIER",
+        "quantity": "DECIMAL",
+        "unit": "TEXT",
+        "item_id": "IDENTIFIER",
+        "date": "DATE",
+        "posting_date": "DATE",
+        "bill_reference": "TEXT",
+        "account_name": "TEXT",
+        "invoice_kind": "TEXT",
+        "invoice_id": "IDENTIFIER",
+        "row_kind": "TEXT",
+        "net_sales_min": "MONEY",
+        "net_sales_max": "MONEY",
+        "invoice_count_min": "INTEGER",
+        "invoice_count_max": "INTEGER",
+        "returns_min": "MONEY",
+        "returns_max": "MONEY",
+        "discounts_min": "MONEY",
+        "discounts_max": "MONEY",
+        "average_invoice_min": "MONEY",
+        "average_invoice_max": "MONEY",
+        "contribution_percent_min": "DECIMAL",
+        "contribution_percent_max": "DECIMAL",
+        "comparison_amount_min": "MONEY",
+        "comparison_amount_max": "MONEY",
+        "change_amount_min": "MONEY",
+        "change_amount_max": "MONEY",
+        "change_percent_min": "DECIMAL",
+        "change_percent_max": "DECIMAL",
+        "quantity_min": "DECIMAL",
+        "quantity_max": "DECIMAL",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE"
+      },
+      "sort_fields": [
+        "period",
+        "label",
+        "net_sales",
+        "invoice_count",
+        "returns",
+        "discounts",
+        "average_invoice",
+        "contribution_percent",
+        "comparison_amount",
+        "change_amount",
+        "change_percent",
+        "currency",
+        "party_id",
+        "quantity",
+        "unit",
+        "item_id",
+        "date",
+        "posting_date",
+        "bill_reference",
+        "account_name",
+        "invoice_kind",
+        "invoice_id",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  },
+  "SOURCE_RECONCILIATION": {
+    "definition": {
+      "code": "SOURCE_RECONCILIATION",
+      "version": 6,
+      "title": "Source reconciliation",
+      "description": "Source reconciliation from a reconciled, immutable company generation.",
+      "implementation_hash": "525e4762b29673c0e8c20bcfa54717f98dac35a5f63173ca8368bfc83f1d2213",
+      "parameter_schema_hash": "e6306ad5102765e0d252f66b8d790c2e907fc208481a1590b7f53de3dd63ea72",
+      "datasets": [
+        "owner_fact"
+      ],
+      "metrics": [
+        "debit",
+        "credit",
+        "balance"
+      ],
+      "permissions": [
+        "accounting.account.read",
+        "accounting.finance.read",
+        "accounting.group.read",
+        "accounting.head.read",
+        "accounting.party.read",
+        "accounting.setup.read",
+        "ledger.read",
+        "period.read",
+        "report.read"
+      ],
+      "views": [
+        {
+          "key": "default",
+          "title": "Snapshot controls",
+          "columns": [
+            {
+              "key": "kind",
+              "title": "Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "source",
+              "title": "Source",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "count",
+              "title": "Count",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "DEBIT",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "CREDIT",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ],
+      "resource_class": "SHORT",
+      "financial_statement": false,
+      "drilldowns": [
+        {
+          "key": "row_detail",
+          "title": "View retained row detail",
+          "target": "SOURCE_RECONCILIATION",
+          "version": 1
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "description": "The diagnostic always covers the entire owner snapshot.",
+      "properties": {},
+      "title": "SourceParameters",
+      "type": "object"
+    },
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "kind",
+        "source",
+        "row_kind"
+      ],
+      "filters": {
+        "kind": "TEXT",
+        "source": "TEXT",
+        "count": "INTEGER",
+        "currency": "TEXT",
+        "DEBIT": "MONEY",
+        "CREDIT": "MONEY",
+        "row_kind": "TEXT",
+        "period": "TEXT",
+        "count_min": "INTEGER",
+        "count_max": "INTEGER",
+        "DEBIT_min": "MONEY",
+        "DEBIT_max": "MONEY",
+        "CREDIT_min": "MONEY",
+        "CREDIT_max": "MONEY"
+      },
+      "sort_fields": [
+        "kind",
+        "source",
+        "count",
+        "currency",
+        "DEBIT",
+        "CREDIT",
+        "ordinal",
+        "row_kind",
+        "period"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      },
+      {
+        "format": "HTML",
+        "max_rows": 10000,
+        "max_cells": 1000000
+      }
+    ]
+  }
+}

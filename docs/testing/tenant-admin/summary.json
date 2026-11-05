@@ -1,0 +1,46 @@
+{
+  "generated_utc": "2026-10-29T13:09:26.611317+00:00",
+  "live": {
+    "PASS": 1800,
+    "FAIL": 148,
+    "BLOCKED": 11
+  },
+  "live_execution_levels": {
+    "LIVE_UI": 120,
+    "LIVE_API_SUPPORT": 12,
+    "LIVE_UI_ROUTE_SMOKE": 897,
+    "LIVE_UI_INTERACTION_SMOKE": 262,
+    "LIVE_UI_WITH_API_READBACK": 18,
+    "LIVE_UI_FORM_READINESS": 1,
+    "LIVE_UI_NAVIGATION; entry implementation unavailable or load not verified": 4,
+    "LIVE_AUTHENTICATED_LINK_HTTP": 516,
+    "LIVE_API_FIXTURE_RETENTION": 12,
+    "LIVE_UI_FORM_CONFIGURATION": 114,
+    "LIVE_UI_ADMISSION_READINESS": 3
+  },
+  "automated": {
+    "PASS": 6251,
+    "FAIL": 8,
+    "SKIP": 3
+  },
+  "findings": 169,
+  "finding_statuses": {
+    "RECOVERED": 5,
+    "BLOCKED": 27,
+    "OPEN": 134,
+    "NEEDS_UI_RETEST": 3
+  },
+  "harness_or_prerequisite_issues": 23,
+  "visited_company_routes": 890,
+  "inventoried_elements": 45212,
+  "coverage_statuses": {
+    "NOT_INDIVIDUALLY_EXERCISED": 7857,
+    "DESTINATION_ROUTE_SMOKE": 36576,
+    "WORKFLOW_CONTROL_EXERCISED": 318,
+    "AUTHENTICATED_LINK_HTTP_ONLY": 461
+  },
+  "reusable_cases": 7461,
+  "application_code_changed_by_this_task": false,
+  "direct_application_database_writes": false,
+  "coverage_note": "Route smoke, individual workflows, HTTP-only repeated links and isolated automated regression are separate. NOT_RUN_INDIVIDUALLY entries are not claimed as tested features."
+}

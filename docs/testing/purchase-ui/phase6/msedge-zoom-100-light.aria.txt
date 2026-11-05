@@ -1,0 +1,165 @@
+- main:
+  - text: Purchases / Workflow preview
+  - heading "New purchase" [level=1]
+  - paragraph: Capture your supplier bill, with every detail in its place.
+  - strong: Preview workspace
+  - text: · Synthetic examples in INR. Changes stay on this page and are lost on reload.
+  - region "Purchase workflow":
+    - text: New · demo
+    - paragraph: No demo record yet · No unapplied edits
+    - link "Back to vouchers":
+      - /url: /vouchers
+  - group: Explore workflow examples
+  - region "Supplier and invoice details":
+    - heading "Supplier & invoice" [level=2]
+    - text: Internal reference
+    - strong: Unassigned
+    - text: Supplier
+    - combobox "Supplier": Paper & Co. Supplies
+    - button "Clear Supplier"
+    - button "Toggle Supplier options"
+    - paragraph: Example suppliers only. No live supplier balances.
+    - status
+    - text: Supplier payable account
+    - strong: Trade payables
+    - text: Selected automatically Supplier invoice number
+    - textbox "Supplier invoice number":
+      - /placeholder: e.g. PC-261034
+      - text: PC-261034
+    - text: Supplier invoice date
+    - textbox "Supplier invoice date": 2026-10-31
+    - text: Posting date
+    - textbox "Posting date": 2026-10-31
+    - paragraph: Determines the accounting period.
+    - strong: Entry mode
+    - paragraph: Choose how this supplier bill is entered.
+    - group "Purchase entry mode":
+      - button "Items" [pressed]
+      - button "Accounts / services"
+      - button "Mixed"
+  - group "Current purchase bill":
+    - strong: PC-261034
+    - text: 2 lines · INR
+  - region "Purchase line entry":
+    - heading "Bill lines" [level=2]
+    - paragraph: Receipt and billed quantities stay separate. Rates are entered manually.
+    - text: 2 entered
+    - table "Purchase lines. Tab moves across, Enter moves down, Control and Enter adds a line.":
+      - caption: Purchase lines. Tab moves across, Enter moves down, Control and Enter adds a line.
+      - rowgroup:
+        - row "# Item * Unit Receipt qty * Billed qty * Rate * Discount Net amount Line actions":
+          - columnheader "#"
+          - columnheader "Item *"
+          - columnheader "Unit"
+          - columnheader "Receipt qty *"
+          - columnheader "Billed qty *"
+          - columnheader "Rate *"
+          - columnheader "Discount"
+          - columnheader "Net amount"
+          - columnheader "Line actions"
+      - rowgroup:
+        - 'row "1 Item, line 1 A5 ruled notebooks · pack of 4 Toggle Item, line 1 options Unit, line 1: pack 24.0000 24.0000 125.0000 150.00 Net amount, line 1: ₹2,850.00 Line details, line 1 Duplicate line 1 Remove line 1"':
+          - cell "1"
+          - cell "Item, line 1 A5 ruled notebooks · pack of 4 Toggle Item, line 1 options":
+            - text: Item, line 1
+            - combobox "Item, line 1": A5 ruled notebooks · pack of 4
+            - button "Toggle Item, line 1 options"
+            - status
+          - 'cell "Unit, line 1: pack"'
+          - cell "24.0000":
+            - textbox "Receipt qty, line 1": "24.0000"
+          - cell "24.0000":
+            - textbox "Billed qty, line 1": "24.0000"
+          - cell "125.0000":
+            - textbox "Rate, line 1": "125.0000"
+          - cell "150.00":
+            - textbox "Discount, line 1": "150.00"
+          - 'cell "Net amount, line 1: ₹2,850.00"'
+          - cell "Line details, line 1 Duplicate line 1 Remove line 1":
+            - button "Line details, line 1"
+            - button "Duplicate line 1"
+            - button "Remove line 1"
+        - 'row "2 Item, line 2 Document organisers · A4 Toggle Item, line 2 options Unit, line 2: each 10.0000 10.0000 200.0000 100.00 Net amount, line 2: ₹1,900.00 Line details, line 2 Duplicate line 2 Remove line 2"':
+          - cell "2"
+          - cell "Item, line 2 Document organisers · A4 Toggle Item, line 2 options":
+            - text: Item, line 2
+            - combobox "Item, line 2": Document organisers · A4
+            - button "Toggle Item, line 2 options"
+            - status
+          - 'cell "Unit, line 2: each"'
+          - cell "10.0000":
+            - textbox "Receipt qty, line 2": "10.0000"
+          - cell "10.0000":
+            - textbox "Billed qty, line 2": "10.0000"
+          - cell "200.0000":
+            - textbox "Rate, line 2": "200.0000"
+          - cell "100.00":
+            - textbox "Discount, line 2": "100.00"
+          - 'cell "Net amount, line 2: ₹1,900.00"'
+          - cell "Line details, line 2 Duplicate line 2 Remove line 2":
+            - button "Line details, line 2"
+            - button "Duplicate line 2"
+            - button "Remove line 2"
+      - rowgroup:
+        - row "Add line":
+          - cell "Add line":
+            - button "Add line"
+    - text: Enter next row · Ctrl Enter add line · Alt Enter details Net amounts in INR · after line discount, before bill adjustments and tax
+  - region "Purchase details":
+    - heading "Purchase details" [level=2]
+    - text: Open only what this bill needs
+    - button "Discounts & charges 1 document component · line discounts stay in the grid"
+    - button "Tax details Supplied tax evidence · rates are read-only Example evidence"
+    - button "Goods receipt Receive with bill · planned quantities"
+    - button "Line tracking Location, batch, expiry and serial details by item"
+    - button "Payment & terms Due 30 Nov 2026 · advances and payment intentions"
+    - button "Supplier bill & attachments 0 local files · supplier total, notes and additional fields"
+  - complementary "Purchase totals":
+    - region "Bill summary":
+      - heading "Bill summary" [level=2]
+      - text: Provisional
+      - paragraph:
+        - text: Line subtotal
+        - strong: ₹5,000.00
+      - paragraph:
+        - text: Line discounts
+        - strong: "-₹250.00"
+      - paragraph:
+        - text: After line discounts
+        - strong: ₹4,750.00
+      - paragraph:
+        - text: Supplier charges
+        - strong: ₹100.00
+      - paragraph:
+        - text: CGST · supplied example
+        - strong: ₹436.50
+      - paragraph:
+        - text: SGST · supplied example
+        - strong: ₹436.50
+      - paragraph:
+        - text: Bill total
+        - strong: ₹5,723.00
+      - paragraph: Uses a bounded supplied example recipe. Provisional only; no financial entry is created.
+    - region "Settlement intentions":
+      - heading "Payment & terms" [level=2]
+      - paragraph: Due 30 Nov 2026 · from invoice date
+      - paragraph:
+        - text: Advances to apply
+        - strong: ₹1,000.00
+      - paragraph:
+        - text: Payment to record
+        - strong: ₹0.00
+      - paragraph:
+        - text: Remaining if applied
+        - strong: ₹4,723.00
+      - paragraph: Proposed only. Nothing has been applied, paid or cleared.
+    - region "Entry guidance":
+      - heading "Before you finish" [level=2]
+      - paragraph: Use the supplier’s own invoice number. Your internal voucher reference is assigned later.
+      - paragraph: Check receipt quantity against what arrived, and billed quantity against the supplier’s invoice.
+  - group "Purchase actions":
+    - text: Bill total
+    - strong: ₹5,723.00
+    - text: Provisional · Not saved
+    - button "Review bill"
+    - button "Save demo draft"

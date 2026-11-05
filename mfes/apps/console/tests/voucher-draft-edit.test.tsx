@@ -1,0 +1,77 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, expect, it, vi } from 'vitest';
+import { VoucherDraftEditor } from '../app/components/VoucherDraftEditor';
+import { editableDraft } from '../app/lib/voucher-draft-edit';
+import { buildPurchase } from '../app/lib/purchase-entry';
+import { draft as purchaseDraft, metadata as purchaseMetadata } from './purchase-entry-fixtures';
+import { productFieldRequest } from '../app/lib/product-fields';
+import { serviceCall } from '../app/lib/service-call';
+import { goTo } from '../app/lib/navigate';
+import type { FieldSet } from '../app/lib/voucher-fields';
+import type { components } from '@janso/api-client/vouchers';
+vi.mock('../app/lib/product-fields', () => ({ productFieldRequest: vi.fn() }));
+vi.mock('../app/lib/service-call', async original => ({ ...await original<typeof import('../app/lib/service-call')>(), serviceCall: vi.fn() }));
+vi.mock('../app/lib/navigate', () => ({ goTo: vi.fn() }));
+const id = (n: number) => '10000000-0000-7000-8000-' + String(n).padStart(12, '0');
+const company = id(1), voucherId = id(2), typeId = id(3), account = id(4);
+const properties = Object.fromEntries(['type_revision_id', 'class_id', 'document_date', 'posting_date', 'stock_date', 'statutory_date', 'credit_terms_date', 'mode', 'currency', 'narration', 'lines', 'parties', 'references', 'attachments', 'links', 'custom_fields', 'financial'].map(key => [key, {}]));
+const metadata: FieldSet = { native: { properties }, custom: [], configuration: { type_revision_id: typeId, kind: 'RECEIPT', profile: 'STANDARD', policy: { schema_version: 2, allowed_modes: ['ACCOUNTS'] } } };
+const voucher: components['schemas']['VoucherDetail'] = { id: voucherId, company_id: company, row_version: 4, status: 'DRAFT', revision_id: id(5), revision_number: 2, type_revision_id: typeId, kind: 'RECEIPT', profile: 'STANDARD', document_date: '2026-10-30', posting_date: '2026-10-30', mode: 'ACCOUNTS', currency: 'INR', narration: 'Original', lines: [], parties: [], references: [], attachments: [], links: [], custom_fields: { cf_note: 'retained' }, financial: { purpose: 'GENERAL', accounts: [{ line_key: id(6), account_id: account, source_version: 2, side: 'DEBIT', currency: 'INR', amount: '42.1234', exchange_rate: '1', tracking: 'NONE' }], tenders: [], allocations: [] } };
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(productFieldRequest).mockImplementation(async (_service, _method, path) => path.includes('/field-set') ? metadata : path.includes('/vouchers/') ? voucher : { id: account, company_id: company, row_version: 99, name: 'Current bank label', kind: 'BANK' });
+  vi.mocked(serviceCall).mockResolvedValue({ ...voucher, row_version: 5 });
+});
+it.each([{ ...voucher, company_id: id(9) }, { ...voucher, status: 'POSTED' }, { ...voucher, custom_fields: null }])('refuses foreign, terminal or unreadable replacement captures', bad => {
+  expect(() => editableDraft(company, voucherId, bad, metadata)).toThrow();
+});
+it('preserves captured source versions and other content while saving an exact amount', async () => {
+  render(<VoucherDraftEditor company={company} voucherId={voucherId} typeId={typeId} currency="INR" />);
+  const amount = await screen.findByLabelText('Amount 1');
+  fireEvent.change(amount, { target: { value: '43.1234' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save draft changes' }));
+  await waitFor(() => expect(goTo).toHaveBeenCalledWith('/vouchers/' + voucherId));
+  expect(vi.mocked(serviceCall).mock.calls[0]![1]).toMatchObject({ method: 'PUT', body: { expected_version: 4, content: { custom_fields: { cf_note: 'retained' }, financial: { accounts: [{ amount: '43.1234', source_version: 2 }] } } } });
+});
+it('freezes an uncertain edit and retries the exact content and key', async () => {
+  vi.mocked(serviceCall).mockRejectedValueOnce({ status: 503, message: 'Edit unconfirmed' }).mockResolvedValueOnce({ ...voucher, row_version: 5 });
+  render(<VoucherDraftEditor company={company} voucherId={voucherId} typeId={typeId} currency="INR" />);
+  fireEvent.change(await screen.findByLabelText('Amount 1'), { target: { value: '43.1234' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save draft changes' }));
+  const retry = await screen.findByRole('button', { name: 'Retry the same save' });
+  expect(screen.getByLabelText('Amount 1')).toBeDisabled();
+  fireEvent.click(retry);
+  await waitFor(() => expect(goTo).toHaveBeenCalled());
+  const calls = vi.mocked(serviceCall).mock.calls;
+  expect(calls[1]![1]).toEqual(calls[0]![1]);
+});
+it('shows refusal and keeps the edit correctable without navigation', async () => {
+  vi.mocked(serviceCall).mockRejectedValue({ status: 422, message: 'Entries must balance' });
+  render(<VoucherDraftEditor company={company} voucherId={voucherId} typeId={typeId} currency="INR" />);
+  fireEvent.change(await screen.findByLabelText('Amount 1'), { target: { value: '43.1234' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save draft changes' }));
+  await screen.findByText('Entries must balance');
+  expect(screen.getByLabelText('Amount 1')).toBeEnabled();
+  expect(goTo).not.toHaveBeenCalled();
+});
+it('edits a retained Purchase without dropping unrelated capture or refreshing source versions', async () => {
+  const purchaseFields: FieldSet = { ...purchaseMetadata, native: { ...purchaseMetadata.native, properties: { ...properties, ...purchaseMetadata.native.properties } }, configuration: { ...purchaseMetadata.configuration, type_revision_id: typeId } };
+  const captured = buildPurchase(company, purchaseDraft, voucher.document_date!, purchaseFields);
+  const extra = { purpose: 'EXTERNAL' as const, reference: 'Retained delivery reference', reference_date: '2026-10-29' };
+  const other = { role: 'OTHER' as const, party_id: id(8), source_version: 7 };
+  const saved = { ...voucher, ...captured, kind: 'PURCHASE', financial: null, references: [...captured.references!, extra], parties: [...captured.parties!, other], invoice: { ...captured.invoice!, tax: { ...captured.invoice!.tax, supplier_invoice_date: '2026-10-29' }, accepted_calculation_hash: 'a'.repeat(64) } };
+  vi.mocked(productFieldRequest).mockImplementation(async (_service, _method, path) => path.includes('/field-set') ? purchaseFields : path.includes('/vouchers/') ? saved : { id: path.split('/').at(-1), company_id: company, row_version: 99, name: 'Current label' });
+  vi.mocked(serviceCall).mockResolvedValue({ ...saved, row_version: 5 });
+  render(<VoucherDraftEditor company={company} voucherId={voucherId} typeId={typeId} currency="INR" />);
+  await screen.findByLabelText('Supplier invoice reference');
+  fireEvent.change(screen.getByLabelText('Narration'), { target: { value: 'Reviewed Purchase' } });
+  fireEvent.change(screen.getByLabelText('Supplier-declared total (INR)'), { target: { value: '' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save draft changes' }));
+  await waitFor(() => expect(goTo).toHaveBeenCalled());
+  const content = vi.mocked(serviceCall).mock.calls[0]![1].body as { content: typeof saved };
+  expect(content.content.references).toContainEqual(extra);
+  expect(content.content.parties).toContainEqual(other);
+  expect(content.content.invoice.tax).toEqual(saved.invoice.tax);
+  expect(content.content.invoice).toMatchObject({ accepted_calculation_hash: null, supplier_declared_total: null, party_account_version: purchaseDraft.payable!.version, supplies: [{ amount: '42.1234', account_version: purchaseDraft.supplies[0]!.account!.version }] });
+  expect(content.content.custom_fields).toEqual(voucher.custom_fields);
+});

@@ -1,0 +1,99 @@
+[project]
+name = "identity"
+version = "0.1.0"
+description = "Tenants, companies, users, roles, permissions, custom fields and field policy."
+requires-python = "==3.12.*"
+dependencies = [
+    "identity-posting-client", # Shared stock first-use wire contract; common reservation lifecycle.
+    "reporting-contract", # Signed report-worker permission proofs; neutral owner wire schemas.
+    # Mechanism only: base, tenant filter, money, outbox, ids, errors (CLAUDE.md Â§3).
+    "billing-platform",
+    # `asyncmy` is the production driver; migrations and the mariadb-marked tests
+    # both need it, so it is a hard dependency here rather than an extra.
+    "billing-platform[mariadb]",
+    # Confirmed publication of complete Catalog source facts.
+    "billing-platform[messaging]",
+    "billing-platform[crypto]",  # authenticated encryption for bank account fields
+    "billing-platform[auth]",  # shared Authentik JWT/JWKS validation
+    "alembic>=1.14.0,<1.15",
+    "redis>=5.2.0,<7",  # proofs plus permission, reference and company-display caches
+    # The HTTP surface (CLAUDE.md Â§5.15: a dependency with a stated reason). The API
+    # phase serves the routes the DB/domain phases deferred; same pins as `notification`
+    # so the two services do not drift on the framework.
+    "fastapi>=0.115.0,<0.116",
+    "uvicorn[standard]>=0.34.0,<0.35",
+    # Private document SAS, conditional snapshots and managed/environment identity.
+    "azure-storage-blob==12.30.1",
+    "azure-identity==1.25.3",
+    "aiohttp==3.14.3",  # Azure async HTTP transport
+    "argon2-cffi>=25.1,<26",  # argon2id password hashing for the local authentication provider (docs/local-auth.md)
+]
+
+[dependency-groups]
+dev = [
+    "billing-platform[testing]",
+    "pytest>=8.3.4,<9",
+    "pytest-asyncio>=0.25.0,<0.26",
+    "pytest-cov>=6.0.0,<7",
+    "mypy>=1.14.0,<2",
+    "ruff>=0.8.0,<0.9",
+    "aiosqlite>=0.20.0,<0.21",
+    "testcontainers[mysql]>=4.9.0,<5",
+    # Drives the FastAPI app in-process via ASGITransport; no live server or port.
+    "httpx>=0.28.0,<0.29",
+    "pytest-xdist==3.8.0",  # isolate test databases across workers for full-suite verification
+]
+
+[tool.uv.sources]
+reporting-contract = { path = "../../clients/reporting", editable = true }
+identity-posting-client = { path = "../../clients/identity-posting", editable = true }
+billing-platform = { path = "../../libs/platform", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/identity"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "T20", "RUF", "S"]
+ignore = ["S101", "B008"]  # assert is how tests assert; FastAPI markers live in defaults
+
+[tool.ruff.lint.isort]
+known-first-party = ["identity", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]
+# `tools/` holds dev-only smoke helpers, not shipped code: printing progress is the
+# point, and they read a throwaway local DB password from a documented default.
+"tools/*" = ["T201", "S106", "S608"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "--strict-markers"
+markers = [
+    "mysql: requires a live MySQL 9.6 container (needs Docker)",
+]
+
+[tool.coverage.run]
+concurrency = ["greenlet"]  # SQLAlchemy async ORM switches execution through greenlets
+source = ["src/identity"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

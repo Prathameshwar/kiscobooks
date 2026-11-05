@@ -1,0 +1,278 @@
+/*
+ * FileUpload — the drop zone, the rejection notice and the attachment list
+ * (docs/design-system.md §5.6).
+ *
+ * Its own stylesheet for the same reason `search-select.css` is: this is a control with several
+ * states rather than a primitive, and burying two hundred lines of it in the middle of the
+ * shared field rules makes both harder to read. Every colour here is a token — the file carries
+ * none of its own (tokens.test.ts enforces it).
+ */
+
+.janso-upload {
+  display: block;
+}
+
+/* ---------- the drop zone ---------- */
+
+/*
+ * The wrapper owns the drag events; the `<label>` inside it owns the click. They are separate
+ * elements because a `<label>` is not a reliable drop target across browsers — dragging over its
+ * own text fires leave/enter pairs that a label cannot see the outside of.
+ */
+.janso-upload__drop {
+  position: relative;
+}
+
+.janso-upload__zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--janso-space-2);
+  padding: var(--janso-space-5) var(--janso-space-4);
+  text-align: center;
+  /* Dashed, because the boundary is an invitation rather than a field's edge — and it is the
+   * only place in the system that says "put something here". */
+  border: 1px dashed var(--janso-control-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface);
+  color: var(--janso-ink-soft);
+  cursor: pointer;
+  transition: border-color var(--janso-dur-fast) var(--janso-ease),
+    background var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-upload__zone:hover {
+  border-color: var(--janso-brand-line);
+  background: var(--janso-hover);
+}
+
+/*
+ * The focus ring is drawn here, on the label, because the control that actually holds focus is
+ * the visually hidden `<input type="file">` immediately before it. Adjacent-sibling is what
+ * projects the ring onto the thing a sighted keyboard user can see — without it the field takes
+ * focus with no visible change at all (WCAG 2.4.7).
+ */
+.janso-upload__input:focus-visible + .janso-upload__zone {
+  outline: none;
+  border-color: var(--janso-focus);
+  box-shadow: var(--janso-focus-ring);
+}
+
+/* Dragging: the same emphasis as focus, since it is the same message — this is the live target. */
+.janso-upload__drop[data-dragging='true'] .janso-upload__zone {
+  border-color: var(--janso-brand);
+  border-style: solid;
+  background: var(--janso-brand-tint);
+  color: var(--janso-brand-ink);
+}
+
+.janso-upload[data-invalid='true'] .janso-upload__zone {
+  border-color: var(--janso-danger-ink);
+}
+.janso-upload[data-disabled='true'] .janso-upload__zone {
+  background: var(--janso-disabled-surface);
+  color: var(--janso-disabled-ink);
+  border-color: var(--janso-line);
+  cursor: not-allowed;
+}
+.janso-upload[data-disabled='true'] .janso-upload__zone:hover {
+  border-color: var(--janso-line);
+  background: var(--janso-disabled-surface);
+}
+
+.janso-upload__icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-brand-tint);
+  color: var(--janso-brand);
+}
+.janso-upload[data-disabled='true'] .janso-upload__icon {
+  background: var(--janso-neutral-tint);
+  color: var(--janso-disabled-ink);
+}
+
+.janso-upload__prompt {
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  color: var(--janso-ink);
+}
+.janso-upload[data-disabled='true'] .janso-upload__prompt {
+  color: var(--janso-disabled-ink);
+}
+.janso-upload__constraints {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-faint);
+}
+
+/* ---------- what was refused ---------- */
+
+.janso-upload__rejects {
+  margin-top: var(--janso-space-3);
+  padding: var(--janso-space-3);
+  border: 1px solid var(--janso-danger-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-danger-tint);
+  color: var(--janso-danger-ink);
+  font-size: var(--janso-text-xs);
+}
+.janso-upload__reject-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+.janso-upload__reject-head svg {
+  flex: none;
+}
+.janso-upload__rejects ul {
+  margin: var(--janso-space-2) 0 0;
+  padding-left: 1.15rem;
+  list-style: disc;
+}
+.janso-upload__rejects li + li {
+  margin-top: 0.2rem;
+}
+
+/* ---------- the attachment list ---------- */
+
+.janso-upload__list {
+  margin: var(--janso-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+}
+
+.janso-upload__item {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-3);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface);
+  min-width: 0;
+}
+.janso-upload__item[data-status='failed'] {
+  border-color: var(--janso-danger-line);
+  background: var(--janso-danger-tint);
+}
+.janso-upload__item[data-status='done'] {
+  border-color: var(--janso-success-line);
+}
+
+.janso-upload__item-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--janso-ink-faint);
+}
+.janso-upload__item[data-status='done'] .janso-upload__item-icon {
+  color: var(--janso-success-ink);
+}
+.janso-upload__item[data-status='failed'] .janso-upload__item-icon {
+  color: var(--janso-danger-ink);
+}
+
+.janso-upload__item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  /* `min-width: 0` on both the row and this column is what lets the long-name truncation below
+   * actually happen: a flex item's default minimum is its content. */
+  min-width: 0;
+  flex: 1;
+}
+.janso-upload__item-name {
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  /* A file name is user data and can be 250 characters. It truncates rather than reflowing the
+   * row, and `title` is not used for it — the full name belongs in the list, not in a tooltip
+   * no touch device can open. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janso-upload__item-meta {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-upload__item[data-status='failed'] .janso-upload__item-meta {
+  color: var(--janso-danger-ink);
+}
+
+/* ---------- progress ---------- */
+
+.janso-upload__bar {
+  display: block;
+  height: 4px;
+  margin-top: 0.35rem;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-meter-track);
+  overflow: hidden;
+}
+.janso-upload__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-meter-fill);
+  transition: width var(--janso-dur) var(--janso-ease);
+}
+/*
+ * No measurement to draw, so the bar sweeps instead of claiming a width. The reduced-motion
+ * rule in `janso-ui.css` stops the animation; the bar then reads as a full track, which is the
+ * honest static rendering of "in flight, progress unknown".
+ */
+.janso-upload__bar[data-indeterminate='true'] .janso-upload__bar-fill {
+  width: 35%;
+  animation: janso-upload-sweep 1.1s ease-in-out infinite;
+}
+@keyframes janso-upload-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+/* ---------- row actions ---------- */
+
+.janso-upload__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: none;
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface);
+  color: var(--janso-ink-soft);
+  font: inherit;
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+}
+.janso-upload__action:hover {
+  color: var(--janso-ink);
+  border-color: var(--janso-ink-faint);
+  background: var(--janso-hover);
+}
+.janso-upload__action:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-upload__action:disabled {
+  color: var(--janso-disabled-ink);
+  background: var(--janso-disabled-surface);
+  cursor: not-allowed;
+}
+/* Square, for the one whose glyph is the whole label. */
+.janso-upload__action--icon {
+  padding: 0.3rem;
+}

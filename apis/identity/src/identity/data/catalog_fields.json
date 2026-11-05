@@ -1,0 +1,593 @@
+{
+  "catalog.company_product_authoring_configuration": {
+    "fields": [
+      "product_family_sku_enabled",
+      "row_version",
+      "change_reason"
+    ],
+    "forms": {
+      "change_reason": {
+        "group": "general",
+        "hideable": false,
+        "order": 30,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "product_family_sku_enabled": {
+        "group": "general",
+        "hideable": false,
+        "order": 10,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "row_version": {
+        "group": "general",
+        "hideable": false,
+        "order": 20,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      }
+    },
+    "option_sources": {
+      "catalog.attribute_definitions": {
+        "entity": "catalog.attribute_definition",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.attribute_options": {
+        "entity": "catalog.attribute_option",
+        "parent_field": "definition_id",
+        "parent_source": "catalog.attribute_definitions"
+      },
+      "catalog.attribute_sets": {
+        "entity": "catalog.attribute_set",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.brand_series": {
+        "entity": "catalog.brand_series",
+        "parent_field": "brand_id",
+        "parent_source": "catalog.brands"
+      },
+      "catalog.brands": {
+        "entity": "catalog.brand",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.category_schemes": {
+        "entity": "catalog.category_scheme",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.handling_profiles": {
+        "entity": "catalog.handling_profile",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.identifier_profiles": {
+        "entity": "catalog.identifier_profile",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.inventory_templates": {
+        "entity": "catalog.inventory_profile_template",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.item_categories": {
+        "entity": "catalog.item_category",
+        "parent_field": "scheme_id",
+        "parent_source": "catalog.category_schemes"
+      },
+      "catalog.item_groups": {
+        "entity": "catalog.item_group",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.manufacturer_sites": {
+        "entity": "catalog.manufacturer_site",
+        "parent_field": "manufacturer_id",
+        "parent_source": "catalog.manufacturers"
+      },
+      "catalog.manufacturers": {
+        "entity": "catalog.manufacturer",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.pack_types": {
+        "entity": "catalog.pack_type",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.product_types": {
+        "entity": "catalog.product_type",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.return_policies": {
+        "entity": "catalog.return_policy",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_categories": {
+        "entity": "catalog.tax_category",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_classifications": {
+        "entity": "catalog.tax_classification",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_rules": {
+        "entity": "catalog.tax_rule",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.units": {
+        "entity": "catalog.unit_of_measure",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.warranty_policies": {
+        "entity": "catalog.warranty_policy",
+        "parent_field": null,
+        "parent_source": null
+      }
+    },
+    "permissions": {
+      "read": "product_configuration.read",
+      "write": "product_configuration.manage"
+    }
+  },
+  "catalog.item": {
+    "fields": [
+      "family_id",
+      "default_slot",
+      "sku",
+      "name",
+      "base_unit_id",
+      "sellable",
+      "purchasable",
+      "min_sale_quantity",
+      "status",
+      "row_version"
+    ],
+    "forms": {
+      "base_unit_id": {
+        "group": "general",
+        "hideable": false,
+        "order": 50,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "default_slot": {
+        "group": "general",
+        "hideable": true,
+        "order": 20,
+        "reason": null,
+        "renameable": true,
+        "required": false,
+        "requires_feature": null
+      },
+      "family_id": {
+        "group": "general",
+        "hideable": false,
+        "order": 10,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "min_sale_quantity": {
+        "group": "general",
+        "hideable": true,
+        "order": 80,
+        "reason": null,
+        "renameable": true,
+        "required": false,
+        "requires_feature": null
+      },
+      "name": {
+        "group": "general",
+        "hideable": false,
+        "order": 40,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "purchasable": {
+        "group": "general",
+        "hideable": false,
+        "order": 70,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "row_version": {
+        "group": "general",
+        "hideable": false,
+        "order": 100,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "sellable": {
+        "group": "general",
+        "hideable": false,
+        "order": 60,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "sku": {
+        "group": "general",
+        "hideable": false,
+        "order": 30,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "status": {
+        "group": "general",
+        "hideable": false,
+        "order": 90,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      }
+    },
+    "option_sources": {
+      "catalog.attribute_definitions": {
+        "entity": "catalog.attribute_definition",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.attribute_options": {
+        "entity": "catalog.attribute_option",
+        "parent_field": "definition_id",
+        "parent_source": "catalog.attribute_definitions"
+      },
+      "catalog.attribute_sets": {
+        "entity": "catalog.attribute_set",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.brand_series": {
+        "entity": "catalog.brand_series",
+        "parent_field": "brand_id",
+        "parent_source": "catalog.brands"
+      },
+      "catalog.brands": {
+        "entity": "catalog.brand",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.category_schemes": {
+        "entity": "catalog.category_scheme",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.handling_profiles": {
+        "entity": "catalog.handling_profile",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.identifier_profiles": {
+        "entity": "catalog.identifier_profile",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.inventory_templates": {
+        "entity": "catalog.inventory_profile_template",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.item_categories": {
+        "entity": "catalog.item_category",
+        "parent_field": "scheme_id",
+        "parent_source": "catalog.category_schemes"
+      },
+      "catalog.item_groups": {
+        "entity": "catalog.item_group",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.manufacturer_sites": {
+        "entity": "catalog.manufacturer_site",
+        "parent_field": "manufacturer_id",
+        "parent_source": "catalog.manufacturers"
+      },
+      "catalog.manufacturers": {
+        "entity": "catalog.manufacturer",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.pack_types": {
+        "entity": "catalog.pack_type",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.product_types": {
+        "entity": "catalog.product_type",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.return_policies": {
+        "entity": "catalog.return_policy",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_categories": {
+        "entity": "catalog.tax_category",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_classifications": {
+        "entity": "catalog.tax_classification",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_rules": {
+        "entity": "catalog.tax_rule",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.units": {
+        "entity": "catalog.unit_of_measure",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.warranty_policies": {
+        "entity": "catalog.warranty_policy",
+        "parent_field": null,
+        "parent_source": null
+      }
+    },
+    "permissions": {
+      "read": "item.read",
+      "write": "item.update"
+    }
+  },
+  "catalog.product_family": {
+    "fields": [
+      "code",
+      "name",
+      "kind",
+      "structure_mode",
+      "product_type_revision_id",
+      "brand_id",
+      "series_id",
+      "model_code",
+      "description",
+      "status",
+      "row_version"
+    ],
+    "forms": {
+      "brand_id": {
+        "group": "general",
+        "hideable": true,
+        "order": 60,
+        "reason": null,
+        "renameable": true,
+        "required": false,
+        "requires_feature": null
+      },
+      "code": {
+        "group": "general",
+        "hideable": false,
+        "order": 10,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "description": {
+        "group": "general",
+        "hideable": true,
+        "order": 90,
+        "reason": null,
+        "renameable": true,
+        "required": false,
+        "requires_feature": null
+      },
+      "kind": {
+        "group": "general",
+        "hideable": false,
+        "order": 30,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "model_code": {
+        "group": "general",
+        "hideable": true,
+        "order": 80,
+        "reason": null,
+        "renameable": true,
+        "required": false,
+        "requires_feature": null
+      },
+      "name": {
+        "group": "general",
+        "hideable": false,
+        "order": 20,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "product_type_revision_id": {
+        "group": "general",
+        "hideable": false,
+        "order": 50,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "row_version": {
+        "group": "general",
+        "hideable": false,
+        "order": 110,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "series_id": {
+        "group": "general",
+        "hideable": true,
+        "order": 70,
+        "reason": null,
+        "renameable": true,
+        "required": false,
+        "requires_feature": null
+      },
+      "status": {
+        "group": "general",
+        "hideable": false,
+        "order": 100,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      },
+      "structure_mode": {
+        "group": "general",
+        "hideable": false,
+        "order": 40,
+        "reason": "native quantity or identity contract",
+        "renameable": true,
+        "required": true,
+        "requires_feature": null
+      }
+    },
+    "option_sources": {
+      "catalog.attribute_definitions": {
+        "entity": "catalog.attribute_definition",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.attribute_options": {
+        "entity": "catalog.attribute_option",
+        "parent_field": "definition_id",
+        "parent_source": "catalog.attribute_definitions"
+      },
+      "catalog.attribute_sets": {
+        "entity": "catalog.attribute_set",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.brand_series": {
+        "entity": "catalog.brand_series",
+        "parent_field": "brand_id",
+        "parent_source": "catalog.brands"
+      },
+      "catalog.brands": {
+        "entity": "catalog.brand",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.category_schemes": {
+        "entity": "catalog.category_scheme",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.handling_profiles": {
+        "entity": "catalog.handling_profile",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.identifier_profiles": {
+        "entity": "catalog.identifier_profile",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.inventory_templates": {
+        "entity": "catalog.inventory_profile_template",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.item_categories": {
+        "entity": "catalog.item_category",
+        "parent_field": "scheme_id",
+        "parent_source": "catalog.category_schemes"
+      },
+      "catalog.item_groups": {
+        "entity": "catalog.item_group",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.manufacturer_sites": {
+        "entity": "catalog.manufacturer_site",
+        "parent_field": "manufacturer_id",
+        "parent_source": "catalog.manufacturers"
+      },
+      "catalog.manufacturers": {
+        "entity": "catalog.manufacturer",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.pack_types": {
+        "entity": "catalog.pack_type",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.product_types": {
+        "entity": "catalog.product_type",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.return_policies": {
+        "entity": "catalog.return_policy",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_categories": {
+        "entity": "catalog.tax_category",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_classifications": {
+        "entity": "catalog.tax_classification",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.tax_rules": {
+        "entity": "catalog.tax_rule",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.units": {
+        "entity": "catalog.unit_of_measure",
+        "parent_field": null,
+        "parent_source": null
+      },
+      "catalog.warranty_policies": {
+        "entity": "catalog.warranty_policy",
+        "parent_field": null,
+        "parent_source": null
+      }
+    },
+    "permissions": {
+      "read": "item.read",
+      "write": "item.update"
+    }
+  }
+}

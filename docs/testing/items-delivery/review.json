@@ -1,0 +1,129 @@
+{
+  "observed_at": "2026-10-31T13:57:15.929Z",
+  "checks": [
+    {
+      "name": "authenticated-directory",
+      "catalog_requests": 3,
+      "status": "PASS"
+    },
+    {
+      "name": "short-search-bookmark",
+      "status": "PASS"
+    },
+    {
+      "name": "new-product-form",
+      "field_labels": [
+        "Product name",
+        "Product code",
+        "Kind",
+        "Published product type",
+        "Base unit",
+        "Min sale quantity",
+        "Sellable",
+        "Purchasable",
+        "Brand",
+        "Brand series",
+        "Model code",
+        "Description",
+        "Primary product group",
+        "Setup effective from",
+        "Add a selling / purchasing unit conversion",
+        "Assign India tax defaults",
+        "Add a product barcode"
+      ],
+      "notices": [],
+      "status": "PASS"
+    },
+    {
+      "name": "create-selectable-qa-type",
+      "reused_qa_type": true,
+      "id": "01a19223-5dd1-729a-a31a-2cf626ca8af3",
+      "status": "PASS"
+    },
+    {
+      "name": "create-selectable-qa-group",
+      "reused_qa_group": true,
+      "id": "01a1922a-6700-70ef-b42c-591b3973bcb1",
+      "status": "PASS"
+    },
+    {
+      "name": "create-product-draft",
+      "reused_qa_draft": true,
+      "id": "01a1922a-b49b-7630-9a8c-2313202208ef",
+      "status": "PASS"
+    },
+    {
+      "name": "saved-detail-reload",
+      "status": "PASS"
+    },
+    {
+      "name": "edit-draft-and-reload",
+      "status": "FAIL",
+      "failure_type": "TimeoutError",
+      "message": "locator.click: Timeout 90000ms exceeded.",
+      "page_path": "/masters/items/01a1922a-b49b-7630-9a8c-2313202208ef/edit"
+    },
+    {
+      "name": "punctuation-search-and-mobile",
+      "status": "PASS"
+    },
+    {
+      "name": "filtered-detail-return",
+      "status": "FAIL",
+      "failure_type": "TimeoutError",
+      "message": "locator.waitFor: Timeout 90000ms exceeded.",
+      "page_path": "/masters/items"
+    },
+    {
+      "name": "company-settings-voucher-types",
+      "route": "/settings",
+      "voucher_type_creation_discoverable": true,
+      "status": "PASS"
+    },
+    {
+      "name": "directory-network-failure-recovery",
+      "actual_network_interruption": true,
+      "retry_used_native_catalog": true,
+      "status": "PASS"
+    },
+    {
+      "name": "mobile-validation-keyboard-and-discard",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "qa_records": [
+    {
+      "id": "01a1922a-b49b-7630-9a8c-2313202208ef",
+      "company_id": "01a19203-7533-70f9-977b-2d37e7165aed",
+      "code": "QAREV-MVWFZCCU",
+      "name": "QA delivery AC/DC MVWFZCCU reviewed",
+      "status": "DRAFT"
+    }
+  ],
+  "dependency_recoveries": [],
+  "company_count": 1,
+  "company_id": "01a19203-7533-70f9-977b-2d37e7165aed",
+  "products": {
+    "status": 200,
+    "count": 3
+  },
+  "product_types": {
+    "status": 200,
+    "count": 3
+  },
+  "units": {
+    "status": 200,
+    "count": 17
+  },
+  "qa_setup": {
+    "product_type": {
+      "id": "01a19223-5dd1-729a-a31a-2cf626ca8af3",
+      "revision_id": "01a19223-6b01-73ca-9ab3-c7047b352efb",
+      "published_at": "2026-10-31T13:26:00.698706Z"
+    },
+    "product_group": {
+      "id": "01a1922a-6700-70ef-b42c-591b3973bcb1"
+    }
+  }
+}

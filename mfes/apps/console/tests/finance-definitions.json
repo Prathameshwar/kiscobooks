@@ -1,0 +1,5921 @@
+{
+  "ADVANCES": {
+    "definition": {
+      "code": "ADVANCES",
+      "version": 6,
+      "views": [
+        {
+          "key": "default",
+          "title": "Unapplied credits",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "role",
+              "title": "Role",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direction",
+              "title": "Direction",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "original_amount",
+              "title": "Original Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "allocated_amount",
+              "title": "Allocated Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "remaining",
+              "title": "Remaining",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "report_currency",
+              "title": "Report Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "report_amount",
+              "title": "Report Amount",
+              "kind": "MONEY",
+              "currency_key": "report_currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "party_balances",
+          "title": "Balances by party",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account code",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "role",
+              "title": "Role",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debt",
+              "title": "Debt",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "unapplied_credit",
+              "title": "Unapplied credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_debt",
+              "title": "Net debt",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "party_balances",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_to"
+      ],
+      "title": "AsOfParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "reference",
+        "account_code",
+        "account_name",
+        "role",
+        "direction",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "reference": "IDENTIFIER",
+        "account_code": "TEXT",
+        "account_name": "TEXT",
+        "role": "TEXT",
+        "direction": "TEXT",
+        "posting_date": "DATE",
+        "currency": "TEXT",
+        "original_amount": "MONEY",
+        "allocated_amount": "MONEY",
+        "remaining": "MONEY",
+        "report_currency": "TEXT",
+        "report_amount": "MONEY",
+        "debt": "MONEY",
+        "unapplied_credit": "MONEY",
+        "net_debt": "MONEY",
+        "row_kind": "TEXT",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "original_amount_min": "MONEY",
+        "original_amount_max": "MONEY",
+        "allocated_amount_min": "MONEY",
+        "allocated_amount_max": "MONEY",
+        "remaining_min": "MONEY",
+        "remaining_max": "MONEY",
+        "report_amount_min": "MONEY",
+        "report_amount_max": "MONEY",
+        "debt_min": "MONEY",
+        "debt_max": "MONEY",
+        "unapplied_credit_min": "MONEY",
+        "unapplied_credit_max": "MONEY",
+        "net_debt_min": "MONEY",
+        "net_debt_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "reference",
+        "account_code",
+        "account_name",
+        "role",
+        "direction",
+        "posting_date",
+        "currency",
+        "original_amount",
+        "allocated_amount",
+        "remaining",
+        "report_currency",
+        "report_amount",
+        "debt",
+        "unapplied_credit",
+        "net_debt",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "OUTSTANDING_BILLS": {
+    "definition": {
+      "code": "OUTSTANDING_BILLS",
+      "version": 6,
+      "views": [
+        {
+          "key": "default",
+          "title": "Bill detail",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "role",
+              "title": "Role",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direction",
+              "title": "Direction",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "document_date",
+              "title": "Document Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "due_date",
+              "title": "Due Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "report_currency",
+              "title": "Report Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "original_amount",
+              "title": "Original Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "allocated_amount",
+              "title": "Allocated Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "remaining",
+              "title": "Remaining",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "report_amount",
+              "title": "Report Amount",
+              "kind": "MONEY",
+              "currency_key": "report_currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "aging_bucket",
+              "title": "Aging Bucket",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        },
+        {
+          "key": "party_balances",
+          "title": "Balances by party",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account code",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "role",
+              "title": "Role",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debt",
+              "title": "Debt",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "unapplied_credit",
+              "title": "Unapplied credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net_debt",
+              "title": "Net debt",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "party_balances",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_to"
+      ],
+      "title": "AsOfParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "reference",
+        "account_code",
+        "account_name",
+        "role",
+        "direction",
+        "aging_bucket",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "reference": "IDENTIFIER",
+        "account_code": "TEXT",
+        "account_name": "TEXT",
+        "role": "TEXT",
+        "direction": "TEXT",
+        "document_date": "DATE",
+        "due_date": "DATE",
+        "report_currency": "TEXT",
+        "original_amount": "MONEY",
+        "allocated_amount": "MONEY",
+        "remaining": "MONEY",
+        "currency": "TEXT",
+        "report_amount": "MONEY",
+        "aging_bucket": "TEXT",
+        "debt": "MONEY",
+        "unapplied_credit": "MONEY",
+        "net_debt": "MONEY",
+        "row_kind": "TEXT",
+        "document_date_from": "DATE",
+        "document_date_to": "DATE",
+        "due_date_from": "DATE",
+        "due_date_to": "DATE",
+        "original_amount_min": "MONEY",
+        "original_amount_max": "MONEY",
+        "allocated_amount_min": "MONEY",
+        "allocated_amount_max": "MONEY",
+        "remaining_min": "MONEY",
+        "remaining_max": "MONEY",
+        "report_amount_min": "MONEY",
+        "report_amount_max": "MONEY",
+        "debt_min": "MONEY",
+        "debt_max": "MONEY",
+        "unapplied_credit_min": "MONEY",
+        "unapplied_credit_max": "MONEY",
+        "net_debt_min": "MONEY",
+        "net_debt_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "reference",
+        "account_code",
+        "account_name",
+        "role",
+        "direction",
+        "document_date",
+        "due_date",
+        "report_currency",
+        "original_amount",
+        "allocated_amount",
+        "remaining",
+        "currency",
+        "report_amount",
+        "aging_bucket",
+        "debt",
+        "unapplied_credit",
+        "net_debt",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "ACCOUNT_SUMMARY": {
+    "definition": {
+      "code": "ACCOUNT_SUMMARY",
+      "version": 6,
+      "views": [
+        {
+          "key": "default",
+          "title": "Period movement",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "grain",
+              "title": "Grain",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "group_name",
+              "title": "Group Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "opening",
+              "title": "Opening",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debit",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "credit",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "net",
+              "title": "Net",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "closing",
+              "title": "Closing",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "grain": {
+          "default": "DAY",
+          "enum": [
+            "DAY",
+            "MONTH"
+          ],
+          "title": "Grain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "SummaryParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "grain",
+        "account_code",
+        "account_name",
+        "group_name"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "date": "DATE",
+        "grain": "TEXT",
+        "account_code": "IDENTIFIER",
+        "account_name": "TEXT",
+        "group_name": "TEXT",
+        "currency": "TEXT",
+        "opening": "MONEY",
+        "debit": "MONEY",
+        "credit": "MONEY",
+        "net": "MONEY",
+        "closing": "MONEY",
+        "account_id": "IDENTIFIER",
+        "group_id": "IDENTIFIER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "opening_min": "MONEY",
+        "opening_max": "MONEY",
+        "debit_min": "MONEY",
+        "debit_max": "MONEY",
+        "credit_min": "MONEY",
+        "credit_max": "MONEY",
+        "net_min": "MONEY",
+        "net_max": "MONEY",
+        "closing_min": "MONEY",
+        "closing_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "date",
+        "grain",
+        "account_code",
+        "account_name",
+        "group_name",
+        "currency",
+        "opening",
+        "debit",
+        "credit",
+        "net",
+        "closing",
+        "ordinal",
+        "account_id",
+        "group_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "BANK_BOOK": {
+    "definition": {
+      "code": "BANK_BOOK",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Bank transactions",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "kind",
+              "title": "Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debit",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "credit",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "balance",
+              "title": "Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "number",
+        "kind",
+        "account_name"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "date": "DATE",
+        "number": "IDENTIFIER",
+        "kind": "TEXT",
+        "account_name": "TEXT",
+        "currency": "TEXT",
+        "debit": "MONEY",
+        "credit": "MONEY",
+        "balance": "MONEY",
+        "account_id": "IDENTIFIER",
+        "party_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "line_id": "IDENTIFIER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "debit_min": "MONEY",
+        "debit_max": "MONEY",
+        "credit_min": "MONEY",
+        "credit_max": "MONEY",
+        "balance_min": "MONEY",
+        "balance_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "date",
+        "number",
+        "kind",
+        "account_name",
+        "currency",
+        "debit",
+        "credit",
+        "balance",
+        "ordinal",
+        "account_id",
+        "party_id",
+        "journal_id",
+        "line_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "CASH_BOOK": {
+    "definition": {
+      "code": "CASH_BOOK",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Cash transactions",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "kind",
+              "title": "Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debit",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "credit",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "balance",
+              "title": "Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "number",
+        "kind",
+        "account_name"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "date": "DATE",
+        "number": "IDENTIFIER",
+        "kind": "TEXT",
+        "account_name": "TEXT",
+        "currency": "TEXT",
+        "debit": "MONEY",
+        "credit": "MONEY",
+        "balance": "MONEY",
+        "account_id": "IDENTIFIER",
+        "party_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "line_id": "IDENTIFIER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "debit_min": "MONEY",
+        "debit_max": "MONEY",
+        "credit_min": "MONEY",
+        "credit_max": "MONEY",
+        "balance_min": "MONEY",
+        "balance_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "date",
+        "number",
+        "kind",
+        "account_name",
+        "currency",
+        "debit",
+        "credit",
+        "balance",
+        "ordinal",
+        "account_id",
+        "party_id",
+        "journal_id",
+        "line_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "PARTY_LEDGER": {
+    "definition": {
+      "code": "PARTY_LEDGER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Transactions",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "kind",
+              "title": "Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "role",
+              "title": "Role",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debit",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "credit",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "balance",
+              "title": "Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "number",
+        "kind",
+        "account_code",
+        "account_name",
+        "role"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "date": "DATE",
+        "number": "IDENTIFIER",
+        "kind": "TEXT",
+        "account_code": "IDENTIFIER",
+        "account_name": "TEXT",
+        "role": "TEXT",
+        "currency": "TEXT",
+        "debit": "MONEY",
+        "credit": "MONEY",
+        "balance": "MONEY",
+        "account_id": "IDENTIFIER",
+        "party_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "line_id": "IDENTIFIER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "debit_min": "MONEY",
+        "debit_max": "MONEY",
+        "credit_min": "MONEY",
+        "credit_max": "MONEY",
+        "balance_min": "MONEY",
+        "balance_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "date",
+        "number",
+        "kind",
+        "account_code",
+        "account_name",
+        "role",
+        "currency",
+        "debit",
+        "credit",
+        "balance",
+        "ordinal",
+        "account_id",
+        "party_id",
+        "journal_id",
+        "line_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "DAY_BOOK": {
+    "definition": {
+      "code": "DAY_BOOK",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Posted journal entries",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "kind",
+              "title": "Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debit",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "credit",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "number",
+        "kind",
+        "account_code",
+        "account_name",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "date": "DATE",
+        "number": "IDENTIFIER",
+        "kind": "TEXT",
+        "account_code": "IDENTIFIER",
+        "account_name": "TEXT",
+        "currency": "TEXT",
+        "debit": "MONEY",
+        "credit": "MONEY",
+        "row_kind": "TEXT",
+        "account_id": "IDENTIFIER",
+        "party_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "line_id": "IDENTIFIER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "debit_min": "MONEY",
+        "debit_max": "MONEY",
+        "credit_min": "MONEY",
+        "credit_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "date",
+        "number",
+        "kind",
+        "account_code",
+        "account_name",
+        "currency",
+        "debit",
+        "credit",
+        "ordinal",
+        "row_kind",
+        "account_id",
+        "party_id",
+        "journal_id",
+        "line_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "ACCOUNT_LEDGER": {
+    "definition": {
+      "code": "ACCOUNT_LEDGER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Transactions",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "kind",
+              "title": "Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debit",
+              "title": "Debit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "credit",
+              "title": "Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "balance",
+              "title": "Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "number",
+        "kind",
+        "account_code",
+        "account_name"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "date": "DATE",
+        "number": "IDENTIFIER",
+        "kind": "TEXT",
+        "account_code": "IDENTIFIER",
+        "account_name": "TEXT",
+        "currency": "TEXT",
+        "debit": "MONEY",
+        "credit": "MONEY",
+        "balance": "MONEY",
+        "account_id": "IDENTIFIER",
+        "party_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "line_id": "IDENTIFIER",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "debit_min": "MONEY",
+        "debit_max": "MONEY",
+        "credit_min": "MONEY",
+        "credit_max": "MONEY",
+        "balance_min": "MONEY",
+        "balance_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "date",
+        "number",
+        "kind",
+        "account_code",
+        "account_name",
+        "currency",
+        "debit",
+        "credit",
+        "balance",
+        "ordinal",
+        "account_id",
+        "party_id",
+        "journal_id",
+        "line_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "INCOME_EXPENSE": {
+    "definition": {
+      "code": "INCOME_EXPENSE",
+      "version": 6,
+      "views": [
+        {
+          "key": "default",
+          "title": "Statement",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "group_name",
+              "title": "Group Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "imported_ytd_amount",
+              "title": "Imported Ytd Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "STATEMENT",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "show_zero": {
+          "default": false,
+          "title": "Show Zero",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "ProfitParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "account_name",
+        "group_name"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "account_name": "TEXT",
+        "group_name": "TEXT",
+        "currency": "TEXT",
+        "amount": "MONEY",
+        "imported_ytd_amount": "MONEY",
+        "account_id": "IDENTIFIER",
+        "group_id": "IDENTIFIER",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "imported_ytd_amount_min": "MONEY",
+        "imported_ytd_amount_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "account_name",
+        "group_name",
+        "currency",
+        "amount",
+        "imported_ytd_amount",
+        "ordinal",
+        "account_id",
+        "group_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "AGING": {
+    "definition": {
+      "code": "AGING",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Ageing matrix",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_code",
+              "title": "Account Code",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "role",
+              "title": "Role",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "debt",
+              "title": "Debt",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "unapplied_credit",
+              "title": "Unapplied Credit",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "CURRENT",
+              "title": "Current",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "DAYS_1_30",
+              "title": "Days 1 30",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "DAYS_31_60",
+              "title": "Days 31 60",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "DAYS_61_90",
+              "title": "Days 61 90",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "DAYS_OVER_90",
+              "title": "Days Over 90",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "UNKNOWN",
+              "title": "Unknown",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "SUMMARY",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_to"
+      ],
+      "title": "AsOfParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "account_code",
+        "account_name",
+        "role",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "account_code": "IDENTIFIER",
+        "account_name": "TEXT",
+        "role": "TEXT",
+        "currency": "TEXT",
+        "debt": "MONEY",
+        "unapplied_credit": "MONEY",
+        "CURRENT": "MONEY",
+        "DAYS_1_30": "MONEY",
+        "DAYS_31_60": "MONEY",
+        "DAYS_61_90": "MONEY",
+        "DAYS_OVER_90": "MONEY",
+        "UNKNOWN": "MONEY",
+        "row_kind": "TEXT",
+        "debt_min": "MONEY",
+        "debt_max": "MONEY",
+        "unapplied_credit_min": "MONEY",
+        "unapplied_credit_max": "MONEY",
+        "CURRENT_min": "MONEY",
+        "CURRENT_max": "MONEY",
+        "DAYS_1_30_min": "MONEY",
+        "DAYS_1_30_max": "MONEY",
+        "DAYS_31_60_min": "MONEY",
+        "DAYS_31_60_max": "MONEY",
+        "DAYS_61_90_min": "MONEY",
+        "DAYS_61_90_max": "MONEY",
+        "DAYS_OVER_90_min": "MONEY",
+        "DAYS_OVER_90_max": "MONEY",
+        "UNKNOWN_min": "MONEY",
+        "UNKNOWN_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "account_code",
+        "account_name",
+        "role",
+        "currency",
+        "debt",
+        "unapplied_credit",
+        "CURRENT",
+        "DAYS_1_30",
+        "DAYS_31_60",
+        "DAYS_61_90",
+        "DAYS_OVER_90",
+        "UNKNOWN",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "PAYMENT_REGISTER": {
+    "definition": {
+      "code": "PAYMENT_REGISTER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Payment detail",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "voucher_kind",
+              "title": "Voucher Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "mode",
+              "title": "Mode",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "instrument_date",
+              "title": "Instrument Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "recognition",
+              "title": "Recognition",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "side",
+              "title": "Side",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "signed_amount",
+              "title": "Signed Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "number",
+        "account_name",
+        "mode",
+        "reference",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "number": "IDENTIFIER",
+        "voucher_kind": "TEXT",
+        "posting_date": "DATE",
+        "account_name": "TEXT",
+        "mode": "TEXT",
+        "reference": "IDENTIFIER",
+        "instrument_date": "DATE",
+        "recognition": "TEXT",
+        "side": "TEXT",
+        "currency": "TEXT",
+        "amount": "MONEY",
+        "signed_amount": "MONEY",
+        "row_kind": "TEXT",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "instrument_date_from": "DATE",
+        "instrument_date_to": "DATE",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "signed_amount_min": "MONEY",
+        "signed_amount_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "number",
+        "voucher_kind",
+        "posting_date",
+        "account_name",
+        "mode",
+        "reference",
+        "instrument_date",
+        "recognition",
+        "side",
+        "currency",
+        "amount",
+        "signed_amount",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "RECEIPT_REGISTER": {
+    "definition": {
+      "code": "RECEIPT_REGISTER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Receipt detail",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "number",
+              "title": "Number",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "voucher_kind",
+              "title": "Voucher Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "mode",
+              "title": "Mode",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "instrument_date",
+              "title": "Instrument Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "recognition",
+              "title": "Recognition",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "side",
+              "title": "Side",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "signed_amount",
+              "title": "Signed Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "journal_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Journal Id"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "LedgerParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "number",
+        "account_name",
+        "mode",
+        "reference",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "number": "IDENTIFIER",
+        "voucher_kind": "TEXT",
+        "posting_date": "DATE",
+        "account_name": "TEXT",
+        "mode": "TEXT",
+        "reference": "IDENTIFIER",
+        "instrument_date": "DATE",
+        "recognition": "TEXT",
+        "side": "TEXT",
+        "currency": "TEXT",
+        "amount": "MONEY",
+        "signed_amount": "MONEY",
+        "row_kind": "TEXT",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "instrument_date_from": "DATE",
+        "instrument_date_to": "DATE",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "signed_amount_min": "MONEY",
+        "signed_amount_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "number",
+        "voucher_kind",
+        "posting_date",
+        "account_name",
+        "mode",
+        "reference",
+        "instrument_date",
+        "recognition",
+        "side",
+        "currency",
+        "amount",
+        "signed_amount",
+        "ordinal",
+        "row_kind"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "BANK_RECONCILIATION": {
+    "definition": {
+      "code": "BANK_RECONCILIATION",
+      "version": 6,
+      "views": [
+        {
+          "key": "default",
+          "title": "Balance agreement",
+          "columns": [
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "booking_date",
+              "title": "Booking Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "state",
+              "title": "State",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "signed_amount",
+              "title": "Signed Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "cleared",
+              "title": "Cleared",
+              "kind": "BOOLEAN",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "book_balance",
+              "title": "Book Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "uncleared_signed",
+              "title": "Uncleared Signed",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "expected_statement_balance",
+              "title": "Expected Statement Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "statement_balance",
+              "title": "Statement Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "difference",
+              "title": "Difference",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "default": "BASE",
+          "enum": [
+            "BASE",
+            "TRANSACTION"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "account_id": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "statement_balance": {
+          "pattern": "^-?\\d{1,15}(\\.\\d{1,4})?$",
+          "title": "Statement Balance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_to",
+        "account_id",
+        "statement_balance"
+      ],
+      "title": "BankReconciliationParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "reference",
+        "state"
+      ],
+      "filters": {
+        "row_kind": "TEXT",
+        "booking_date": "DATE",
+        "reference": "IDENTIFIER",
+        "state": "TEXT",
+        "currency": "TEXT",
+        "signed_amount": "MONEY",
+        "cleared": "BOOLEAN",
+        "book_balance": "MONEY",
+        "uncleared_signed": "MONEY",
+        "expected_statement_balance": "MONEY",
+        "statement_balance": "MONEY",
+        "difference": "MONEY",
+        "period": "TEXT",
+        "booking_date_from": "DATE",
+        "booking_date_to": "DATE",
+        "signed_amount_min": "MONEY",
+        "signed_amount_max": "MONEY",
+        "book_balance_min": "MONEY",
+        "book_balance_max": "MONEY",
+        "uncleared_signed_min": "MONEY",
+        "uncleared_signed_max": "MONEY",
+        "expected_statement_balance_min": "MONEY",
+        "expected_statement_balance_max": "MONEY",
+        "statement_balance_min": "MONEY",
+        "statement_balance_max": "MONEY",
+        "difference_min": "MONEY",
+        "difference_max": "MONEY"
+      },
+      "sort_fields": [
+        "row_kind",
+        "booking_date",
+        "reference",
+        "state",
+        "currency",
+        "signed_amount",
+        "cleared",
+        "book_balance",
+        "uncleared_signed",
+        "expected_statement_balance",
+        "statement_balance",
+        "difference",
+        "ordinal",
+        "period"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "BANK_RECONCILIATION_EVIDENCE": {
+    "definition": {
+      "code": "BANK_RECONCILIATION_EVIDENCE",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Session evidence",
+          "columns": [
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "transaction_date",
+              "title": "Transaction Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "booking_date",
+              "title": "Booking Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "side",
+              "title": "Side",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "residual",
+              "title": "Residual",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "status",
+              "title": "Status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "opening_balance",
+              "title": "Opening Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "closing_balance",
+              "title": "Closing Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "matched_amount",
+              "title": "Matched Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "book_balance",
+              "title": "Book Balance",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "outstanding_book_amount",
+              "title": "Outstanding Book Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "account_id": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "basis": {
+          "const": "TRANSACTION",
+          "default": "TRANSACTION",
+          "title": "Basis",
+          "type": "string"
+        },
+        "session_id": {
+          "format": "uuid",
+          "title": "Session Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to",
+        "account_id",
+        "currency",
+        "session_id"
+      ],
+      "title": "BankEvidenceParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "reference",
+        "status"
+      ],
+      "filters": {
+        "row_kind": "TEXT",
+        "transaction_date": "DATE",
+        "booking_date": "DATE",
+        "reference": "IDENTIFIER",
+        "side": "TEXT",
+        "currency": "TEXT",
+        "amount": "MONEY",
+        "residual": "MONEY",
+        "status": "TEXT",
+        "opening_balance": "MONEY",
+        "closing_balance": "MONEY",
+        "matched_amount": "MONEY",
+        "book_balance": "MONEY",
+        "outstanding_book_amount": "MONEY",
+        "period": "TEXT",
+        "transaction_date_from": "DATE",
+        "transaction_date_to": "DATE",
+        "booking_date_from": "DATE",
+        "booking_date_to": "DATE",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "residual_min": "MONEY",
+        "residual_max": "MONEY",
+        "opening_balance_min": "MONEY",
+        "opening_balance_max": "MONEY",
+        "closing_balance_min": "MONEY",
+        "closing_balance_max": "MONEY",
+        "matched_amount_min": "MONEY",
+        "matched_amount_max": "MONEY",
+        "book_balance_min": "MONEY",
+        "book_balance_max": "MONEY",
+        "outstanding_book_amount_min": "MONEY",
+        "outstanding_book_amount_max": "MONEY"
+      },
+      "sort_fields": [
+        "row_kind",
+        "transaction_date",
+        "booking_date",
+        "reference",
+        "side",
+        "currency",
+        "amount",
+        "residual",
+        "status",
+        "opening_balance",
+        "closing_balance",
+        "matched_amount",
+        "book_balance",
+        "outstanding_book_amount",
+        "ordinal",
+        "period"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "BANK_RECONCILIATION_WORKLIST": {
+    "definition": {
+      "code": "BANK_RECONCILIATION_WORKLIST",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Unmatched worklist",
+          "columns": [
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "date",
+              "title": "Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reference",
+              "title": "Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "status",
+              "title": "Status",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "mode",
+              "title": "Mode",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "side",
+              "title": "Side",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "amount",
+              "title": "Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "matched_amount",
+              "title": "Matched Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "residual",
+              "title": "Residual",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "age_days",
+              "title": "Age Days",
+              "kind": "INTEGER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "RECONCILIATION",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "account_id": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "basis": {
+          "const": "TRANSACTION",
+          "default": "TRANSACTION",
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to",
+        "account_id",
+        "currency"
+      ],
+      "title": "BankWorklistParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "reference",
+        "status",
+        "mode"
+      ],
+      "filters": {
+        "row_kind": "TEXT",
+        "date": "DATE",
+        "reference": "IDENTIFIER",
+        "status": "TEXT",
+        "mode": "TEXT",
+        "side": "TEXT",
+        "currency": "TEXT",
+        "amount": "MONEY",
+        "matched_amount": "MONEY",
+        "residual": "MONEY",
+        "age_days": "INTEGER",
+        "period": "TEXT",
+        "date_from": "DATE",
+        "date_to": "DATE",
+        "amount_min": "MONEY",
+        "amount_max": "MONEY",
+        "matched_amount_min": "MONEY",
+        "matched_amount_max": "MONEY",
+        "residual_min": "MONEY",
+        "residual_max": "MONEY",
+        "age_days_min": "INTEGER",
+        "age_days_max": "INTEGER"
+      },
+      "sort_fields": [
+        "row_kind",
+        "date",
+        "reference",
+        "status",
+        "mode",
+        "side",
+        "currency",
+        "amount",
+        "matched_amount",
+        "residual",
+        "age_days",
+        "ordinal",
+        "period"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "SALES_REGISTER": {
+    "definition": {
+      "code": "SALES_REGISTER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Invoice register",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_kind",
+              "title": "Invoice Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direction",
+              "title": "Direction",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "document_date",
+              "title": "Document Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "due_date",
+              "title": "Due Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "commercial_total",
+              "title": "Commercial Total",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "tax_total",
+              "title": "Tax Total",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "rounding",
+              "title": "Rounding",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "payable",
+              "title": "Payable",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "invoice_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invoice Id"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_basis": {
+          "default": "POSTING",
+          "enum": [
+            "POSTING",
+            "DOCUMENT"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "InvoiceDocumentParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "bill_reference",
+        "invoice_kind",
+        "direction",
+        "account_name",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "bill_reference": "IDENTIFIER",
+        "invoice_kind": "TEXT",
+        "direction": "TEXT",
+        "account_name": "TEXT",
+        "document_date": "DATE",
+        "posting_date": "DATE",
+        "due_date": "DATE",
+        "currency": "TEXT",
+        "commercial_total": "MONEY",
+        "tax_total": "MONEY",
+        "rounding": "MONEY",
+        "payable": "MONEY",
+        "row_kind": "TEXT",
+        "invoice_id": "IDENTIFIER",
+        "party_account_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "document_date_from": "DATE",
+        "document_date_to": "DATE",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "due_date_from": "DATE",
+        "due_date_to": "DATE",
+        "commercial_total_min": "MONEY",
+        "commercial_total_max": "MONEY",
+        "tax_total_min": "MONEY",
+        "tax_total_max": "MONEY",
+        "rounding_min": "MONEY",
+        "rounding_max": "MONEY",
+        "payable_min": "MONEY",
+        "payable_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "bill_reference",
+        "invoice_kind",
+        "direction",
+        "account_name",
+        "document_date",
+        "posting_date",
+        "due_date",
+        "currency",
+        "commercial_total",
+        "tax_total",
+        "rounding",
+        "payable",
+        "ordinal",
+        "row_kind",
+        "invoice_id",
+        "party_account_id",
+        "journal_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "PURCHASE_REGISTER": {
+    "definition": {
+      "code": "PURCHASE_REGISTER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Supplier invoice register",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_kind",
+              "title": "Invoice Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "direction",
+              "title": "Direction",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "account_name",
+              "title": "Account Name",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "document_date",
+              "title": "Document Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "due_date",
+              "title": "Due Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "commercial_total",
+              "title": "Commercial Total",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "tax_total",
+              "title": "Tax Total",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "charged_tax_total",
+              "title": "Charged Tax Total",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "supplier_difference",
+              "title": "Supplier Difference",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "rounding",
+              "title": "Rounding",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "payable",
+              "title": "Payable",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "invoice_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invoice Id"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "date_basis": {
+          "default": "POSTING",
+          "enum": [
+            "POSTING",
+            "DOCUMENT"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "InvoiceDocumentParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "bill_reference",
+        "invoice_kind",
+        "direction",
+        "account_name",
+        "row_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "bill_reference": "IDENTIFIER",
+        "invoice_kind": "TEXT",
+        "direction": "TEXT",
+        "account_name": "TEXT",
+        "document_date": "DATE",
+        "posting_date": "DATE",
+        "due_date": "DATE",
+        "currency": "TEXT",
+        "commercial_total": "MONEY",
+        "tax_total": "MONEY",
+        "charged_tax_total": "MONEY",
+        "supplier_difference": "MONEY",
+        "rounding": "MONEY",
+        "payable": "MONEY",
+        "row_kind": "TEXT",
+        "invoice_id": "IDENTIFIER",
+        "party_account_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "document_date_from": "DATE",
+        "document_date_to": "DATE",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "due_date_from": "DATE",
+        "due_date_to": "DATE",
+        "commercial_total_min": "MONEY",
+        "commercial_total_max": "MONEY",
+        "tax_total_min": "MONEY",
+        "tax_total_max": "MONEY",
+        "charged_tax_total_min": "MONEY",
+        "charged_tax_total_max": "MONEY",
+        "supplier_difference_min": "MONEY",
+        "supplier_difference_max": "MONEY",
+        "rounding_min": "MONEY",
+        "rounding_max": "MONEY",
+        "payable_min": "MONEY",
+        "payable_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "bill_reference",
+        "invoice_kind",
+        "direction",
+        "account_name",
+        "document_date",
+        "posting_date",
+        "due_date",
+        "currency",
+        "commercial_total",
+        "tax_total",
+        "charged_tax_total",
+        "supplier_difference",
+        "rounding",
+        "payable",
+        "ordinal",
+        "row_kind",
+        "invoice_id",
+        "party_account_id",
+        "journal_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "INVOICE_COMPONENT_REGISTER": {
+    "definition": {
+      "code": "INVOICE_COMPONENT_REGISTER",
+      "version": 5,
+      "views": [
+        {
+          "key": "default",
+          "title": "Components and allocations",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "invoice_kind",
+              "title": "Invoice Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "purpose",
+              "title": "Purpose",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "scope",
+              "title": "Scope",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "effect",
+              "title": "Effect",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "input_kind",
+              "title": "Input Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "basis_amount",
+              "title": "Basis Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "basis_quantity",
+              "title": "Basis Quantity",
+              "kind": "DECIMAL",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "component_amount",
+              "title": "Component Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "allocation_amount",
+              "title": "Allocation Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "comparative_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative From"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "date_from": {
+          "format": "date",
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "invoice_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invoice Id"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        }
+      },
+      "required": [
+        "date_from",
+        "date_to"
+      ],
+      "title": "InvoiceParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "bill_reference",
+        "invoice_kind",
+        "purpose",
+        "scope",
+        "effect",
+        "input_kind"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "bill_reference": "IDENTIFIER",
+        "invoice_kind": "TEXT",
+        "posting_date": "DATE",
+        "purpose": "TEXT",
+        "scope": "TEXT",
+        "effect": "TEXT",
+        "input_kind": "TEXT",
+        "currency": "TEXT",
+        "basis_amount": "MONEY",
+        "basis_quantity": "DECIMAL",
+        "component_amount": "MONEY",
+        "allocation_amount": "MONEY",
+        "invoice_id": "IDENTIFIER",
+        "party_account_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "basis_amount_min": "MONEY",
+        "basis_amount_max": "MONEY",
+        "basis_quantity_min": "DECIMAL",
+        "basis_quantity_max": "DECIMAL",
+        "component_amount_min": "MONEY",
+        "component_amount_max": "MONEY",
+        "allocation_amount_min": "MONEY",
+        "allocation_amount_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "bill_reference",
+        "invoice_kind",
+        "posting_date",
+        "purpose",
+        "scope",
+        "effect",
+        "input_kind",
+        "currency",
+        "basis_amount",
+        "basis_quantity",
+        "component_amount",
+        "allocation_amount",
+        "ordinal",
+        "invoice_id",
+        "party_account_id",
+        "journal_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  },
+  "INVOICE_SETTLEMENT_REGISTER": {
+    "definition": {
+      "code": "INVOICE_SETTLEMENT_REGISTER",
+      "version": 6,
+      "views": [
+        {
+          "key": "default",
+          "title": "Settlement history",
+          "columns": [
+            {
+              "key": "period",
+              "title": "Period",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "row_kind",
+              "title": "Row Kind",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "bill_reference",
+              "title": "Bill Reference",
+              "kind": "IDENTIFIER",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "posting_date",
+              "title": "Posting Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "reversal_date",
+              "title": "Reversal Date",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "as_of",
+              "title": "As Of",
+              "kind": "DATE",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "active",
+              "title": "Active",
+              "kind": "BOOLEAN",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "currency",
+              "title": "Currency",
+              "kind": "TEXT",
+              "currency_key": null,
+              "metric": null,
+              "nullable": true
+            },
+            {
+              "key": "settlement_amount",
+              "title": "Settlement Amount",
+              "kind": "MONEY",
+              "currency_key": "currency",
+              "metric": null,
+              "nullable": true
+            }
+          ],
+          "layout": "REGISTER",
+          "order": [
+            "ordinal"
+          ],
+          "calculation": "detail",
+          "orientation": "AUTO"
+        }
+      ]
+    },
+    "parameter_schema": {
+      "additionalProperties": false,
+      "description": "Cumulative allocation history with activity evaluated at the selected date.",
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "CUSTOMER",
+                "SUPPLIER"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "date_to": {
+          "format": "date",
+          "title": "Date To",
+          "type": "string"
+        },
+        "comparative_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparative To"
+        },
+        "invoice_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invoice Id"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        }
+      },
+      "required": [
+        "date_to"
+      ],
+      "title": "InvoiceSettlementParameters",
+      "type": "object"
+    },
+    "run_enabled": true,
+    "export_limits": [
+      {
+        "format": "PDF",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "XLSX",
+        "max_rows": 1000,
+        "max_cells": 100000
+      },
+      {
+        "format": "CSV",
+        "max_rows": 1000,
+        "max_cells": 100000
+      }
+    ],
+    "navigation": {
+      "method": "POST",
+      "path": "/report-runs/{id}/queries",
+      "search_mode": "PREFIX",
+      "search_fields": [
+        "row_kind",
+        "bill_reference"
+      ],
+      "filters": {
+        "period": "TEXT",
+        "row_kind": "TEXT",
+        "bill_reference": "IDENTIFIER",
+        "posting_date": "DATE",
+        "reversal_date": "DATE",
+        "as_of": "DATE",
+        "active": "BOOLEAN",
+        "currency": "TEXT",
+        "settlement_amount": "MONEY",
+        "invoice_id": "IDENTIFIER",
+        "party_account_id": "IDENTIFIER",
+        "journal_id": "IDENTIFIER",
+        "posting_date_from": "DATE",
+        "posting_date_to": "DATE",
+        "reversal_date_from": "DATE",
+        "reversal_date_to": "DATE",
+        "as_of_from": "DATE",
+        "as_of_to": "DATE",
+        "settlement_amount_min": "MONEY",
+        "settlement_amount_max": "MONEY"
+      },
+      "sort_fields": [
+        "period",
+        "row_kind",
+        "bill_reference",
+        "posting_date",
+        "reversal_date",
+        "as_of",
+        "active",
+        "currency",
+        "settlement_amount",
+        "ordinal",
+        "invoice_id",
+        "party_account_id",
+        "journal_id"
+      ],
+      "max_sort_fields": 3,
+      "nulls": "LAST",
+      "balance_semantics": "ORIGINAL_RESULT",
+      "execution": "BOUNDED_WORKER"
+    }
+  }
+}

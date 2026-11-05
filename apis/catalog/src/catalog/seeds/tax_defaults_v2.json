@@ -1,0 +1,374 @@
+{
+  "version": "IN_GST_STARTER_2",
+  "effective_from": "2026-02-01",
+  "reviewed_on": "2026-10-31",
+  "sources": {
+    "goods": {
+      "url": "https://courier.cbic.gov.in/advisory/2025/NOTIFICATION%20NO.%209_2025-INTEGRATED%20TAX%20%28RATE%29%20-1759486719.pdf",
+      "sha256": "22943574e66ff2d6c14114ebd68c521457d1fa8437801804e92e6356209e9134",
+      "reference": "Notification 9/2025 Integrated Tax (Rate), 17 September 2025; effective 22 September 2025"
+    },
+    "sac": {
+      "url": "https://www.gstcouncil.gov.in/sites/default/files/2024-02/scheme_of_classification_of_services_amended.pdf",
+      "sha256": "43f2f886f89ac927a621e4d0e173ffdbccb01170534e0eae068f6123eb899710",
+      "reference": "GST Council amended Scheme of Classification of Services"
+    },
+    "services": {
+      "url": "https://cbic-gst.gov.in/hindi/gst-goods-services-rates.html",
+      "sha256": "65028013e282478e6d114443fbf5417f9787a5747d1c8b556e0aad5605d957d4",
+      "reference": "CBIC consolidated GST services rates; heading 9983 entry 21(ii)"
+    },
+    "reform": {
+      "reference": "Government GST rate updates September 2025: Notifications 9/2025, 10/2025, 14/2025 and 15/2025; rate templates require classification and eligibility review",
+      "url": "https://comtax.wb.gov.in/GST/GST_PPU/Monthly%20GST%20Updates%5BPart%20B%5D_Rate_September%202025_20251008.pdf",
+      "sha256": "42851208fb9047ec0d785c2635981039cd059e303c297f4d6809ba56743f0a55"
+    },
+    "amendment": {
+      "reference": "Government GST updates December 2025: Notification 19/2025-Integrated Tax (Rate), effective 2026-02-01; Schedule VII 28% omitted",
+      "url": "https://comtax.wb.gov.in/GST/GST_PPU/GST_Updates_Dec_2025.pdf",
+      "sha256": "f2d7c3ca503590f1fec6da3118b541f0801bd8e07899f3ebf9ad6c845ca2b870"
+    },
+    "faq": {
+      "reference": "GST Council FAQ: tax treatments, exempt/non-taxable supplies and conditional 0.1% merchant-exporter procurement; eligibility requires review",
+      "url": "https://www.gstcouncil.gov.in/sites/default/files/2024-02/final-gst-faq-edition.pdf",
+      "sha256": "a958cfcfb11a870264bf8b9e1ffcd633c975d4263ad9ebd5cf85302a722fdc6a"
+    }
+  },
+  "categories": [
+    {
+      "code": "GST_GOODS",
+      "name": "GST taxable goods"
+    },
+    {
+      "code": "GST_SERVICES",
+      "name": "GST taxable services"
+    },
+    {
+      "code": "GST_NIL",
+      "name": "Nil-rated supplies"
+    },
+    {
+      "code": "GST_EXEMPT",
+      "name": "Exempt supplies"
+    },
+    {
+      "code": "GST_NON_GST",
+      "name": "Non-GST supplies"
+    }
+  ],
+  "classifications": [
+    {
+      "code": "0402",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Concentrated milk and cream",
+      "source": "goods"
+    },
+    {
+      "code": "0405",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Butter, ghee and dairy spreads",
+      "source": "goods"
+    },
+    {
+      "code": "0902",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Processed tea; excluding unprocessed green leaves",
+      "source": "goods"
+    },
+    {
+      "code": "3004",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Non-exempt retail medicaments",
+      "source": "goods"
+    },
+    {
+      "code": "8415",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Air conditioning machines",
+      "source": "goods"
+    },
+    {
+      "code": "8471",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Computers and data processing equipment",
+      "source": "goods"
+    },
+    {
+      "code": "8517",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Telephones and communications equipment",
+      "source": "goods"
+    },
+    {
+      "code": "8544",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Insulated wires and cables",
+      "source": "goods"
+    },
+    {
+      "code": "998313",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "IT consulting and support",
+      "source": "sac"
+    },
+    {
+      "code": "998314",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "IT design and development",
+      "source": "sac"
+    },
+    {
+      "code": "998315",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "Hosting and IT infrastructure provisioning",
+      "source": "sac"
+    },
+    {
+      "code": "998316",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "IT infrastructure and network management",
+      "source": "sac"
+    },
+    {
+      "code": "998319",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "Other IT services",
+      "source": "sac"
+    }
+  ],
+  "rules": [
+    {
+      "code": "GST_G_0_1",
+      "name": "GST 0.1% - Goods (conditional)",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "0.1",
+      "source": "faq",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_0_25",
+      "name": "GST 0.25% - Goods",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "0.25",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_1_5",
+      "name": "GST 1.5% - Goods",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "1.5",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_3",
+      "name": "GST 3% - Goods",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "3",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_5",
+      "name": "GST 5% - Goods",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "5",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_12",
+      "name": "GST 12% - Goods (conditional)",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "12",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_18",
+      "name": "GST 18% - Goods",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "18",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_40",
+      "name": "GST 40% - Goods",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "40",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_NIL",
+      "name": "GST nil-rated (0%) - Goods",
+      "category": "GST_NIL",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "NIL_RATED",
+      "percentage": "0",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_EXEMPT",
+      "name": "GST exempt - Goods",
+      "category": "GST_EXEMPT",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "EXEMPT",
+      "percentage": "0",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_G_NON_GST",
+      "name": "Non-GST - Goods",
+      "category": "GST_NON_GST",
+      "item_kind": "GOODS",
+      "classification_scope": "ANY",
+      "treatment": "NON_GST",
+      "percentage": "0",
+      "source": "faq",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_1_5",
+      "name": "GST 1.5% - Services (conditional)",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "1.5",
+      "source": "services",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_5",
+      "name": "GST 5% - Services",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "5",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_7_5",
+      "name": "GST 7.5% - Services (conditional)",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "7.5",
+      "source": "services",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_12",
+      "name": "GST 12% - Services (conditional)",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "12",
+      "source": "services",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_18",
+      "name": "GST 18% - Services",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "18",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_40",
+      "name": "GST 40% - Services",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "TAXABLE",
+      "percentage": "40",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_NIL",
+      "name": "GST nil-rated (0%) - Services",
+      "category": "GST_NIL",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "NIL_RATED",
+      "percentage": "0",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_EXEMPT",
+      "name": "GST exempt - Services",
+      "category": "GST_EXEMPT",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "EXEMPT",
+      "percentage": "0",
+      "source": "reform",
+      "classifications": []
+    },
+    {
+      "code": "GST_S_NON_GST",
+      "name": "Non-GST - Services",
+      "category": "GST_NON_GST",
+      "item_kind": "SERVICE",
+      "classification_scope": "ANY",
+      "treatment": "NON_GST",
+      "percentage": "0",
+      "source": "faq",
+      "classifications": []
+    }
+  ]
+}

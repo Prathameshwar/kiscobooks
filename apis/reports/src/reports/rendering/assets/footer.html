@@ -1,0 +1,4 @@
+{% if count == 0 %}<tr><td class="report-empty" colspan="{{ columns | length }}">No rows for the selected parameters.</td></tr>{% endif %}
+</tbody></table></div><footer class="report-footer">{{ count }} rows · Report {{ document.run_id }}<br>
+Amounts use the retained company display precision. Currency columns identify each amount; values in different currencies are not combined. Exact values remain available in CSV and the report API.</footer>
+</main></body></html>

@@ -1,0 +1,243 @@
+{
+  "version": "COMMON_UNITS_1",
+  "units": [
+    {
+      "code": "NOS",
+      "symbol": "pc",
+      "name": "Pieces",
+      "dimension": "COUNT",
+      "decimal_places": 0,
+      "quantity_increment": "1",
+      "inventory": false,
+      "canonical_code": "NOS",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "HOUR",
+      "symbol": "h",
+      "name": "Hours",
+      "dimension": "TIME",
+      "decimal_places": 2,
+      "quantity_increment": "0.01",
+      "inventory": false,
+      "canonical_code": "HOUR",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "DAY",
+      "symbol": "d",
+      "name": "Days (24 hours)",
+      "dimension": "TIME",
+      "decimal_places": 2,
+      "quantity_increment": "0.01",
+      "inventory": false,
+      "canonical_code": "HOUR",
+      "numerator": 24,
+      "denominator": 1
+    },
+    {
+      "code": "JOB",
+      "symbol": "job",
+      "name": "Jobs",
+      "dimension": "JOB",
+      "decimal_places": 0,
+      "quantity_increment": "1",
+      "inventory": false,
+      "canonical_code": "JOB",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "G",
+      "symbol": "g",
+      "name": "Grams",
+      "dimension": "MASS",
+      "decimal_places": 3,
+      "quantity_increment": "0.001",
+      "inventory": true,
+      "canonical_code": "G",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "KG",
+      "symbol": "kg",
+      "name": "Kilograms",
+      "dimension": "MASS",
+      "decimal_places": 3,
+      "quantity_increment": "0.001",
+      "inventory": true,
+      "canonical_code": "G",
+      "numerator": 1000,
+      "denominator": 1
+    },
+    {
+      "code": "MG",
+      "symbol": "mg",
+      "name": "Milligrams",
+      "dimension": "MASS",
+      "decimal_places": 0,
+      "quantity_increment": "1",
+      "inventory": true,
+      "canonical_code": "G",
+      "numerator": 1,
+      "denominator": 1000
+    },
+    {
+      "code": "TONNE",
+      "symbol": "t",
+      "name": "Metric tonnes",
+      "dimension": "MASS",
+      "decimal_places": 4,
+      "quantity_increment": "0.0001",
+      "inventory": true,
+      "canonical_code": "G",
+      "numerator": 1000000,
+      "denominator": 1
+    },
+    {
+      "code": "ML",
+      "symbol": "ml",
+      "name": "Millilitres",
+      "dimension": "VOLUME",
+      "decimal_places": 0,
+      "quantity_increment": "1",
+      "inventory": true,
+      "canonical_code": "ML",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "L",
+      "symbol": "l",
+      "name": "Litres",
+      "dimension": "VOLUME",
+      "decimal_places": 3,
+      "quantity_increment": "0.001",
+      "inventory": true,
+      "canonical_code": "ML",
+      "numerator": 1000,
+      "denominator": 1
+    },
+    {
+      "code": "MM",
+      "symbol": "mm",
+      "name": "Millimetres",
+      "dimension": "LENGTH",
+      "decimal_places": 3,
+      "quantity_increment": "0.001",
+      "inventory": true,
+      "canonical_code": "MM",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "CM",
+      "symbol": "cm",
+      "name": "Centimetres",
+      "dimension": "LENGTH",
+      "decimal_places": 3,
+      "quantity_increment": "0.001",
+      "inventory": true,
+      "canonical_code": "MM",
+      "numerator": 10,
+      "denominator": 1
+    },
+    {
+      "code": "M",
+      "symbol": "m",
+      "name": "Metres",
+      "dimension": "LENGTH",
+      "decimal_places": 3,
+      "quantity_increment": "0.001",
+      "inventory": true,
+      "canonical_code": "MM",
+      "numerator": 1000,
+      "denominator": 1
+    },
+    {
+      "code": "KM",
+      "symbol": "km",
+      "name": "Kilometres",
+      "dimension": "LENGTH",
+      "decimal_places": 4,
+      "quantity_increment": "0.0001",
+      "inventory": true,
+      "canonical_code": "MM",
+      "numerator": 1000000,
+      "denominator": 1
+    },
+    {
+      "code": "SQM",
+      "symbol": "m2",
+      "name": "Square metres",
+      "dimension": "AREA",
+      "decimal_places": 4,
+      "quantity_increment": "0.0001",
+      "inventory": true,
+      "canonical_code": "SQM",
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "code": "DOZEN",
+      "symbol": "doz",
+      "name": "Dozens",
+      "dimension": "COUNT",
+      "decimal_places": 0,
+      "quantity_increment": "1",
+      "inventory": true,
+      "canonical_code": "NOS",
+      "numerator": 12,
+      "denominator": 1
+    },
+    {
+      "code": "PAIR",
+      "symbol": "pr",
+      "name": "Pairs",
+      "dimension": "COUNT",
+      "decimal_places": 0,
+      "quantity_increment": "1",
+      "inventory": true,
+      "canonical_code": "NOS",
+      "numerator": 2,
+      "denominator": 1
+    }
+  ],
+  "packs": [
+    {
+      "code": "BOX",
+      "name": "Box"
+    },
+    {
+      "code": "CARTON",
+      "name": "Carton"
+    },
+    {
+      "code": "BAG",
+      "name": "Bag"
+    },
+    {
+      "code": "BOTTLE",
+      "name": "Bottle"
+    },
+    {
+      "code": "CAN",
+      "name": "Can"
+    },
+    {
+      "code": "DRUM",
+      "name": "Drum"
+    },
+    {
+      "code": "PACKET",
+      "name": "Packet"
+    },
+    {
+      "code": "ROLL",
+      "name": "Roll"
+    }
+  ]
+}

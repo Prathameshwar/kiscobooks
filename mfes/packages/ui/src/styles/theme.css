@@ -1,0 +1,72 @@
+/*
+ * @janso/ui — the theme switcher, kept beside the theme system it belongs to rather
+ * than in the general shell chrome (design-system §5.1).
+ *
+ * Contains no colour values — every colour reads a --janso-* token.
+ */
+
+/* ---------- segmented theme switcher ---------- */
+/*
+ * One bordered pill holding four icon-only radios. The group reads as a single control, so
+ * the border and radius belong to the group and the options only carry state — that is also
+ * why the divider is a hairline between options rather than a border on each.
+ */
+.janso-theme-switcher {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 1px; /* the hairline: the group's background shows through between options */
+  /* Room for an option's focus ring (a 1px surface gap, then the solid stop) inside the group's own
+   * border, so the two edges never fight for the same pixel row. */
+  padding: 3px;
+  background: var(--janso-surface-2);
+  /* The group border is this control's entire boundary (WCAG 1.4.11), so it takes the
+   * 3:1 control edge rather than the decorative ledger rule. */
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-pill);
+}
+
+.janso-theme-switcher__option {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--janso-radius-pill);
+  background: transparent;
+  color: var(--janso-ink-soft);
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--janso-dur-fast) var(--janso-ease),
+    color var(--janso-dur-fast) var(--janso-ease);
+}
+
+.janso-theme-switcher__option:hover {
+  background: var(--janso-hover);
+  color: var(--janso-ink);
+}
+
+.janso-theme-switcher__option:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+
+/* State is the ARIA attribute, not a class — one source of truth for "selected", and the
+ * style cannot drift from what a screen reader announces. */
+.janso-theme-switcher__option[aria-checked='true'] {
+  background: var(--janso-surface);
+  border-color: var(--janso-line);
+  color: var(--janso-ink);
+  box-shadow: var(--janso-shadow-card);
+}
+
+.janso-theme-switcher__icon {
+  display: grid;
+  place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .janso-theme-switcher__option {
+    transition: none;
+  }
+}

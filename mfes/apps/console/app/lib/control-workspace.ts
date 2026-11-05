@@ -1,0 +1,9 @@
+import type {BookDefinition} from './book-workspace';
+
+export const controlWorkspaces = {
+ BALANCE_CONTINUITY: {code:'BALANCE_CONTINUITY',title:'Balance continuity',overline:'Year continuity',lede:'',resultNoun:'continuity checks',focus:'Compare the previous closing with the next opening.',empty:'No continuity checks match this selection.',primaryFilters:['date_from','date_to'],note:'Choose the complete next financial year. Accounts, carried bills and derived earnings are separate checks; their amounts must not be added together. This review does not close a year or post balances.'},
+ SOURCE_RECONCILIATION: {code:'SOURCE_RECONCILIATION',title:'Source reconciliation',overline:'Snapshot controls',lede:'',resultNoun:'source checks',focus:'Counts and ledger control totals for the entire verified snapshot.',empty:'No source controls are available for this snapshot.',primaryFilters:[],note:'This report covers the entire retained snapshot, with no period filter. Source counts measure different record types and must not be added together. Balanced debit and credit controls do not certify business classification.'},
+ INVOICE_GL_BRIDGE: {code:'INVOICE_GL_BRIDGE',title:'Invoice to ledger reconciliation',overline:'Posted invoice effects',lede:'',resultNoun:'posted effects',focus:'Trace invoice effects to their posted ledger entries.',empty:'No invoice ledger effects match this selection.',primaryFilters:['date_from','date_to','invoice_id','account_id'],note:'Each row is a posted invoice effect, with debit or credit direction and company-currency amount. Amounts are ledger effects, not invoice payable totals. Open row details to inspect retained identifiers and journal entries.'},
+} satisfies Record<string,BookDefinition & {note:string}>;
+export type ControlReportCode = keyof typeof controlWorkspaces;
+export const isControlReport=(code:string|undefined):code is ControlReportCode=>!!code&&Object.hasOwn(controlWorkspaces,code);

@@ -1,0 +1,20 @@
+.janso-gst-table-scroll { overflow: auto; max-width: 100%; }
+.janso-gst-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.janso-gst-table caption { text-align: start; padding: var(--janso-space-3); font-weight: 600; }
+.janso-gst-table th, .janso-gst-table td { padding: var(--janso-space-3); border-bottom: 1px solid var(--janso-line); text-align: start; vertical-align: top; }
+.janso-gst-table thead { background: var(--janso-surface-2); }
+.janso-gst-table td[data-amount] { text-align: end; white-space: nowrap; }
+.janso-gst-amount-link {
+  color: var(--janso-brand);
+  font: inherit;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.janso-gst-amount-link:focus-visible {
+  outline: 2px solid var(--janso-brand);
+  outline-offset: var(--janso-space-1);
+}

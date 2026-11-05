@@ -1,0 +1,144 @@
+﻿run,case_or_route,result,http_status,observed_result,run_page_error_count,evidence,latest_result_for_same_case,replacement_case,replacement_case_result
+live,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-PLATFORM-LANDING,PASS,,Company-less platform operator landed on platform administration,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-TENANT-CREATE-REPLAY,PASS,,Created a disposable tenant through the live provider and DB; replay returned the same ID without the password,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-TENANT-DETAIL-EDIT,PASS,,Live edit persisted and rendered on the full tenant detail page,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-ADMIN-LAST-OWNER-AND-INVITATION,PASS,,Last-owner revocation refused; backup invite/resend/revoke/restore passed; wrong-tenant lookup refused; backup left revoked,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-DISPOSABLE-ADMIN-RECOVERY-LINK,FAIL,,"AssertionError [ERR_ASSERTION]: {""code"":""administrator_recovery_unavailable"",""message"":""Recovery could not be confirmed. Check the sign-in provider before creating another link."",""trace_id"":""dfee427997d24da9b962b5e3e1cbf509""}
+
+503 !== 200
+",0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-TENANT-LIFECYCLE-REPLAY-STALE,PASS,,"Deactivate/activate/deactivate, exact replay and stale revision refusal passed; QA tenant left suspended",0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-PRICING-CRUD-REVISIONS,PASS,,Inactive QA price create/edit/delete/restore/delete and five revisions passed; tax total exact; QA price left deleted,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-AUDIT-DELIVERY,PASS,,Observed 22 delivered platform events for the QA tenant in the Audit API,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,,
+live,LIVE-NOTIFICATION-PAGES,FAIL,,"AssertionError [ERR_ASSERTION]: [{""path"":""/platform/notifications/requests"",""http"":500,""text"":""Unable to load your books\n\nYour session or company access could not be loaded. Try again, or sign in to check your access.\nTry again\nSign in""}]
+
+1 !== 0
+",0,.test_artifacts/platform-admin-fixes/live/live-results.json,FAIL,LIVE-NOTIFICATION-DESTINATIONS-SETTLED,PASS
+live,LIVE-MOBILE-AND-THEMES,PASS,,Four administrator pages at 390px across light/dark/ledger rendered without document overflow,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,LIVE-MOBILE-VERIFIED-THEMES,PASS
+live,LIVE-SETTLED-DETAILS-AND-PRICING-READ,FAIL,,"AssertionError [ERR_ASSERTION]: Back
+Platform administration
+Fees and pricing
+Fees and pricing
+
+Subscription plans and optional add-ons, priced in INR and USD.
+
+Add offering
+Prices exclude tax. Platform subscriptions are billed upfront for the full term. Add-ons are monthly, with usage charged separately and no included allowance. USD prices include a 20% premium over the saved INR conversion.
+Pricing catalog
+
+Edit an offering to view tax, term totals, model details and price history.
+
+Offering type
+All types
+Platform subscription
+WhatsApp
+SMS
+Email
+AI model
+Document processing
+Status
+Active
+Inactive
+Deleted
+All
+Refresh prices
+Status
+is
+active
+Platform pricing catalog
+Offering	INR / month	USD / month	Usage / 1,000	Status	
+Actions
+
+
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+Loading rows
+
+No offerings
+
+Rows per page
+25 per page
+50 per page
+100 per page
+200 per page",0,.test_artifacts/platform-admin-fixes/live/live-results.json,FAIL,LIVE-SETTLED-DATA-PAGES,PASS
+live,LIVE-CHANGE-PASSWORD-HANDOFF-PAGE,PASS,,Authenticated password-change handoff page rendered; actual password change deliberately excluded for the supplied account,0,.test_artifacts/platform-admin-fixes/live/live-results.json,PASS,LIVE-CHANGE-PASSWORD-PAGE,PASS
+live-recheck,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-PLATFORM-LANDING,PASS,,Company-less platform operator landed on platform administration,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-TENANT-CREATE-REPLAY,PASS,,Created a disposable tenant through the live provider and DB; replay returned the same ID without the password,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-TENANT-DETAIL-EDIT,PASS,,Live edit persisted and rendered on the full tenant detail page,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-ADMIN-LAST-OWNER-AND-INVITATION,PASS,,Last-owner revocation refused; backup invite/resend/revoke/restore passed; wrong-tenant lookup refused; backup left revoked,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-DISPOSABLE-ADMIN-RECOVERY-LINK,FAIL,,"AssertionError [ERR_ASSERTION]: {""code"":""administrator_recovery_unavailable"",""message"":""Recovery could not be confirmed. Check the sign-in provider before creating another link."",""trace_id"":""589c601e11e24114858a9c40f9bfd9f1""}
+
+503 !== 200
+",0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-TENANT-LIFECYCLE-REPLAY-STALE,PASS,,"Deactivate/activate/deactivate, exact replay and stale revision refusal passed; QA tenant left suspended",0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-PRICING-CRUD-REVISIONS,PASS,,Inactive QA price create/edit/delete/restore/delete and five revisions passed; tax total exact; QA price left deleted,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-recheck,LIVE-AUDIT-DELIVERY,PASS,,Observed 22 delivered platform events for the QA tenant in the Audit API,0,.test_artifacts/platform-admin-fixes/live-recheck/live-results.json,PASS,,
+live-final,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-PLATFORM-LANDING,PASS,,Company-less platform operator landed on platform administration,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-TENANT-CREATE-REPLAY,PASS,,Created a disposable tenant through the live provider and DB; replay returned the same ID without the password,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-TENANT-DETAIL-EDIT,PASS,,Live edit persisted and rendered on the full tenant detail page,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-ADMIN-LAST-OWNER-AND-INVITATION,PASS,,Last-owner revocation refused; backup invite/resend/revoke/restore passed; wrong-tenant lookup refused; backup left revoked,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-DISPOSABLE-ADMIN-RECOVERY-LINK,FAIL,,Error: Disposable recovery verification failed at: mismatched password rejection,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-TENANT-LIFECYCLE-REPLAY-STALE,PASS,,"Deactivate/activate/deactivate, exact replay and stale revision refusal passed; QA tenant left suspended",0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-PRICING-CRUD-REVISIONS,PASS,,Inactive QA price create/edit/delete/restore/delete and five revisions passed; tax total exact; QA price left deleted,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-final,LIVE-AUDIT-DELIVERY,PASS,,Observed 22 delivered platform events for the QA tenant in the Audit API,0,.test_artifacts/platform-admin-fixes/live-final/live-results.json,PASS,,
+live-completion,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-PLATFORM-LANDING,PASS,,Company-less platform operator landed on platform administration,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-TENANT-CREATE-REPLAY,PASS,,Created a disposable tenant through the live provider and DB; replay returned the same ID without the password,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-TENANT-DETAIL-EDIT,PASS,,Live edit persisted and rendered on the full tenant detail page,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-ADMIN-LAST-OWNER-AND-INVITATION,PASS,,Last-owner revocation refused; backup invite/resend/revoke/restore passed; wrong-tenant lookup refused; backup left revoked,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-DISPOSABLE-ADMIN-RECOVERY-LINK,FAIL,,Error: Disposable recovery verification failed at: password completion,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-TENANT-LIFECYCLE-REPLAY-STALE,PASS,,"Deactivate/activate/deactivate, exact replay and stale revision refusal passed; QA tenant left suspended",0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-PRICING-CRUD-REVISIONS,PASS,,Inactive QA price create/edit/delete/restore/delete and five revisions passed; tax total exact; QA price left deleted,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-completion,LIVE-AUDIT-DELIVERY,PASS,,Observed 22 delivered platform events for the QA tenant in the Audit API,0,.test_artifacts/platform-admin-fixes/live-completion/live-results.json,PASS,,
+live-verified,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-PLATFORM-LANDING,PASS,,Company-less platform operator landed on platform administration,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-TENANT-CREATE-REPLAY,PASS,,Created a disposable tenant through the live provider and DB; replay returned the same ID without the password,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-TENANT-DETAIL-EDIT,PASS,,Live edit persisted and rendered on the full tenant detail page,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-ADMIN-LAST-OWNER-AND-INVITATION,PASS,,Last-owner revocation refused; backup invite/resend/revoke/restore passed; wrong-tenant lookup refused; backup left revoked,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-DISPOSABLE-ADMIN-RECOVERY-LINK,PASS,,"Disposable administrator initial sign-in, native reset, mismatched/same password rejection, new-password sign-in, old-password rejection and one-use link replay rejection passed",0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-TENANT-LIFECYCLE-REPLAY-STALE,PASS,,"Deactivate/activate/deactivate, exact replay and stale revision refusal passed; QA tenant left suspended",0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-PRICING-CRUD-REVISIONS,PASS,,Inactive QA price create/edit/delete/restore/delete and five revisions passed; tax total exact; QA price left deleted,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-verified,LIVE-AUDIT-DELIVERY,PASS,,Observed 22 delivered platform events for the QA tenant in the Audit API,0,.test_artifacts/platform-admin-fixes/live-verified/live-results.json,PASS,,
+live-reads,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-PLATFORM-LANDING,PASS,,Company-less platform operator landed on platform administration,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-UNAUTHENTICATED-BOUNDARY,PASS,,Four real Console proxy requests refused absent sessions with HTTP 401,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-READ-API-CATALOGS,PASS,,Ten live Identity read contracts returned HTTP 200,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-SETTLED-DATA-PAGES,PASS,,"Metadata, pricing, states and history finished loading and displayed no service error",0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-TENANT-SEARCH,PASS,,Tenant prefix search returned QA tenant and excluded unrelated demo tenants,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-NOTIFICATION-DESTINATIONS-SETTLED,PASS,,Loaded 12 notification destinations with live services and no visible service errors,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-MOBILE-VERIFIED-THEMES,PASS,,Verified applied theme attribute and lack of document overflow on 12 mobile page/theme combinations,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,
+live-reads,LIVE-CHANGE-PASSWORD-PAGE,PASS,,Authenticated change-password handoff page loaded; supplied account password left unchanged,0,.test_artifacts/platform-admin-fixes/live-reads/live-results.json,PASS,,

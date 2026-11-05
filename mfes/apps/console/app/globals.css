@@ -1,0 +1,20 @@
+/*
+ * App-wide base for the console. Design tokens, the three palettes and every component
+ * stylesheet are imported in layout.tsx — this file only sets the document up.
+ *
+ * No colour values here either: the console inherits its palette entirely from the
+ * `data-theme` attribute the pre-paint script sets (docs/design-system.md §2.2).
+ */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--janso-paper);
+  color: var(--janso-ink);
+}
+
+/* The shell owns the viewport and scrolls its own main region, so the document must not
+   also scroll — two scrollbars on one page is the classic app-shell bug. */
+body {
+  overflow: hidden;
+}

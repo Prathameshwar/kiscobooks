@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="KiscoBooks">
+  <defs>
+    <linearGradient id="janso-favicon" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4257a8" />
+      <stop offset="1" stop-color="#2c3c86" />
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="10.5" fill="url(#janso-favicon)" />
+  <g stroke="#ffffff" stroke-width="3.4" stroke-linecap="round">
+    <path d="M9.5 16.6 27 11.8" />
+    <path d="M9.5 25.6 31 25.6" />
+  </g>
+  <circle cx="30.2" cy="15" r="2.7" fill="#5b72d6" />
+</svg>

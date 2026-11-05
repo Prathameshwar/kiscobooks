@@ -1,0 +1,799 @@
+/*
+ * @janso/ui — `DataTable` and its query controls (design-system §5.11).
+ *
+ * Three structural rules the rest of this file depends on:
+ *
+ * 1. **The table region is the one nested scroller the design system allows.** `main` is otherwise
+ *    the page's single vertical scroller (shell.css) — but a table that scrolls horizontally *is* a
+ *    scroll container on both axes, because setting `overflow-x: auto` computes `overflow-y` from
+ *    `visible` to `auto`. A sticky `<thead>` inside it therefore resolves against the shell's own
+ *    scrollport, not `main`'s. So the shell takes a height cap and owns its vertical scrolling:
+ *    that is not decoration, it is what makes the frozen header work at all. `--janso-table-max-h`
+ *    is the knob, and the cap applies only when the header is actually sticky.
+ * 2. **Gridlines are container decoration, not controls.** They read `--janso-line` at ~1.3:1;
+ *    anything interactive inside a cell uses `--janso-control-line` at 3:1.
+ * 3. **`z-index` inside the shell is local.** The frozen header and the pinned column stack against
+ *    each other only, inside a scroll container that creates its own context — nothing here
+ *    competes with the `--janso-z-*` layers, which belong to portalled overlays.
+ *
+ * Contains no colour values — every colour reads a --janso-* token.
+ */
+
+/* ---------- shell ---------- */
+
+.janso-table-shell {
+  /* Roughly two thirds of a laptop viewport: enough rows to read, short enough that the page's
+   * own header and the pager below it stay on screen while scrolling the body. */
+  --janso-table-max-h: 68dvh;
+  /*
+   * The width of a leading control column — the selection checkbox, the expand toggle. Fixed rather
+   * than content-sized, and that is load-bearing: `DataTable` computes each pinned cell's sticky
+   * offset as this times its place in the run, so a measured width would mean a layout pass and a
+   * frame of cells overlapping. Wide enough for an 18px box or a 28px icon button plus padding.
+   */
+  --janso-table-ctrl-w: 2.75rem;
+  overflow-x: auto;
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-card);
+}
+
+.janso-table-shell[data-sticky='true'] {
+  max-height: var(--janso-table-max-h);
+  overflow-y: auto;
+}
+
+/*
+ * The shell carries a tab stop, because it scrolls (`DataTable`) — so it owes a focus indicator.
+ * Inset, not the shared `--janso-focus-ring`: that ring is drawn outside the box, and this box is a
+ * scrollport whose own overflow would clip it into a sliver along one edge.
+ */
+.janso-table-shell:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: -2px;
+}
+
+.janso-table {
+  width: 100%;
+  /*
+   * `separate`, not `collapse`. A collapsed border belongs to the table rather than to the cell, so
+   * it does not travel with a `position: sticky` header — the heading row scrolls away from its own
+   * bottom rule. `border-spacing: 0` keeps the hairlines looking collapsed regardless.
+   */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+
+/* ---------- heading row ---------- */
+
+.janso-table thead th {
+  padding: 0.5rem var(--janso-space-4);
+  background: var(--janso-surface-2);
+  border-bottom: 1px solid var(--janso-line);
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--janso-ink-soft);
+  text-align: start;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.janso-table--sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* The column currently ordering the list reads as ink rather than as a caption. */
+.janso-table thead th[data-sorted] {
+  color: var(--janso-ink);
+}
+
+/*
+ * A sortable heading is a button, not a click handler on the cell: it has to be reachable by tab
+ * and it has to be the thing that shows the focus ring. It fills the cell so the whole heading is
+ * the target, and inherits the row's type so pressing it does not restyle the column name.
+ */
+.janso-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+/* The glyph trails the name on a start-aligned column and leads it on an end-aligned one, so it
+ * never sits between the figures and the column they belong to. */
+.janso-table th[data-align='end'] .janso-table__sort {
+  flex-direction: row-reverse;
+}
+.janso-table th[data-align='center'] .janso-table__sort {
+  justify-content: center;
+}
+.janso-table__sort:hover {
+  color: var(--janso-ink);
+}
+.janso-table__sort:focus-visible {
+  outline: none;
+  border-radius: var(--janso-radius-sm);
+  box-shadow: var(--janso-focus-ring);
+}
+
+/*
+ * Faint until the column is the sort key, but never hidden: an affordance that only appears on
+ * hover does not exist for a touch reader, and this one is how a column says it can be sorted.
+ */
+.janso-table__sort-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--janso-ink-faint);
+}
+.janso-table th[data-sorted] .janso-table__sort-icon,
+.janso-table__sort:hover .janso-table__sort-icon {
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- body ---------- */
+
+.janso-table tbody td {
+  padding: 0.5rem var(--janso-space-4);
+  height: 2.75rem;
+  border-bottom: 1px solid var(--janso-line);
+  vertical-align: middle;
+}
+/* The shell already draws the closing edge; a second rule inside it reads as an empty row. */
+.janso-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.janso-table tbody tr:hover td {
+  background: var(--janso-hover);
+}
+
+/* A row that can no longer be changed sits back a step, and says why through its marker. */
+.janso-table tbody tr[data-locked='true'] td {
+  background: var(--janso-surface-2);
+}
+.janso-table tbody tr[data-locked='true']:hover td {
+  background: var(--janso-hover);
+}
+
+/* `margin-inline-end`, like every other offset in this file: the marker leads the row's first value,
+ * and under a right-to-left script "leads" is the other side. */
+.janso-table__lock {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-end: var(--janso-space-2);
+  color: var(--janso-ink-faint);
+  vertical-align: -2px;
+}
+
+/* ---------- alignment ---------- */
+
+.janso-table th[data-align='end'],
+.janso-table td[data-align='end'] {
+  text-align: end;
+}
+.janso-table th[data-align='center'],
+.janso-table td[data-align='center'] {
+  text-align: center;
+}
+
+/* Figures are always tabular — this is accounting software, and a column of amounts has to line
+ * up on its decimal point. Same declarations as `.janso-figure`, applied by type rather than by
+ * asking every call site to remember the class. */
+.janso-table td[data-figure='true'] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* A missing value is content-shaped but is not content: the em dash recedes so a scan down the
+ * column reads the values, not the gaps. */
+.janso-table td[data-empty='true'] {
+  color: var(--janso-ink-faint);
+}
+
+/* ---------- pinned first column ---------- */
+
+/*
+ * Order matters here. The body cell sits above the scrolling content (1); the frozen header above
+ * that (2); and the cell that is both must beat both (3), or the first column paints over its own
+ * heading. An opaque background is not optional — a sticky cell has scrolled content passing
+ * underneath it.
+ */
+/*
+ * `inset-inline-start`, not `left`: `DataTable` sets this property inline for each cell past the
+ * first in the pinned run, and the two must be the same property or the inline value would not
+ * override this one under a right-to-left script.
+ */
+.janso-table td[data-pinned='true'] {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  background: var(--janso-surface);
+}
+.janso-table tbody tr:hover td[data-pinned='true'] {
+  background: var(--janso-hover);
+}
+.janso-table tbody tr[data-locked='true'] td[data-pinned='true'] {
+  background: var(--janso-surface-2);
+}
+.janso-table th[data-pinned='true'] {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 3;
+}
+
+/* The separating edge, drawn outside the cell so it does not eat a pixel of padding — and drawn by
+ * the last cell of the run only, or the frozen control columns print hairlines between themselves. */
+.janso-table th[data-pin-edge='true'],
+.janso-table td[data-pin-edge='true'] {
+  box-shadow: 1px 0 0 0 var(--janso-line);
+}
+
+/* ---------- selection, expansion and the control columns ---------- */
+
+/*
+ * A control cell is furniture: fixed width, centred on its control, and never the thing the eye
+ * lands on first. `padding-inline` is trimmed from the body default so the box lines up under the
+ * heading's box rather than being pushed off by two lots of cell padding.
+ */
+.janso-table th.janso-table__ctrl,
+.janso-table td.janso-table__ctrl {
+  width: var(--janso-table-ctrl-w);
+  padding-inline: var(--janso-space-3);
+  text-align: start;
+  white-space: nowrap;
+}
+
+/*
+ * A selected row is tinted, and the tint survives hover — the row is in a set that a bulk verb is
+ * about to act on, which outranks "the pointer is here". `--janso-brand-tint` is the same surface
+ * the brand uses elsewhere, so nothing new is introduced for it.
+ */
+.janso-table tbody tr[data-selected='true'] td {
+  background: var(--janso-brand-tint);
+}
+.janso-table tbody tr[data-selected='true']:hover td {
+  background: var(--janso-brand-tint);
+}
+.janso-table tbody tr[data-selected='true'] td[data-pinned='true'] {
+  background: var(--janso-brand-tint);
+}
+
+/* The panel under an expanded row. Inset from the row's own left edge so it reads as belonging to
+ * it, and on the second surface so the boundary is visible without another rule. */
+.janso-table tbody tr.janso-table__detail-row td {
+  background: var(--janso-surface-2);
+}
+.janso-table__detail {
+  padding: var(--janso-space-4) var(--janso-space-5);
+}
+
+/* ---------- bulk action bar ---------- */
+
+/*
+ * Sits between the filter bar and the table, and is only present while something is selected — so it
+ * inserts itself into the page rather than reserving a strip that is empty most of the time.
+ */
+.janso-bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-2) var(--janso-space-2) var(--janso-space-2) var(--janso-space-4);
+  background: var(--janso-brand-tint);
+  border: 1px solid var(--janso-brand-line);
+  border-radius: var(--janso-radius-sm);
+}
+
+.janso-bulk-bar__count {
+  margin: 0;
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* A `<fieldset>`, because `disabled` on one holds every control inside it — so the browser's own
+ * default frame, padding and margin have to be given up here. */
+.janso-bulk-bar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* ---------- density ---------- */
+
+.janso-table[data-density='compact'] thead th,
+.janso-table[data-density='compact'] tbody td {
+  padding: var(--janso-space-2) var(--janso-space-3);
+}
+
+/* ---------- cell content ---------- */
+
+/*
+ * Truncation needs an element of its own: `text-overflow` on a `<td>` does nothing under
+ * `table-layout: auto`, because the cell is sized by its content rather than sizing it.
+ */
+.janso-table__ellipsis {
+  display: block;
+  max-width: 24rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Codes and masked values are mono: character width is meaning in a reference or an account tail. */
+.janso-table__code,
+.janso-table__masked {
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-text-xs);
+  letter-spacing: 0.02em;
+}
+
+/* The currency code beside an amount not in the company's own currency. Quiet, but never absent —
+ * it is the difference between two amounts that otherwise look comparable. */
+.janso-table__ccy {
+  /* Logical, so the code trails the amount rather than crossing to the far side of it in RTL. */
+  margin-inline-start: var(--janso-space-2);
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+.janso-table__chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-1);
+}
+/* `help` rather than `default`: the count carries the rest of the list in its tooltip. */
+.janso-table__chips-more {
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-ink-soft);
+  cursor: help;
+}
+
+/*
+ * The row's identifying link reads as the row's name, in ink, not as a column of blue: a page of
+ * brand-coloured names is the loudest thing on a ledger and says only "these are clickable", which
+ * the hover underline and the pointer already say.
+ */
+.janso-table__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+}
+.janso-table a.janso-table__link {
+  color: var(--janso-ink);
+  font-weight: 500;
+}
+.janso-table a.janso-table__link:hover {
+  color: var(--janso-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The bar sits inside a cell rather than under a list row, so it drops the row's top margin. */
+.janso-table td .janso-meter {
+  margin-top: 0;
+}
+
+/* ---------- empty, error and loading ---------- */
+
+.janso-table__state {
+  padding: var(--janso-space-5);
+  border-bottom: 0;
+}
+/*
+ * A dashed panel inside a bordered shell is a border inside a border, so the empty state gives up
+ * its own frame here. The error state keeps its solid danger tint — inside the body it reads as a
+ * banner where the rows would have been, which is the intent.
+ */
+.janso-table__state .janso-state:not(.janso-state--error) {
+  border-color: transparent;
+  background: transparent;
+}
+
+/* ---------- stacked layout ---------- */
+
+/*
+ * Below this width the table stops being a grid and each row becomes a labelled block. 52rem is
+ * where a six-column ledger stops fitting without sideways scrolling, and it is a `rem` so the
+ * switch follows the reader's font size rather than a device.
+ *
+ * `DataTable` restates the ARIA roles whenever `stack` is on, because `display: block` here strips
+ * the implicit table roles. That is also why the heading row is *clipped* rather than
+ * `display: none` — the column headers must stay in the accessibility tree while `::before`
+ * repeats them visually per cell.
+ */
+@media (max-width: 52rem) {
+  /*
+   * The height cap goes with the frozen header it exists for. The heading row is clipped here, so
+   * the nested scroller would trap a phone reader inside two thirds of their own viewport for no
+   * benefit — the one case where the shell is not the scrollport anything needs.
+   *
+   * Only the cap is lifted. `overflow-y: visible` would be a lie in this file's own terms — the
+   * `overflow-x: auto` above computes it back to `auto` — and it is not needed: an uncapped box
+   * never has anything to scroll.
+   */
+  .janso-table-shell[data-stack='true'] {
+    max-height: none;
+  }
+
+  /* `thead` is in this list too: leaving it a `table-header-group` inside a `display: block` table
+   * makes the browser wrap it in an anonymous table box, which is a layout nobody wrote. */
+  .janso-table--stack,
+  .janso-table--stack > thead,
+  .janso-table--stack > tbody,
+  .janso-table--stack > :is(thead, tbody) > tr,
+  .janso-table--stack > tbody > tr > td {
+    display: block;
+    width: auto;
+  }
+
+  /* Same recipe as `.janso-visually-hidden`, which cannot be applied as a class from a query. */
+  .janso-table.janso-table--stack > thead > tr > th {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .janso-table--stack > tbody > tr {
+    padding: var(--janso-space-3) var(--janso-space-4);
+    border-bottom: 1px solid var(--janso-line);
+  }
+  .janso-table--stack > tbody > tr:last-child {
+    border-bottom: 0;
+  }
+  /*
+   * An expanded row and its panel are one block, not two cards. Stacked, every row draws its own
+   * closing rule — which would print a line between a row and the detail that belongs to it, making
+   * the panel read as the next record. `:has()` because the row that must give up its rule is the
+   * one *before* the detail, and there is no previous-sibling combinator.
+   */
+  .janso-table--stack > tbody > tr:has(+ .janso-table__detail-row) {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .janso-table--stack > tbody > tr.janso-table__detail-row {
+    padding-top: 0;
+  }
+
+  .janso-table--stack > tbody > tr > td {
+    display: grid;
+    /* Multiline descriptions must grow with their content in the stacked layout. */
+    height: auto;
+    grid-template-columns: minmax(6rem, 38%) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--janso-space-3);
+    padding: var(--janso-space-1) 0;
+    border-bottom: 0;
+  }
+  /* Alignment was a column property; stacked, every value sits beside its own label. Specificity
+   * rather than `!important`, so the wide rules still read as the default. */
+  .janso-table--stack > tbody > tr > td[data-align='end'],
+  .janso-table--stack > tbody > tr > td[data-align='center'] {
+    text-align: start;
+  }
+
+  .janso-table--stack > tbody > tr > td::before {
+    content: attr(data-label);
+    font-size: var(--janso-text-xs);
+    font-weight: 600;
+    color: var(--janso-ink-soft);
+  }
+  /* A cell with no heading — the row's kebab — spans the block instead of leaving a hole. */
+  .janso-table--stack > tbody > tr > td:not([data-label]) {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: end;
+  }
+  .janso-table--stack > tbody > tr > td:not([data-label])::before {
+    content: none;
+  }
+
+  /* Neither freeze means anything once the row is a block, and both would misplace the cell. */
+  .janso-table--stack > tbody > tr > td[data-pinned='true'],
+  .janso-table--stack > tbody > tr > td[data-pin-edge='true'] {
+    /* `static` also settles the offset `DataTable` sets inline: an inset does not apply to a cell
+     * that is not positioned, so the inline style cannot outlive the layout it was for. */
+    position: static;
+    box-shadow: none;
+  }
+
+  /*
+   * A control cell keeps its label-less layout but leads the block instead of hanging off its end:
+   * the checkbox and the expand toggle belong at the start of a row that is now a card, where the
+   * reader's eye enters it. The fixed column width goes with the columns.
+   */
+  .janso-table--stack > tbody > tr > td.janso-table__ctrl,
+  .janso-table--stack > tbody > tr > td.janso-table__detail {
+    width: auto;
+    padding-inline: 0;
+    justify-items: start;
+  }
+  /* Nothing scrolls sideways any more, so a clipped value is just a lost one. */
+  .janso-table--stack .janso-table__ellipsis {
+    max-width: none;
+    white-space: normal;
+  }
+  .janso-table--stack .janso-table__state {
+    padding: var(--janso-space-4) 0;
+  }
+}
+
+/* ---------- filter bar ---------- */
+
+.janso-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-3);
+}
+
+/*
+ * One row of controls, top-aligned. Search labels are hidden and selects use inline labels,
+ * so their boxes start on the same line; a hint under the search box hangs below the row
+ * instead of dragging the selects and buttons down to its baseline.
+ */
+.janso-filter-bar__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--janso-space-3);
+}
+
+/* The query controls take the room; the table's own controls sit against the far edge. */
+.janso-filter-bar__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--janso-space-2) var(--janso-space-3);
+  flex: 1 1 var(--janso-filter-controls-min);
+  min-width: 0;
+}
+
+.janso-filter-bar__controls > .janso-field + .janso-field { margin-top: 0; }
+.janso-filter-bar__controls > * { min-width: 0; max-width: 100%; }
+.janso-filter-bar__controls .janso-select { min-width: 0; max-width: 100%; }
+.janso-filter-bar__controls .janso-select__wrap { min-width: 0; }
+.janso-filter-bar__controls .janso-select--inline .janso-select__control {
+  min-height: var(--janso-filter-control-h);
+  padding-block: 0.4375rem;
+  font-size: var(--janso-text-base);
+}
+
+/* All query field kinds share a label/control row. Grid keeps hints below their
+ * control instead of making them another horizontal flex item. An explicit
+ * stacked Select remains stacked; ordinary forms outside this bar are untouched. */
+.janso-filter-bar__controls :is(.janso-field:not(.janso-select), .janso-select--inline) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--janso-space-2);
+  min-width: 0;
+  max-width: 100%;
+}
+.janso-filter-bar__controls :is(.janso-field:not(.janso-select), .janso-select--inline) > .janso-field__row {
+  grid-column: 1;
+  grid-row: 1;
+  margin-bottom: 0;
+}
+.janso-filter-bar__controls :is(.janso-field:not(.janso-select), .janso-select--inline) > .janso-field__row .janso-label {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-filter-bar__controls :is(.janso-field:not(.janso-select), .janso-select--inline) > :is(.janso-input-wrap, .janso-select__wrap, .janso-search-select__control) {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+.janso-filter-bar__controls :is(.janso-field:not(.janso-select), .janso-select--inline) > :is(.janso-hint, .janso-error) {
+  grid-column: 2;
+  margin-top: var(--janso-space-1);
+}
+.janso-filter-bar__controls :is(.janso-field:not(.janso-select), .janso-select--inline):not(:has(> .janso-field__row)) > :is(.janso-input-wrap, .janso-select__wrap, .janso-search-select__control, .janso-hint, .janso-error) {
+  grid-column: 1 / -1;
+}
+.janso-filter-bar__controls .janso-search-select__control {
+  min-height: var(--janso-filter-control-h);
+  /* Lookup clear/toggle targets stay 24px; the border and padding fill the row. */
+  padding-block: calc((var(--janso-filter-control-h) - 1.5rem - 2px) / 2);
+}
+.janso-filter-bar__controls .janso-search-select__input {
+  padding-block: 0;
+  min-height: 1.5rem;
+}
+.janso-filter-bar__controls .janso-search-select__control:not(:has(.janso-search-select__chip)) {
+  flex-wrap: nowrap;
+}
+.janso-filter-bar__controls .janso-input[type='date'] {
+  /* Native calendar chrome otherwise adds two pixels to an ordinary text row. */
+  block-size: var(--janso-filter-control-h);
+}
+.janso-filter-bar__controls .janso-table-search {
+  min-width: min(var(--janso-filter-search-min), 100%);
+  max-width: min(var(--janso-filter-search-max), 100%);
+}
+
+.janso-filter-bar__actions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-2);
+  flex: none;
+}
+
+/* Card headers, list controls and paging share the same content gutters. */
+.janso-card > .janso-filter-bar { padding: var(--janso-space-4) var(--janso-space-5); }
+.janso-card > .janso-pager { margin-top: 0; padding: var(--janso-space-3) var(--janso-space-5); }
+.janso-card > .janso-table-shell { border-inline: 0; border-radius: 0; box-shadow: none; }
+.janso-card > .janso-table-shell > .janso-table > :is(thead, tbody) > tr > :is(th, td):first-child:not(.janso-table__ctrl) { padding-inline-start: var(--janso-space-5); }
+.janso-card > .janso-table-shell > .janso-table > :is(thead, tbody) > tr > :is(th, td):last-child:not(.janso-table__ctrl) { padding-inline-end: var(--janso-space-5); }
+@media (max-width: 52rem) {
+  .janso-card > .janso-table-shell > .janso-table--stack > tbody > tr { padding-inline: var(--janso-space-5); }
+  .janso-card > .janso-table-shell > .janso-table--stack > tbody > tr > td:first-child:not(.janso-table__ctrl),
+  .janso-card > .janso-table-shell > .janso-table--stack > tbody > tr > td:last-child:not(.janso-table__ctrl) { padding-inline: 0; }
+}
+
+.janso-table-search .janso-hint {
+  margin-top: var(--janso-space-1);
+}
+
+.janso-filter-bar__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-2);
+}
+
+/* "Clear all" is the row's quietest control — it ends a query, and a prominent button there
+ * invites the reader to lose the filters they just set. Quiet is about weight, not about size:
+ * 1.5rem is the floor every target in this system keeps, and an icon button is 34px. */
+.janso-filter-bar__clear {
+  padding: 0.15rem var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  min-height: 1.5rem;
+}
+
+/* ---------- table search ---------- */
+
+/* Wide enough for an invoice number plus a customer name, and it gives way first when the bar
+ * wraps — a search box is the one control that reads fine at half width. */
+.janso-table-search {
+  flex: 1 1 18rem;
+  max-width: var(--janso-filter-search-max);
+  min-width: var(--janso-filter-search-min);
+}
+
+/* The clear button is the shared in-input control (`janso-input__toggle`), which is sized for a
+ * word rather than a glyph — so here it centres an icon instead. */
+.janso-table-search .janso-input__toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem;
+}
+
+/* ---------- pager ---------- */
+
+.janso-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  margin-top: var(--janso-space-3);
+}
+
+/*
+ * The range, not a count: keyset paging returns no total (docs/api-conventions.md §2.1), so this
+ * says "Showing 51–100" and never "of 1,240". Tabular figures, because the numbers change under
+ * the reader's eye as they step and a shifting digit width reads as movement.
+ */
+.janso-pager__range {
+  margin: 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.janso-pager__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+}
+
+/* ---------- applied-filter chips ---------- */
+
+/*
+ * Distinct from `.janso-chip` (shell.css), which is a static context label. This one is a
+ * dismissible statement about the query, so it carries an operator and a remove button, and it
+ * takes the neutral tint rather than the brand's — a filter is a fact, not an emphasis.
+ */
+.janso-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+  max-width: 22rem;
+  padding: 0.15rem 0.2rem 0.15rem var(--janso-space-2);
+  background: var(--janso-surface-2);
+  border: 1px solid var(--janso-line-strong);
+  border-radius: var(--janso-radius-sm);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink);
+  white-space: nowrap;
+}
+
+.janso-filter-chip__label {
+  font-weight: 600;
+}
+
+/* The operator is the quiet connective — present, readable, not competing with the value. */
+.janso-filter-chip__op {
+  color: var(--janso-ink-soft);
+}
+
+/* The value is what the user scans for, so it is the only part allowed to truncate. */
+.janso-filter-chip__value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*
+ * Painted small, hit large. The visible box is sized to the chip — a 24px button inside a chip whose
+ * type is `--janso-text-xs` would be the chip — but 1.15rem is 18px, under the target-size floor,
+ * and dismissing a filter by mistake means re-deriving a query. The pseudo-element extends the
+ * pointer target to ~26px without moving a pixel of paint or of layout.
+ */
+.janso-filter-chip__remove {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 0;
+  border-radius: var(--janso-radius-sm);
+  background: transparent;
+  color: var(--janso-ink-soft);
+  cursor: pointer;
+}
+.janso-filter-chip__remove::after {
+  content: '';
+  position: absolute;
+  inset: -0.25rem;
+}
+.janso-filter-chip__remove:hover {
+  background: var(--janso-hover);
+  color: var(--janso-ink);
+}
+.janso-filter-chip__remove:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}

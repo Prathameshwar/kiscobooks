@@ -1,0 +1,9 @@
+Service,Declared_audit_routes,Static_decorated_mutation_handler_definitions,Tests,Passed,Skipped,Coverage_basis,Limit
+Identity,117,112,test_gap_audit; test_audit_gateway_context; test_platform_audit_evidence,10,0,Publication contracts context and safe platform evidence,Concurrent local-auth workflows not fully validated
+Catalog,441,264,test_audit_contract; test_audit_integration; test_audit_publisher; test_audit_evidence; test_company_product_defaults,24,0,Exact matrix native write confirmed adapter ingestion dedupe chain and defaults,Mock exchange and isolated SQLite; live MySQL/broker not run
+Accounting,387,192,test_master_audit_contract; test_audit_integration; test_audit_evidence; test_audit_native_financial,23,10,Master and financial source evidence plus Audit integration,Native infrastructure cases skipped
+Vouchers,57,53,test_audit_contract; test_broker_integration,2,1,Voucher native draft/submit evidence and ingestion contract,Live broker case skipped
+Reports,16,12,test_activity_audit_contract; test_framework_api; test_framework_jobs; test_framework_exports; test_framework_execution; test_framework_recovery,53,1,All declared lifecycle actions plus API jobs export execution recovery,Infrastructure case skipped
+Notification,84,34,test_audit_contract,2,0,Publishable safe mutation evidence and realm scope,Provider and live delivery not certified
+Design,18,13,test_isolation_and_audit,13,0,Native mutation evidence isolation and rejected mutation behavior,Isolated tests; live broker not run
+Audit,1,N/A,Full tests suite,218,13,Authenticated ingestion dedupe chain source scope activity read and complete cursor walks,Native infrastructure cases skipped

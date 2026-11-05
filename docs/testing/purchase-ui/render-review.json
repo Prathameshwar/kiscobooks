@@ -1,0 +1,39 @@
+{
+  "scope": "Static P1 compositions only; not application or WCAG certification.",
+  "browser": "156.0.4314.50",
+  "fixture": "PU02",
+  "results": [
+    {
+      "composition": "desktop-light",
+      "viewport": "1440x1080",
+      "text_nodes": 105,
+      "overflow": [],
+      "contrast": [],
+      "overlaps": []
+    },
+    {
+      "composition": "desktop-dark",
+      "viewport": "1440x1080",
+      "text_nodes": 105,
+      "overflow": [],
+      "contrast": [],
+      "overlaps": []
+    },
+    {
+      "composition": "desktop-ledger",
+      "viewport": "1440x1080",
+      "text_nodes": 105,
+      "overflow": [],
+      "contrast": [],
+      "overlaps": []
+    },
+    {
+      "composition": "mobile-light",
+      "viewport": "390x1400",
+      "text_nodes": 46,
+      "overflow": [],
+      "contrast": [],
+      "overlaps": []
+    }
+  ]
+}

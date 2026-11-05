@@ -1,0 +1,68 @@
+/*
+ * JANSO canvas tokens — the invoice designer's own scale. NON-COLOUR ONLY.
+ *
+ * Why a second token file rather than more of `tokens.css`: the product's scale is built
+ * for forms and tables read at arm's length, and an editor is a different instrument. An
+ * inspector carries forty controls beside a page that must stay at true size, so its
+ * chrome runs one step denser than a page body, and its rows are measured in a grid of
+ * their own. Keeping that here means the form pages cannot drift denser by accident, and
+ * the designer cannot drift looser.
+ *
+ * Colour lives in `theme-light.css`, `theme-dark.css` and `theme-ledger.css` like
+ * everything else — including the paper, which stays paper-coloured in every palette. A
+ * dark-mode invoice preview would be a lie about what prints.
+ *
+ * Import after `tokens.css` and before `designer.css`.
+ */
+
+:root {
+  /* — Editor chrome type: one step under the product scale. The canvas is the content;
+   *   its surrounding controls should recede. — */
+  --janso-editor-text-xs: 0.6875rem; /* 11px — ruler numerals, unit suffixes, chips */
+  --janso-editor-text-sm: 0.75rem; /* 12px — inspector labels, tree rows, status bar */
+  --janso-editor-text: 0.8125rem; /* 13px — inspector values, palette items, buttons */
+
+  /* — Editor space: a 4px grid, because an inspector row is 28px and a form row is 40 — */
+  --janso-editor-space-1: 0.25rem;
+  --janso-editor-space-2: 0.375rem;
+  --janso-editor-space-3: 0.5rem;
+  --janso-editor-space-4: 0.75rem;
+  --janso-editor-space-5: 1rem;
+
+  /* — Editor layout — */
+  --janso-editor-rail-w: 15rem; /* templates and blocks */
+  --janso-editor-inspector-w: 17.5rem; /* wider: it holds labelled control rows */
+  --janso-editor-toolbar-h: 2.75rem;
+  --janso-editor-status-h: 1.75rem;
+  --janso-editor-row-h: 1.75rem; /* a control row */
+  --janso-editor-control-h: 1.625rem; /* the control inside it */
+  --janso-editor-radius: 5px; /* tighter than a form control: more of them, closer */
+
+  /* — Paper and canvas geometry. CSS `mm` is a real unit, so a page declared in
+   *   millimetres and scaled by `transform` is print-accurate without arithmetic at
+   *   every element — which is also why the layout model stores millimetres. — */
+  --janso-canvas-pad: 2.5rem; /* air around the page inside the scroller */
+  --janso-canvas-page-radius: 2px; /* paper has a corner, not a radius */
+  --janso-canvas-grid-step: 5mm; /* matches the layout model's default snap step */
+  --janso-canvas-grid-dot: 1px;
+  --janso-canvas-ruler-w: 1.375rem; /* the band holding numerals at 11px */
+  --janso-canvas-tick: 4px;
+  --janso-canvas-tick-major: 7px;
+  --janso-canvas-handle: 7px; /* resize handle box */
+  --janso-canvas-handle-hit: 15px; /* its pointer target — fingers and trackpads */
+  --janso-canvas-outline: 1px; /* a hovered zone */
+  --janso-canvas-ring: 2px; /* a selected element */
+  --janso-canvas-guide: 1px; /* a smart alignment guide */
+
+  /* — Stacking inside the canvas, declared once. These sit *below*
+   *   `--janso-z-topbar` (20) so the app's menus and toasts always win. — */
+  --janso-z-canvas-grid: 1;
+  --janso-z-canvas-content: 2;
+  --janso-z-canvas-margin: 3;
+  --janso-z-canvas-zone: 4;
+  --janso-z-canvas-guide: 5;
+  --janso-z-canvas-ring: 6;
+  --janso-z-canvas-handle: 7;
+  --janso-z-canvas-ruler: 8;
+  --janso-z-canvas-chrome: 9;
+}

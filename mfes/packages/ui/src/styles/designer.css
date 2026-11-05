@@ -1,0 +1,1677 @@
+/*
+ * JANSO invoice designer — editor chrome and the document paper surface.
+ *
+ * Every value here is a token (`canvas-tokens.css` for scale, the palettes for colour).
+ * Two things are deliberately NOT in this file:
+ *
+ *   1. Element geometry. An element's position and size come from the layout model at
+ *      runtime, in millimetres, so the renderer sets them inline. That is computed data,
+ *      not a design value — there is nothing to centralise.
+ *
+ *   2. Zoom. The page scales with one `transform` on `.janso-canvas__page`; nothing else
+ *      recomputes. CSS `mm` is a real unit, so a page declared at 210mm × 297mm and
+ *      scaled is print-accurate, and an element at `left: 12mm` lands where it will print.
+ *
+ * Layout: a five-area grid. The stage is the only scroll container, so the toolbar,
+ * rails and status bar never move — an editor whose toolbar scrolls away is unusable at
+ * 200% zoom.
+ */
+
+/* ---------------------------------------------------------------- editor frame */
+
+.janso-editor {
+  display: grid;
+  grid-template-columns: var(--janso-editor-rail-w) minmax(0, 1fr) var(--janso-editor-inspector-w);
+  grid-template-rows: var(--janso-editor-toolbar-h) minmax(0, 1fr) var(--janso-editor-status-h);
+  grid-template-areas:
+    'toolbar toolbar toolbar'
+    'rail    stage   inspector'
+    'status  status  status';
+  /* The editor owns the viewport: it is a tool, not a document in a page flow. */
+  block-size: 100vh;
+  background: var(--janso-editor-chrome);
+  color: var(--janso-editor-chrome-ink);
+  font-family: var(--janso-font-body);
+  font-size: var(--janso-editor-text);
+  overflow: hidden;
+}
+
+.janso-editor__toolbar {
+  grid-area: toolbar;
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-3);
+  padding-inline: var(--janso-editor-space-4);
+  border-block-end: 1px solid var(--janso-editor-chrome-line);
+  background: var(--janso-editor-chrome);
+}
+
+.janso-editor__compact-controls,
+.janso-editor__panel-close { display: none; }
+
+/* The way out stays whole on a narrow toolbar: a clipped "Back" is not a way out. */
+.janso-editor__back {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* A palette row can be dragged onto the page; the pointer says so before anyone tries. */
+.janso-editor__item[draggable='true']:not(:disabled) { cursor: grab; }
+.janso-editor__item[draggable='true']:not(:disabled):active { cursor: grabbing; }
+
+@media (max-width: 68.75rem) {
+  .janso-editor {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'toolbar' 'stage' 'status';
+    block-size: 100dvh;
+  }
+  .janso-editor__toolbar {
+    flex-wrap: wrap;
+    padding: var(--janso-editor-space-3);
+    gap: var(--janso-editor-space-2);
+  }
+  .janso-editor__toolbar .janso-editor__title {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    align-items: start;
+  }
+  .janso-editor__toolbar .janso-editor__subtitle { white-space: normal; }
+  .janso-editor__toolbar .janso-editor__spacer { display: none; }
+  .janso-editor__toolbar > * { max-inline-size: 100%; }
+  .janso-editor__compact-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--janso-editor-space-2);
+  }
+  .janso-editor .janso-editor__rail,
+  .janso-editor .janso-editor__inspector {
+    display: none;
+    grid-area: stage;
+    z-index: 4;
+    inline-size: min(90%, var(--janso-editor-inspector-w));
+  }
+  .janso-editor[data-panel='palette'] .janso-editor__rail {
+    display: block;
+    justify-self: start;
+  }
+  .janso-editor[data-panel='properties'] .janso-editor__inspector {
+    display: block;
+    justify-self: end;
+  }
+  .janso-editor__panel-close { display: block; margin-block-end: var(--janso-editor-space-4); }
+  .janso-editor .janso-editor__status { flex-wrap: wrap; padding-block: var(--janso-editor-space-2); }
+}
+
+.janso-editor__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--janso-editor-space-3);
+  min-inline-size: 0;
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-size: var(--janso-text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.janso-editor__subtitle {
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-sm);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.janso-editor__spacer {
+  flex: 1 1 auto;
+}
+
+.janso-editor__rail,
+.janso-editor__inspector {
+  overflow-y: auto;
+  padding: var(--janso-editor-space-4);
+  background: var(--janso-editor-chrome);
+}
+
+/*
+ * The rail scrolls, and its two long lists scroll inside it.
+ *
+ * Phase 8 found the rail with no overflow rule at all: the grid row clipped it, so on a
+ * 1000px viewport the field palette and the version panel were not below the fold — they
+ * were unreachable. Bounding the tree and the palette as well as the rail means all four
+ * group headings stay on screen, which is the difference between a panel a designer knows
+ * exists and one they never find.
+ */
+.janso-editor__rail {
+  grid-area: rail;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-inline-end: 1px solid var(--janso-editor-chrome-line);
+}
+
+.janso-editor__group > .janso-editor__tree,
+.janso-editor__palette-scroll {
+  max-block-size: 32vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.janso-editor__inspector {
+  grid-area: inspector;
+  border-inline-start: 1px solid var(--janso-editor-chrome-line);
+}
+
+.janso-editor__stage {
+  grid-area: stage;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+
+.janso-editor__group {
+  margin-block-end: var(--janso-editor-space-5);
+}
+
+.janso-editor__group-label {
+  margin-block: 0 var(--janso-editor-space-3);
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.janso-editor__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.janso-editor__item {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-3);
+  inline-size: 100%;
+  min-block-size: var(--janso-editor-row-h);
+  padding: var(--janso-editor-space-2) var(--janso-editor-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--janso-editor-radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.janso-editor__item:hover {
+  background: var(--janso-editor-chrome-2);
+}
+
+.janso-editor__item:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-editor__item[aria-current='true'],
+.janso-editor__item[aria-pressed='true'] {
+  border-color: var(--janso-brand-line);
+  background: var(--janso-brand-tint);
+  color: var(--janso-brand-ink);
+  font-weight: 600;
+}
+
+.janso-editor__item-meta {
+  margin-inline-start: auto;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+  font-weight: 400;
+}
+
+.janso-editor__status {
+  grid-area: status;
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-4);
+  padding-inline: var(--janso-editor-space-4);
+  border-block-start: 1px solid var(--janso-editor-chrome-line);
+  background: var(--janso-editor-chrome-2);
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.janso-editor__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  white-space: nowrap;
+}
+
+.janso-editor__stat-key {
+  color: var(--janso-editor-chrome-ink-soft);
+  opacity: 0.8;
+}
+
+.janso-editor__stat-value {
+  color: var(--janso-editor-chrome-ink);
+}
+
+/* An editor-height select. The form `Select` is 40px tall with a floating label, which is
+ * right on a form page and wrong in a 44px toolbar. */
+.janso-editor__select {
+  block-size: var(--janso-editor-control-h);
+  max-inline-size: 13rem;
+  padding-inline: var(--janso-editor-space-2);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome);
+  color: var(--janso-editor-chrome-ink);
+  font: inherit;
+  font-size: var(--janso-editor-text-sm);
+}
+
+.janso-editor__select:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+/* ---------------------------------------------------------------- canvas */
+
+.janso-canvas {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  block-size: 100%;
+  background:
+    radial-gradient(circle at 50% 0%, var(--janso-canvas-backdrop) 0%, var(--janso-canvas-backdrop-2) 100%);
+}
+
+/* Without rulers the scroller takes the whole area. */
+.janso-canvas--plain {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.janso-canvas__corner {
+  grid-row: 1;
+  grid-column: 1;
+  inline-size: var(--janso-canvas-ruler-w);
+  block-size: var(--janso-canvas-ruler-w);
+  border-inline-end: 1px solid var(--janso-editor-chrome-line);
+  border-block-end: 1px solid var(--janso-editor-chrome-line);
+  background: var(--janso-canvas-ruler-bg);
+}
+
+.janso-canvas__scroll {
+  position: relative;
+  grid-row: 2;
+  grid-column: 2;
+  overflow: auto;
+  padding: var(--janso-canvas-pad);
+  /* The page is centred until it outgrows the viewport, then it scrolls from the start —
+   * `safe center` keeps the top-left reachable instead of clipping it. */
+  display: grid;
+  place-content: safe center;
+}
+
+.janso-canvas--plain .janso-canvas__scroll {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+/* The scaled box. `transform` keeps the paper's own millimetre geometry intact: children
+ * never learn about zoom, so an element at 12mm is at 12mm at every zoom level. */
+.janso-canvas__page {
+  position: relative;
+  transform: scale(var(--janso-zoom, 1));
+  transform-origin: top center;
+}
+
+.janso-canvas__paper {
+  position: relative;
+  box-sizing: border-box;
+  border: 1px solid var(--janso-canvas-page-edge);
+  border-radius: var(--janso-canvas-page-radius);
+  background: var(--janso-canvas-page);
+  box-shadow: 0 1px 2px var(--janso-canvas-page-shadow), 0 12px 32px var(--janso-canvas-page-shadow);
+  color: var(--janso-canvas-page-ink);
+  /* A document is read at its printed size, so its type does not inherit the editor's. */
+  font-size: 9pt;
+  line-height: 1.35;
+}
+
+.janso-canvas__grid {
+  position: absolute;
+  inset: 0;
+  z-index: var(--janso-z-canvas-grid);
+  background-image: radial-gradient(
+    var(--janso-canvas-grid-dot) var(--janso-canvas-grid-dot),
+    transparent var(--janso-canvas-grid-dot)
+  );
+  background-position: 0 0;
+  pointer-events: none;
+}
+
+.janso-canvas__margins {
+  position: absolute;
+  z-index: var(--janso-z-canvas-margin);
+  border: 1px dashed var(--janso-canvas-margin-line);
+  pointer-events: none;
+}
+
+.janso-canvas__content {
+  position: absolute;
+  inset: 0;
+  z-index: var(--janso-z-canvas-content);
+}
+
+.janso-canvas__chip {
+  position: absolute;
+  z-index: var(--janso-z-canvas-chrome);
+  inset-block-start: calc(-1 * var(--janso-editor-space-5));
+  inset-inline-start: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  padding: 0 var(--janso-editor-space-2);
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-canvas-badge-bg);
+  color: var(--janso-canvas-badge-ink);
+  font-size: var(--janso-editor-text-xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  /* The chip is chrome about the page, not part of it: it must not scale with the paper. */
+  transform: scale(calc(1 / var(--janso-zoom, 1)));
+  transform-origin: bottom left;
+}
+
+/* ---------------------------------------------------------------- rulers */
+
+.janso-canvas__ruler {
+  position: relative;
+  overflow: hidden;
+  background: var(--janso-canvas-ruler-bg);
+  color: var(--janso-canvas-ruler-ink);
+  font-size: var(--janso-editor-text-xs);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.janso-canvas__ruler--h {
+  grid-row: 1;
+  grid-column: 2;
+  block-size: var(--janso-canvas-ruler-w);
+  border-block-end: 1px solid var(--janso-editor-chrome-line);
+}
+
+.janso-canvas__ruler--v {
+  grid-row: 2;
+  grid-column: 1;
+  inline-size: var(--janso-canvas-ruler-w);
+  border-inline-end: 1px solid var(--janso-editor-chrome-line);
+}
+
+.janso-canvas__ruler-band {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+}
+
+.janso-canvas__ruler--v .janso-canvas__ruler-band {
+  inset-inline: 0;
+  inset-block-start: 0;
+}
+
+.janso-canvas__tick {
+  position: absolute;
+  background: var(--janso-canvas-ruler-tick);
+}
+
+.janso-canvas__ruler--h .janso-canvas__tick {
+  inset-block-end: 0;
+  inline-size: 1px;
+  block-size: var(--janso-canvas-tick);
+}
+
+.janso-canvas__ruler--h .janso-canvas__tick--major {
+  block-size: var(--janso-canvas-tick-major);
+}
+
+.janso-canvas__ruler--v .janso-canvas__tick {
+  inset-inline-end: 0;
+  block-size: 1px;
+  inline-size: var(--janso-canvas-tick);
+}
+
+.janso-canvas__ruler--v .janso-canvas__tick--major {
+  inline-size: var(--janso-canvas-tick-major);
+}
+
+.janso-canvas__numeral {
+  position: absolute;
+  padding-inline: 2px;
+  line-height: 1;
+}
+
+.janso-canvas__ruler--h .janso-canvas__numeral {
+  inset-block-start: 2px;
+  transform: translateX(1px);
+}
+
+.janso-canvas__ruler--v .janso-canvas__numeral {
+  inset-inline-start: 1px;
+  /* Reading down the page: the numeral turns, so the digits stay upright to the reader. */
+  writing-mode: vertical-rl;
+  transform: translateY(1px);
+}
+
+.janso-canvas__marker {
+  position: absolute;
+  z-index: var(--janso-z-canvas-ruler);
+  background: var(--janso-canvas-ruler-marker);
+}
+
+.janso-canvas__ruler--h .janso-canvas__marker {
+  inset-block: 0;
+  inline-size: 1px;
+}
+
+.janso-canvas__ruler--v .janso-canvas__marker {
+  inset-inline: 0;
+  block-size: 1px;
+}
+
+/* ---------------------------------------------------------------- zoom control */
+
+.janso-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 2px;
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome-2);
+}
+
+.janso-zoom__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.5rem;
+  block-size: var(--janso-editor-control-h);
+  padding-inline: var(--janso-editor-space-2);
+  border: 0;
+  border-radius: calc(var(--janso-editor-radius) - 1px);
+  background: none;
+  color: var(--janso-editor-chrome-ink);
+  font: inherit;
+  font-size: var(--janso-editor-text-sm);
+  cursor: pointer;
+}
+
+.janso-zoom__btn:hover:not(:disabled) {
+  background: var(--janso-editor-chrome);
+}
+
+.janso-zoom__btn:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: -1px;
+}
+
+.janso-zoom__btn:disabled {
+  color: var(--janso-disabled-ink);
+  cursor: default;
+}
+
+.janso-zoom__value {
+  min-inline-size: 3.25rem;
+  padding-inline: var(--janso-editor-space-2);
+  color: var(--janso-editor-chrome-ink);
+  font-size: var(--janso-editor-text-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------- the document */
+
+/*
+ * `janso-doc-*` styles what prints. It is intentionally separate from the product's
+ * component styles: an invoice is a printed artefact, so it takes a serif-free document
+ * voice, hairline rules and point sizes — never the app's card radii or brand tints.
+ */
+
+.janso-doc__section {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.janso-doc__el {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.janso-doc-text {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.janso-doc-text--label {
+  color: var(--janso-canvas-page-ink-soft);
+  font-size: 7.5pt;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.janso-doc-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  inline-size: 100%;
+}
+
+.janso-doc-image img {
+  max-block-size: 100%;
+  max-inline-size: 100%;
+  object-fit: contain;
+}
+
+.janso-doc-divider {
+  border-block-start: 1px solid var(--janso-canvas-page-line-strong);
+}
+
+.janso-doc-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 8pt;
+}
+
+.janso-doc-table th,
+.janso-doc-table td {
+  padding: 1.1mm 1.4mm;
+  border-block-end: 1px solid var(--janso-canvas-page-line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.janso-doc-table thead th {
+  border-block-end: 1px solid var(--janso-canvas-page-line-strong);
+  background: var(--janso-canvas-page-tint);
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.janso-doc-table__num {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.janso-doc-table__desc {
+  color: var(--janso-canvas-page-ink-soft);
+  font-size: 7.5pt;
+}
+
+.janso-doc-table__blank td {
+  block-size: 6mm;
+}
+
+.janso-doc-totals {
+  display: flex;
+  flex-direction: column;
+  font-size: 8pt;
+}
+
+.janso-doc-totals__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4mm;
+  padding-block: 0.9mm;
+  border-block-end: 1px solid var(--janso-canvas-page-line);
+}
+
+.janso-doc-totals__row--grand {
+  border-block: 1px solid var(--janso-canvas-page-line-strong);
+  font-size: 9.5pt;
+  font-weight: 700;
+}
+
+.janso-doc-totals__row--words {
+  display: block;
+  border: 0;
+  color: var(--janso-canvas-page-ink-soft);
+  font-size: 7.5pt;
+}
+
+.janso-doc-totals__amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.janso-doc-sign {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  block-size: 100%;
+  border-block-start: 1px solid var(--janso-canvas-page-line-strong);
+  font-size: 7.5pt;
+  text-align: center;
+}
+
+.janso-doc-qr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  border: 1px solid var(--janso-canvas-page-line);
+  color: var(--janso-canvas-page-ink-soft);
+  font-size: 6.5pt;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* The Original / Duplicate / Triplicate mark. Diagonal, behind the content, and part of
+ * the print — the preview shows exactly what the copy will carry. */
+.janso-doc-copymark {
+  position: absolute;
+  inset: 0;
+  z-index: var(--janso-z-canvas-grid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--janso-canvas-copy-mark);
+  font-size: 48pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  text-transform: uppercase;
+  transform: rotate(-32deg);
+}
+
+/* ---------------------------------------------------------------- selection */
+
+/*
+ * The selection layer sits *above* the document and is the only thing that knows about
+ * editing. The document renderer stays print-pure — no editor class, no handler, no
+ * affordance — because the server renderer has to produce the same page from the same
+ * layout, and a renderer that had to strip editor markup would eventually strip the wrong
+ * thing.
+ *
+ * One tab stop, not thirty-seven: the layer is a listbox and its targets are options, so
+ * arrow keys move the selection and Tab moves to the next pane. A page of 200 elements
+ * each taking a tab stop is a keyboard trap with good intentions.
+ */
+
+.janso-canvas__select {
+  position: absolute;
+  inset: 0;
+  z-index: var(--janso-z-canvas-zone);
+}
+
+/* With nothing selected, this ring is the only thing telling a keyboard user the canvas
+ * has focus — and it is the state they always start in. */
+.janso-canvas__select:focus-visible {
+  outline: var(--janso-canvas-ring) solid var(--janso-focus);
+  outline-offset: calc(-1 * var(--janso-canvas-ring));
+}
+
+.janso-canvas__target {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--janso-canvas-outline) solid transparent;
+  background: none;
+  cursor: pointer;
+}
+
+/* Hover and keyboard focus read the same, because they mean the same thing: "this is the
+ * one you are about to act on". */
+.janso-canvas__target[data-state='hovered'] {
+  border-color: var(--janso-canvas-zone-line);
+  border-style: dashed;
+  background: var(--janso-canvas-zone-tint);
+}
+
+.janso-canvas__target[data-state='selected'] {
+  border-width: var(--janso-canvas-ring);
+  border-style: solid;
+  border-color: var(--janso-canvas-ring);
+}
+
+/* A zone reads as a region, an element as an object: the zone gets a softer, inset edge so
+ * a selected element inside a selected zone is still legible. */
+.janso-canvas__target[data-kind='zone'][data-state='selected'] {
+  border-style: dashed;
+}
+
+/* A member of a multi-selection that is not the active one: the same ring, drawn lighter.
+ * With four rings on the page, which one the keyboard will act on has to be visible, and a
+ * different colour would read as a different kind of thing. */
+.janso-canvas__target[data-state='selected']:not([data-active]) {
+  border-color: var(--janso-canvas-ring-muted);
+}
+
+/* The rubber band. Dashed, because it is a gesture in progress and not an object: a solid
+ * rectangle on the paper reads as something that was just drawn. */
+.janso-canvas__marquee {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--janso-canvas-outline) dashed var(--janso-canvas-ring);
+  background: var(--janso-canvas-marquee-tint);
+  pointer-events: none;
+}
+
+.janso-canvas__label {
+  position: absolute;
+  inset-block-end: 100%;
+  inset-inline-start: calc(-1 * var(--janso-canvas-ring));
+  padding: 0 var(--janso-editor-space-2);
+  border-radius: 2px 2px 0 0;
+  background: var(--janso-canvas-zone-label-bg);
+  color: var(--janso-canvas-zone-label-ink);
+  font-size: var(--janso-editor-text-xs);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  white-space: nowrap;
+  /* Chrome about the page, so it keeps its size as the paper scales. */
+  transform: scale(calc(1 / var(--janso-zoom, 1)));
+  transform-origin: bottom left;
+}
+
+.janso-canvas__badge {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-end: 0;
+  padding: 0 var(--janso-editor-space-2);
+  border-radius: 0 0 2px 2px;
+  background: var(--janso-canvas-badge-bg);
+  color: var(--janso-canvas-badge-ink);
+  font-size: var(--janso-editor-text-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  white-space: nowrap;
+  transform: scale(calc(1 / var(--janso-zoom, 1)));
+  transform-origin: top right;
+}
+
+.janso-canvas__handle {
+  position: absolute;
+  z-index: var(--janso-z-canvas-handle);
+  inline-size: var(--janso-canvas-handle);
+  block-size: var(--janso-canvas-handle);
+  border: 1px solid var(--janso-canvas-handle-line);
+  background: var(--janso-canvas-handle-fill);
+  /* The handle is drawn small and hit large: a 7px square is a design, not a target. */
+  box-shadow: 0 0 0 calc((var(--janso-canvas-handle-hit) - var(--janso-canvas-handle)) / 2) transparent;
+  transform: scale(calc(1 / var(--janso-zoom, 1)));
+}
+
+.janso-canvas__handle[data-at='nw'] { inset-block-start: 0; inset-inline-start: 0; transform-origin: top left; }
+.janso-canvas__handle[data-at='n'] { inset-block-start: 0; inset-inline-start: 50%; transform-origin: top center; }
+.janso-canvas__handle[data-at='ne'] { inset-block-start: 0; inset-inline-end: 0; transform-origin: top right; }
+.janso-canvas__handle[data-at='e'] { inset-block-start: 50%; inset-inline-end: 0; transform-origin: center right; }
+.janso-canvas__handle[data-at='se'] { inset-block-end: 0; inset-inline-end: 0; transform-origin: bottom right; }
+.janso-canvas__handle[data-at='s'] { inset-block-end: 0; inset-inline-start: 50%; transform-origin: bottom center; }
+.janso-canvas__handle[data-at='sw'] { inset-block-end: 0; inset-inline-start: 0; transform-origin: bottom left; }
+.janso-canvas__handle[data-at='w'] { inset-block-start: 50%; inset-inline-start: 0; transform-origin: center left; }
+
+/* ---------------------------------------------------------------- element tree */
+
+.janso-editor__tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.janso-editor__tree .janso-editor__tree {
+  margin-inline-start: var(--janso-editor-space-4);
+  border-inline-start: 1px solid var(--janso-editor-chrome-line);
+  padding-inline-start: var(--janso-editor-space-2);
+}
+
+.janso-editor__node {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  inline-size: 100%;
+  min-block-size: var(--janso-editor-row-h);
+  padding: 0 var(--janso-editor-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--janso-editor-radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--janso-editor-text-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.janso-editor__node:hover {
+  background: var(--janso-editor-chrome-2);
+}
+
+.janso-editor__node:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: -1px;
+}
+
+.janso-editor__node[aria-selected='true'] {
+  border-color: var(--janso-brand-line);
+  background: var(--janso-brand-tint);
+  color: var(--janso-brand-ink);
+  font-weight: 600;
+}
+
+/* The active member of a multi-selection, marked the same way the canvas marks it: a
+ * leading bar rather than another colour, since every row here is already the same kind
+ * of thing. */
+.janso-editor__node[data-active] {
+  box-shadow: inset 2px 0 0 var(--janso-brand-ink);
+}
+
+.janso-editor__node--zone {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.janso-editor__twisty {
+  display: inline-flex;
+  inline-size: 0.75rem;
+  justify-content: center;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+}
+
+.janso-editor__node-kind {
+  margin-inline-start: auto;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+/* ---------------------------------------------------------------- inspector rows */
+
+.janso-editor__row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--janso-editor-space-3);
+  min-block-size: var(--janso-editor-row-h);
+}
+
+.janso-editor__row-label {
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-sm);
+}
+
+.janso-editor__row-value {
+  color: var(--janso-editor-chrome-ink);
+  font-size: var(--janso-editor-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.janso-editor__row-hint {
+  grid-column: 2;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+}
+
+.janso-editor__empty {
+  padding: var(--janso-editor-space-4) 0;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-sm);
+}
+
+.janso-editor__kbd {
+  display: inline-block;
+  min-inline-size: 1.25rem;
+  padding: 0 var(--janso-editor-space-2);
+  border: 1px solid var(--janso-editor-chrome-line);
+  border-radius: 3px;
+  background: var(--janso-editor-chrome-2);
+  color: var(--janso-editor-chrome-ink);
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-editor-text-xs);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------- editor controls */
+
+/*
+ * Editor-density controls. The product's form controls are 40px tall with floating
+ * labels, which is right on a page where someone fills in eight fields and wrong in a
+ * panel that holds forty. These are 26px, label to the left, and they share one row grid
+ * so every label column in the inspector lines up.
+ *
+ * None of them carries a colour value: a swatch's colour is document data the app passes
+ * in, and everything else is a token.
+ */
+
+.janso-editor__control {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  min-inline-size: 0;
+}
+
+/*
+ * Control edges use `--janso-control-line`, the same token the console's forms use, and
+ * never `--janso-editor-chrome-line`. The two look alike and mean different things: a
+ * control's boundary is information a low-vision user needs to find the field (WCAG
+ * 1.4.11, ≥ 3:1, asserted in `tests/contrast.test.ts`), while a divider between two
+ * regions is decoration that owes nothing. Phase 8 found every editor input drawn at
+ * 1.26:1 because the two had been conflated.
+ */
+.janso-editor__input {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--janso-editor-control-h);
+  padding-inline: var(--janso-editor-space-2);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome);
+  color: var(--janso-editor-chrome-ink);
+  font: inherit;
+  font-size: var(--janso-editor-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.janso-editor__input:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-editor__input[aria-invalid='true'] {
+  border-color: var(--janso-danger-line);
+  background: var(--janso-danger-tint);
+  color: var(--janso-danger-ink);
+}
+
+.janso-editor__input--measure {
+  text-align: end;
+}
+
+.janso-editor__unit {
+  flex: 0 0 auto;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+}
+
+/* The segmented choice lives in `controls.css`: form pages use it too. */
+
+/* A colour field: the swatch *is* the preview, so it is as large as the control and the
+ * hex sits beside it for the people who think in hex. */
+.janso-editor__swatch {
+  flex: 0 0 auto;
+  inline-size: var(--janso-editor-control-h);
+  block-size: var(--janso-editor-control-h);
+  padding: 0;
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-editor-radius);
+  cursor: pointer;
+}
+
+.janso-editor__swatch:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-editor__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--janso-editor-space-1);
+  grid-column: 2;
+  padding-block-start: var(--janso-editor-space-1);
+}
+
+.janso-editor__swatch--small {
+  inline-size: 1rem;
+  block-size: 1rem;
+  border-radius: 3px;
+}
+
+.janso-editor__swatch--small[aria-pressed='true'] {
+  outline: 2px solid var(--janso-canvas-ring);
+  outline-offset: 1px;
+}
+
+/* A toggle. Not the product's `Checkbox`: that one is 20px with a 14px label beside it,
+ * and here the label is already the row's label. */
+/* A text input that spans the row, for content a designer types rather than picks. */
+.janso-editor__textarea {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: calc(var(--janso-editor-control-h) * 2);
+  padding: var(--janso-editor-space-2);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome);
+  color: var(--janso-editor-chrome-ink);
+  font: inherit;
+  font-size: var(--janso-editor-text);
+  resize: vertical;
+}
+
+.janso-editor__textarea:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+/* A row whose control needs the full width: a textarea, a swatch list. */
+.janso-editor__row--stack {
+  display: block;
+}
+
+.janso-editor__row--stack .janso-editor__row-label {
+  display: block;
+  padding-block-end: var(--janso-editor-space-1);
+}
+
+/* ---------------------------------------------------------------- column designer */
+
+/*
+ * The budget bar. A column set that overflows its table is the layout error that looks
+ * right on screen and comes out of a printer with a column missing, so "how full is it"
+ * has a shape, not only a number.
+ */
+.janso-editor__budget {
+  display: block;
+  inline-size: 100%;
+  block-size: 0.375rem;
+  overflow: hidden;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-meter-track);
+}
+
+.janso-editor__budget-fill {
+  display: block;
+  block-size: 100%;
+  background: var(--janso-meter-fill);
+}
+
+.janso-editor__budget[data-over='true'] .janso-editor__budget-fill {
+  background: var(--janso-danger-ink);
+}
+
+.janso-editor__columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-2);
+  margin: var(--janso-editor-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.janso-editor__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-1);
+  padding: var(--janso-editor-space-2);
+  border: 1px solid var(--janso-editor-chrome-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome-2);
+}
+
+.janso-editor__column-head {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+}
+
+.janso-editor__column-name {
+  min-inline-size: 0;
+  overflow: hidden;
+  font-size: var(--janso-editor-text-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.janso-editor__column-actions {
+  display: flex;
+  gap: 1px;
+  margin-inline-start: auto;
+}
+
+.janso-editor__column-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+}
+
+.janso-editor__column-rename {
+  display: block;
+}
+
+.janso-editor__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: var(--janso-editor-chrome-ink-soft);
+  font: inherit;
+  font-size: var(--janso-editor-text-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.janso-editor__icon:hover:not(:disabled) {
+  background: var(--janso-editor-chrome);
+  color: var(--janso-editor-chrome-ink);
+}
+
+.janso-editor__icon:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-editor__icon:disabled {
+  color: var(--janso-disabled-ink);
+  cursor: default;
+}
+
+.janso-editor__icon[aria-pressed='true'] {
+  background: var(--janso-brand-tint);
+  color: var(--janso-brand-ink);
+}
+
+.janso-editor__button {
+  block-size: var(--janso-editor-control-h);
+  padding-inline: var(--janso-editor-space-3);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome);
+  color: var(--janso-editor-chrome-ink);
+  font: inherit;
+  font-size: var(--janso-editor-text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.janso-editor__button:hover:not(:disabled) {
+  background: var(--janso-editor-chrome-2);
+}
+
+.janso-editor__button:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-editor__button:disabled {
+  border-color: var(--janso-editor-chrome-line);
+  color: var(--janso-disabled-ink);
+  cursor: default;
+}
+
+/* Removing something is the one action here that cannot be reached back through the same
+ * button, so it is drawn as what it is. */
+.janso-editor__button--danger:not(:disabled) {
+  border-color: var(--janso-danger-line);
+  color: var(--janso-danger-ink);
+}
+
+/* The arrange grids: six alignments read as two rows of three, and the pairs as two of
+ * two. Equal columns, because every button in a set is the same weight of decision. */
+.janso-editor__arrange {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--janso-editor-space-1);
+  inline-size: 100%;
+}
+
+.janso-editor__arrange--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.janso-editor__arrange .janso-editor__button {
+  padding-inline: var(--janso-editor-space-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------------- column grips */
+
+/* Dividers on the table itself. The inspector sets a width; this pulls one. */
+.janso-canvas__columns {
+  position: absolute;
+  z-index: var(--janso-z-canvas-handle);
+  pointer-events: none;
+}
+
+.janso-canvas__column-grip {
+  position: absolute;
+  inset-block: 0;
+  /* Drawn as a hairline, hit as a target: the line is the design, the padding is the UI. */
+  inline-size: 11px;
+  margin-inline-start: -5px;
+  background: linear-gradient(
+    to right,
+    transparent 5px,
+    var(--janso-canvas-zone-line) 5px,
+    var(--janso-canvas-zone-line) 6px,
+    transparent 6px
+  );
+  cursor: col-resize;
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity var(--janso-dur-fast) var(--janso-ease);
+}
+
+.janso-canvas__columns:hover .janso-canvas__column-grip,
+.janso-canvas__column-grip[data-dragging='true'] {
+  opacity: 1;
+}
+
+.janso-canvas__column-grip[data-dragging='true'] {
+  background: linear-gradient(
+    to right,
+    transparent 5px,
+    var(--janso-canvas-ring) 5px,
+    var(--janso-canvas-ring) 6px,
+    transparent 6px
+  );
+}
+
+.janso-canvas__column-grip .janso-canvas__badge {
+  inset-block-start: -1.5rem;
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+  transform-origin: bottom left;
+}
+
+/* ---------------------------------------------------------------- transform */
+
+/* The selection itself is the move handle, so it says so under the pointer. */
+.janso-canvas__target[data-draggable='true'] {
+  cursor: move;
+}
+
+.janso-canvas__handle[data-handle='nw'],
+.janso-canvas__handle[data-handle='se'] {
+  cursor: nwse-resize;
+}
+
+.janso-canvas__handle[data-handle='ne'],
+.janso-canvas__handle[data-handle='sw'] {
+  cursor: nesw-resize;
+}
+
+.janso-canvas__handle[data-handle='n'],
+.janso-canvas__handle[data-handle='s'] {
+  cursor: ns-resize;
+}
+
+.janso-canvas__handle[data-handle='e'],
+.janso-canvas__handle[data-handle='w'] {
+  cursor: ew-resize;
+}
+
+/* Guides live above the page and below the ring: they are aiming aids, not the subject. */
+.janso-canvas__guides {
+  position: absolute;
+  inset: 0;
+  z-index: var(--janso-z-canvas-guide);
+  pointer-events: none;
+}
+
+.janso-canvas__guide {
+  position: absolute;
+  background: var(--janso-canvas-guide);
+}
+
+.janso-canvas__guide[data-axis='x'] {
+  inset-block: 0;
+  inline-size: var(--janso-canvas-guide);
+}
+
+.janso-canvas__guide[data-axis='y'] {
+  inset-inline: 0;
+  block-size: var(--janso-canvas-guide);
+}
+
+/* A centre line is the more deliberate alignment, so it reads as a dashed axis rather
+ * than a solid edge. */
+.janso-canvas__guide[data-kind='centre'] {
+  background: repeating-linear-gradient(
+    var(--janso-canvas-guide) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+.janso-canvas__guide[data-axis='y'][data-kind='centre'] {
+  background: repeating-linear-gradient(
+    to right,
+    var(--janso-canvas-guide) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+/* ---------------------------------------------------------------- inline text */
+
+/*
+ * Editing text where it prints. The box matches the element exactly — same millimetres,
+ * same type — so what you type is already what you will get; only the ring and the caret
+ * say that this is an editor rather than a page.
+ */
+.janso-canvas__inline {
+  position: absolute;
+  z-index: var(--janso-z-canvas-handle);
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: var(--janso-canvas-ring) solid var(--janso-canvas-ring);
+  background: var(--janso-canvas-page);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  overflow: hidden;
+  resize: none;
+  text-align: inherit;
+  text-transform: inherit;
+}
+
+.janso-canvas__inline:focus-visible {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------- field palette */
+
+.janso-editor__search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-1);
+  margin-block-end: var(--janso-editor-space-2);
+}
+
+.janso-editor__palette-group {
+  margin-block-start: var(--janso-editor-space-3);
+}
+
+/* The binding root — `voucher`, `company` — as a quiet divider rather than a heading,
+   because the group it labels is one word long and a heading would outweigh it. */
+.janso-editor__palette-root {
+  margin-block: 0 var(--janso-editor-space-1);
+  padding-block-end: var(--janso-editor-space-1);
+  border-block-end: 1px solid var(--janso-editor-chrome-line);
+  color: var(--janso-editor-chrome-ink-soft);
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-editor-text-xs);
+}
+
+/*
+ * Two lines per field, not one.
+ *
+ * A palette row carries three things — the name, an "on the page" tag, and the sample
+ * value — and the rail is 280px. On one line they collide, which phase 8's screenshots
+ * showed happening to every already-placed field. Stacking them also puts the value
+ * directly under the name it belongs to, which is how the pair is read.
+ */
+.janso-editor__palette-group .janso-editor__item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.janso-editor__palette-group .janso-editor__item-meta {
+  margin-inline-start: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.janso-editor__palette-name {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  min-inline-size: 0;
+}
+
+/* "on the page" — a state, not an action, so it reads as a tag and never as a button. */
+.janso-editor__palette-mark {
+  padding-inline: var(--janso-editor-space-2);
+  border-radius: 999px;
+  background: var(--janso-brand-tint);
+  color: var(--janso-brand-ink);
+  font-size: var(--janso-editor-text-xs);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- problems */
+
+.janso-editor__issues {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.janso-editor__issue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-1);
+  inline-size: 100%;
+  padding: var(--janso-editor-space-2) var(--janso-editor-space-3);
+  border: 1px solid var(--janso-warn-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-warn-tint);
+  color: var(--janso-warn-ink);
+  font: inherit;
+  font-size: var(--janso-editor-text-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+/* An error will print wrong; a warning may be deliberate. The two are told apart by the
+   word in the row as well as the colour, so this is reinforcement and not the message. */
+.janso-editor__issue[data-severity='error'] {
+  border-color: var(--janso-danger-line);
+  background: var(--janso-danger-tint);
+  color: var(--janso-danger-ink);
+}
+
+.janso-editor__issue:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-editor__issue-kind {
+  font-size: var(--janso-editor-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.janso-editor__issue-text {
+  line-height: 1.35;
+}
+
+/* ---------------------------------------------------------------- bindings on paper */
+
+/*
+ * A binding printed as itself, in placeholder mode.
+ *
+ * Monospace and tinted so it reads as a slot rather than as content: the whole purpose of
+ * the mode is that nobody mistakes `{{party.name}}` for something the customer will see.
+ * It keeps the element's own font size, because the point of the canvas is that the box is
+ * the size it will print at.
+ */
+.janso-doc-binding {
+  border-radius: 2px;
+  background: var(--janso-canvas-page-tint);
+  color: var(--janso-canvas-page-ink-soft);
+  font-family: var(--janso-font-mono);
+  font-size: 0.92em;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- thumbnails */
+
+/*
+ * The clipping frame. The sheet inside is drawn at full millimetre size and scaled down, so
+ * it overflows this box until the transform applies — `overflow: hidden` is load-bearing,
+ * not cosmetic.
+ */
+.janso-thumb {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  border: 1px solid var(--janso-canvas-page-edge);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-canvas-page);
+}
+
+.janso-thumb__sheet {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  transform-origin: top left;
+  background: var(--janso-canvas-page);
+}
+
+/* ---------------------------------------------------------------- gallery */
+
+.janso-gallery {
+  box-sizing: border-box;
+  min-block-size: 100vh;
+  padding: var(--janso-editor-space-5);
+  background: var(--janso-canvas-backdrop);
+  color: var(--janso-editor-chrome-ink);
+}
+
+.janso-gallery__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-4);
+  margin-block-end: var(--janso-editor-space-3);
+}
+
+.janso-gallery__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--janso-editor-space-3);
+  margin-block-end: var(--janso-editor-space-4);
+}
+
+.janso-gallery__grid {
+  display: grid;
+  gap: var(--janso-editor-space-4);
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.janso-gallery__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-3);
+  block-size: 100%;
+  padding: var(--janso-editor-space-3);
+  border: 1px solid var(--janso-editor-chrome-line);
+  border-radius: var(--janso-editor-radius);
+  background: var(--janso-editor-chrome);
+  text-align: start;
+}
+
+.janso-gallery__preview {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--janso-editor-space-2);
+}
+
+.janso-gallery__name {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  margin: 0;
+  font-size: var(--janso-editor-text);
+  font-weight: 600;
+}
+
+.janso-gallery__code {
+  color: var(--janso-editor-chrome-ink-soft);
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-editor-text-xs);
+}
+
+.janso-gallery__note {
+  margin: 0;
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-sm);
+  line-height: 1.4;
+}
+
+.janso-gallery__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-3);
+  margin-block-start: auto;
+}
+
+/* ---------------------------------------------------------------- versions */
+
+.janso-editor__versions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.janso-editor__version {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  inline-size: 100%;
+  padding: var(--janso-editor-space-2) var(--janso-editor-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--janso-editor-radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+.janso-editor__version[data-live='true'] {
+  border-color: var(--janso-success-line);
+  background: var(--janso-success-tint);
+  color: var(--janso-success-ink);
+}
+
+.janso-editor__version-head {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-editor-space-2);
+  font-size: var(--janso-editor-text-sm);
+  font-weight: 600;
+}
+
+.janso-editor__version-meta {
+  color: var(--janso-editor-chrome-ink-soft);
+  font-size: var(--janso-editor-text-xs);
+}
+
+.janso-editor__publish {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-editor-space-2);
+}

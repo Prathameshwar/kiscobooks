@@ -1,0 +1,43 @@
+﻿run,case_or_route,result,http_status,observed_result,run_page_error_count,evidence
+live-write-final,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-TENANT-CREATE-REPLAY,PASS,,Created a disposable tenant through the live provider and DB; replay returned the same ID without the password,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-TENANT-DETAIL-EDIT,PASS,,Live edit persisted and rendered on the full tenant detail page,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-ADMIN-LAST-OWNER-AND-INVITATION,PASS,,Last-owner revocation refused; backup invite/resend/revoke/restore passed; wrong-tenant lookup refused; backup left revoked,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-DISPOSABLE-ADMIN-RECOVERY-LINK,FAIL,,"AssertionError [ERR_ASSERTION]: {""code"":""conflict"",""message"":""this sign-in provider does not support billing password recovery"",""trace_id"":""caebb3bf63954e2b80a8e314d9c28e5e""}
+
+409 !== 200
+",0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-TENANT-LIFECYCLE-REPLAY-STALE,PASS,,"Deactivate/activate/deactivate, exact replay and stale revision refusal passed; QA tenant left suspended",0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-PRICING-CRUD-REVISIONS,PASS,,Inactive QA price create/edit/delete/restore/delete and five revisions passed; tax total exact; QA price left deleted,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-AUDIT-DELIVERY,PASS,,Observed 21 delivered platform events for the QA tenant in the Audit API,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-write-final,LIVE-CHANGE-PASSWORD-HANDOFF-PAGE,PASS,,Authenticated password-change handoff page rendered; actual password change deliberately excluded for the supplied account,0,.test_artifacts/platform-admin-20261029/live-write-final/live-results.json
+live-verified,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/details,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/tenants,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/tenants/new,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/accounts,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/access/administrators,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/access/role,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/access/permissions,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/pricing,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/references,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/references/countries,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/references/states,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/references/currencies,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/references/languages,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/references/timezones,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/notifications,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,/platform/history,OBSERVED,200,HTTP route/screenshot observation; data loading is independently checked by explicit settled-state cases.,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-UNAUTHENTICATED-BOUNDARY,PASS,,Four real Console proxy requests refused absent sessions with HTTP 401,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-READ-API-CATALOGS,PASS,,Ten live Identity read contracts returned HTTP 200,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-SETTLED-DATA-PAGES,PASS,,"Metadata, pricing, states and history finished loading and displayed no service error",0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-TENANT-SEARCH,HARNESS_ERROR_RECHECKED,,"Initial selector requested textbox for an HTML search input. Corrected to searchbox; separate fresh-login recheck passed. Original failure: TimeoutError: locator.fill: Timeout 60000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('textbox', { name: 'Search tenants', exact: true })[22m
+",0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-NOTIFICATION-DESTINATIONS-SETTLED,PASS,,Loaded 12 notification destinations with live services and no visible service errors,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-MOBILE-VERIFIED-THEMES,PASS,,Verified applied theme attribute and lack of document overflow on 12 mobile page/theme combinations,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-verified,LIVE-CHANGE-PASSWORD-PAGE,PASS,,Authenticated change-password handoff page loaded; supplied account password left unchanged,0,.test_artifacts/platform-admin-20261029/live-verified/live-results.json
+live-search-recheck,LIVE-LOGIN,PASS,,Real Authentik username/password login reached Console,0,.test_artifacts/platform-admin-20261029/live-search-recheck/live-results.json
+live-search-recheck,LIVE-TENANT-SEARCH,PASS,,Tenant prefix search returned QA tenant and excluded unrelated demo tenants,0,.test_artifacts/platform-admin-20261029/live-search-recheck/live-results.json

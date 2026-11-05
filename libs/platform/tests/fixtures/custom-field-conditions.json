@@ -1,0 +1,155 @@
+[
+  {
+    "name": "exact decimal membership",
+    "rule": {
+      "field": "cf_price",
+      "cmp": "in",
+      "value": [
+        "1",
+        "2.00"
+      ]
+    },
+    "values": {
+      "cf_price": "1.0000"
+    },
+    "numeric": [
+      "cf_price"
+    ],
+    "native_type": null,
+    "expected": true
+  },
+  {
+    "name": "boolean is not numeric",
+    "rule": {
+      "field": "cf_price",
+      "cmp": "eq",
+      "value": "1"
+    },
+    "values": {
+      "cf_price": true
+    },
+    "numeric": [
+      "cf_price"
+    ],
+    "native_type": null,
+    "expected": false
+  },
+  {
+    "name": "invalid numeric inequality fails closed",
+    "rule": {
+      "field": "cf_price",
+      "cmp": "ne",
+      "value": "bad"
+    },
+    "values": {
+      "cf_price": "1"
+    },
+    "numeric": [
+      "cf_price"
+    ],
+    "native_type": null,
+    "expected": false
+  },
+  {
+    "name": "strict boolean",
+    "rule": {
+      "field": "cf_flag",
+      "cmp": "eq",
+      "value": 0
+    },
+    "values": {
+      "cf_flag": false
+    },
+    "numeric": [],
+    "native_type": null,
+    "expected": false
+  },
+  {
+    "name": "native UUID canonical form",
+    "rule": {
+      "field": "brand_id",
+      "cmp": "eq",
+      "value": "AABC1234-0000-4000-8000-000000000001"
+    },
+    "values": {
+      "brand_id": "aabc1234-0000-4000-8000-000000000001"
+    },
+    "numeric": [],
+    "native_type": "uuid",
+    "expected": true
+  },
+  {
+    "name": "custom text remains case sensitive",
+    "rule": {
+      "field": "cf_note",
+      "cmp": "eq",
+      "value": "AABC1234-0000-4000-8000-000000000001"
+    },
+    "values": {
+      "cf_note": "aabc1234-0000-4000-8000-000000000001"
+    },
+    "numeric": [],
+    "native_type": null,
+    "expected": false
+  },
+  {
+    "name": "native timestamp compares instant",
+    "rule": {
+      "field": "created_at",
+      "cmp": "eq",
+      "value": "2026-09-15T06:30:00.123456Z"
+    },
+    "values": {
+      "created_at": "2026-09-15T12:00:00.123456+05:30"
+    },
+    "numeric": [],
+    "native_type": "datetime",
+    "expected": true
+  },
+  {
+    "name": "custom timestamp preserves string comparison",
+    "rule": {
+      "field": "cf_when",
+      "cmp": "eq",
+      "value": "2026-09-15T06:30:00Z"
+    },
+    "values": {
+      "cf_when": "2026-09-15T12:00:00+05:30"
+    },
+    "numeric": [],
+    "native_type": null,
+    "expected": false
+  },
+  {
+    "name": "empty multiselect",
+    "rule": {
+      "field": "cf_tags",
+      "cmp": "empty",
+      "value": null
+    },
+    "values": {
+      "cf_tags": []
+    },
+    "numeric": [],
+    "native_type": null,
+    "expected": true
+  },
+  {
+    "name": "nested negation",
+    "rule": {
+      "op": "not",
+      "rules": [
+        {
+          "field": "cf_note",
+          "cmp": "empty"
+        }
+      ]
+    },
+    "values": {
+      "cf_note": "note"
+    },
+    "numeric": [],
+    "native_type": null,
+    "expected": true
+  }
+]

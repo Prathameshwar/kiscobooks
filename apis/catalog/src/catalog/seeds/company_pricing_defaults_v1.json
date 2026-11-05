@@ -1,0 +1,14 @@
+{
+  "SALE": {
+    "code": "DEFAULT_SALES",
+    "name": "Default sales",
+    "purpose": "SALE",
+    "tax_basis": "EXCLUSIVE"
+  },
+  "PURCHASE": {
+    "code": "DEFAULT_PURCHASE",
+    "name": "Default purchase",
+    "purpose": "PURCHASE",
+    "tax_basis": "EXCLUSIVE"
+  }
+}

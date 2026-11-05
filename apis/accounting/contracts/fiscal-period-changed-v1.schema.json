@@ -1,0 +1,62 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "company_id": {
+      "format": "uuid",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "end_date": {
+      "format": "date",
+      "title": "End Date",
+      "type": "string"
+    },
+    "fiscal_year_id": {
+      "format": "uuid",
+      "title": "Fiscal Year Id",
+      "type": "string"
+    },
+    "period_id": {
+      "format": "uuid",
+      "title": "Period Id",
+      "type": "string"
+    },
+    "row_version": {
+      "title": "Row Version",
+      "type": "integer"
+    },
+    "start_date": {
+      "format": "date",
+      "title": "Start Date",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "FUTURE",
+        "OPEN",
+        "SOFT_CLOSED",
+        "CLOSED",
+        "LOCKED"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "company_id",
+    "period_id",
+    "fiscal_year_id",
+    "row_version",
+    "start_date",
+    "end_date",
+    "status"
+  ],
+  "title": "PeriodChanged",
+  "type": "object"
+}

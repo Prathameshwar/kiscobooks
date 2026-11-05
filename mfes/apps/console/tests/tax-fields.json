@@ -1,0 +1,1452 @@
+{
+  "catalog.tax_category": [
+    {
+      "key": "code",
+      "source": "native",
+      "label": "code",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": {
+        "kind": "text",
+        "label": "Code",
+        "choices": [],
+        "nullable": false,
+        "max_length": 30,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "name",
+      "source": "native",
+      "label": "name",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "text",
+        "label": "Name",
+        "choices": [],
+        "nullable": false,
+        "max_length": 100,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "is_active",
+      "source": "native",
+      "label": "is_active",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 2,
+      "control": {
+        "kind": "boolean",
+        "label": "Active",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 3,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 4,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": null
+    }
+  ],
+  "catalog.tax_classification": [
+    {
+      "key": "jurisdiction",
+      "source": "native",
+      "label": "jurisdiction",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": null
+    },
+    {
+      "key": "code_system",
+      "source": "native",
+      "label": "code_system",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "select",
+        "label": "Code system",
+        "choices": [
+          {
+            "value": "HSN",
+            "label": "HSN (goods)"
+          },
+          {
+            "value": "SAC",
+            "label": "SAC (services)"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "code",
+      "source": "native",
+      "label": "code",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 2,
+      "control": {
+        "kind": "text",
+        "label": "Code",
+        "choices": [],
+        "nullable": false,
+        "max_length": 8,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "item_kind",
+      "source": "native",
+      "label": "item_kind",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 3,
+      "control": {
+        "kind": "select",
+        "label": "Item kind",
+        "choices": [
+          {
+            "value": "GOODS",
+            "label": "Goods"
+          },
+          {
+            "value": "SERVICE",
+            "label": "Services"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "description",
+      "source": "native",
+      "label": "description",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 4,
+      "control": {
+        "kind": "text",
+        "label": "Description",
+        "choices": [],
+        "nullable": false,
+        "max_length": 1000,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "valid_from",
+      "source": "native",
+      "label": "valid_from",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": {
+        "kind": "date",
+        "label": "Effective from",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "valid_to",
+      "source": "native",
+      "label": "valid_to",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 6,
+      "control": {
+        "kind": "date",
+        "label": "Effective through",
+        "choices": [],
+        "nullable": true,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_reference",
+      "source": "native",
+      "label": "source_reference",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 7,
+      "control": {
+        "kind": "text",
+        "label": "Official source reference",
+        "choices": [],
+        "nullable": false,
+        "max_length": 500,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_url",
+      "source": "native",
+      "label": "source_url",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 8,
+      "control": {
+        "kind": "text",
+        "label": "Official document URL",
+        "choices": [],
+        "nullable": false,
+        "max_length": 1000,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_sha256",
+      "source": "native",
+      "label": "source_sha256",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 9,
+      "control": {
+        "kind": "text",
+        "label": "Document SHA-256",
+        "choices": [],
+        "nullable": false,
+        "max_length": 64,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 10,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 11,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 12,
+      "control": null
+    }
+  ],
+  "catalog.tax_rule": [
+    {
+      "key": "code",
+      "source": "native",
+      "label": "code",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": {
+        "kind": "text",
+        "label": "Code",
+        "choices": [],
+        "nullable": false,
+        "max_length": 30,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "name",
+      "source": "native",
+      "label": "name",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "text",
+        "label": "Name",
+        "choices": [],
+        "nullable": false,
+        "max_length": 100,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "tax_system",
+      "source": "native",
+      "label": "tax_system",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 2,
+      "control": null
+    },
+    {
+      "key": "jurisdiction",
+      "source": "native",
+      "label": "jurisdiction",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 3,
+      "control": null
+    },
+    {
+      "key": "item_kind",
+      "source": "native",
+      "label": "item_kind",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 4,
+      "control": {
+        "kind": "select",
+        "label": "Item kind",
+        "choices": [
+          {
+            "value": "GOODS",
+            "label": "Goods"
+          },
+          {
+            "value": "SERVICE",
+            "label": "Services"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "treatment",
+      "source": "native",
+      "label": "treatment",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": {
+        "kind": "select",
+        "label": "Treatment",
+        "choices": [
+          {
+            "value": "TAXABLE",
+            "label": "Taxable"
+          },
+          {
+            "value": "NIL_RATED",
+            "label": "Nil rated"
+          },
+          {
+            "value": "EXEMPT",
+            "label": "Exempt"
+          },
+          {
+            "value": "NON_GST",
+            "label": "Outside GST"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "classification_scope",
+      "source": "native",
+      "label": "classification_scope",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": {
+        "kind": "select",
+        "label": "Classification scope",
+        "choices": [
+          {
+            "value": "SPECIFIC",
+            "label": "Specific HSN/SAC codes"
+          },
+          {
+            "value": "ANY",
+            "label": "Generic rate template"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "tax_category_id",
+      "source": "native",
+      "label": "tax_category_id",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 6,
+      "control": {
+        "kind": "reference",
+        "label": "Tax category",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": "tax-categories",
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "is_active",
+      "source": "native",
+      "label": "is_active",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 7,
+      "control": {
+        "kind": "boolean",
+        "label": "Active",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "custom_fields",
+      "source": "native",
+      "label": "custom_fields",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 8,
+      "control": null
+    },
+    {
+      "key": "source_reference",
+      "source": "native",
+      "label": "source_reference",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 9,
+      "control": {
+        "kind": "text",
+        "label": "Official source reference",
+        "choices": [],
+        "nullable": false,
+        "max_length": 500,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_url",
+      "source": "native",
+      "label": "source_url",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 10,
+      "control": {
+        "kind": "text",
+        "label": "Official document URL",
+        "choices": [],
+        "nullable": false,
+        "max_length": 1000,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_sha256",
+      "source": "native",
+      "label": "source_sha256",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 11,
+      "control": {
+        "kind": "text",
+        "label": "Document SHA-256",
+        "choices": [],
+        "nullable": false,
+        "max_length": 64,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 12,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 13,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 14,
+      "control": null
+    }
+  ],
+  "catalog.tax_rate": [
+    {
+      "key": "series_id",
+      "source": "native",
+      "label": "series_id",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": {
+        "kind": "reference",
+        "label": "Rate series",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": "tax-rate-series",
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "valid_from",
+      "source": "native",
+      "label": "valid_from",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "date",
+        "label": "Effective from",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "valid_to",
+      "source": "native",
+      "label": "valid_to",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 2,
+      "control": {
+        "kind": "date",
+        "label": "Effective through",
+        "choices": [],
+        "nullable": true,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "supersedes_id",
+      "source": "native",
+      "label": "supersedes_id",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 3,
+      "control": null
+    },
+    {
+      "key": "source_reference",
+      "source": "native",
+      "label": "source_reference",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 4,
+      "control": {
+        "kind": "text",
+        "label": "Official source reference",
+        "choices": [],
+        "nullable": false,
+        "max_length": 500,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_url",
+      "source": "native",
+      "label": "source_url",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": {
+        "kind": "text",
+        "label": "Official document URL",
+        "choices": [],
+        "nullable": false,
+        "max_length": 1000,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "source_sha256",
+      "source": "native",
+      "label": "source_sha256",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 6,
+      "control": {
+        "kind": "text",
+        "label": "Document SHA-256",
+        "choices": [],
+        "nullable": false,
+        "max_length": 64,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 7,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 8,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 9,
+      "control": null
+    }
+  ],
+  "catalog.tax_rate_series": [
+    {
+      "key": "rule_id",
+      "source": "native",
+      "label": "rule_id",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": {
+        "kind": "reference",
+        "label": "Tax rule",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": "tax-rules",
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "applicability",
+      "source": "native",
+      "label": "applicability",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "select",
+        "label": "Applicability",
+        "choices": [
+          {
+            "value": "INTRA_STATE",
+            "label": "Within a state"
+          },
+          {
+            "value": "INTRA_UT",
+            "label": "Within a union territory"
+          },
+          {
+            "value": "INTER_STATE",
+            "label": "Between states / territories"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 2,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 3,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 4,
+      "control": null
+    }
+  ],
+  "catalog.tax_rate_component": [
+    {
+      "key": "rate_id",
+      "source": "native",
+      "label": "rate_id",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": null
+    },
+    {
+      "key": "component_key",
+      "source": "native",
+      "label": "component_key",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "text",
+        "label": "Component key",
+        "choices": [],
+        "nullable": false,
+        "max_length": 30,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "component",
+      "source": "native",
+      "label": "component",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 2,
+      "control": {
+        "kind": "select",
+        "label": "Component",
+        "choices": [
+          {
+            "value": "CGST",
+            "label": "CGST"
+          },
+          {
+            "value": "SGST",
+            "label": "SGST"
+          },
+          {
+            "value": "UTGST",
+            "label": "UTGST"
+          },
+          {
+            "value": "IGST",
+            "label": "IGST"
+          },
+          {
+            "value": "CESS",
+            "label": "CESS"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "kind",
+      "source": "native",
+      "label": "kind",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 3,
+      "control": {
+        "kind": "select",
+        "label": "Kind",
+        "choices": [
+          {
+            "value": "PERCENT",
+            "label": "Percentage"
+          },
+          {
+            "value": "FIXED_PER_UNIT",
+            "label": "Fixed cess per unit"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "percentage",
+      "source": "native",
+      "label": "percentage",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 4,
+      "control": {
+        "kind": "decimal",
+        "label": "Percentage",
+        "choices": [],
+        "nullable": true,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "amount",
+      "source": "native",
+      "label": "amount",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": {
+        "kind": "decimal",
+        "label": "Amount",
+        "choices": [],
+        "nullable": true,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "currency",
+      "source": "native",
+      "label": "currency",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 6,
+      "control": {
+        "kind": "text",
+        "label": "Currency",
+        "choices": [],
+        "nullable": true,
+        "max_length": 3,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "unit_id",
+      "source": "native",
+      "label": "unit_id",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 7,
+      "control": {
+        "kind": "reference",
+        "label": "Unit",
+        "choices": [],
+        "nullable": true,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": "units",
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "basis_quantity",
+      "source": "native",
+      "label": "basis_quantity",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 8,
+      "control": {
+        "kind": "decimal",
+        "label": "Basis quantity",
+        "choices": [],
+        "nullable": true,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "rounding_mode",
+      "source": "native",
+      "label": "rounding_mode",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 9,
+      "control": {
+        "kind": "select",
+        "label": "Rounding mode",
+        "choices": [
+          {
+            "value": "HALF_UP",
+            "label": "Half up"
+          },
+          {
+            "value": "UP",
+            "label": "Round up"
+          },
+          {
+            "value": "DOWN",
+            "label": "Round down"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "position",
+      "source": "native",
+      "label": "position",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 10,
+      "control": {
+        "kind": "integer",
+        "label": "Position",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": 0,
+        "maximum": 15,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 11,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 12,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 13,
+      "control": null
+    }
+  ],
+  "catalog.tax_rule_applicability": [
+    {
+      "key": "rule_id",
+      "source": "native",
+      "label": "rule_id",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 0,
+      "control": {
+        "kind": "reference",
+        "label": "Tax rule",
+        "choices": [],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": "tax-rules",
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "code_system",
+      "source": "native",
+      "label": "code_system",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 1,
+      "control": {
+        "kind": "select",
+        "label": "Code system",
+        "choices": [
+          {
+            "value": "HSN",
+            "label": "HSN (goods)"
+          },
+          {
+            "value": "SAC",
+            "label": "SAC (services)"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "code",
+      "source": "native",
+      "label": "code",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 2,
+      "control": {
+        "kind": "text",
+        "label": "Code",
+        "choices": [],
+        "nullable": false,
+        "max_length": 30,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "match_kind",
+      "source": "native",
+      "label": "match_kind",
+      "required": true,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 3,
+      "control": {
+        "kind": "select",
+        "label": "Match kind",
+        "choices": [
+          {
+            "value": "EXACT",
+            "label": "Exact code"
+          },
+          {
+            "value": "PREFIX",
+            "label": "Code prefix"
+          }
+        ],
+        "nullable": false,
+        "max_length": null,
+        "minimum": null,
+        "maximum": null,
+        "reference_source": null,
+        "reference_kind": null,
+        "depends_on": null,
+        "show_when": null
+      }
+    },
+    {
+      "key": "row_version",
+      "source": "native",
+      "label": "row_version",
+      "required": true,
+      "visible": true,
+      "writable": false,
+      "conditional_access": false,
+      "order": 4,
+      "control": null
+    },
+    {
+      "key": "created_by",
+      "source": "native",
+      "label": "created_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 5,
+      "control": null
+    },
+    {
+      "key": "updated_by",
+      "source": "native",
+      "label": "updated_by",
+      "required": false,
+      "visible": true,
+      "writable": true,
+      "conditional_access": false,
+      "order": 6,
+      "control": null
+    }
+  ]
+}

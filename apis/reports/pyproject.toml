@@ -1,0 +1,75 @@
+[project]
+name = "reports"
+version = "0.1.0"
+description = "Reconciled financial source projections and frozen report runs."
+requires-python = "==3.12.*"
+dependencies = [
+  "reporting-contract", # Signed owner reporting wire contract and client
+  "billing-platform[crypto,mariadb,messaging]",
+  "fastapi==0.115.14", # HTTP contracts and validation, same platform version
+  "httpx==0.28.1", # Signed owner snapshot reads outside database transactions
+  "uvicorn[standard]==0.34.3", # ASGI runtime, same platform version
+  "celery==5.6.3", # Isolated durable calculation/export workers over the existing RabbitMQ broker.
+  "xlsxwriter==3.2.9", # Sequential constant-memory spreadsheets.
+  "jinja2==3.1.6", # Autoescaped trusted standalone report templates.
+  "reportlab==4.5.1", # PDF layout in supervised bounded child processes.
+  "uharfbuzz==0.55.0", # Required glyph shaping for packaged Devanagari fonts.
+]
+
+[dependency-groups]
+dev = [
+  "billing-platform[testing]",
+  "httpx==0.28.1",
+  "pytest==8.4.2",
+  "pytest-asyncio==0.25.3",
+  "pytest-cov==6.3.0",
+  "mypy==1.19.1",
+  "ruff==0.8.6",
+  "celery-types==0.26.0", # Type stubs for strict checking of worker configuration.
+  "pypdf==6.20.1", # Independent extraction of rendered PDF values in tests.
+  "pypdfium2==5.14.0", # Windows raster fixtures for visual inspection.
+]
+
+[tool.uv.sources]
+reporting-contract = { path = "../../clients/reporting", editable = true }
+billing-platform = { path = "../../libs/platform", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reports"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "T20", "RUF", "S"]
+ignore = ["S101", "B008"]
+[tool.ruff.lint.isort]
+known-first-party = ["reports"]
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]
+"tools/*" = ["T201"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = [".", "src"]
+addopts = "--strict-markers"
+markers = ["mysql: isolated native database integration", "rabbitmq: live broker integration"]
+
+[tool.coverage.run]
+concurrency = ["greenlet", "thread"]
+source = ["src/reports"]
+branch = true
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]

@@ -1,0 +1,336 @@
+{
+  "browser": "156.0.4314.50",
+  "checkedAt": "2026-10-31T10:33:25.636Z",
+  "surface": "Actual React PurchaseWorkspace in an isolated local component harness; route authorization checked by unit tests.",
+  "results": [
+    {
+      "name": "desktop-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "actions": [
+          {
+            "text": "Review bill",
+            "height": 36
+          },
+          {
+            "text": "Save demo draft",
+            "height": 36
+          }
+        ],
+        "scrollableTable": false,
+        "overflowing": []
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "desktop-dark",
+      "theme": "dark",
+      "width": 1440,
+      "height": 1000,
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "actions": [
+          {
+            "text": "Review bill",
+            "height": 36
+          },
+          {
+            "text": "Save demo draft",
+            "height": 36
+          }
+        ],
+        "scrollableTable": false,
+        "overflowing": []
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "desktop-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "actions": [
+          {
+            "text": "Review bill",
+            "height": 36
+          },
+          {
+            "text": "Save demo draft",
+            "height": 36
+          }
+        ],
+        "scrollableTable": false,
+        "overflowing": []
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "tablet-light",
+      "theme": "light",
+      "width": 1024,
+      "height": 900,
+      "measurements": {
+        "viewport": 1024,
+        "document": 1024,
+        "actions": [
+          {
+            "text": "Review bill",
+            "height": 36
+          },
+          {
+            "text": "Save demo draft",
+            "height": 36
+          }
+        ],
+        "scrollableTable": true,
+        "overflowing": [
+          {
+            "tag": "TABLE",
+            "class": "janso-entry-grid",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "THEAD",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TR",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TBODY",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TR",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TR",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TFOOT",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TR",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TD",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          }
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "mobile-light",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "actions": [
+          {
+            "text": "Review bill",
+            "height": 44
+          },
+          {
+            "text": "Save demo draft",
+            "height": 44
+          }
+        ],
+        "scrollableTable": true,
+        "overflowing": [
+          {
+            "tag": "TABLE",
+            "class": "janso-entry-grid",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "THEAD",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TR",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TH",
+            "class": "",
+            "position": "static",
+            "width": 54.328125,
+            "right": 424.328125
+          },
+          {
+            "tag": "TH",
+            "class": "",
+            "position": "static",
+            "width": 98.21875,
+            "right": 522.546875
+          },
+          {
+            "tag": "TH",
+            "class": "",
+            "position": "static",
+            "width": 96,
+            "right": 618.546875
+          },
+          {
+            "tag": "TH",
+            "class": "",
+            "position": "static",
+            "width": 112,
+            "right": 730.546875
+          },
+          {
+            "tag": "TH",
+            "class": "",
+            "position": "static",
+            "width": 112,
+            "right": 842.546875
+          },
+          {
+            "tag": "TH",
+            "class": "",
+            "position": "static",
+            "width": 112,
+            "right": 954.546875
+          },
+          {
+            "tag": "TH",
+            "class": "janso-entry-grid__controls",
+            "position": "static",
+            "width": 104,
+            "right": 1058.546875
+          },
+          {
+            "tag": "SPAN",
+            "class": "janso-visually-hidden",
+            "position": "absolute",
+            "width": 1,
+            "right": 1050.546875
+          },
+          {
+            "tag": "TBODY",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TR",
+            "class": "",
+            "position": "static",
+            "width": 1024.546875,
+            "right": 1058.546875
+          },
+          {
+            "tag": "TD",
+            "class": "",
+            "position": "static",
+            "width": 54.328125,
+            "right": 424.328125
+          },
+          {
+            "tag": "SPAN",
+            "class": "janso-entry-cell--derived",
+            "position": "static",
+            "width": 54.328125,
+            "right": 424.328125
+          },
+          {
+            "tag": "SPAN",
+            "class": "janso-visually-hidden",
+            "position": "absolute",
+            "width": 1,
+            "right": 413.328125
+          },
+          {
+            "tag": "TD",
+            "class": "",
+            "position": "static",
+            "width": 98.21875,
+            "right": 522.546875
+          },
+          {
+            "tag": "SPAN",
+            "class": "janso-entry-cell__numeric-wrap",
+            "position": "static",
+            "width": 96,
+            "right": 520.328125
+          }
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "empty-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "actions": [
+          {
+            "text": "Review bill",
+            "height": 36
+          },
+          {
+            "text": "Save demo draft",
+            "height": 36
+          }
+        ],
+        "scrollableTable": false,
+        "overflowing": []
+      },
+      "runtimeErrors": []
+    }
+  ]
+}

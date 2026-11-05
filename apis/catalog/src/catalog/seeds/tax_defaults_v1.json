@@ -1,0 +1,303 @@
+{
+  "version": "IN_GST_STARTER_1",
+  "effective_from": "2025-09-22",
+  "reviewed_on": "2026-10-27",
+  "sources": {
+    "goods": {
+      "url": "https://courier.cbic.gov.in/advisory/2025/NOTIFICATION%20NO.%209_2025-INTEGRATED%20TAX%20%28RATE%29%20-1759486719.pdf",
+      "sha256": "22943574e66ff2d6c14114ebd68c521457d1fa8437801804e92e6356209e9134",
+      "reference": "Notification 9/2025 Integrated Tax (Rate), 17 September 2025; effective 22 September 2025"
+    },
+    "sac": {
+      "url": "https://www.gstcouncil.gov.in/sites/default/files/2024-02/scheme_of_classification_of_services_amended.pdf",
+      "sha256": "43f2f886f89ac927a621e4d0e173ffdbccb01170534e0eae068f6123eb899710",
+      "reference": "GST Council amended Scheme of Classification of Services"
+    },
+    "services": {
+      "url": "https://cbic-gst.gov.in/hindi/gst-goods-services-rates.html",
+      "sha256": "65028013e282478e6d114443fbf5417f9787a5747d1c8b556e0aad5605d957d4",
+      "reference": "CBIC consolidated GST services rates; heading 9983 entry 21(ii)"
+    }
+  },
+  "categories": [
+    {
+      "code": "GST_GOODS",
+      "name": "GST taxable goods"
+    },
+    {
+      "code": "GST_SERVICES",
+      "name": "GST taxable services"
+    },
+    {
+      "code": "GST_NIL",
+      "name": "Nil-rated supplies"
+    },
+    {
+      "code": "GST_EXEMPT",
+      "name": "Exempt supplies"
+    },
+    {
+      "code": "GST_NON_GST",
+      "name": "Non-GST supplies"
+    }
+  ],
+  "classifications": [
+    {
+      "code": "0402",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Concentrated milk and cream",
+      "source": "goods"
+    },
+    {
+      "code": "0405",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Butter, ghee and dairy spreads",
+      "source": "goods"
+    },
+    {
+      "code": "0902",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Processed tea; excluding unprocessed green leaves",
+      "source": "goods"
+    },
+    {
+      "code": "3004",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Non-exempt retail medicaments",
+      "source": "goods"
+    },
+    {
+      "code": "8415",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Air conditioning machines",
+      "source": "goods"
+    },
+    {
+      "code": "8471",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Computers and data processing equipment",
+      "source": "goods"
+    },
+    {
+      "code": "8517",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Telephones and communications equipment",
+      "source": "goods"
+    },
+    {
+      "code": "8544",
+      "code_system": "HSN",
+      "item_kind": "GOODS",
+      "description": "Insulated wires and cables",
+      "source": "goods"
+    },
+    {
+      "code": "998313",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "IT consulting and support",
+      "source": "sac"
+    },
+    {
+      "code": "998314",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "IT design and development",
+      "source": "sac"
+    },
+    {
+      "code": "998315",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "Hosting and IT infrastructure provisioning",
+      "source": "sac"
+    },
+    {
+      "code": "998316",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "IT infrastructure and network management",
+      "source": "sac"
+    },
+    {
+      "code": "998319",
+      "code_system": "SAC",
+      "item_kind": "SERVICE",
+      "description": "Other IT services",
+      "source": "sac"
+    }
+  ],
+  "rules": [
+    {
+      "code": "GST1_0402",
+      "name": "Concentrated milk and cream - GST 5%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "5.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "0402",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_0405",
+      "name": "Butter, ghee and dairy spreads - GST 5%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "5.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "0405",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_0902",
+      "name": "Processed tea; excluding unprocessed green leaves - GST 5%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "5.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "0902",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_3004",
+      "name": "Non-exempt retail medicaments - GST 5%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "5.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "3004",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_8415",
+      "name": "Air conditioning machines - GST 18%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "18.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "8415",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_8471",
+      "name": "Computers and data processing equipment - GST 18%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "18.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "8471",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_8517",
+      "name": "Telephones and communications equipment - GST 18%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "18.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "8517",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_8544",
+      "name": "Insulated wires and cables - GST 18%",
+      "category": "GST_GOODS",
+      "item_kind": "GOODS",
+      "treatment": "TAXABLE",
+      "percentage": "18.0000",
+      "source": "goods",
+      "classifications": [
+        {
+          "code_system": "HSN",
+          "code": "8544",
+          "match_kind": "PREFIX"
+        }
+      ]
+    },
+    {
+      "code": "GST1_IT_SERVICES",
+      "name": "Taxable IT services - GST 18%",
+      "category": "GST_SERVICES",
+      "item_kind": "SERVICE",
+      "treatment": "TAXABLE",
+      "percentage": "18.0000",
+      "source": "services",
+      "classifications": [
+        {
+          "code_system": "SAC",
+          "code": "998313",
+          "match_kind": "EXACT"
+        },
+        {
+          "code_system": "SAC",
+          "code": "998314",
+          "match_kind": "EXACT"
+        },
+        {
+          "code_system": "SAC",
+          "code": "998315",
+          "match_kind": "EXACT"
+        },
+        {
+          "code_system": "SAC",
+          "code": "998316",
+          "match_kind": "EXACT"
+        },
+        {
+          "code_system": "SAC",
+          "code": "998319",
+          "match_kind": "EXACT"
+        }
+      ]
+    }
+  ]
+}

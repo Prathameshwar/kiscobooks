@@ -1,0 +1,871 @@
+/*
+ * @janso/ui — the application shell: rail, top bar, footer, chips, avatars, menus.
+ * Shared from day one because every authenticated MFE needs it; the auth split-screen
+ * stays in its own app because nothing else will ever want it (design-system §5.2).
+ *
+ * Contains no colour values — every colour reads a --janso-* token.
+ */
+
+/* ---------- skip link ---------- */
+/*
+ * The bypass mechanism (WCAG 2.4.1). It must be invisible until focused and clearly visible
+ * once it is (2.4.7), which is why it cannot just wear `.janso-visually-hidden`: that only
+ * does the first half. Clipped rather than `display:none`, so it stays focusable.
+ */
+.janso-skip-link {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.janso-skip-link:focus-visible,
+.janso-skip-link:focus {
+  position: fixed;
+  top: var(--janso-space-3);
+  left: var(--janso-space-3);
+  z-index: var(--janso-z-tooltip);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: var(--janso-space-2) var(--janso-space-4);
+  overflow: visible;
+  clip: auto;
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface);
+  color: var(--janso-brand);
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--janso-shadow-popover), var(--janso-focus-ring);
+}
+
+/* ---------- the shell grid ---------- */
+/*
+ * One grid, one scroll container (design-system §4.1). The rail spans both rows so the
+ * brand lockup sits in the top bar's band; `.janso-main` is the only scroller, which is
+ * what keeps the rail and top bar still while a long ledger scrolls.
+ */
+.janso-shell {
+  display: grid;
+  height: 100dvh;
+  grid-template-columns: var(--janso-rail-w) 1fr;
+  grid-template-rows: var(--janso-topbar-h) 1fr;
+  background: var(--janso-paper);
+  color: var(--janso-ink);
+  transition: grid-template-columns var(--janso-dur) var(--janso-ease);
+}
+.janso-shell[data-collapsed='true'] {
+  grid-template-columns: var(--janso-rail-w-collapsed) 1fr;
+}
+
+.janso-shell__rail {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-width: 0;
+  z-index: var(--janso-z-rail);
+  background: var(--janso-surface-2);
+  border-right: 1px solid var(--janso-line);
+  display: flex;
+  overflow: hidden;
+}
+
+.janso-shell__topbar {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: 0;
+  z-index: var(--janso-z-topbar);
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  background: var(--janso-surface);
+  border-bottom: 1px solid var(--janso-line);
+}
+/* The drawer control only exists below the breakpoint; above it the caller's
+ * CollapseToggle is the one control. */
+.janso-shell__menu {
+  display: none;
+  margin-inline-start: var(--janso-space-3);
+}
+
+.janso-main {
+  grid-column: 2;
+  grid-row: 2;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--janso-paper);
+}
+/* Short pages fill the scrollport; long pages keep their natural height above the footer. */
+.janso-main > main { flex: 1 0 auto; min-width: 0; }
+.janso-main > .janso-app-footer { flex-shrink: 0; margin-top: 0; }
+
+.janso-shell__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--janso-z-scrim);
+  background: var(--janso-scrim);
+}
+
+/* ---------- rail ---------- */
+/*
+ * Four bands, each placed explicitly: an absent switcher must not promote the nav into
+ * its row and hand the footer the flexible one.
+ */
+.janso-rail {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+}
+.janso-rail__brand {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  min-height: var(--janso-topbar-h);
+  padding: 0 var(--janso-space-4);
+  overflow: hidden;
+}
+.janso-rail__switcher {
+  grid-row: 2;
+  padding: var(--janso-space-1) var(--janso-space-3) var(--janso-space-2);
+  min-width: 0;
+}
+/* The rail's own scroll region — the nav grows, the lockup and user card do not move. */
+.janso-rail__nav {
+  grid-row: 3;
+  overflow-y: auto;
+  padding: var(--janso-space-2) var(--janso-space-3) var(--janso-space-4);
+  min-width: 0;
+}
+.janso-rail__foot {
+  grid-row: 4;
+  min-width: 0;
+}
+
+.janso-rail-section + .janso-rail-section {
+  margin-top: var(--janso-space-4);
+}
+/* Sentence case at the small step: a quiet group name, not a shouted overline. */
+.janso-rail-section__label {
+  margin: 0 0 var(--janso-space-1);
+  padding: 0 var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--janso-ink-faint);
+}
+.janso-rail-section__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.janso-rail-item {
+  position: relative; /* the marker bar below hangs off this, on hover and when active */
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2rem;
+  padding: 0.3125rem var(--janso-space-2);
+  border-radius: var(--janso-radius-sm);
+  color: var(--janso-ink-soft);
+  text-decoration: none;
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--janso-dur-fast) var(--janso-ease),
+    color var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-rail-item__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+}
+.janso-rail-item__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.janso-rail-group__heading { display: flex; align-items: center; gap: var(--janso-space-1); }
+.janso-rail-group__heading > .janso-rail-item { flex: 1; min-width: 0; }
+.janso-rail-group__items { margin-inline-start: var(--janso-space-3); border-inline-start: 1px solid var(--janso-line); padding-inline-start: var(--janso-space-1); }
+.janso-rail-group[data-open='false'] > .janso-rail-group__items { display: none; }
+.janso-rail-item:hover {
+  background: var(--janso-hover);
+  color: var(--janso-ink);
+}
+.janso-rail-item:hover .janso-rail-item__icon {
+  color: var(--janso-ink-soft);
+}
+/*
+ * `--janso-hover` is 1.13:1 against the rail — a tint that a good few people will never
+ * see, and it was the only feedback this item gave. So the same marker bar that says
+ * "current page" also appears, at half strength, to say "the pointer is here": a shape
+ * change, not a colour change. It is instant, so there is no motion for
+ * `prefers-reduced-motion` to suppress.
+ */
+.janso-rail-item:hover::before,
+.janso-rail-item[data-active='true']::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 2px;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-brand);
+}
+.janso-rail-item:hover::before {
+  opacity: 0.5;
+}
+.janso-rail-item:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+/* The selected item: a raised neutral pill in full ink. The brand is spent on the icon and the
+ * leading marker, so selection survives greyscale and never shouts (design-system §7). Weight
+ * stays at 500 so the label does not reflow when it becomes current. */
+.janso-rail-item[data-active='true'] {
+  background: var(--janso-surface);
+  color: var(--janso-ink);
+  box-shadow: var(--janso-shadow-card), 0 0 0 1px var(--janso-line);
+}
+.janso-rail-item[data-active='true'] .janso-rail-item__icon {
+  color: var(--janso-brand);
+}
+/* Full strength for the current page — and declared last, so hovering the active item
+ * does not demote its own marker to the hover half-strength. */
+.janso-rail-item[data-active='true']::before {
+  opacity: 1;
+}
+
+.janso-rail-footer {
+  border-top: 1px solid var(--janso-line);
+  padding: var(--janso-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+}
+
+/* ---------- collapsed rail ---------- */
+/*
+ * Labels go, icons stay. The accessible name does not: `RailItem` carries the label in
+ * `aria-label` and `title`, so hiding the text costs nothing but pixels.
+ *
+ * Scoped above the drawer breakpoint on purpose. Below it the rail is a full-width
+ * drawer, where an icon-only treatment would be a bug — so the collapsed rules simply
+ * never apply there, rather than being fought off by later overrides.
+ */
+@media (min-width: 960.02px) {
+  .janso-shell[data-collapsed='true'] .janso-rail-item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .janso-shell[data-collapsed='true'] .janso-rail-group__toggle { display: none; }
+  .janso-shell[data-collapsed='true'] .janso-rail-group[data-open='true'] > .janso-rail-group__items { display: flex; margin-inline-start: 0; padding-inline-start: 0; border: 0; }
+  .janso-shell[data-collapsed='true'] .janso-rail-item__label,
+  .janso-shell[data-collapsed='true'] .janso-rail-section__label,
+  .janso-shell[data-collapsed='true'] .janso-org__text,
+  .janso-shell[data-collapsed='true'] .janso-org__chevron,
+  .janso-shell[data-collapsed='true'] .janso-wordmark__text,
+  .janso-shell[data-collapsed='true'] .janso-usermenu__text,
+  .janso-shell[data-collapsed='true'] .janso-usermenu__chevron {
+    display: none;
+  }
+  /* Without its overline a group needs a rule to still read as a group. */
+  .janso-shell[data-collapsed='true'] .janso-rail-section + .janso-rail-section {
+    margin-top: var(--janso-space-3);
+    padding-top: var(--janso-space-3);
+    border-top: 1px solid var(--janso-line);
+  }
+  .janso-shell[data-collapsed='true'] .janso-rail__brand,
+  .janso-shell[data-collapsed='true'] .janso-rail__switcher,
+  .janso-shell[data-collapsed='true'] .janso-rail__nav {
+    padding-inline: var(--janso-space-2);
+  }
+  .janso-shell[data-collapsed='true'] .janso-org,
+  .janso-shell[data-collapsed='true'] .janso-usermenu__trigger {
+    justify-content: center;
+    padding: var(--janso-space-2);
+  }
+  /*
+   * Every remaining row centres on the icon, including the two that are not rail items: the
+   * lockup, whose wordmark text is gone, and the pinned footer. Without this the mark and the
+   * footer sat flush-left against a 72px rail with a hole to their right, which is what made
+   * the collapsed state look broken rather than compact.
+   */
+  .janso-shell[data-collapsed='true'] .janso-rail__brand {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  /* A column, so centring the icons is `align-items`, not `justify-content`. */
+  .janso-shell[data-collapsed='true'] .janso-rail-footer {
+    align-items: center;
+    padding-inline: var(--janso-space-2);
+  }
+  /*
+   * Square-ish targets once the label is gone: a 36px-tall row that is 56px wide reads as a
+   * misaligned list item, whereas a square reads as an icon button.
+   */
+  .janso-shell[data-collapsed='true'] .janso-rail-item {
+    min-height: 2.25rem;
+  }
+  /* The active marker hangs off the item's inline start, which is now the rail's own edge. */
+  .janso-shell[data-collapsed='true'] .janso-rail-item::before {
+    inset-inline-start: calc(var(--janso-space-2) * -1);
+  }
+}
+
+/* ---------- top bar ---------- */
+/*
+ * The bar has to survive 320px and 200% zoom (WCAG 1.4.10, 1.4.4). It used to do neither:
+ * a nowrap flex row with no overflow, inside a fixed grid band, under `body{overflow:hidden}`
+ * — so the theme switcher and the user menu simply left the page.
+ *
+ * It also cannot scroll, and it cannot wrap. `overflow-x: auto` was the first fix and it broke
+ * the user menu: a scroll container clips its descendants, and the menu is absolutely
+ * positioned *below* the 60px band, so opening it produced a sliver and a scrollbar instead of
+ * a popover. Wrapping is out too — the band is one grid row (`--janso-topbar-h`) that this file
+ * cannot grow, so a second line would paint over `.janso-main`.
+ *
+ * So the bar sheds content as it narrows instead: the collapse control goes at 960px, the
+ * context and role chips at 720px, and the user's name and chevron at 640px, leaving the
+ * avatar. What remains — menu, switcher, bell, avatar — fits inside 320px with room to spare,
+ * which is what makes reflow work without a scrollbar (WCAG 1.4.10). The band is in `rem`, so
+ * it grows with the user's font size rather than clipping it, and nothing here assumes 60px.
+ */
+.janso-topbar {
+  flex: 1;
+  min-width: 0;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: 0 var(--janso-space-5);
+}
+.janso-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+}
+/*
+ * `flex: 1 1 auto`, not `flex: 1`.
+ *
+ * `flex: 1` is `1 1 0%`, and shrinking is distributed in proportion to each item's
+ * `flex-shrink × flex-basis`. With a zero basis this box's scaled shrink factor was **zero**,
+ * so when the bar ran short none of the shrinking landed here: all of it fell on the right
+ * cluster, whose chips are `white-space: nowrap` and so cannot shrink either. The result was a
+ * cluster pushed past the end of a band that deliberately cannot scroll — the theme switcher
+ * and the avatar walking off the page, which is the bug the comment above says was fixed.
+ *
+ * It was latent while this slot held one search box with room to spare either side. A second
+ * control in it ("New") widened the slot's content and brought the overflow forward by about a
+ * hundred pixels, into ordinary laptop widths. A content basis is the actual fix: both sides
+ * now give, in proportion to what they are holding.
+ */
+.janso-topbar__mid {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+}
+.janso-topbar__right {
+  /* Stated rather than left to the initial value, because the whole point above is that this
+     box has to be able to give way. `margin-inline-start: auto` still parks it at the end when
+     the middle slot is absent, where there is no flexible sibling to do it. */
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+}
+
+/*
+ * Within the middle slot, the search is what gives way and the primary action is what holds.
+ * A squeezed command trigger ellipsizes its placeholder and still reads as a search box; a
+ * squeezed "New" clips a gradient pill mid-word, which looks like a rendering fault rather
+ * than a narrow window. The floor keeps the icon and the keycap from colliding.
+ */
+.janso-topbar__mid > .janso-command-trigger {
+  min-width: 7rem;
+}
+.janso-topbar__mid > .janso-menu {
+  flex: none;
+}
+
+/*
+ * A chip states context, so it may lose the end of a long name — but it may not push the
+ * controls beside it off a bar that cannot scroll. A floor rather than `0`: a pill shrunk to
+ * its dot says nothing, and the reader is better served by "Janso Ret…" than by a stub. Below
+ * 720px these are gone entirely, which is the existing ladder.
+ */
+.janso-topbar__right > .janso-chip {
+  min-width: 4.5rem;
+}
+
+/* ---------- chips ---------- */
+/*
+ * A chip states context; it is not an alert. So the pill stays a quiet surface and the
+ * tone rides on the border and the accent glyph — two fully tinted pills sitting together
+ * in the top bar read as two warnings, which is the opposite of "here is where you are".
+ * The tone is still never colour alone: `ContextChip` renders a text descriptor beside it.
+ */
+.janso-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--janso-radius-pill);
+  border: 1px solid var(--janso-line);
+  background: var(--janso-surface);
+  color: var(--janso-ink);
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  max-width: 22ch;
+  /* The accent the dot and the icon inherit; each tone below re-points it. */
+  --janso-chip-accent: var(--janso-neutral-ink);
+}
+/*
+ * `min-width: 0` is what makes the ellipsis beside it fire at all. A flex item's automatic
+ * minimum size is its min-content width, so without this a long one-token company name ignored
+ * the chip's own `max-width: 22ch` and overflowed its rounded border — text sitting outside the
+ * pill it belongs to, which is the misalignment a reader actually notices first.
+ */
+.janso-chip__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.janso-chip__dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-chip-accent);
+}
+.janso-chip__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--janso-chip-accent);
+}
+/* Tones are data attributes, and each one is the full {ink,tint,line} triplet. */
+.janso-chip[data-tone='brand'] {
+  border-color: var(--janso-brand-line);
+  --janso-chip-accent: var(--janso-brand-ink);
+}
+.janso-chip[data-tone='success'] {
+  border-color: var(--janso-success-line);
+  --janso-chip-accent: var(--janso-success-ink);
+}
+.janso-chip[data-tone='warn'] {
+  border-color: var(--janso-warn-line);
+  --janso-chip-accent: var(--janso-warn-ink);
+}
+.janso-chip[data-tone='danger'] {
+  border-color: var(--janso-danger-line);
+  --janso-chip-accent: var(--janso-danger-ink);
+}
+.janso-chip[data-tone='info'] {
+  border-color: var(--janso-info-line);
+  --janso-chip-accent: var(--janso-info-ink);
+}
+/* A role is an authority claim, so the shield carries the brand and the label stays quiet —
+   the emphasis belongs on the glyph, not on a pill competing with the context beside it. */
+.janso-chip--role {
+  color: var(--janso-ink-soft);
+  --janso-chip-accent: var(--janso-brand);
+}
+
+/* ---------- avatar ---------- */
+.janso-avatar {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  background: var(--janso-brand-tint);
+  border: 1px solid var(--janso-brand-line);
+  color: var(--janso-brand-ink);
+  font-family: var(--janso-font-display);
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.janso-avatar--square { border-radius: var(--janso-radius-sm); }
+.janso-avatar--round { border-radius: var(--janso-radius-pill); }
+/* The box is `rem` because its content is: the initials are sized from the `rem` type
+ * scale, so a px box clips them the moment the user raises their default font size
+ * (WCAG 1.4.4). Same 26 / 34 / 44 at the default 16px root. */
+.janso-avatar--sm { width: 1.625rem; height: 1.625rem; font-size: var(--janso-text-overline); }
+.janso-avatar--md { width: 2.125rem; height: 2.125rem; font-size: var(--janso-text-xs); }
+.janso-avatar--lg { width: 2.75rem; height: 2.75rem; font-size: var(--janso-text-sm); }
+
+/* ---------- organisation switcher ---------- */
+.janso-org {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: 0.375rem var(--janso-space-2);
+  font: inherit;
+  text-align: start;
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  box-shadow: var(--janso-shadow-card);
+  color: var(--janso-ink);
+  cursor: pointer;
+  transition: background var(--janso-dur-fast) var(--janso-ease),
+    border-color var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-org:hover {
+  background: var(--janso-hover);
+  border-color: var(--janso-line-strong);
+}
+.janso-org:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-org__text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+/* `--janso-ink-soft`, not `--janso-ink-faint`: this sits on `--janso-surface-2` (the
+ * switcher's own fill), where `ink-faint` measures 4.25:1 in ledger — under the 4.5 an
+ * 11px label owes. `ink-faint` stays for glyphs on this surface, which owe 3:1. */
+.janso-org__code {
+  font-size: var(--janso-text-overline);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--janso-ink-soft);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* A long trading name truncates; it never widens the rail. */
+.janso-org__name {
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.janso-org__chevron {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--janso-ink-faint);
+}
+/* The glyph variant: a square the size of the `md` avatar it replaces, so stacking an
+ * icon trigger under an avatar trigger keeps both text columns on one axis. */
+.janso-org__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface-2);
+  color: var(--janso-ink-soft);
+}
+/* A second switcher stacked under the first — the financial year under the company. Denser,
+ * and quieter: two cards of equal weight in the rail read as two companies. */
+.janso-org[data-compact='true'] {
+  padding: 0.25rem var(--janso-space-2);
+  box-shadow: none;
+  background: var(--janso-surface-2);
+}
+.janso-org[data-compact='true'] .janso-org__icon {
+  width: 1.625rem;
+  height: 1.625rem;
+  background: var(--janso-surface);
+}
+.janso-org[data-compact='true'] .janso-org__name {
+  font-size: var(--janso-text-xs);
+}
+.janso-org:disabled {
+  cursor: not-allowed;
+  background: var(--janso-surface-2);
+  box-shadow: none;
+}
+.janso-org:disabled .janso-org__name,
+.janso-org:disabled .janso-org__code {
+  color: var(--janso-disabled-ink);
+}
+/* The switcher band holds the company trigger and, under it, the year — a column rather than
+ * two siblings in the rail's grid, so an absent year selector leaves no gap. */
+.janso-switcher {
+  display: grid;
+  /* The nested company/year switchers must shrink with the rail, even for unbroken names. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--janso-space-2);
+  min-width: 0;
+}
+
+/* ---------- user menu ---------- */
+.janso-usermenu__separator { height: 1px; margin: var(--janso-space-1) 0; background: var(--janso-line); }
+.janso-usermenu {
+  position: relative;
+  min-width: 0;
+}
+.janso-usermenu__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  width: 100%;
+  padding: var(--janso-space-2);
+  font: inherit;
+  text-align: start;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--janso-radius-sm);
+  color: var(--janso-ink);
+  cursor: pointer;
+}
+.janso-usermenu__trigger:hover {
+  background: var(--janso-hover);
+}
+.janso-usermenu__trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-usermenu__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.janso-usermenu__name {
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.janso-usermenu__secondary {
+  font-size: var(--janso-text-overline);
+  color: var(--janso-ink-soft);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.janso-usermenu__chevron {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--janso-ink-faint);
+}
+.janso-usermenu__menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + var(--janso-space-2));
+  z-index: var(--janso-z-popover);
+  min-width: 208px;
+  padding: var(--janso-space-1);
+  background: var(--janso-overlay);
+  /* A popover needs a real edge in all three themes. In dark the shadow is black on near-black,
+   * so `--janso-overlay-line` is held to 3:1 there and does the separating; in light and ledger it
+   * is a hairline and the shadow lifts the menu off the page (§2.4). */
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+  display: flex;
+  flex-direction: column;
+}
+/* In the rail footer the menu has nothing below it, so it opens upward. */
+.janso-rail-footer .janso-usermenu__menu {
+  top: auto;
+  bottom: calc(100% + var(--janso-space-2));
+  inset-inline: 0;
+}
+.janso-usermenu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: 0.4375rem 0.625rem;
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  text-align: start;
+  background: transparent;
+  border: none;
+  border-radius: var(--janso-radius-sm);
+  color: var(--janso-ink);
+  cursor: pointer;
+}
+/* Same reason as the rail item: a 1.13:1 tint is not feedback on its own, so the label
+ * underlines as well. A text decoration costs no layout and no motion, so it is also
+ * nothing for `prefers-reduced-motion` to undo. */
+.janso-usermenu__item:hover {
+  background: var(--janso-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.janso-usermenu__item:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-usermenu__item-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+}
+
+/* ---------- page footer ---------- */
+.janso-app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-4);
+  flex-wrap: wrap;
+  margin-top: var(--janso-space-6);
+  padding: var(--janso-space-4) var(--janso-page-gutter);
+  border-top: 1px solid var(--janso-line);
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-xs);
+}
+.janso-app-footer__links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-4);
+  margin: 0;
+  padding: 0;
+}
+.janso-app-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  color: var(--janso-ink-soft);
+  text-decoration: none;
+  border-radius: var(--janso-radius-sm);
+}
+.janso-app-footer__link:hover {
+  color: var(--janso-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.janso-app-footer__link:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-app-footer__icon {
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+}
+.janso-app-footer__copy {
+  margin: 0;
+  color: var(--janso-ink-faint);
+}
+
+/* ---------- below the drawer breakpoint (design-system §4.1) ---------- */
+@media (max-width: 960px) {
+  .janso-shell,
+  .janso-shell[data-collapsed='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .janso-shell__topbar,
+  .janso-main {
+    grid-column: 1;
+  }
+  .janso-shell__topbar { grid-row: 1; }
+  .janso-main { grid-row: 2; }
+
+  /* Off the grid and over the content, hidden until asked for. */
+  .janso-shell__rail {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--janso-rail-w);
+    max-width: 86vw;
+    z-index: var(--janso-z-drawer);
+    box-shadow: var(--janso-shadow-popover);
+    transform: translateX(-100%);
+    /* Off-canvas means out of the tab order too — a translated rail is still focusable,
+     * and tabbing into invisible navigation is worse than not having it. */
+    visibility: hidden;
+    /* Only `transform` is transitioned. `visibility` is animatable as a step that flips at
+     * 50% of the duration, so including it would leave the closing rail focusable for ~90ms
+     * after it starts moving away — the exact tab trap the line above exists to prevent.
+     * Hiding instantly and sliding out visually is the right way round. */
+    transition: transform var(--janso-dur) var(--janso-ease);
+  }
+  .janso-shell[data-drawer='open'] .janso-shell__rail {
+    transform: translateX(0);
+    visibility: visible;
+  }
+  .janso-shell__menu {
+    display: inline-flex;
+  }
+  /* …and the other one goes, which is the half the CSS was missing. The collapsed-rail
+   * rules are scoped `min-width: 960.02px`, so below here the caller's `CollapseToggle`
+   * changes no rendered state while still announcing `aria-expanded` — two navigation
+   * controls, one of them a lie. The comment above `.janso-shell__menu` says they are
+   * mutually exclusive; this is what makes that true. */
+  .janso-topbar__left {
+    display: none;
+  }
+  /* The keycap goes at the same step, rather than at a breakpoint invented for it. It is a
+   * discoverability hint for a shortcut that keeps working, so it is the cheapest ~3rem in the
+   * bar — and spending it here is what keeps the search legible beside the primary action
+   * instead of both squeezing at once. */
+  .janso-topbar__mid .janso-command__kbd {
+    display: none;
+  }
+}
+
+/* Context chips yield space to theme, notifications, and the named account menu on
+ * phones. The caller can also include context in the account menu or rail. */
+@media (max-width: 720px) {
+  .janso-topbar__right > .janso-chip {
+    display: none;
+  }
+  .janso-topbar__mid {
+    display: none;
+  }
+}
+
+/*
+ * Last thing to go before the bar would overflow: the name and the chevron, leaving the
+ * avatar. The trigger keeps its accessible name from `aria-label`, so this costs pixels only.
+ */
+@media (max-width: 640px) {
+  .janso-topbar .janso-usermenu__text,
+  .janso-topbar .janso-usermenu__chevron {
+    display: none;
+  }
+  .janso-topbar .janso-usermenu__trigger {
+    padding: var(--janso-space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .janso-shell,
+  .janso-shell__rail,
+  .janso-rail-item,
+  .janso-org {
+    transition-duration: 0.001ms;
+  }
+}
+

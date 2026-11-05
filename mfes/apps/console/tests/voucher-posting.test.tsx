@@ -1,0 +1,74 @@
+import {fireEvent,render,screen,waitFor} from '@testing-library/react';
+import {beforeEach,expect,it,vi} from 'vitest';
+import {VoucherPosting} from '../app/components/VoucherPosting';
+import {productFieldRequest} from '../app/lib/product-fields';
+vi.mock('../app/lib/product-fields',()=>({productFieldRequest:vi.fn()}));
+const api=vi.mocked(productFieldRequest);
+const voucher={id:'voucher',status:'APPROVED',row_version:5};
+beforeEach(()=>{api.mockReset();});
+it('requires an issued number before native stock posting',async()=>{
+ api.mockResolvedValue({financial_execution:false,stock_execution:true,kinds:[{kind:'RECEIPT_NOTE',stock_execution_profiles:['STANDARD']}]});
+ const physical={...voucher,kind:'RECEIPT_NOTE',profile:'STANDARD'};
+ const view=render(<VoucherPosting company="company" voucher={physical} permissions={['vouchers.post']}/>);
+ fireEvent.click(screen.getByText('Check posting availability'));
+ await screen.findByText('Issue this stock voucher to assign its number before posting.');
+ expect(screen.getByRole('button',{name:'Post voucher'})).toBeDisabled();
+ expect(api.mock.calls.every(call=>call[1]==='GET')).toBe(true);
+ view.rerender(<VoucherPosting company="company" voucher={{...physical,status:'ISSUED'}} permissions={['vouchers.post']}/>);
+ expect(screen.getByRole('button',{name:'Post voucher'})).toBeEnabled();
+ expect(screen.queryByText('Issue this stock voucher to assign its number before posting.')).not.toBeInTheDocument();
+});
+it('hides posting without permission and shows the service gate',async()=>{
+ const view=render(<VoucherPosting company="company" voucher={voucher} permissions={[]}/>);
+ expect(screen.queryByRole('button')).not.toBeInTheDocument();
+ api.mockResolvedValue({financial_execution:false});
+ view.rerender(<VoucherPosting company="company" voucher={voucher} permissions={['vouchers.post']}/>);
+ fireEvent.click(screen.getByText('Check posting availability'));
+ await screen.findByText('Posting is not enabled for this company service.');
+ expect(screen.queryByText('Post voucher')).not.toBeInTheDocument();
+});
+it.each(['Session expired','Access denied','Invalid accounts','Service unavailable'])('keeps one posting identity after %s',async(message)=>{
+ let attempts=0;
+ api.mockImplementation(async(_,method,path)=>method==='GET'?path.includes('capabilities')?{financial_execution:true}:{id:'operation',status:'COMMITTED',row_version:2}:attempts++===0?Promise.reject(new Error(message)):{operation_id:'operation',status:'PENDING',row_version:1});
+ render(<VoucherPosting company="company" voucher={voucher} permissions={['vouchers.post','vouchers.operation.read','vouchers.operation.recover','vouchers.cancel']}/>);
+ fireEvent.click(screen.getByText('Check posting availability'));await screen.findByText('Post voucher');
+ fireEvent.click(screen.getByText('Post voucher'));expect(await screen.findByRole('alert')).toHaveTextContent(message);
+ fireEvent.click(screen.getByText('Post voucher'));await screen.findByText('Execution: PENDING');
+ expect(screen.getByText('Post voucher')).toBeDisabled();
+ expect(screen.queryByText('Execution completed. Refresh the voucher to view its current status.')).not.toBeInTheDocument();
+ const calls=api.mock.calls.filter(call=>call[1]==='POST');
+ expect(calls[0][3]).toEqual({expected_version:5});expect(calls[0][4]).toBe(calls[1][4]);
+ fireEvent.click(screen.getByText('Retry delivery'));await waitFor(()=>expect(api.mock.calls.at(-1)?.[2]).toContain('/operation/recover'));
+ fireEvent.click(screen.getByText('Cancel pending execution'));await waitFor(()=>expect(api.mock.calls.at(-1)?.[2]).toContain('/operation/cancel'));
+ fireEvent.click(screen.getByText('Refresh execution'));await screen.findByText('Execution: COMMITTED');
+ expect(screen.queryByText('Retry delivery')).not.toBeInTheDocument();
+ expect(screen.getByText('Post voucher')).toBeDisabled();
+});
+it.each(['CLOSED_PERIOD',null])('explains a rejected execution with reason %s',async rejection_code=>{
+ api.mockImplementation(async(_,method,path)=>method==='POST'?{operation_id:'operation',status:'PENDING',row_version:1}:path.includes('capabilities')?{financial_execution:true}:{id:'operation',status:'REJECTED',row_version:2,rejection_code});
+ render(<VoucherPosting company="company" voucher={voucher} permissions={['vouchers.post','vouchers.operation.read']}/>);
+ fireEvent.click(screen.getByText('Check posting availability'));await screen.findByText('Post voucher');
+ fireEvent.click(screen.getByText('Post voucher'));await screen.findByText('Execution: PENDING');
+ fireEvent.click(screen.getByText('Refresh execution'));expect(await screen.findByRole('alert')).toHaveTextContent(rejection_code?'The posting period is closed':'Posting was rejected');
+ expect(screen.queryByText('Retry delivery')).not.toBeInTheDocument();
+});
+it('requires a dated explanation to reverse a posted voucher',async()=>{
+ api.mockImplementation(async(_,method)=>method==='GET'?{financial_execution:true}:{id:'reversal',status:'PENDING',row_version:1});
+ render(<VoucherPosting company="company" voucher={{...voucher,status:'POSTED'}} permissions={['vouchers.reverse']}/>);
+ fireEvent.click(screen.getByText('Check posting availability'));await screen.findByText('Reverse voucher');
+ expect(screen.getByText('Reverse voucher')).toBeDisabled();
+ fireEvent.change(screen.getByLabelText('Reversal posting date'),{target:{value:'2026-04-02'}});
+ fireEvent.change(screen.getByLabelText('Reversal reason'),{target:{value:'Correct wrong account'}});
+ fireEvent.click(screen.getByText('Reverse voucher'));await screen.findByText('Execution: PENDING');
+ expect(api.mock.calls.at(-1)?.[3]).toEqual({expected_version:5,posting_date:'2026-04-02',reason:'Correct wrong account'});
+});
+it('uses the separate invoice gate and requires an accepted calculation',async()=>{
+ api.mockResolvedValue({financial_execution:false,invoice_execution:true});
+ const view=render(<VoucherPosting company="company" voucher={{...voucher,kind:'SALES',invoice:{accepted_calculation_hash:null}}} permissions={['vouchers.post','vouchers.reverse']}/>);
+ fireEvent.click(screen.getByText('Check posting availability'));
+ expect(await screen.findByText('Accept the invoice calculation before posting.')).toBeInTheDocument();
+ expect(screen.getByText('Post voucher')).toBeDisabled();
+ view.rerender(<VoucherPosting company="company" voucher={{...voucher,kind:'SALES',invoice:{accepted_calculation_hash:'a'.repeat(64)}}} permissions={['vouchers.post','vouchers.reverse']}/>);
+ expect(screen.getByText('Post voucher')).toBeEnabled();
+ expect(screen.queryByText('Reverse voucher')).not.toBeInTheDocument();
+});

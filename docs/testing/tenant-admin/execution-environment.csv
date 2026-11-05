@@ -1,0 +1,22 @@
+﻿field,value
+execution_date,2026-10-29
+generated_utc,2026-10-29T11:56:29.235179+00:00
+git_head,d4301a8c4aad4d00bb1606fc8f11d23b834d660c
+source_state,Pre-existing working-tree application edits preserved; QA added only docs/test artifacts
+console_origin,http://localhost:4320
+auth_origin,http://localhost:4310
+identity_gateway,http://localhost:8090
+browser,Installed Microsoft Edge; Playwright; headless; local self-signed TLS accepted
+node_version,v24.13.1
+python_version,Python 3.12.9
+tenant_id,01a186e4-81a0-7221-8f57-2404a864ff43
+tenant_state,Active; authenticated live API verified
+companies,"Retail, Services, Distribution; all active"
+live_mutation_scope,Only newly created QA tenant and its records through UI/ordinary authenticated APIs
+direct_application_database_access,None
+isolated_regression_storage,Existing suite fixtures; native MySQL/concurrency-only cases excluded or skipped
+credential_storage,Ignored Windows DPAPI ciphertext; no credentials in reports
+artifact_root,.test_artifacts/tenant-admin-20261029
+application_code_changed_by_this_task,False
+commit_or_publish,None
+environment_recovery,Existing Authentik SSH tunnel restarted through its repository helper at 12:39 UTC; no VM/provider/database configuration changes

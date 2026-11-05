@@ -1,0 +1,41 @@
+/* Shared report presentation. The server bundles these styles with the light tokens. */
+:root {
+  --report-font: 'Report Sans', 'Report Devanagari', sans-serif;
+  --report-body-size: 0.8125rem;
+  --report-pdf-body-size: 8;
+  --report-pdf-heading-size: 20;
+  --report-pdf-leading: 12;
+  --report-pdf-margin: 36;
+  --report-pdf-padding: 5;
+  --report-xlsx-body-size: 11;
+}
+.report-document { margin: 0; color: var(--janso-ink); background: var(--janso-surface); font-family: var(--report-font); font-size: var(--report-body-size); }
+.report-shell { padding: var(--janso-space-6); }
+.report-header { border-top: var(--janso-space-1) solid var(--janso-brand); padding-top: var(--janso-space-5); margin-bottom: var(--janso-space-5); }
+.report-eyebrow { color: var(--janso-ink-soft); font-size: var(--janso-text-overline); letter-spacing: 0.08em; text-transform: uppercase; }
+.report-title { margin: var(--janso-space-2) 0; font-size: var(--janso-text-2xl); font-weight: 700; line-height: 1.2; }
+.report-company { font-size: var(--janso-text-lg); margin: var(--janso-space-2) 0; }
+.report-meta { display: flex; flex-wrap: wrap; gap: var(--janso-space-5); color: var(--janso-ink-soft); border-block: 1px solid var(--janso-line); padding-block: var(--janso-space-3); }
+.report-meta dt { font-size: var(--janso-text-overline); text-transform: uppercase; }
+.report-meta dd { margin: var(--janso-space-1) 0 0; color: var(--janso-ink); }
+.report-table-wrap { overflow-x: auto; }
+.report-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.report-table th { text-align: left; color: var(--janso-brand-ink); background: var(--janso-brand-tint); font-weight: 700; border-bottom: 1px solid var(--janso-line-strong); }
+.report-table th, .report-table td { padding: var(--janso-space-3); vertical-align: top; overflow-wrap: anywhere; white-space: pre-wrap; }
+.report-table td { border-bottom: 1px solid var(--janso-line); }
+.report-table .report-number { text-align: right; white-space: nowrap; }
+.report-table .report-total td { font-weight: 700; border-top: 1px solid var(--janso-ink-soft); background: var(--janso-surface-2); }
+.report-table .report-control td { font-weight: 700; background: var(--janso-panel); }
+.report-statement .report-table { max-width: 72rem; }
+.report-summary .report-table { max-width: 64rem; }
+.report-reconciliation .report-table td:first-child { font-weight: 700; }
+.report-footer { border-top: 1px solid var(--janso-line-strong); margin-top: var(--janso-space-5); padding-top: var(--janso-space-3); color: var(--janso-ink-soft); font-size: var(--janso-text-xs); overflow-wrap: anywhere; }
+.report-empty { padding: var(--janso-space-6); text-align: center; color: var(--janso-ink-soft); }
+@media print {
+  @page { size: A4 landscape; margin: 12mm; }
+  .report-shell { padding: 0; }
+  .report-table-wrap { overflow: visible; }
+  .report-table thead { display: table-header-group; }
+  .report-table tr { break-inside: avoid; }
+  .report-title { break-after: avoid; }
+}

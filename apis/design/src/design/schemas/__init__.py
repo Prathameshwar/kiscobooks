@@ -1,0 +1,98 @@
+"""Schemas package for the design service."""
+
+from design.schemas.assets import (
+    AssetDetail,
+    AssetItem,
+    AssetUpload,
+    ComponentCreate,
+    ComponentDetail,
+    ComponentItem,
+    ComponentUpdate,
+)
+from design.schemas.assignments import (
+    AssignmentCreate,
+    AssignmentItem,
+    AssignmentUpdate,
+    ResolveTemplateRequest,
+    ResolveTemplateResponse,
+)
+from design.schemas.canvas import (
+    CANVAS,
+    CanvasDefinition,
+    CanvasElement,
+    CanvasElementV11,
+    CanvasMargins,
+    CanvasPage,
+    CanvasPageV11,
+    CanvasSection,
+    CanvasSectionV11,
+    CanvasStyle,
+    CanvasTheme,
+    CanvasV10,
+    CanvasV11,
+    ItemColumn,
+    PrintOptions,
+    RowOptions,
+)
+from design.schemas.page import Page, PageMeta
+from design.schemas.snapshots import (
+    SnapshotDetail,
+    SnapshotItem,
+    SnapshotRecordRequest,
+)
+from design.schemas.templates import (
+    TemplateCreate,
+    TemplateCreated,
+    TemplateDetail,
+    TemplateItem,
+    TemplateUpdate,
+)
+from design.schemas.versions import (
+    VersionCreate,
+    VersionDetail,
+    VersionItem,
+)
+
+__all__ = [
+    "CANVAS",
+    "AssetDetail",
+    "AssetItem",
+    "AssetUpload",
+    "AssignmentCreate",
+    "AssignmentItem",
+    "AssignmentUpdate",
+    "CanvasDefinition",
+    "CanvasElement",
+    "CanvasElementV11",
+    "CanvasMargins",
+    "CanvasPage",
+    "CanvasPageV11",
+    "CanvasSection",
+    "CanvasSectionV11",
+    "CanvasStyle",
+    "CanvasTheme",
+    "CanvasV10",
+    "CanvasV11",
+    "ComponentCreate",
+    "ComponentDetail",
+    "ComponentItem",
+    "ComponentUpdate",
+    "ItemColumn",
+    "Page",
+    "PageMeta",
+    "PrintOptions",
+    "ResolveTemplateRequest",
+    "ResolveTemplateResponse",
+    "RowOptions",
+    "SnapshotDetail",
+    "SnapshotItem",
+    "SnapshotRecordRequest",
+    "TemplateCreate",
+    "TemplateCreated",
+    "TemplateDetail",
+    "TemplateItem",
+    "TemplateUpdate",
+    "VersionCreate",
+    "VersionDetail",
+    "VersionItem",
+]

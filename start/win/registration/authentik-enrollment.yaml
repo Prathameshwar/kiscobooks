@@ -1,0 +1,149 @@
+version: 1
+metadata:
+  name: Bill account enrollment - manual review
+entries:
+  - model: authentik_flows.flow
+    identifiers: {slug: bill-account-enrollment}
+    id: enrollment
+    attrs:
+      name: Create a KiscoBooks account
+      title: Create your account
+      designation: enrollment
+      authentication: require_unauthenticated
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-name}
+    id: name
+    attrs: {field_key: name, label: Full name, type: text, required: true, order: 10, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-username}
+    id: username
+    attrs: {field_key: username, label: Username, type: username, required: true, order: 20, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-email}
+    id: email
+    attrs: {field_key: email, label: Email address, type: email, required: true, order: 30, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-password}
+    id: password
+    attrs: {field_key: password, label: Password, type: password, required: true, order: 40, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-password-repeat}
+    id: password-repeat
+    attrs: {field_key: password_repeat, label: Confirm password, type: password, required: true, order: 50, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-country}
+    id: country
+    attrs: {field_key: country_code, label: Country, type: text, required: true, order: 35, placeholder: '', initial_value: IN}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-state}
+    id: state
+    attrs: {field_key: state_code, label: State, type: text, required: false, order: 36, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-registration-workspace}
+    id: workspace
+    attrs: {field_key: workspace_name, label: Workspace name, type: text, required: false, order: 37, placeholder: '', initial_value: ''}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-registration-validation}
+    id: validation
+    attrs:
+      execution_logging: false
+      expression: |
+        import re
+        data = request.context.get("prompt_data", {})
+        username = data.get("username", "")
+        email = data.get("email", "")
+        password = data.get("password", "")
+        if not re.fullmatch(r"[a-z0-9][a-z0-9._-]{2,63}", username):
+            ak_message("Use a valid username.")
+            return False
+        if not 1 <= len(data.get("name", "").strip()) <= 100 or len(email) > 254:
+            ak_message("Check your account details.")
+            return False
+        if not 6 <= len(password) <= 128:
+            ak_message("Use a password with 6 to 128 characters.")
+            return False
+        if ak_user_by(email__iexact=email) is not None:
+            ak_message("These account details cannot be used. Contact your administrator.")
+            return False
+        # No client-supplied attributes, groups, active status or user type are carried forward.
+        allowed = {"component", "name", "username", "email", "password", "password_repeat", "country_code", "state_code", "workspace_name"}
+        if set(data) - allowed:
+            return False
+        country = data.get("country_code", "")
+        state = data.get("state_code", "")
+        workspace = data.get("workspace_name", "").strip()
+        if not re.fullmatch(r"[A-Z]{2}", country) or (state and not re.fullmatch(re.escape(country) + r"-[A-Z0-9]{1,3}", state)):
+            ak_message("Check your country and state.")
+            return False
+        if len(workspace) > 200 or any(ord(character) < 32 or ord(character) == 127 for character in workspace):
+            ak_message("Check your workspace name.")
+            return False
+        # Only fixed region metadata survives; billing membership and verification
+        # remain independent. Identity validates active reference rows on tenant creation.
+        data["attributes"] = {"billing_email_verified": False,
+                              "billing_registration_region": {"country_code": country, "state_code": state},
+                              "billing_registration_workspace_name": workspace}
+        return True
+  - model: authentik_policies_password.passwordpolicy
+    identifiers: {name: bill-registration-password-policy}
+    id: password-policy
+    attrs:
+      execution_logging: false
+      password_field: password
+      check_static_rules: true
+      length_min: 6
+      # Strength remains advisory in the UI; a score threshold would reject valid six-character passwords.
+      check_zxcvbn: false
+      zxcvbn_score_threshold: 3
+      check_have_i_been_pwned: false
+      error_message: Use a password with 6 to 128 characters.
+  - model: authentik_stages_prompt.promptstage
+    identifiers: {name: bill-registration-details}
+    id: details
+    attrs:
+      fields: [!KeyOf name, !KeyOf username, !KeyOf email, !KeyOf country, !KeyOf state, !KeyOf workspace, !KeyOf password, !KeyOf password-repeat]
+      validation_policies: [!KeyOf password-policy, !KeyOf validation]
+  - model: authentik_stages_user_write.userwritestage
+    identifiers: {name: bill-registration-create-pending}
+    id: create-pending
+    attrs:
+      user_creation_mode: always_create
+      create_users_as_inactive: true
+      create_users_group: null
+      user_type: external
+      user_path_template: bill/pending-registration
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf enrollment, order: 10}
+    attrs: {stage: !KeyOf details}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf enrollment, order: 20}
+    attrs: {stage: !KeyOf create-pending}
+  - model: authentik_stages_user_login.userloginstage
+    identifiers: {name: bill-registration-review-handoff}
+    id: review-handoff
+    attrs: {session_duration: seconds=0}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-registration-review-permissions}
+    id: review-permissions
+    attrs:
+      execution_logging: false
+      expression: |
+        from authentik.flows.planner import PLAN_CONTEXT_PENDING_USER
+        from authentik.rbac.models import Role
+        user = request.context.get(PLAN_CONTEXT_PENDING_USER)
+        if user is not None and user.pk and user.path == "bill/pending-registration" and user.type == "external" and not user.is_active and not user.ak_groups.exists() and not user.roles.exists():
+            role = Role.objects.filter(name="bill-account-review-service").first()
+            if role is not None:
+                role.assign_perms(["authentik_core.view_user", "authentik_core.change_user"], user)
+            recovery = Role.objects.filter(name="bill-administrator-recovery-service").first()
+            if recovery is not None:
+                recovery.assign_perms(["authentik_core.view_user", "authentik_core.add_user", "authentik_core.reset_user_password"], user)
+        # This binding is a trusted post-write handoff only; never log an inactive applicant in.
+        return False
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf enrollment, order: 30}
+    id: review-handoff-binding
+    attrs: {stage: !KeyOf review-handoff, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf review-handoff-binding, order: 0, policy: !KeyOf review-permissions}
+    attrs: {failure_result: false}

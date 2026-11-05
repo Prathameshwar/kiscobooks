@@ -1,0 +1,132 @@
+﻿import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, expect, it, vi } from 'vitest';
+import { DisplayConfigProvider, PermissionProvider } from '@janso/ui';
+import { ReferenceDirectory } from '../app/platform/references/ReferenceDirectory';
+import { ReferenceRecord } from '../app/platform/references/ReferenceRecord';
+import { catalogReturnTo } from '../app/platform/references/reference-config';
+import { allowedPlatformRequest } from '../app/lib/platform-request';
+const { fetcher, navigate } = vi.hoisted(() => ({ fetcher: vi.fn(), navigate: vi.fn() }));
+vi.mock('../app/lib/session-fetch', () => ({ sessionFetch: fetcher }));
+vi.mock('../app/lib/navigate', () => ({ goTo: navigate, signInUrl: () => 'http://localhost:4310/login' }));
+const record = { id: '01900000-0000-7000-8000-000000000001', code: 'zz', name: 'Test language', parent_code: null, is_active: true, source: 'operator', version: 1, sync_ready: false, updated_at: '2026-10-21T00:00:00Z', protected_fields: ['code', 'iso3'], data: { kind: 'language', code: 'zz', iso3: 'zzz', name: 'Test language', native_name: null, is_active: true } };
+const show = (children: React.ReactNode) => render(<DisplayConfigProvider><PermissionProvider permissions={['platform.config.manage']}>{children}</PermissionProvider></DisplayConfigProvider>);
+const india = { ...record, code: 'IN-MH', display_code: '27', name: 'Maharashtra', parent_code: 'IN', protected_fields: ['code', 'country_code', 'tax_jurisdiction_code'], data: { kind: 'state', code: 'IN-MH', country_code: 'IN', name: 'Maharashtra', subdivision_type: 'State', tax_jurisdiction_code: '27', is_active: true } };
+beforeEach(() => { window.history.replaceState({}, '', '/platform/references/languages'); fetcher.mockReset(); navigate.mockReset();
+  fetcher.mockImplementation(async (_url, init) => { const input = JSON.parse(init.body);
+    if (input.path.endsWith('/options')) return Response.json({ countries: [{ code: 'IN', name: 'India' }], currencies: [{ code: 'INR', name: 'Indian rupee' }] });
+    if (input.path.includes('?')) return Response.json({ items: [record], page: { has_more: false, next_cursor: null } });
+    return Response.json(record);
+  });
+});
+it('provides a shared directory, navigation, filters and dedicated view/edit links', async () => {
+  show(<ReferenceDirectory catalog="languages" />); await screen.findByText('Test language');
+  expect(screen.getByText('Active', { selector: '.janso-badge' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Back to reference data' })).toHaveAttribute('href', '/platform/references');
+  expect(screen.getByRole('link', { name: 'New language' })).toHaveAttribute('href', expect.stringContaining('/platform/references/languages/new'));
+  await userEvent.click(screen.getByRole('button', { name: 'Actions for Test language' })); await userEvent.click(screen.getByRole('menuitem', { name: 'View details' }));
+  expect(navigate).toHaveBeenCalledWith(expect.stringContaining('/platform/references/languages/zz?returnTo='));
+});
+it('uses GST state codes for India and retains other countries codes and stable action URLs', async () => {
+  fetcher.mockImplementation(async (_url, init) => { const input = JSON.parse(init.body);
+    if (input.path.endsWith('/options')) return Response.json({ countries: [{ code: 'IN', name: 'India' }, { code: 'US', name: 'United States' }], currencies: [] });
+    return Response.json({ items: [india, { ...india, code: 'US-CA', display_code: 'US-CA', parent_code: 'US', name: 'California' }], page: { has_more: false, next_cursor: null } });
+  });
+  show(<ReferenceDirectory catalog="states" />); await screen.findByText('Maharashtra');
+  expect(screen.getByText('27')).toBeInTheDocument(); expect(screen.getByText('US-CA')).toBeInTheDocument();
+  expect(screen.queryByText('IN-MH')).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Actions for Maharashtra' }));
+  await userEvent.click(screen.getByRole('menuitem', { name: 'View details' }));
+  expect(navigate).toHaveBeenCalledWith(expect.stringContaining('/states/IN-MH?'));
+});
+it('labels Indian GST and ISO identifiers clearly and permanently protects the GST code', async () => {
+  fetcher.mockImplementation(async (_url, init) => Response.json(JSON.parse(init.body).path.endsWith('/options') ? { countries: [{ code: 'IN', name: 'India' }], currencies: [] } : india));
+  show(<ReferenceRecord catalog="states" code="IN-MH" mode="edit" />);
+  expect(await screen.findByRole('textbox', { name: 'GST state code' })).toHaveValue('27');
+  expect(screen.getByRole('textbox', { name: 'GST state code' })).toHaveAttribute('readonly');
+  expect(screen.getByRole('textbox', { name: 'ISO reference code' })).toHaveValue('IN-MH');
+  expect(screen.getByText(/Assigned automatically and permanently fixed/)).toBeInTheDocument();
+});
+it('automatically assigns the GST code on creation and displays the saved value', async () => {
+  fetcher.mockImplementation(async (_url, init) => Response.json(JSON.parse(init.body).path.endsWith('/options') ? { countries: [{ code: 'IN', name: 'India' }], currencies: [] } : india));
+  show(<ReferenceRecord catalog="states" mode="new" />);
+  await userEvent.click(await screen.findByRole('combobox', { name: 'Country' }));
+  await userEvent.click(await screen.findByRole('option', { name: /India/ }));
+  expect(screen.getByRole('textbox', { name: 'GST state code' })).toHaveAttribute('readonly');
+  await userEvent.type(screen.getByRole('textbox', { name: 'ISO reference code' }), 'IN-MH');
+  await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'Maharashtra');
+  await userEvent.type(screen.getByRole('textbox', { name: 'Subdivision type' }), 'State');
+  await userEvent.click(screen.getByRole('button', { name: 'Create state' }));
+  await screen.findByText('State created.');
+  expect(screen.getByRole('textbox', { name: 'GST state code' })).toHaveValue('27');
+});
+it('validates creation, saves once and displays a review destination and sync message', async () => {
+  show(<ReferenceRecord catalog="languages" mode="new" />); await screen.findByRole('textbox', { name: 'Code' });
+  await userEvent.click(screen.getByRole('button', { name: 'Create language' })); expect(screen.getAllByRole('alert')[0]).toHaveTextContent('highlighted fields');
+  await userEvent.type(screen.getByRole('textbox', { name: 'Code' }), 'zz'); await userEvent.type(screen.getByRole('textbox', { name: 'ISO alpha-3 code' }), 'zzz'); await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'Test language');
+  await userEvent.click(screen.getByRole('button', { name: 'Create language' })); expect(await screen.findByText('Language created.')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'View details' })).toHaveAttribute('href', expect.stringContaining('/platform/references/languages/zz'));
+  expect(screen.getByText(/Sync pending/)).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Check synchronization' }));
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Test language'));
+  expect(screen.queryByRole('button', { name: 'Create language' })).not.toBeInTheDocument();
+  const posts = fetcher.mock.calls.map(([, init]) => JSON.parse(init.body)).filter(value => value.method === 'POST');
+  expect(posts).toHaveLength(1);
+});
+it('matches the tenant editor: split layout, context card, and Cancel left of the action', async () => {
+  const { container } = show(<ReferenceRecord catalog="languages" mode="new" />);
+  await screen.findByRole('textbox', { name: 'Code' });
+  expect(container.querySelector('.janso-grid--split')).toBeInTheDocument();
+  expect(screen.getByText(/becomes selectable once Catalog and Accounting confirm delivery/)).toBeInTheDocument();
+  const footer = container.querySelector('.janso-card__footer')!;
+  expect(within(footer as HTMLElement).getByRole('link', { name: 'Cancel' })).toBeInTheDocument();
+  expect(footer.querySelector('.janso-form-actions')).toContainElement(screen.getByRole('button', { name: 'Create language' }));
+});
+it('confirms a discard before the back chevron or a breadcrumb leaves an edited record', async () => {
+  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+  show(<ReferenceRecord catalog="languages" code="zz" mode="edit" />);
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Name' }), { target: { value: 'Edited language' } });
+  fireEvent.click(screen.getByRole('link', { name: 'Back to languages' }));
+  fireEvent.click(screen.getByRole('link', { name: 'Platform administration' }));
+  expect(confirm).toHaveBeenCalledTimes(2);
+  confirm.mockRestore();
+});
+it('blocks creation while required options fail and supports retry', async () => {
+  fetcher.mockResolvedValueOnce(Response.json({ error: { message: 'Options unavailable' } }, { status: 500 }));
+  show(<ReferenceRecord catalog="countries" mode="new" />);
+  expect(await screen.findByRole('alert')).toHaveTextContent('Options unavailable');
+  expect(screen.queryByRole('button', { name: 'Create country' })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  expect(await screen.findByRole('textbox', { name: 'Code' })).toBeInTheDocument();
+});
+it('uses read-only protected fields for editing and retains errors on a stale edit', async () => {
+  show(<ReferenceRecord catalog="languages" code="zz" mode="edit" />); expect(await screen.findByRole('textbox', { name: 'Code' })).toHaveAttribute('readonly');
+  fetcher.mockResolvedValue(Response.json({ error: { message: 'This record changed; reload before saving' } }, { status: 409 }));
+  await userEvent.click(screen.getByRole('button', { name: 'Save changes' })); expect(await screen.findByRole('alert')).toHaveTextContent('record changed');
+});
+it('blocks context-cookie changes while a reference edit is unsaved', async () => {
+  show(<ReferenceRecord catalog="languages" code="zz" mode="edit" />);
+  const name = await screen.findByRole('textbox', { name: 'Name' });
+  const allowed = () => window.dispatchEvent(new Event('janso:before-company-change', { cancelable: true }));
+  expect(allowed()).toBe(true);
+  fireEvent.change(name, { target: { value: 'Edited language' } });
+  expect(allowed()).toBe(false);
+  await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+  await screen.findByText('Changes saved.');
+  expect(allowed()).toBe(true);
+});
+it('shows details and requires a reason for archive confirmation', async () => {
+  show(<ReferenceRecord catalog="languages" code="zz" mode="view" />); await screen.findByRole('heading', { level: 1, name: 'Test language' });
+  expect(screen.queryByRole('textbox', { name: 'Name' })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Delete (archive)' })); await userEvent.click(screen.getByRole('button', { name: 'Archive record' }));
+  expect(screen.getAllByRole('alert')[0]).toHaveTextContent('Enter a reason');
+  await userEvent.type(screen.getByRole('textbox', { name: 'Reason' }), 'Cleanup'); await userEvent.click(screen.getByRole('button', { name: 'Archive record' }));
+  expect(await screen.findByText(/Record archived/)).toBeInTheDocument();
+});
+it('restricts return destinations and the proxy to exact reference routes', () => {
+  expect(catalogReturnTo('states', '//evil.invalid')).toBe('/platform/references/states');
+  expect(catalogReturnTo('states', '/platform/references/states?country_code=IN')).toContain('country_code=IN');
+  expect(allowedPlatformRequest('GET', '/v1/platform/references/states?country_code=IN')).toBe(true);
+  expect(allowedPlatformRequest('POST', '/v1/platform/references/states/IN-MH/archive')).toBe(true);
+  expect(allowedPlatformRequest('DELETE', '/v1/platform/references/states/IN-MH')).toBe(false);
+});

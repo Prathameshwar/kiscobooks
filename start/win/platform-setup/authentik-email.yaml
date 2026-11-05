@@ -1,0 +1,31 @@
+version: 1
+metadata:
+  name: Bill verified email claim
+entries:
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: Bill administrator-confirmed email
+    id: bill-verified-email
+    attrs:
+      scope_name: email
+      expression: |
+        return {
+            "email": request.user.email,
+            "email_verified": bool(request.user.email) and request.user.attributes.get("billing_email_verified", False) is True,
+            # Saved metadata supplies editable defaults, never verification or grants.
+            "billing_registration_region": request.user.attributes.get("billing_registration_region"),
+        }
+  - model: authentik_providers_oauth2.oauth2provider
+    identifiers:
+      client_id: janso-local
+    attrs:
+      grant_types:
+        - authorization_code
+        - refresh_token
+      # Scopes for the local Bill provider; replace the default unverified email mapping.
+      property_mappings:
+        - !Find [authentik_providers_oauth2.scopemapping, [managed, goauthentik.io/providers/oauth2/scope-openid]]
+        - !Find [authentik_providers_oauth2.scopemapping, [managed, goauthentik.io/providers/oauth2/scope-profile]]
+        - !KeyOf bill-verified-email
+        - !Find [authentik_providers_oauth2.scopemapping, [managed, goauthentik.io/providers/oauth2/scope-offline_access]]
+        - !Find [authentik_providers_oauth2.scopemapping, [name, Bill local API scope]]

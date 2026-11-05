@@ -1,0 +1,109 @@
+[project]
+name = "billing-platform"
+version = "0.44.5"
+description = "Shared mechanism for the billing platform services: base model, tenant isolation, money, outbox, cache, errors."
+requires-python = "==3.12.*"
+dependencies = [
+    "sqlalchemy>=2.0.36,<2.1",
+    "alembic>=1.14.0,<1.15",
+    "pydantic>=2.10.0,<3",
+    "pydantic-settings>=2.7.0,<3",
+    "tzdata==2026.3",  # IANA timezone fallback required by zoneinfo on Windows
+]
+
+# The importable package is `billing_platform`, not `platform`.
+# `platform` is a Python standard-library module; shadowing it breaks any
+# dependency that imports it (sqlalchemy and asyncmy both do).
+
+[project.optional-dependencies]
+api = ["fastapi>=0.115.0,<0.116"]  # Optional shared import HTTP boundary, matching owner APIs.
+# Authentik JWT verification and bounded async JWKS retrieval; no IdP credentials here.
+crypto = ["cryptography>=44.0.0,<51"]
+auth = ["joserfc>=1.2,<2", "httpx>=0.28.0,<0.29"]
+# Optional RabbitMQ transport; services own routes and source/consumer policy.
+messaging = ["aio-pika>=9.5.0,<10"]
+mariadb = ["asyncmy>=0.2.10,<0.3"]
+# Redis is cache-only on this platform (docs/tech-stack.md) â€” the broker is RabbitMQ.
+# `billing_platform.cache` builds every service's Redis client and cache wrapper.
+cache = ["redis>=5.2.0,<7"]
+# `billing_platform.testing` imports pytest, so a consumer that re-exports the
+# shared fixtures declares this extra rather than getting pytest transitively.
+testing = [
+    "pytest>=8.3.4,<9",
+    "pytest-asyncio>=0.25.0,<0.26",
+    "aiosqlite>=0.20.0,<0.21",
+]
+
+[dependency-groups]
+dev = [
+    "fastapi>=0.115.0,<0.116",  # Test the optional import route factory with native ASGI calls.
+    "joserfc>=1.2,<2",
+    "httpx>=0.28.0,<0.29",
+    "aio-pika>=9.5.0,<10",  # exercises the optional broker adapter in platform tests
+    "asyncmy>=0.2.10,<0.3",  # exercises the MariaDB dialect in test_session / test_permissions
+    "redis>=5.2.0,<7",  # exercises the optional cache adapter in platform tests
+    "pytest>=8.3.4,<9",
+    "pytest-asyncio>=0.25.0,<0.26",
+    "pytest-cov>=6.0.0,<7",
+    "mypy>=1.14.0,<2",
+    "ruff>=0.8.0,<0.9",
+    "aiosqlite>=0.20.0,<0.21",
+]
+containers = ["testcontainers[mysql]>=4.9.0,<5"]
+# Generation-time only, for `tools/generate_reference_data.py`. Never a runtime
+# dependency: the generator's output is committed JSON under
+# `src/billing_platform/reference/data/`, so the ISO databases are versioned in the
+# repo and a seed is reproducible. Pinned exactly, because a bump changes data.
+reference = [
+    "pycountry==24.6.1",   # ISO 3166-1, ISO 3166-2, ISO 4217
+    "babel==2.17.0",       # CLDR: currency symbols, minor units, territory currencies
+    "phonenumbers==8.13.52",  # libphonenumber: dial codes
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/billing_platform"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "T20", "RUF", "S"]
+ignore = ["S101"]  # assert is how tests assert
+
+[tool.ruff.lint.isort]
+known-first-party = ["billing_platform", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+# So `tests.models` imports as a package: the fixture models must be imported
+# from conftest to register on Base.metadata before create_all.
+pythonpath = ["."]
+addopts = "--strict-markers"
+markers = [
+    "mariadb: requires a live MariaDB container (needs Docker)",
+]
+
+[tool.coverage.run]
+concurrency = ["greenlet"]  # SQLAlchemy async ORM switches execution through greenlets
+source = ["src/billing_platform"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

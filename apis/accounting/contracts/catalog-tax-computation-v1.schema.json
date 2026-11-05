@@ -1,0 +1,112 @@
+{
+  "$defs": {
+    "TaxComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "decimal_places": 4,
+          "gt": 0,
+          "max_digits": 19,
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Amount",
+          "type": "string"
+        },
+        "code": {
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "amount"
+      ],
+      "title": "TaxComponent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "assessment_id": {
+      "format": "uuid",
+      "title": "Assessment Id",
+      "type": "string"
+    },
+    "company_id": {
+      "format": "uuid",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/TaxComponent"
+      },
+      "maxItems": 20,
+      "title": "Components",
+      "type": "array"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "gross_amount": {
+      "decimal_places": 4,
+      "gt": 0,
+      "max_digits": 19,
+      "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+      "title": "Gross Amount",
+      "type": "string"
+    },
+    "input_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Hash",
+      "type": "string"
+    },
+    "net_amount": {
+      "decimal_places": 4,
+      "gt": 0,
+      "max_digits": 19,
+      "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+      "title": "Net Amount",
+      "type": "string"
+    },
+    "posting_date": {
+      "format": "date",
+      "title": "Posting Date",
+      "type": "string"
+    },
+    "provider_id": {
+      "format": "uuid",
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "provider_id",
+    "tenant_id",
+    "company_id",
+    "assessment_id",
+    "input_hash",
+    "posting_date",
+    "currency",
+    "net_amount",
+    "gross_amount",
+    "components"
+  ],
+  "title": "TaxComputation",
+  "type": "object"
+}

@@ -1,0 +1,7 @@
+import {metadata,COMPANY,ACCOUNT} from './financial-opening-fixtures';
+import {blankOpening,type OpeningCapture,type OpeningDraft,type MasterHeld,type MasterHeldPage} from '../app/lib/master-opening';
+export const capture:OpeningCapture={company_id:COMPANY,opening_date:'2026-04-01',currency:'INR',can_capture:true,blockers:[],capture:{properties:Object.fromEntries(['amount','side','opening_date','documents'].map(key=>[key,{title:key}]))},capture_permissions:metadata.capture_permissions};
+export const draft=(values:Partial<OpeningDraft>={}):OpeningDraft=>({...blankOpening(),amount:'100',side:'CREDIT',...values});
+export const supplier={party:true,role:'SUPPLIER',currencyMode:'BASE',kind:'PARTY'};
+export const heldMaster=(values:Partial<MasterHeld>={}):MasterHeld=>({id:'01990000-0000-7000-8000-000000000099',company_id:COMPANY,account_id:ACCOUNT,row_version:1,source_key:'mob-'+ACCOUNT.replaceAll('-',''),status:'PENDING',opening_date:'2026-04-01',included:false,entry:{account_id:ACCOUNT,source_key:'mob-'+ACCOUNT.replaceAll('-',''),amount:'100',base_amount:'100',side:'CREDIT',currency:'INR',exchange_rate:'1',description:null,documents:[{line_sequence:1,reference:'BILL-1',amount:'100',original_amount:'200',base_amount:'100',document_kind:'BILL',document_date:'2026-03-01',due_date:'2026-04-10'}]},...values});
+export const masterPage=(items:MasterHeld[]=[],more=false):MasterHeldPage=>({items,page:{limit:25,has_more:more,next_cursor:more?'verified-cursor':null}});

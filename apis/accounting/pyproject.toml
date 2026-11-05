@@ -1,0 +1,66 @@
+[project]
+name = "accounting"
+version = "0.1.0"
+description = "Company accounting and counterparty masters."
+requires-python = "==3.12.*"
+dependencies = [
+  "reporting-contract", # Committed financial export wire schemas
+  "voucher-execution-client", # Signed shared execution wire contract and client
+  "billing-platform[crypto,mariadb,messaging]",
+  "fastapi==0.115.14", # HTTP schema and validation
+  "uvicorn[standard]==0.34.3", # ASGI runtime
+  "identity-posting-client", # pre-transaction Identity reservation and outbox confirmation
+  "httpx==0.28.1", # Identity context acquisition before database transactions
+]
+
+[dependency-groups]
+dev = [
+  "billing-platform[testing]",
+  "pytest==8.4.2", "pytest-asyncio==0.25.3", "pytest-cov==6.3.0",
+  "mypy==1.19.1", "ruff==0.8.6",
+]
+
+[tool.uv.sources]
+reporting-contract = { path = "../../clients/reporting", editable = true }
+voucher-execution-client = { path = "../../clients/voucher-execution", editable = true }
+identity-posting-client = { path = "../../clients/identity-posting", editable = true }
+billing-platform = { path = "../../libs/platform", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/accounting"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "."]
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "T20", "RUF", "S"]
+ignore = ["S101", "B008"]
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]
+"tools/*" = ["T201", "S608"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = [".", "src"]
+addopts = "--strict-markers"
+markers = ["mysql: isolated native database integration", "rabbitmq: live broker integration"]
+
+[tool.coverage.run]
+concurrency = ["greenlet", "thread"]
+source = ["src/accounting"]
+branch = true
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]

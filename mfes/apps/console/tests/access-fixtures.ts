@@ -1,0 +1,11 @@
+import type { AccessContext, Assignment, RoleRecord, UserRecord } from '../app/lib/access-directory';
+export const userId = '01990000-0000-7000-8000-000000000001';
+export const roleId = '01990000-0000-7000-8000-000000000002';
+export const companyId = '01990000-0000-7000-8000-000000000003';
+export const assignmentId = '01990000-0000-7000-8000-000000000004';
+export const permissions = ['user.read', 'user.invite', 'user.update', 'user.deactivate', 'role.read', 'role.manage', 'role.assign', 'company.read', 'department.read', 'group.read', 'invoice.read'];
+export const access: AccessContext = { permissions, tenantPermissions: permissions, tenantId: companyId, companyId, userId: companyId, grants: [{ scope_type: 'tenant', scope_id: null, permissions, valid_from: '2000-01-01', valid_to: null }] };
+export const userRecord = { id: userId, email: 'ava@example.com', first_name: 'Ava', middle_name: null, last_name: 'Singh', display_name: 'Ava Singh', user_type: 'tenant_user', status: 'active', job_title: null, employee_code: null, phone: null, phone_country_code: null, salutation: null, default_company_id: null, reporting_manager_id: null, date_of_joining: null, date_of_exit: null, updated_at: '2026-10-24T10:00:00Z' } as UserRecord;
+export const roleRecord: RoleRecord = { id: roleId, key: 'viewer', name: 'Viewer', description: null, scope_hint: 'company', is_active: true, is_system: false, cloned_from_role_id: null, permissions: ['invoice.read'], created_at: '2026-10-01T10:00:00Z', updated_at: '2026-10-24T10:00:00Z' };
+export const assignment: Assignment = { id: assignmentId, role_id: roleId, subject_id: userId, subject_type: 'user', scope_type: 'company', scope_id: companyId, is_active: true, valid_from: '2026-01-01', valid_to: null, granted_by: companyId, grant_reason: 'Review', created_at: '2026-10-01T10:00:00Z' };
+export const page = (items: unknown[], next: string | null = null) => ({ items, page: { has_more: !!next, next_cursor: next } });

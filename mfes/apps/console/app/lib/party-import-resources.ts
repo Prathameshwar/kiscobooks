@@ -1,0 +1,21 @@
+export const partyImportResources = [
+  { value: 'party', label: 'Existing party identities (update only)' },
+  { value: 'customer', label: 'Ready-to-use customers' },
+  { value: 'supplier', label: 'Ready-to-use suppliers' },
+  { value: 'party_role', label: 'Customer or supplier roles' },
+  { value: 'party_address', label: 'Addresses' },
+  { value: 'party_address_use', label: 'Address uses' },
+  { value: 'party_contact', label: 'Contacts' },
+  { value: 'party_contact_use', label: 'Contact uses' },
+  { value: 'party_tax_registration', label: 'Tax registrations' },
+  { value: 'party_drug_licence', label: 'Drug licences' },
+  { value: 'party_identifier', label: 'Business identifiers' },
+  { value: 'party_registration_address', label: 'Registration addresses' },
+  { value: 'party_bank_account', label: 'Bank beneficiaries' },
+  {
+    value: 'party_commercial_type_membership',
+    label: 'Commercial classifications',
+  },
+  { value: 'party_accounting_policy', label: 'Accounting policies' },
+  { value: 'party_credit_policy', label: 'Credit policies' },
+] as const;

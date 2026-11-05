@@ -1,0 +1,3321 @@
+[
+  {
+    "role": "RootWebArea",
+    "name": "Purchase UI component review",
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "focused",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "url",
+        "value": {
+          "type": "string",
+          "value": "http://127.0.0.1:4418/?workflow=NEW&blank"
+        }
+      }
+    ]
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Supplier search",
+    "properties": []
+  },
+  {
+    "role": "main",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "listbox",
+    "name": "Supplier results",
+    "properties": [
+      {
+        "name": "multiselectable",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "orientation",
+        "value": {
+          "type": "token",
+          "value": "vertical"
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "New purchase",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " · Synthetic examples in ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "INR",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": ". Changes stay on this page and are lost on reload.",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Purchase workflow",
+    "properties": []
+  },
+  {
+    "role": "group",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Supplier and invoice details",
+    "properties": []
+  },
+  {
+    "role": "group",
+    "name": "Current purchase bill",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Purchase line entry",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Purchase details",
+    "properties": [
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 308,
+              "idref": "purchase-details-title",
+              "text": "Purchase details"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "complementary",
+    "name": "Purchase totals",
+    "properties": []
+  },
+  {
+    "role": "group",
+    "name": "Purchase actions",
+    "properties": []
+  },
+  {
+    "role": "option",
+    "name": "Paper & Co. Supplies SUP-001 · Pune · Example supplier",
+    "properties": [
+      {
+        "name": "selected",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "role": "option",
+    "name": "Northstar Business Services SUP-002 · Mumbai · Example supplier",
+    "properties": [
+      {
+        "name": "selected",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "role": "option",
+    "name": "New supplier · setup incomplete SUP-003 · No payable account configured",
+    "properties": [
+      {
+        "name": "selected",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Purchases / ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Workflow preview",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "New purchase",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Capture your supplier bill, with every detail in its place.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Preview workspace",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " · Synthetic examples in ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "INR",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": ". ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Changes stay on this page and are lost on reload.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "New · demo",
+    "properties": []
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "link",
+    "name": "Back to vouchers",
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "url",
+        "value": {
+          "type": "string",
+          "value": "http://127.0.0.1:4418/vouchers"
+        }
+      }
+    ]
+  },
+  {
+    "role": "DisclosureTriangle",
+    "name": "Explore workflow examples",
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "expanded",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "role": "heading",
+    "name": "Supplier & invoice",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Internal reference ",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "LabelText",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "LabelText",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "alert",
+    "name": "",
+    "properties": [
+      {
+        "name": "live",
+        "value": {
+          "type": "token",
+          "value": "assertive"
+        }
+      },
+      {
+        "name": "atomic",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "relevant",
+        "value": {
+          "type": "tokenList",
+          "value": "additions text"
+        }
+      }
+    ]
+  },
+  {
+    "role": "LabelText",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "LabelText",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "group",
+    "name": "Purchase entry mode",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "0",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "lines",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "INR",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "Bill lines",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "0",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " entered",
+    "properties": []
+  },
+  {
+    "role": "list",
+    "name": "Purchase line cards",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Add purchase line",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "heading",
+    "name": "Purchase details",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Open only what this bill needs",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Discounts & charges Document discounts, freight and other charges",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Tax details Calculation evidence needs review Needs review",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Goods receipt Receive with bill · planned quantities",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Line tracking Location, batch, expiry and serial details by item",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Payment & terms Due 30 Nov 2026 · advances and payment intentions",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Supplier bill & attachments 0 local files · supplier total, notes and additional fields",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "region",
+    "name": "Bill summary",
+    "properties": [
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 341,
+              "idref": "purchase-summary-title",
+              "text": "Bill summary"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "region",
+    "name": "Settlement intentions",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Entry guidance",
+    "properties": []
+  },
+  {
+    "role": "region",
+    "name": "Purchase issues",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Bill total",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Provisional · Not saved",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Review bill",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Save demo draft",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Paper & Co. Supplies",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "SUP-001 · Pune · Example supplier",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Northstar Business Services",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "SUP-002 · Mumbai · Example supplier",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "New supplier · setup incomplete",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "SUP-003 · No payable account configured",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Purchases / ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Workflow preview",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "New purchase",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Capture your supplier bill, with every detail in its ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "place.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Preview workspace",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "New · demo",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "No demo record yet",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "No unapplied edits",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Back to vouchers",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Explore workflow examples",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier & invoice",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Internal reference ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Unassigned",
+    "properties": []
+  },
+  {
+    "role": "LabelText",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "combobox",
+    "name": "Supplier",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "true"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "focused",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "editable",
+        "value": {
+          "type": "token",
+          "value": "plaintext"
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "autocomplete",
+        "value": {
+          "type": "token",
+          "value": "list"
+        }
+      },
+      {
+        "name": "hasPopup",
+        "value": {
+          "type": "token",
+          "value": "listbox"
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "expanded",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "describedby",
+        "value": {
+          "type": "idrefList",
+          "value": "_r_3_-error",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 153,
+              "idref": "_r_3_-error"
+            }
+          ]
+        }
+      },
+      {
+        "name": "controls",
+        "value": {
+          "type": "idrefList",
+          "value": "_r_3_-list",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 664,
+              "idref": "_r_3_-list"
+            }
+          ]
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 143,
+              "text": "Supplier"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Toggle Supplier options",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "status",
+    "name": "",
+    "properties": [
+      {
+        "name": "live",
+        "value": {
+          "type": "token",
+          "value": "polite"
+        }
+      },
+      {
+        "name": "atomic",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "relevant",
+        "value": {
+          "type": "tokenList",
+          "value": "additions text"
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier payable account",
+    "properties": []
+  },
+  {
+    "role": "combobox",
+    "name": "Supplier payable account",
+    "value": "Choose a supplier first",
+    "properties": [
+      {
+        "name": "disabled",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "hasPopup",
+        "value": {
+          "type": "token",
+          "value": "menu"
+        }
+      },
+      {
+        "name": "expanded",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": false
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 156,
+              "text": "Supplier payable account"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier invoice number",
+    "properties": []
+  },
+  {
+    "role": "textbox",
+    "name": "Supplier invoice number",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "true"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "editable",
+        "value": {
+          "type": "token",
+          "value": "plaintext"
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "multiline",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "readonly",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "describedby",
+        "value": {
+          "type": "idrefList",
+          "value": "_r_5_-error",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 632,
+              "idref": "_r_5_-error"
+            }
+          ]
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 177,
+              "text": "Supplier invoice number"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Enter the supplier invoice number.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier invoice date",
+    "properties": []
+  },
+  {
+    "role": "Date",
+    "name": "Supplier invoice date",
+    "value": "2026-10-31",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 184,
+              "text": "Supplier invoice date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Posting date",
+    "properties": []
+  },
+  {
+    "role": "Date",
+    "name": "Posting date",
+    "value": "2026-10-31",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "describedby",
+        "value": {
+          "type": "idrefList",
+          "value": "_r_7_-hint",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 215,
+              "idref": "_r_7_-hint"
+            }
+          ]
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 200,
+              "text": "Posting date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Determines the accounting period.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Entry mode",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Choose how this supplier bill is entered.",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Items",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "pressed",
+        "value": {
+          "type": "tristate",
+          "value": "true"
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Accounts / services",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "pressed",
+        "value": {
+          "type": "tristate",
+          "value": "false"
+        }
+      }
+    ]
+  },
+  {
+    "role": "button",
+    "name": "Mixed",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "pressed",
+        "value": {
+          "type": "tristate",
+          "value": "false"
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "New supplier bill",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "0",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "lines",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "INR",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Bill lines",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Receipt and billed quantities stay separate. Rates are entered manually.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "0",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " entered",
+    "properties": []
+  },
+  {
+    "role": "listitem",
+    "name": "",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Add purchase line",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Purchase details",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Open only what this bill needs",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Discounts & charges",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Document discounts, freight and other charges",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Tax details",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Calculation evidence needs review",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Needs review",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Goods receipt",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Receive with bill · planned quantities",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Line tracking",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Location, batch, expiry and serial details by item",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Payment & terms",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Due 30 Nov 2026 · advances and payment intentions",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier bill & attachments",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "0 local files · supplier total, notes and additional fields",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "Bill summary",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Provisional",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Line subtotal",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Line discounts",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "After line discounts",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Document discounts",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier charges",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier tax",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Bill total",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Tax and charges need calculation evidence. A bill total is unavailable; missing amounts are not treated as zero.",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "Payment & terms",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Advances to apply",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Payment to record",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "Before you finish",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "3 details need attention",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "role": "list",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Bill total",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Provisional · Not saved",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Review bill",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Save demo draft",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Paper & Co. Supplies",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "SUP-001 · Pune · Example supplier",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Northstar Business Services",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "SUP-002 · Mumbai · Example supplier",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "New supplier · setup incomplete",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "SUP-003 · No payable account configured",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "SUP-003 · No payable account configur",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "…",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "No demo record yet",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "No unapplied edits",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Back to vouchers",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Explore workflow examples",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier & invoice",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Unassigned",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Supplier",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": [
+      {
+        "name": "editable",
+        "value": {
+          "type": "token",
+          "value": "plaintext"
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Choose a supplier.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "3 results",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier payable account",
+    "properties": []
+  },
+  {
+    "role": "MenuListPopup",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier invoice number",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": [
+      {
+        "name": "editable",
+        "value": {
+          "type": "token",
+          "value": "plaintext"
+        }
+      }
+    ]
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Enter the supplier invoice number.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier invoice date",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Show date picker Show date picker",
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "hasPopup",
+        "value": {
+          "type": "token",
+          "value": "menu"
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 184,
+              "text": "Supplier invoice date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Posting date",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Show date picker Show date picker",
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "hasPopup",
+        "value": {
+          "type": "token",
+          "value": "menu"
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 200,
+              "text": "Posting date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Determines the accounting period.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Entry mode",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Choose how this supplier bill is entered.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Items",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Accounts / services",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Mixed",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "New supplier bill",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Bill lines",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Receipt and billed quantities stay separate. ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Rates are entered manually.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Line ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "1",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Item",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Actions for line 1",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "hasPopup",
+        "value": {
+          "type": "token",
+          "value": "menu"
+        }
+      },
+      {
+        "name": "expanded",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": false
+        }
+      }
+    ]
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "DescriptionList",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Line total before tax",
+    "properties": []
+  },
+  {
+    "role": "strong",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Add at least one item or expense account.",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Edit line 1",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Add purchase line",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Purchase details",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Discounts & charges",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Document discounts, freight and other ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "charges",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Tax details",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Calculation evidence needs review",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Needs review",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Goods receipt",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Receive with bill · planned quantities",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Line tracking",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Location, batch, expiry and serial details by ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "item",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Payment & terms",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Due 30 Nov 2026 · advances and payment ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "intentions",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier bill & attachments",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "0 local files · supplier total, notes and ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "additional fields",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Bill summary",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Provisional",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Line subtotal",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Line discounts",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "After line discounts",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Document discounts",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier charges",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier tax",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Bill total",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Tax and charges need calculation evidence. A bill ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "total is unavailable; missing amounts are not ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "treated as zero.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Payment & terms",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Due ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "30 Nov 2026",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "from invoice date",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Advances to apply",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "₹0.00",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Payment to record",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "₹0.00",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Proposed only. Nothing has been applied, paid or cleared.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Before you finish",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Use the supplier’s own invoice number. Your internal voucher reference is assigned later.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Check receipt quantity against what arrived, and billed quantity against the supplier’s invoice.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "3",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "details need",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " attention",
+    "properties": []
+  },
+  {
+    "role": "listitem",
+    "name": "",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "role": "listitem",
+    "name": "",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "role": "listitem",
+    "name": "",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Review bill",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Save demo draft",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Supplier",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Choose a supplier.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "3 results",
+    "properties": []
+  },
+  {
+    "role": "option",
+    "name": "Choose a supplier first",
+    "properties": [
+      {
+        "name": "disabled",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Items",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Accounts / services",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Mixed",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Line ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "1",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Item",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Choose an item or expense account",
+    "properties": []
+  },
+  {
+    "role": "term",
+    "name": "Receipt qty",
+    "properties": []
+  },
+  {
+    "role": "definition",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "term",
+    "name": "Billed qty",
+    "properties": []
+  },
+  {
+    "role": "definition",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "term",
+    "name": "Rate",
+    "properties": []
+  },
+  {
+    "role": "definition",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Line total before tax",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Add at least one item or expense account.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Edit",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": " line ",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "1",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Bill summary",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Payment & terms",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Due ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "30 Nov 2026",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " · ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "from invoice date",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "₹0.00",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "₹0.00",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Proposed only. Nothing has been applied, paid or ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "cleared.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Before you finish",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Use the supplier’s own invoice number. Your ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "internal voucher reference is assigned later.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Check receipt quantity against what arrived, and ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "billed quantity against the supplier’s invoice.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "3",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "details need",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " attention",
+    "properties": []
+  },
+  {
+    "role": "ListMarker",
+    "name": "• ",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Choose a supplier.",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "ListMarker",
+    "name": "• ",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Enter the supplier invoice number.",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "ListMarker",
+    "name": "• ",
+    "properties": []
+  },
+  {
+    "role": "button",
+    "name": "Add at least one item or expense account.",
+    "properties": [
+      {
+        "name": "invalid",
+        "value": {
+          "type": "token",
+          "value": "false"
+        }
+      },
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "role": "spinbutton",
+    "name": "Month Month",
+    "value": 10,
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "valuemin",
+        "value": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      {
+        "name": "valuemax",
+        "value": {
+          "type": "number",
+          "value": 12
+        }
+      },
+      {
+        "name": "valuetext",
+        "value": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 184,
+              "text": "Supplier invoice date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "spinbutton",
+    "name": "Day Day",
+    "value": 31,
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "valuemin",
+        "value": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      {
+        "name": "valuemax",
+        "value": {
+          "type": "number",
+          "value": 31
+        }
+      },
+      {
+        "name": "valuetext",
+        "value": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 184,
+              "text": "Supplier invoice date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "spinbutton",
+    "name": "Year Year",
+    "value": 2026,
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "valuemin",
+        "value": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      {
+        "name": "valuemax",
+        "value": {
+          "type": "number",
+          "value": 275760
+        }
+      },
+      {
+        "name": "valuetext",
+        "value": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 184,
+              "text": "Supplier invoice date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "spinbutton",
+    "name": "Month Month",
+    "value": 10,
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "valuemin",
+        "value": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      {
+        "name": "valuemax",
+        "value": {
+          "type": "number",
+          "value": 12
+        }
+      },
+      {
+        "name": "valuetext",
+        "value": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 200,
+              "text": "Posting date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "spinbutton",
+    "name": "Day Day",
+    "value": 31,
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "valuemin",
+        "value": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      {
+        "name": "valuemax",
+        "value": {
+          "type": "number",
+          "value": 31
+        }
+      },
+      {
+        "name": "valuetext",
+        "value": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 200,
+              "text": "Posting date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "spinbutton",
+    "name": "Year Year",
+    "value": 2026,
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "settable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "required",
+        "value": {
+          "type": "boolean",
+          "value": false
+        }
+      },
+      {
+        "name": "valuemin",
+        "value": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      {
+        "name": "valuemax",
+        "value": {
+          "type": "number",
+          "value": 275760
+        }
+      },
+      {
+        "name": "valuetext",
+        "value": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      {
+        "name": "labelledby",
+        "value": {
+          "type": "nodeList",
+          "relatedNodes": [
+            {
+              "backendDOMNodeId": 200,
+              "text": "Posting date"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Choose an item or expense account",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Receipt qty",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Billed qty",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Rate",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Edit",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": " line ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "1",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Choose a supplier.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Enter the supplier invoice number.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Add at least one item or expense account.",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "10",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "31",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "2026",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "10",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "31",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "/",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "2026",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Receipt qty",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Billed qty",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Rate",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "—",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Choose a supplier.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Enter the supplier invoice number.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Add at least one item or expense ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "account.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "10",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "31",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "2026",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "10",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "31",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "2026",
+    "properties": []
+  }
+]

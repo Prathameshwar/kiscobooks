@@ -1,0 +1,113 @@
+{
+  "services": [
+    {
+      "code": "identity",
+      "port": 8001,
+      "project": "apis/identity",
+      "module": "identity.main:create_app",
+      "factory": true,
+      "env_prefix": "IDENTITY_",
+      "db": "identity",
+      "alembic": "dbs/identity/alembic.ini",
+      "route": "/identity/"
+    },
+    {
+      "code": "audit",
+      "port": 8002,
+      "project": "apis/audit",
+      "module": "audit.main:create_app",
+      "factory": true,
+      "env_prefix": "AUDIT_",
+      "db": "audit",
+      "alembic": "dbs/audit/alembic.ini",
+      "route": "/audit/"
+    },
+    {
+      "code": "catalog",
+      "port": 8003,
+      "project": "apis/catalog",
+      "module": "catalog.main:create_app",
+      "factory": true,
+      "env_prefix": "CATALOG_",
+      "db": "catalog",
+      "alembic": "dbs/catalog/alembic.ini",
+      "route": "/catalog/"
+    },
+    {
+      "code": "notification",
+      "port": 8010,
+      "project": "apis/notification",
+      "module": "notification.main:create_app",
+      "factory": true,
+      "env_prefix": "NOTIFICATION_",
+      "db": "notification",
+      "alembic": "dbs/notification/alembic.ini",
+      "route": "/notification/"
+    },
+    {
+      "code": "accounting",
+      "port": 8011,
+      "project": "apis/accounting",
+      "module": "accounting.main:create_app",
+      "factory": true,
+      "env_prefix": "ACCOUNTING_",
+      "db": "accounting",
+      "alembic": "dbs/accounting/alembic.ini",
+      "route": "/accounting/"
+    },
+    {
+      "code": "vouchers",
+      "port": 8012,
+      "project": "apis/vouchers",
+      "module": "vouchers.main:create_app",
+      "factory": true,
+      "env_prefix": "VOUCHERS_",
+      "db": "vouchers",
+      "alembic": "dbs/vouchers/alembic.ini",
+      "route": "/vouchers/"
+    },
+    {
+      "code": "reports",
+      "port": 8013,
+      "project": "apis/reports",
+      "module": "reports.main:create_app",
+      "factory": true,
+      "env_prefix": "REPORTS_",
+      "db": "reports",
+      "alembic": "dbs/reports/alembic.ini",
+      "route": "/reports/"
+    },
+    {
+      "code": "design",
+      "port": 8014,
+      "project": "apis/design",
+      "module": "design.main:create_app",
+      "factory": true,
+      "env_prefix": "DESIGN_",
+      "db": "design",
+      "alembic": "dbs/design/alembic.ini",
+      "route": "/design/"
+    }
+  ],
+  "infra": {
+    "mysql": {
+      "host": "127.0.0.1",
+      "port": 3306,
+      "superuser": "root",
+      "password": ""
+    },
+    "redis": {
+      "host": "127.0.0.1",
+      "port": 6379
+    },
+    "rabbitmq": {
+      "host": "127.0.0.1",
+      "port": 5672
+    },
+    "nginx": {
+      "listen_port": 8090,
+      "root_relative": "start\\win\\bin\\nginx",
+      "version": "1.26.2"
+    }
+  }
+}

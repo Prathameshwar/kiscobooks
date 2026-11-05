@@ -1,0 +1,266 @@
+{
+  "$defs": {
+    "Component": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{1,15}(\\.[0-9]{1,4})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "basis_quantity": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{1,15}(\\.[0-9]{1,4})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Basis Quantity"
+        },
+        "component": {
+          "enum": [
+            "CGST",
+            "SGST",
+            "UTGST",
+            "IGST",
+            "CESS"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "component_key": {
+          "pattern": "^[A-Z][A-Z0-9_]{0,29}$",
+          "title": "Component Key",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "PERCENT",
+            "FIXED_PER_UNIT"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "percentage": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{1,15}(\\.[0-9]{1,4})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Percentage"
+        },
+        "position": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Position",
+          "type": "integer"
+        },
+        "rounding_mode": {
+          "enum": [
+            "HALF_UP",
+            "UP",
+            "DOWN"
+          ],
+          "title": "Rounding Mode",
+          "type": "string"
+        },
+        "unit_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Id"
+        }
+      },
+      "required": [
+        "id",
+        "component_key",
+        "component",
+        "kind",
+        "rounding_mode",
+        "position"
+      ],
+      "title": "Component",
+      "type": "object"
+    },
+    "Rate": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "enum": [
+            "INTRA_STATE",
+            "INTRA_UT",
+            "INTER_STATE"
+          ],
+          "title": "Applicability",
+          "type": "string"
+        },
+        "components": {
+          "items": {
+            "$ref": "#/$defs/Component"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Components",
+          "type": "array"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "rule_id": {
+          "format": "uuid",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "series_id": {
+          "format": "uuid",
+          "title": "Series Id",
+          "type": "string"
+        },
+        "source_reference": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source Reference",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "supersedes_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes Id"
+        },
+        "valid_from": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        }
+      },
+      "required": [
+        "valid_from",
+        "id",
+        "rule_id",
+        "series_id",
+        "applicability",
+        "source_reference",
+        "source_sha256",
+        "components"
+      ],
+      "title": "Rate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "PUBLISH",
+        "UPDATE",
+        "WITHDRAW"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "company_id": {
+      "format": "uuid",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "rate": {
+      "$ref": "#/$defs/Rate"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_version": {
+      "maximum": 9223372036854775807,
+      "minimum": 1,
+      "title": "Source Version",
+      "type": "integer"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "company_id",
+    "source_version",
+    "action",
+    "rate"
+  ],
+  "title": "RateChanged",
+  "type": "object"
+}

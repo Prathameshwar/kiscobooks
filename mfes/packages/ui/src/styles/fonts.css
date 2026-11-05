@@ -1,0 +1,33 @@
+/*
+ * The typeface the design system is designed in.
+ *
+ * `--janso-font-display` and `--janso-font-body` have named Inter first since the tokens were
+ * written, and nothing ever loaded it: no `@font-face`, no `next/font`, no link. Every console
+ * screen rendered in whatever the next entry in the stack resolved to — Segoe UI on Windows,
+ * something else elsewhere — while `janso-ui.css` applied `letter-spacing: -0.006em` and
+ * `font-feature-settings: 'cv11' 1, 'ss03' 1`, both of which were calibrated for Inter and one
+ * of which (the OpenType features) does nothing at all in a face that has no such features.
+ * A design system whose primary face is absent is not a design system, it is a suggestion.
+ *
+ * **Self-hosted, not a CDN.** This is on-premise billing software: an installation with no
+ * route to fonts.googleapis.com must not render in a fallback face, and a third-party request
+ * per page load is a privacy detail nobody asked for. 344KB of variable woff2 covers the whole
+ * 100-900 weight range in one file — less than a static four-weight set, and the only reason
+ * the variable format is worth having.
+ *
+ * **Roman only, deliberately.** Inter's italics are a second 340KB file and this interface uses
+ * italics nowhere; the synthesised oblique a browser produces for the rare `<em>` is a better
+ * trade than doubling the font payload on every page. Add the italic file when something needs
+ * real italics.
+ *
+ * Licensed under the SIL Open Font License 1.1 — see `../assets/fonts/LICENSE.txt`.
+ */
+
+@font-face {
+  font-family: 'Inter';
+  /* The variable axis range, so one file answers every weight the tokens ask for. */
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  src: url('../assets/fonts/InterVariable.woff2') format('woff2-variations');
+}

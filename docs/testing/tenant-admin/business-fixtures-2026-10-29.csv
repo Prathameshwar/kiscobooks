@@ -1,0 +1,33 @@
+﻿tenant_id,company_key,resource,id,status,configuration,source
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,company,01a186e5-f0c5-729d-9cca-0ac3d2487f40,ACTIVE,IN-MH; amount=2; quantity=3; half_up; indian,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,product,01a18721-cfa8-73b9-a02b-9da0336bcdaa,ACTIVE,GOODS/STOCK,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,customer,01a18817-be40-7284-a207-2e16f193d9ff,ACTIVE,Synthetic QA party,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,receivable,01a18819-cd3a-7770-84be-e7075fdd9dd0,ACTIVE,CUSTOMER PARTY account,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,customer_account_policy,01a18839-0dfc-72f2-a01f-a8afea96c1b3,EFFECTIVE,bill_wise=True; payment_term=01a18723-5677-7090-b6c6-2fe9e4fe449d,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,sales_type,01a18817-d3c7-727d-81b1-a28f6acbd5e9,ACTIVE,STANDARD; ACCOUNT/SERVICE; default ACCOUNTS; UNTAXED_ACCOUNT,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,sales_reference,01a18827-3dd2-7658-8c15-fa9430e95e0f,SUBMITTED,payable=123.4500; tax=0.0000; rounding=0.0000,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,tax_rule,01a186e6-69ee-74ed-a32b-1f703406b6f8,ACTIVE,TAXABLE; HSN 8471 or SAC 998313; published GST 18%,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,tax_classification,01a186e6-67bd-713b-aaed-84508f6db2b7,ACTIVE,Official seeded classification,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,inventory_revision,01a1880e-2b5b-76d4-ad37-a863f30581f7,PUBLISHED,FIFO; negative_stock=BLOCK,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,retail,current_product_defaults,01a1882d-88dc-72f6-a2bb-071f574378db,PUBLISHED,Product override effective 2026-10-29; explicitly adopted,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,company,01a186e7-5d0a-75f9-b774-b6096ea2c87c,ACTIVE,IN-KA; amount=4; quantity=2; half_even; western,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,product,01a18723-fefe-77dd-b306-8e86aa43c0b4,ACTIVE,SERVICE/NON_STOCK,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,customer,01a18818-2f15-7041-9599-fb384bd91af3,ACTIVE,Synthetic QA party,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,receivable,01a1881a-3bb7-7118-b15b-44a37270ab41,ACTIVE,CUSTOMER PARTY account,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,customer_account_policy,01a18841-d9c9-73fa-83f1-9e1654dd16e9,EFFECTIVE,bill_wise=False; payment_term=01a18724-4dda-7572-a7ba-3012baef4df7,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,sales_type,01a18815-4921-7188-90d6-ce9174c12994,ACTIVE,STANDARD; ACCOUNT/SERVICE; default ACCOUNTS; UNTAXED_ACCOUNT,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,sales_reference,01a18825-7567-7397-a817-1b1fddeac7c2,SUBMITTED,payable=125.1250; tax=0.0000; rounding=0.0000,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,tax_rule,01a186e7-a184-7269-a8d0-bf76cd68a596,ACTIVE,TAXABLE; HSN 8471 or SAC 998313; published GST 18%,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,tax_classification,01a186e7-9e20-7170-ae37-ce5dfb5435b5,ACTIVE,Official seeded classification,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,services,design_template,01a1883d-93f2-72b1-b3b3-754a241a07fd,PUBLISHED,Native versions 1/2; historical restore and undo verified,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,company,01a186e7-fee7-73f0-951b-a81e2188ddd8,ACTIVE,IN-GJ; amount=0; quantity=4; half_up; western,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,product,01a18725-a5ab-7214-a397-59408bba7cfc,ACTIVE,GOODS/STOCK,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,customer,01a18818-c5a1-73c3-aa91-db625118e7a3,ACTIVE,Synthetic QA party,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,receivable,01a1881a-b92b-746f-92ed-39c5958f0638,ACTIVE,CUSTOMER PARTY account,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,customer_account_policy,01a1883d-c019-7338-a837-6e870534b9d3,EFFECTIVE,bill_wise=True; payment_term=01a18725-5de0-7683-b1cc-8d66fd3f2cfc,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,sales_type,01a18818-d3ab-7741-b680-a097af664707,ACTIVE,STANDARD; ACCOUNT/SERVICE; default ACCOUNTS; UNTAXED_ACCOUNT,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,sales_reference,01a18828-f8db-75ce-a16f-ec4a08c4f4ab,SUBMITTED,payable=99.0000; tax=0.0000; rounding=0.0000,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,tax_rule,01a186e8-a9dc-7023-955d-d6e96273852c,ACTIVE,TAXABLE; HSN 8471 or SAC 998313; published GST 18%,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,tax_classification,01a186e8-a6ac-730b-9ce1-f39ae5aeb4e6,ACTIVE,Official seeded classification,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,inventory_revision,01a18817-4ae2-73ba-8a83-fb9363f985b9,PUBLISHED,MOVING_AVERAGE; negative_stock=BLOCK,UI/native API readback; batch results
+01a186e4-81a0-7221-8f57-2404a864ff43,distribution,current_product_defaults,01a18836-6aea-778c-8f5d-84b9c1801a66,PUBLISHED,Product override effective 2026-10-29; explicitly adopted,UI/native API readback; batch results

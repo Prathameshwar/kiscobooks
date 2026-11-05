@@ -1,0 +1,33 @@
+{
+  "name": "@janso/api-client",
+  "version": "0.2.73",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./catalog": "./src/catalog.d.ts",
+    "./identity": "./src/identity.d.ts",
+    "./accounting": "./src/accounting.d.ts",
+    "./audit": "./src/audit.d.ts",
+    "./vouchers": "./src/vouchers.d.ts",
+    "./reports": "./src/reports.d.ts",
+    "./notification": "./src/notification.d.ts",
+    "./design": "./src/design.d.ts"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

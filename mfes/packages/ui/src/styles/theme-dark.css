@@ -1,0 +1,176 @@
+/*
+ * JANSO — DARK palette. Same key set as theme-light.css, same identity: indigo, but
+ * lifted so it reads on a dark surface (a #34478f link on #151a23 would fail contrast).
+ *
+ * Elevation is a light-theme idiom — a shadow on near-black is invisible. Dark buys
+ * separation with a higher-contrast `--janso-line` and a lifted `--janso-surface`
+ * instead of bigger shadows (design-system §2.4).
+ */
+
+[data-theme='dark'] {
+  /* — Surfaces — */
+  --janso-paper: #0c0d10;
+  --janso-surface: #131418;
+  --janso-surface-2: #181a1f;
+  --janso-overlay: #1e2026; /* lifted clear of `surface`: a shadow cannot separate a menu on near-black */
+  --janso-panel: #131418;
+  --janso-panel-2: #0e0f12;
+  --janso-hover: #1c1e24;
+  --janso-active: #23262d;
+  --janso-selected: #1d1e3c;
+  --janso-disabled-surface: #181a1f;
+  --janso-disabled-ink: #8b8f9a; /* 4.9:1 on `overlay` too — a disabled option in a popover */
+  --janso-scrim: rgba(0, 0, 0, 0.6);
+
+  /* — Ink — */
+  --janso-ink: #ededf0;
+  --janso-ink-soft: #a2a6b0;
+  --janso-ink-faint: #8e929d; /* 4.6:1 on every dark surface, `overlay` included */
+  --janso-ink-invert: #ffffff;
+
+  /* — Brand: lifted for contrast; the mark itself stays invariant — */
+  --janso-brand: #9599f7;
+  --janso-brand-strong: #abaef9;
+  --janso-brand-bright: #bcbffb;
+  --janso-brand-ink: #d4d5fc;
+  --janso-wordmark-books: #4ec98a;
+  --janso-brand-tint: #1d1e3c;
+  --janso-brand-line: #35376c;
+  --janso-brand-glow: rgba(149, 153, 247, 0.14);
+
+  /* — Lines & structure — */
+  /*
+   * 1.97:1 on `surface`, 2.09:1 on `paper`, 1.87:1 on `surface-2` — the rail and a nested tile,
+   * which is the binding surface and the reason this is not a notch lower. It was #25272e:
+   * 1.23:1, *lower* than light's equivalent hairline, which is the one thing this palette cannot
+   * afford, because light's card also gets a shadow and here the shadow measures 1.03:1 against
+   * the page. This token is the entire separation budget for a card, a stat tile, a table shell
+   * and the rail, so it has to carry the header's claim above — that dark buys separation with a
+   * firmer line rather than a bigger shadow.
+   *
+   * Not 3:1: this is also every table row divider, and fifty consecutive rows ruled at 3:1 read
+   * as a wireframe. 3:1 is what `line-strong` and `control-line` are for, and the three stay
+   * ordered — 1.97 → 3.01 → 3.39 — so a firmer rule still reads as firmer.
+   */
+  --janso-line: #43474f;
+  --janso-line-strong: #5d626e; /* 3:1 on `surface` — the firmer rule (totals, dashed empty states) */
+  --janso-control-line: #646a77;
+  --janso-overlay-line: #6a6f7b; /* 3:1 on `overlay`: a shadow cannot separate on near-black */
+
+  /* — Signals — */
+  --janso-success-ink: #4ec98a;
+  --janso-success-tint: #10241b;
+  --janso-success-line: #214532;
+  --janso-warn-ink: #e2a83f;
+  --janso-warn-tint: #26200f;
+  --janso-warn-line: #46391b;
+  --janso-danger-ink: #f27f70;
+  --janso-danger-tint: #2a1614;
+  --janso-danger-line: #4d2620;
+  --janso-info-ink: #6fa8e8;
+  --janso-info-tint: #101f2c;
+  --janso-info-line: #1e3a54;
+  --janso-neutral-ink: #a2a6b0;
+  --janso-neutral-tint: #1a1c21;
+  --janso-neutral-line: #2a2d34;
+
+  /* — Gradients: the mark is deliberately identical across themes — */
+  --janso-grad-mark: linear-gradient(150deg, #6366f1 0%, #4338ca 100%);
+  --janso-grad-action: linear-gradient(180deg, #5c61e6 0%, #4a4fd4 100%);
+  --janso-grad-action-press: linear-gradient(180deg, #4a4fd4 0%, #3d41bd 100%);
+  /* Lifts away from `paper`, where it used to sink into it. #14151a → #0e0f12 ended at
+   * 1.01:1 against the page, so an ActionCard dissolved from the bottom up — precisely where
+   * its call to action sits. Now 1.15:1 → 1.08:1. Fill cannot carry separation on near-black;
+   * `--janso-line` does that. This only stops the card reaching for the page colour. */
+  --janso-grad-panel: linear-gradient(165deg, #1b1d23 0%, #15171c 100%);
+
+  /* — Focus — */
+  --janso-focus: #9599f7;
+  --janso-focus-ring: 0 0 0 1px var(--janso-surface), 0 0 0 3px var(--janso-focus), 0 0 0 6px rgba(149, 153, 247, 0.24);
+  --janso-focus-ring-danger: 0 0 0 1px var(--janso-surface), 0 0 0 3px var(--janso-danger-ink), 0 0 0 6px rgba(242, 127, 112, 0.24);
+
+  /* — Elevation — */
+  --janso-shadow-action: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  /*
+   * The drop half measures 1.03:1 against `paper` — it renders as nothing, which is this
+   * palette's whole problem with elevation. So the lift is an inset lit edge instead, the same
+   * idiom `--janso-shadow-action` and `--janso-shadow-inset-mark` already use here: 1px of
+   * light along the top, inside the border, where a light source would catch it. 1.23:1 against
+   * `surface`, reading together with the 1.97:1 border rather than instead of it.
+   *
+   * 0.08 and not more because `.janso-btn--primary:active` swaps `shadow-action` for this
+   * token, so this alpha has to stay clear of that one's 0.12 or a pressed button stops
+   * looking pressed. A test holds that order.
+   */
+  --janso-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --janso-shadow-popover: 0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --janso-shadow-inset-mark: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  /* — Components with no other home — */
+  --janso-meter-track: #24272e;
+  --janso-meter-fill: #9599f7;
+  --janso-spinner-track: rgba(255, 255, 255, 0.3);
+  --janso-spinner-head: #ffffff;
+
+  /* — Charts: the same eight hues re-stepped for a dark surface, not flipped. Worst
+   *   adjacent pair ΔE 8.6 under deuteranopia (gate 8.0), 18.9 normal, all ≥ 3:1 against
+   *   `--janso-surface`. Verify with --mode dark --surface "#131418" (re-run 2026-10-08 with series 1 on the brand indigo). — */
+  --janso-chart-1: #7075e8; /* indigo — the brand, lifted */
+  --janso-chart-2: #c0851f; /* amber */
+  --janso-chart-3: #008f90; /* teal */
+  --janso-chart-4: #c55865; /* rose */
+  --janso-chart-5: #469bd1; /* sky */
+  --janso-chart-6: #667815; /* olive */
+  --janso-chart-7: #a763ab; /* plum */
+  --janso-chart-8: #985521; /* bronze */
+  --janso-chart-grid: #1f2127;
+  --janso-chart-axis: #7c8497;
+
+  /* — Invoice designer. Two groups, and the distinction is the point:
+   *
+   *   The CHROME (backdrop, rulers, rail, inspector, status bar) is part of the app, so it
+   *   follows the palette like everything else.
+   *
+   *   Everything drawn ON the paper — the page itself, its ink and rules, the layout grid,
+   *   margin guides, zone outlines, the selection ring, handles and guides — holds the
+   *   SAME value in all three palettes, because the paper does. A page is white stock in
+   *   every theme: a dark-mode invoice preview would be a lie about what prints, and a
+   *   selection ring tuned for a dark surface would vanish on it. Only edge and shadow
+   *   differ, because those sit between paper and backdrop. — */
+  --janso-canvas-backdrop: #0b0c0f;
+  --janso-canvas-backdrop-2: #121419;
+  --janso-canvas-page-edge: #2c3038;
+  --janso-canvas-page-shadow: rgba(0, 0, 0, 0.62);
+  --janso-canvas-ruler-bg: #16181d;
+  --janso-canvas-ruler-ink: #99a0ae;
+  --janso-canvas-ruler-tick: #3a3f49;
+  --janso-canvas-ruler-marker: #9599f7;
+  --janso-editor-chrome: #131418;
+  --janso-editor-chrome-2: #1a1c22;
+  --janso-editor-chrome-line: #272a31;
+  --janso-editor-chrome-ink: #eef0f4;
+  --janso-editor-chrome-ink-soft: #9aa1b1;
+
+  --janso-canvas-page: #ffffff;
+  --janso-canvas-page-ink: #101114;
+  --janso-canvas-page-ink-soft: #4a4f59;
+  --janso-canvas-page-line: #d8dade;
+  --janso-canvas-page-line-strong: #9aa0aa;
+  --janso-canvas-page-tint: #f1f2f5;
+  --janso-canvas-grid-dot: #c6cad2;
+  --janso-canvas-margin-line: #7f88d0; /* the printable-area guide — 3:1 */
+  --janso-canvas-bleed: rgba(170, 63, 78, 0.08);
+  --janso-canvas-zone-line: #7f84ee; /* a zone boundary on paper — 3:1 */
+  --janso-canvas-zone-tint: rgba(74, 79, 212, 0.05);
+  --janso-canvas-zone-label-bg: #4a4fd4;
+  --janso-canvas-zone-label-ink: #ffffff;
+  --janso-canvas-ring: #4a4fd4;
+  --janso-canvas-ring-muted: #9a9df0;
+  --janso-canvas-marquee-tint: rgba(74, 79, 212, 0.10);
+  --janso-canvas-handle-fill: #ffffff;
+  --janso-canvas-handle-line: #4a4fd4;
+  --janso-canvas-guide: #c28412;
+  --janso-canvas-badge-bg: rgba(16, 18, 26, 0.82);
+  --janso-canvas-badge-ink: #ffffff;
+  --janso-canvas-copy-mark: rgba(16, 18, 26, 0.07);
+}

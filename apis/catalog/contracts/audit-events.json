@@ -1,0 +1,4704 @@
+{
+  "catalog.advanced_product_creation.create": {
+    "entity_type": "catalog.advanced_product_creation",
+    "action": "catalog.advanced_product_creation.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.advanced_product_creation.update": {
+    "entity_type": "catalog.advanced_product_creation",
+    "action": "catalog.advanced_product_creation.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.advanced_product_draft.create": {
+    "entity_type": "catalog.advanced_product_draft",
+    "action": "catalog.advanced_product_draft.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.advanced_product_draft.delete": {
+    "entity_type": "catalog.advanced_product_draft",
+    "action": "catalog.advanced_product_draft.delete",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.advanced_product_draft.update": {
+    "entity_type": "catalog.advanced_product_draft",
+    "action": "catalog.advanced_product_draft.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.attribute_definition.activate": {
+    "entity_type": "catalog.attribute_definition",
+    "action": "catalog.attribute_definition.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_definition.create": {
+    "entity_type": "catalog.attribute_definition",
+    "action": "catalog.attribute_definition.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_definition.deactivate": {
+    "entity_type": "catalog.attribute_definition",
+    "action": "catalog.attribute_definition.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_definition.update": {
+    "entity_type": "catalog.attribute_definition",
+    "action": "catalog.attribute_definition.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_option.activate": {
+    "entity_type": "catalog.attribute_option",
+    "action": "catalog.attribute_option.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_option.create": {
+    "entity_type": "catalog.attribute_option",
+    "action": "catalog.attribute_option.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_option.deactivate": {
+    "entity_type": "catalog.attribute_option",
+    "action": "catalog.attribute_option.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_option.update": {
+    "entity_type": "catalog.attribute_option",
+    "action": "catalog.attribute_option.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.attribute_set.activate": {
+    "entity_type": "catalog.attribute_set",
+    "action": "catalog.attribute_set.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.attribute_set.create": {
+    "entity_type": "catalog.attribute_set",
+    "action": "catalog.attribute_set.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.attribute_set.deactivate": {
+    "entity_type": "catalog.attribute_set",
+    "action": "catalog.attribute_set.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.attribute_set.update": {
+    "entity_type": "catalog.attribute_set",
+    "action": "catalog.attribute_set.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.attribute_set_revision.create": {
+    "entity_type": "catalog.attribute_set_revision",
+    "action": "catalog.attribute_set_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "attribute_set_id",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.attribute_set_revision.publish": {
+    "entity_type": "catalog.attribute_set_revision",
+    "action": "catalog.attribute_set_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "attribute_set_id",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.attribute_set_revision.update": {
+    "entity_type": "catalog.attribute_set_revision",
+    "action": "catalog.attribute_set_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "attribute_set_id",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.bom.activate": {
+    "entity_type": "catalog.bom",
+    "action": "catalog.bom.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.bom.create": {
+    "entity_type": "catalog.bom",
+    "action": "catalog.bom.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.bom.deactivate": {
+    "entity_type": "catalog.bom",
+    "action": "catalog.bom.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.bom.update": {
+    "entity_type": "catalog.bom",
+    "action": "catalog.bom.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.bom_assignment.create": {
+    "entity_type": "catalog.bom_assignment",
+    "action": "catalog.bom_assignment.create",
+    "category": "admin",
+    "safe_fields": [
+      "bom_revision_id",
+      "is_active",
+      "item_id",
+      "valid_from",
+      "valid_to",
+      "warehouse_id"
+    ]
+  },
+  "catalog.bom_assignment.deactivate": {
+    "entity_type": "catalog.bom_assignment",
+    "action": "catalog.bom_assignment.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "bom_revision_id",
+      "is_active",
+      "item_id",
+      "valid_from",
+      "valid_to",
+      "warehouse_id"
+    ]
+  },
+  "catalog.bom_assignment.update": {
+    "entity_type": "catalog.bom_assignment",
+    "action": "catalog.bom_assignment.update",
+    "category": "admin",
+    "safe_fields": [
+      "bom_revision_id",
+      "is_active",
+      "item_id",
+      "valid_from",
+      "valid_to",
+      "warehouse_id"
+    ]
+  },
+  "catalog.bom_component.create": {
+    "entity_type": "catalog.bom_component",
+    "action": "catalog.bom_component.create",
+    "category": "admin",
+    "safe_fields": [
+      "basis",
+      "draft_id",
+      "item_id",
+      "line_key",
+      "loss_fraction",
+      "quantity",
+      "revision_id",
+      "route_step_id",
+      "sequence",
+      "timing",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.bom_component.publish": {
+    "entity_type": "catalog.bom_component",
+    "action": "catalog.bom_component.publish",
+    "category": "admin",
+    "safe_fields": [
+      "basis",
+      "draft_id",
+      "item_id",
+      "line_key",
+      "loss_fraction",
+      "quantity",
+      "revision_id",
+      "route_step_id",
+      "sequence",
+      "timing",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.bom_component.update": {
+    "entity_type": "catalog.bom_component",
+    "action": "catalog.bom_component.update",
+    "category": "admin",
+    "safe_fields": [
+      "basis",
+      "draft_id",
+      "item_id",
+      "line_key",
+      "loss_fraction",
+      "quantity",
+      "revision_id",
+      "route_step_id",
+      "sequence",
+      "timing",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.bom_draft.create": {
+    "entity_type": "catalog.bom_draft",
+    "action": "catalog.bom_draft.create",
+    "category": "admin",
+    "safe_fields": [
+      "batch_maximum",
+      "batch_minimum",
+      "batch_multiple",
+      "bom_id",
+      "component_count",
+      "definition_date",
+      "draft_number",
+      "output_count",
+      "published_revision_id",
+      "route_revision_id",
+      "status"
+    ]
+  },
+  "catalog.bom_draft.publish": {
+    "entity_type": "catalog.bom_draft",
+    "action": "catalog.bom_draft.publish",
+    "category": "admin",
+    "safe_fields": [
+      "batch_maximum",
+      "batch_minimum",
+      "batch_multiple",
+      "bom_id",
+      "component_count",
+      "definition_date",
+      "draft_number",
+      "output_count",
+      "published_revision_id",
+      "route_revision_id",
+      "status"
+    ]
+  },
+  "catalog.bom_draft.update": {
+    "entity_type": "catalog.bom_draft",
+    "action": "catalog.bom_draft.update",
+    "category": "admin",
+    "safe_fields": [
+      "batch_maximum",
+      "batch_minimum",
+      "batch_multiple",
+      "bom_id",
+      "component_count",
+      "definition_date",
+      "draft_number",
+      "output_count",
+      "published_revision_id",
+      "route_revision_id",
+      "status"
+    ]
+  },
+  "catalog.bom_output.create": {
+    "entity_type": "catalog.bom_output",
+    "action": "catalog.bom_output.create",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "item_id",
+      "line_key",
+      "nominal_quantity",
+      "revision_id",
+      "role",
+      "sequence",
+      "unit_revision_id",
+      "yield_fraction"
+    ]
+  },
+  "catalog.bom_output.publish": {
+    "entity_type": "catalog.bom_output",
+    "action": "catalog.bom_output.publish",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "item_id",
+      "line_key",
+      "nominal_quantity",
+      "revision_id",
+      "role",
+      "sequence",
+      "unit_revision_id",
+      "yield_fraction"
+    ]
+  },
+  "catalog.bom_output.update": {
+    "entity_type": "catalog.bom_output",
+    "action": "catalog.bom_output.update",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "item_id",
+      "line_key",
+      "nominal_quantity",
+      "revision_id",
+      "role",
+      "sequence",
+      "unit_revision_id",
+      "yield_fraction"
+    ]
+  },
+  "catalog.bom_revision.publish": {
+    "entity_type": "catalog.bom_revision",
+    "action": "catalog.bom_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "batch_maximum",
+      "batch_minimum",
+      "batch_multiple",
+      "bom_id",
+      "component_count",
+      "content_sha256",
+      "definition_date",
+      "draft_id",
+      "output_count",
+      "policy_generation",
+      "published_at",
+      "revision",
+      "route_revision_id",
+      "source_version",
+      "status"
+    ]
+  },
+  "catalog.bom_revision.retire": {
+    "entity_type": "catalog.bom_revision",
+    "action": "catalog.bom_revision.retire",
+    "category": "admin",
+    "safe_fields": [
+      "batch_maximum",
+      "batch_minimum",
+      "batch_multiple",
+      "bom_id",
+      "component_count",
+      "content_sha256",
+      "definition_date",
+      "draft_id",
+      "output_count",
+      "policy_generation",
+      "published_at",
+      "revision",
+      "route_revision_id",
+      "source_version",
+      "status"
+    ]
+  },
+  "catalog.brand.activate": {
+    "entity_type": "catalog.brand",
+    "action": "catalog.brand.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.brand.create": {
+    "entity_type": "catalog.brand",
+    "action": "catalog.brand.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.brand.deactivate": {
+    "entity_type": "catalog.brand",
+    "action": "catalog.brand.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.brand.move": {
+    "entity_type": "catalog.brand",
+    "action": "catalog.brand.move",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.brand.update": {
+    "entity_type": "catalog.brand",
+    "action": "catalog.brand.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.brand_manufacturer.close": {
+    "entity_type": "catalog.brand_manufacturer",
+    "action": "catalog.brand_manufacturer.close",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "manufacturer_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.brand_manufacturer.create": {
+    "entity_type": "catalog.brand_manufacturer",
+    "action": "catalog.brand_manufacturer.create",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "manufacturer_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.brand_series.activate": {
+    "entity_type": "catalog.brand_series",
+    "action": "catalog.brand_series.activate",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "is_active"
+    ]
+  },
+  "catalog.brand_series.create": {
+    "entity_type": "catalog.brand_series",
+    "action": "catalog.brand_series.create",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "is_active"
+    ]
+  },
+  "catalog.brand_series.deactivate": {
+    "entity_type": "catalog.brand_series",
+    "action": "catalog.brand_series.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "is_active"
+    ]
+  },
+  "catalog.brand_series.update": {
+    "entity_type": "catalog.brand_series",
+    "action": "catalog.brand_series.update",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "is_active"
+    ]
+  },
+  "catalog.bulk_change_set.close": {
+    "entity_type": "catalog.bulk_change_set",
+    "action": "catalog.bulk_change_set.close",
+    "category": "admin",
+    "safe_fields": [
+      "record_count",
+      "state"
+    ]
+  },
+  "catalog.bulk_change_set.create": {
+    "entity_type": "catalog.bulk_change_set",
+    "action": "catalog.bulk_change_set.create",
+    "category": "admin",
+    "safe_fields": [
+      "record_count",
+      "state"
+    ]
+  },
+  "catalog.bulk_change_set.publish": {
+    "entity_type": "catalog.bulk_change_set",
+    "action": "catalog.bulk_change_set.publish",
+    "category": "admin",
+    "safe_fields": [
+      "record_count",
+      "state"
+    ]
+  },
+  "catalog.bulk_change_set.update": {
+    "entity_type": "catalog.bulk_change_set",
+    "action": "catalog.bulk_change_set.update",
+    "category": "admin",
+    "safe_fields": [
+      "record_count",
+      "state"
+    ]
+  },
+  "catalog.bulk_change_set_effect.close": {
+    "entity_type": "catalog.bulk_change_set_effect",
+    "action": "catalog.bulk_change_set_effect.close",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_change_set_effect.create": {
+    "entity_type": "catalog.bulk_change_set_effect",
+    "action": "catalog.bulk_change_set_effect.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_change_set_effect.publish": {
+    "entity_type": "catalog.bulk_change_set_effect",
+    "action": "catalog.bulk_change_set_effect.publish",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_change_set_effect.update": {
+    "entity_type": "catalog.bulk_change_set_effect",
+    "action": "catalog.bulk_change_set_effect.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_import_artifact.close": {
+    "entity_type": "catalog.bulk_import_artifact",
+    "action": "catalog.bulk_import_artifact.close",
+    "category": "admin",
+    "safe_fields": [
+      "content_sha256"
+    ]
+  },
+  "catalog.bulk_import_artifact.create": {
+    "entity_type": "catalog.bulk_import_artifact",
+    "action": "catalog.bulk_import_artifact.create",
+    "category": "admin",
+    "safe_fields": [
+      "content_sha256"
+    ]
+  },
+  "catalog.bulk_import_artifact.publish": {
+    "entity_type": "catalog.bulk_import_artifact",
+    "action": "catalog.bulk_import_artifact.publish",
+    "category": "admin",
+    "safe_fields": [
+      "content_sha256"
+    ]
+  },
+  "catalog.bulk_import_artifact.update": {
+    "entity_type": "catalog.bulk_import_artifact",
+    "action": "catalog.bulk_import_artifact.update",
+    "category": "admin",
+    "safe_fields": [
+      "content_sha256"
+    ]
+  },
+  "catalog.bulk_job.close": {
+    "entity_type": "catalog.bulk_job",
+    "action": "catalog.bulk_job.close",
+    "category": "admin",
+    "safe_fields": [
+      "completed_count",
+      "invalid_count",
+      "kind",
+      "policy_generation",
+      "record_count",
+      "revision",
+      "source_version",
+      "state"
+    ]
+  },
+  "catalog.bulk_job.create": {
+    "entity_type": "catalog.bulk_job",
+    "action": "catalog.bulk_job.create",
+    "category": "admin",
+    "safe_fields": [
+      "completed_count",
+      "invalid_count",
+      "kind",
+      "policy_generation",
+      "record_count",
+      "revision",
+      "source_version",
+      "state"
+    ]
+  },
+  "catalog.bulk_job.export": {
+    "entity_type": "catalog.bulk_job",
+    "action": "catalog.bulk_job.export",
+    "category": "access",
+    "safe_fields": [
+      "completed_count",
+      "invalid_count",
+      "kind",
+      "policy_generation",
+      "record_count",
+      "revision",
+      "source_version",
+      "state"
+    ]
+  },
+  "catalog.bulk_job.publish": {
+    "entity_type": "catalog.bulk_job",
+    "action": "catalog.bulk_job.publish",
+    "category": "admin",
+    "safe_fields": [
+      "completed_count",
+      "invalid_count",
+      "kind",
+      "policy_generation",
+      "record_count",
+      "revision",
+      "source_version",
+      "state"
+    ]
+  },
+  "catalog.bulk_job.update": {
+    "entity_type": "catalog.bulk_job",
+    "action": "catalog.bulk_job.update",
+    "category": "admin",
+    "safe_fields": [
+      "completed_count",
+      "invalid_count",
+      "kind",
+      "policy_generation",
+      "record_count",
+      "revision",
+      "source_version",
+      "state"
+    ]
+  },
+  "catalog.bulk_job_dependency.close": {
+    "entity_type": "catalog.bulk_job_dependency",
+    "action": "catalog.bulk_job_dependency.close",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_job_dependency.create": {
+    "entity_type": "catalog.bulk_job_dependency",
+    "action": "catalog.bulk_job_dependency.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_job_dependency.publish": {
+    "entity_type": "catalog.bulk_job_dependency",
+    "action": "catalog.bulk_job_dependency.publish",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_job_dependency.update": {
+    "entity_type": "catalog.bulk_job_dependency",
+    "action": "catalog.bulk_job_dependency.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.bulk_job_record.close": {
+    "entity_type": "catalog.bulk_job_record",
+    "action": "catalog.bulk_job_record.close",
+    "category": "admin",
+    "safe_fields": [
+      "state"
+    ]
+  },
+  "catalog.bulk_job_record.create": {
+    "entity_type": "catalog.bulk_job_record",
+    "action": "catalog.bulk_job_record.create",
+    "category": "admin",
+    "safe_fields": [
+      "state"
+    ]
+  },
+  "catalog.bulk_job_record.publish": {
+    "entity_type": "catalog.bulk_job_record",
+    "action": "catalog.bulk_job_record.publish",
+    "category": "admin",
+    "safe_fields": [
+      "state"
+    ]
+  },
+  "catalog.bulk_job_record.update": {
+    "entity_type": "catalog.bulk_job_record",
+    "action": "catalog.bulk_job_record.update",
+    "category": "admin",
+    "safe_fields": [
+      "state"
+    ]
+  },
+  "catalog.catalog_default_profile.create": {
+    "entity_type": "catalog.catalog_default_profile",
+    "action": "catalog.catalog_default_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "identifier_profile_id",
+      "revision_id"
+    ]
+  },
+  "catalog.catalog_default_profile.publish": {
+    "entity_type": "catalog.catalog_default_profile",
+    "action": "catalog.catalog_default_profile.publish",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "identifier_profile_id",
+      "revision_id"
+    ]
+  },
+  "catalog.catalog_default_profile.update": {
+    "entity_type": "catalog.catalog_default_profile",
+    "action": "catalog.catalog_default_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "identifier_profile_id",
+      "revision_id"
+    ]
+  },
+  "catalog.catalog_policy_consumer_ack.create": {
+    "entity_type": "catalog.catalog_policy_consumer_ack",
+    "action": "catalog.catalog_policy_consumer_ack.create",
+    "category": "system",
+    "safe_fields": [
+      "acknowledged_at",
+      "aggregate",
+      "aggregate_id",
+      "consumer",
+      "enforced_revision",
+      "reason_code",
+      "release_id",
+      "release_revision",
+      "result",
+      "source_message_id"
+    ]
+  },
+  "catalog.catalog_policy_consumer_ack.update": {
+    "entity_type": "catalog.catalog_policy_consumer_ack",
+    "action": "catalog.catalog_policy_consumer_ack.update",
+    "category": "system",
+    "safe_fields": [
+      "acknowledged_at",
+      "aggregate",
+      "aggregate_id",
+      "consumer",
+      "enforced_revision",
+      "reason_code",
+      "release_id",
+      "release_revision",
+      "result",
+      "source_message_id"
+    ]
+  },
+  "catalog.catalog_policy_release.publish": {
+    "entity_type": "catalog.catalog_policy_release",
+    "action": "catalog.catalog_policy_release.publish",
+    "category": "admin",
+    "safe_fields": [
+      "default_count",
+      "effective_date",
+      "location_count",
+      "manifest_digest",
+      "policy_generation",
+      "published_at",
+      "revision",
+      "source_version"
+    ]
+  },
+  "catalog.catalog_tax_binding.close": {
+    "entity_type": "catalog.catalog_tax_binding",
+    "action": "catalog.catalog_tax_binding.close",
+    "category": "money",
+    "safe_fields": [
+      "scope_id",
+      "tax_category_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.catalog_tax_binding.create": {
+    "entity_type": "catalog.catalog_tax_binding",
+    "action": "catalog.catalog_tax_binding.create",
+    "category": "money",
+    "safe_fields": [
+      "scope_id",
+      "tax_category_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.catalog_tax_binding.publish": {
+    "entity_type": "catalog.catalog_tax_binding",
+    "action": "catalog.catalog_tax_binding.publish",
+    "category": "money",
+    "safe_fields": [
+      "scope_id",
+      "tax_category_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.catalog_tax_binding.update": {
+    "entity_type": "catalog.catalog_tax_binding",
+    "action": "catalog.catalog_tax_binding.update",
+    "category": "money",
+    "safe_fields": [
+      "scope_id",
+      "tax_category_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.catalog_tax_binding.withdraw": {
+    "entity_type": "catalog.catalog_tax_binding",
+    "action": "catalog.catalog_tax_binding.withdraw",
+    "category": "money",
+    "safe_fields": [
+      "scope_id",
+      "tax_category_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.catalog_tax_scope.close": {
+    "entity_type": "catalog.catalog_tax_scope",
+    "action": "catalog.catalog_tax_scope.close",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.catalog_tax_scope.create": {
+    "entity_type": "catalog.catalog_tax_scope",
+    "action": "catalog.catalog_tax_scope.create",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.catalog_tax_scope.publish": {
+    "entity_type": "catalog.catalog_tax_scope",
+    "action": "catalog.catalog_tax_scope.publish",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.catalog_tax_scope.update": {
+    "entity_type": "catalog.catalog_tax_scope",
+    "action": "catalog.catalog_tax_scope.update",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.category_scheme.activate": {
+    "entity_type": "catalog.category_scheme",
+    "action": "catalog.category_scheme.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "is_required",
+      "membership_mode"
+    ]
+  },
+  "catalog.category_scheme.create": {
+    "entity_type": "catalog.category_scheme",
+    "action": "catalog.category_scheme.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "is_required",
+      "membership_mode"
+    ]
+  },
+  "catalog.category_scheme.deactivate": {
+    "entity_type": "catalog.category_scheme",
+    "action": "catalog.category_scheme.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "is_required",
+      "membership_mode"
+    ]
+  },
+  "catalog.category_scheme.update": {
+    "entity_type": "catalog.category_scheme",
+    "action": "catalog.category_scheme.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "is_required",
+      "membership_mode"
+    ]
+  },
+  "catalog.commercial_guard_rule.close": {
+    "entity_type": "catalog.commercial_guard_rule",
+    "action": "catalog.commercial_guard_rule.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "percentage",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.commercial_guard_rule.create": {
+    "entity_type": "catalog.commercial_guard_rule",
+    "action": "catalog.commercial_guard_rule.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "percentage",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.commercial_guard_rule.publish": {
+    "entity_type": "catalog.commercial_guard_rule",
+    "action": "catalog.commercial_guard_rule.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "percentage",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.commercial_guard_rule.update": {
+    "entity_type": "catalog.commercial_guard_rule",
+    "action": "catalog.commercial_guard_rule.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "percentage",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.commercial_policy_scope.close": {
+    "entity_type": "catalog.commercial_policy_scope",
+    "action": "catalog.commercial_policy_scope.close",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.commercial_policy_scope.create": {
+    "entity_type": "catalog.commercial_policy_scope",
+    "action": "catalog.commercial_policy_scope.create",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.commercial_policy_scope.publish": {
+    "entity_type": "catalog.commercial_policy_scope",
+    "action": "catalog.commercial_policy_scope.publish",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.commercial_policy_scope.update": {
+    "entity_type": "catalog.commercial_policy_scope",
+    "action": "catalog.commercial_policy_scope.update",
+    "category": "money",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id"
+    ]
+  },
+  "catalog.company_pricing_policy.close": {
+    "entity_type": "catalog.company_pricing_policy",
+    "action": "catalog.company_pricing_policy.close",
+    "category": "money",
+    "safe_fields": [
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.company_pricing_policy.create": {
+    "entity_type": "catalog.company_pricing_policy",
+    "action": "catalog.company_pricing_policy.create",
+    "category": "money",
+    "safe_fields": [
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.company_pricing_policy.publish": {
+    "entity_type": "catalog.company_pricing_policy",
+    "action": "catalog.company_pricing_policy.publish",
+    "category": "money",
+    "safe_fields": [
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.company_pricing_policy.update": {
+    "entity_type": "catalog.company_pricing_policy",
+    "action": "catalog.company_pricing_policy.update",
+    "category": "money",
+    "safe_fields": [
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.company_product_authoring_configuration.create": {
+    "entity_type": "catalog.company_product_authoring_configuration",
+    "action": "catalog.company_product_authoring_configuration.create",
+    "category": "admin",
+    "safe_fields": [
+      "product_family_sku_enabled"
+    ]
+  },
+  "catalog.company_product_authoring_configuration.update": {
+    "entity_type": "catalog.company_product_authoring_configuration",
+    "action": "catalog.company_product_authoring_configuration.update",
+    "category": "admin",
+    "safe_fields": [
+      "product_family_sku_enabled"
+    ]
+  },
+  "catalog.company_warehouse_configuration.create": {
+    "entity_type": "catalog.company_warehouse_configuration",
+    "action": "catalog.company_warehouse_configuration.create",
+    "category": "admin",
+    "safe_fields": [
+      "default_customer_return_warehouse_id",
+      "default_opening_warehouse_id",
+      "default_purchase_warehouse_id",
+      "default_sale_warehouse_id",
+      "main_warehouse_id",
+      "source_version",
+      "transit_warehouse_id"
+    ]
+  },
+  "catalog.company_warehouse_configuration.update": {
+    "entity_type": "catalog.company_warehouse_configuration",
+    "action": "catalog.company_warehouse_configuration.update",
+    "category": "admin",
+    "safe_fields": [
+      "default_customer_return_warehouse_id",
+      "default_opening_warehouse_id",
+      "default_purchase_warehouse_id",
+      "default_sale_warehouse_id",
+      "main_warehouse_id",
+      "source_version",
+      "transit_warehouse_id"
+    ]
+  },
+  "catalog.custom_field_adoption.adopt": {
+    "entity_type": "catalog.custom_field_adoption",
+    "action": "catalog.custom_field_adoption.adopt",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.discount_ceiling.close": {
+    "entity_type": "catalog.discount_ceiling",
+    "action": "catalog.discount_ceiling.close",
+    "category": "money",
+    "safe_fields": [
+      "max_discount_pct",
+      "scope_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.discount_ceiling.create": {
+    "entity_type": "catalog.discount_ceiling",
+    "action": "catalog.discount_ceiling.create",
+    "category": "money",
+    "safe_fields": [
+      "max_discount_pct",
+      "scope_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.discount_ceiling.publish": {
+    "entity_type": "catalog.discount_ceiling",
+    "action": "catalog.discount_ceiling.publish",
+    "category": "money",
+    "safe_fields": [
+      "max_discount_pct",
+      "scope_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.discount_ceiling.update": {
+    "entity_type": "catalog.discount_ceiling",
+    "action": "catalog.discount_ceiling.update",
+    "category": "money",
+    "safe_fields": [
+      "max_discount_pct",
+      "scope_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_attribute.close": {
+    "entity_type": "catalog.family_attribute",
+    "action": "catalog.family_attribute.close",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "is_required",
+      "position"
+    ]
+  },
+  "catalog.family_attribute.create": {
+    "entity_type": "catalog.family_attribute",
+    "action": "catalog.family_attribute.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "is_required",
+      "position"
+    ]
+  },
+  "catalog.family_attribute.update": {
+    "entity_type": "catalog.family_attribute",
+    "action": "catalog.family_attribute.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "is_required",
+      "position"
+    ]
+  },
+  "catalog.family_attribute_option.close": {
+    "entity_type": "catalog.family_attribute_option",
+    "action": "catalog.family_attribute_option.close",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "option_id"
+    ]
+  },
+  "catalog.family_attribute_option.create": {
+    "entity_type": "catalog.family_attribute_option",
+    "action": "catalog.family_attribute_option.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "option_id"
+    ]
+  },
+  "catalog.family_attribute_option.update": {
+    "entity_type": "catalog.family_attribute_option",
+    "action": "catalog.family_attribute_option.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "option_id"
+    ]
+  },
+  "catalog.family_category.close": {
+    "entity_type": "catalog.family_category",
+    "action": "catalog.family_category.close",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "is_primary",
+      "scheme_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_category.create": {
+    "entity_type": "catalog.family_category",
+    "action": "catalog.family_category.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "is_primary",
+      "scheme_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_category.update": {
+    "entity_type": "catalog.family_category",
+    "action": "catalog.family_category.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "is_primary",
+      "scheme_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_group_assignment.close": {
+    "entity_type": "catalog.family_group_assignment",
+    "action": "catalog.family_group_assignment.close",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_group_assignment.create": {
+    "entity_type": "catalog.family_group_assignment",
+    "action": "catalog.family_group_assignment.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_group_assignment.update": {
+    "entity_type": "catalog.family_group_assignment",
+    "action": "catalog.family_group_assignment.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_manufacturer.close": {
+    "entity_type": "catalog.family_manufacturer",
+    "action": "catalog.family_manufacturer.close",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "manufacturer_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_manufacturer.create": {
+    "entity_type": "catalog.family_manufacturer",
+    "action": "catalog.family_manufacturer.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "manufacturer_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.family_manufacturer.update": {
+    "entity_type": "catalog.family_manufacturer",
+    "action": "catalog.family_manufacturer.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "manufacturer_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.field_rebuild_job.cancel": {
+    "entity_type": "catalog.field_rebuild_job",
+    "action": "catalog.field_rebuild_job.cancel",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.field_rebuild_job.chunk": {
+    "entity_type": "catalog.field_rebuild_job",
+    "action": "catalog.field_rebuild_job.chunk",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.field_rebuild_job.cleanup": {
+    "entity_type": "catalog.field_rebuild_job",
+    "action": "catalog.field_rebuild_job.cleanup",
+    "category": "system",
+    "safe_fields": []
+  },
+  "catalog.field_rebuild_job.failed": {
+    "entity_type": "catalog.field_rebuild_job",
+    "action": "catalog.field_rebuild_job.failed",
+    "category": "system",
+    "safe_fields": []
+  },
+  "catalog.field_rebuild_job.start": {
+    "entity_type": "catalog.field_rebuild_job",
+    "action": "catalog.field_rebuild_job.start",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.handling_profile.activate": {
+    "entity_type": "catalog.handling_profile",
+    "action": "catalog.handling_profile.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.handling_profile.create": {
+    "entity_type": "catalog.handling_profile",
+    "action": "catalog.handling_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.handling_profile.deactivate": {
+    "entity_type": "catalog.handling_profile",
+    "action": "catalog.handling_profile.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.handling_profile.update": {
+    "entity_type": "catalog.handling_profile",
+    "action": "catalog.handling_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.handling_profile_revision.create": {
+    "entity_type": "catalog.handling_profile_revision",
+    "action": "catalog.handling_profile_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.handling_profile_revision.publish": {
+    "entity_type": "catalog.handling_profile_revision",
+    "action": "catalog.handling_profile_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.handling_profile_revision.update": {
+    "entity_type": "catalog.handling_profile_revision",
+    "action": "catalog.handling_profile_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.identifier_namespace.activate": {
+    "entity_type": "catalog.identifier_namespace",
+    "action": "catalog.identifier_namespace.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_namespace.create": {
+    "entity_type": "catalog.identifier_namespace",
+    "action": "catalog.identifier_namespace.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_namespace.deactivate": {
+    "entity_type": "catalog.identifier_namespace",
+    "action": "catalog.identifier_namespace.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_namespace.update": {
+    "entity_type": "catalog.identifier_namespace",
+    "action": "catalog.identifier_namespace.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_profile.activate": {
+    "entity_type": "catalog.identifier_profile",
+    "action": "catalog.identifier_profile.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_profile.create": {
+    "entity_type": "catalog.identifier_profile",
+    "action": "catalog.identifier_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_profile.deactivate": {
+    "entity_type": "catalog.identifier_profile",
+    "action": "catalog.identifier_profile.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_profile.update": {
+    "entity_type": "catalog.identifier_profile",
+    "action": "catalog.identifier_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_type.activate": {
+    "entity_type": "catalog.identifier_type",
+    "action": "catalog.identifier_type.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_type.create": {
+    "entity_type": "catalog.identifier_type",
+    "action": "catalog.identifier_type.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_type.deactivate": {
+    "entity_type": "catalog.identifier_type",
+    "action": "catalog.identifier_type.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.identifier_type.update": {
+    "entity_type": "catalog.identifier_type",
+    "action": "catalog.identifier_type.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.import_job.cleanup": {
+    "entity_type": "catalog.import_job",
+    "action": "catalog.import_job.cleanup",
+    "category": "system",
+    "safe_fields": []
+  },
+  "catalog.import_job.create": {
+    "entity_type": "catalog.import_job",
+    "action": "catalog.import_job.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.import_job.export": {
+    "entity_type": "catalog.import_job",
+    "action": "catalog.import_job.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "catalog.import_job.update": {
+    "entity_type": "catalog.import_job",
+    "action": "catalog.import_job.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.inventory_profile_template.activate": {
+    "entity_type": "catalog.inventory_profile_template",
+    "action": "catalog.inventory_profile_template.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.inventory_profile_template.create": {
+    "entity_type": "catalog.inventory_profile_template",
+    "action": "catalog.inventory_profile_template.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.inventory_profile_template.deactivate": {
+    "entity_type": "catalog.inventory_profile_template",
+    "action": "catalog.inventory_profile_template.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.inventory_profile_template.update": {
+    "entity_type": "catalog.inventory_profile_template",
+    "action": "catalog.inventory_profile_template.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.inventory_profile_template_revision.create": {
+    "entity_type": "catalog.inventory_profile_template_revision",
+    "action": "catalog.inventory_profile_template_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "published_at",
+      "revision",
+      "serial_tracking",
+      "shelf_life_days",
+      "valuation_method"
+    ]
+  },
+  "catalog.inventory_profile_template_revision.publish": {
+    "entity_type": "catalog.inventory_profile_template_revision",
+    "action": "catalog.inventory_profile_template_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "published_at",
+      "revision",
+      "serial_tracking",
+      "shelf_life_days",
+      "valuation_method"
+    ]
+  },
+  "catalog.inventory_profile_template_revision.update": {
+    "entity_type": "catalog.inventory_profile_template_revision",
+    "action": "catalog.inventory_profile_template_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "published_at",
+      "revision",
+      "serial_tracking",
+      "shelf_life_days",
+      "valuation_method"
+    ]
+  },
+  "catalog.item.create": {
+    "entity_type": "catalog.item",
+    "action": "catalog.item.create",
+    "category": "admin",
+    "safe_fields": [
+      "base_unit_id",
+      "family_id",
+      "min_sale_quantity",
+      "status"
+    ]
+  },
+  "catalog.item.update": {
+    "entity_type": "catalog.item",
+    "action": "catalog.item.update",
+    "category": "admin",
+    "safe_fields": [
+      "base_unit_id",
+      "family_id",
+      "min_sale_quantity",
+      "status"
+    ]
+  },
+  "catalog.item_activation.close": {
+    "entity_type": "catalog.item_activation",
+    "action": "catalog.item_activation.close",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "source_version"
+    ]
+  },
+  "catalog.item_activation.create": {
+    "entity_type": "catalog.item_activation",
+    "action": "catalog.item_activation.create",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "source_version"
+    ]
+  },
+  "catalog.item_activation.publish": {
+    "entity_type": "catalog.item_activation",
+    "action": "catalog.item_activation.publish",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "source_version"
+    ]
+  },
+  "catalog.item_activation.update": {
+    "entity_type": "catalog.item_activation",
+    "action": "catalog.item_activation.update",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "source_version"
+    ]
+  },
+  "catalog.item_activation_source.close": {
+    "entity_type": "catalog.item_activation_source",
+    "action": "catalog.item_activation_source.close",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.item_activation_source.create": {
+    "entity_type": "catalog.item_activation_source",
+    "action": "catalog.item_activation_source.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.item_activation_source.publish": {
+    "entity_type": "catalog.item_activation_source",
+    "action": "catalog.item_activation_source.publish",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.item_activation_source.update": {
+    "entity_type": "catalog.item_activation_source",
+    "action": "catalog.item_activation_source.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.item_attribute_value.close": {
+    "entity_type": "catalog.item_attribute_value",
+    "action": "catalog.item_attribute_value.close",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "option_id",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.item_attribute_value.create": {
+    "entity_type": "catalog.item_attribute_value",
+    "action": "catalog.item_attribute_value.create",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "option_id",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.item_attribute_value.update": {
+    "entity_type": "catalog.item_attribute_value",
+    "action": "catalog.item_attribute_value.update",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "option_id",
+      "unit_id",
+      "value_type"
+    ]
+  },
+  "catalog.item_barcode.close": {
+    "entity_type": "catalog.item_barcode",
+    "action": "catalog.item_barcode.close",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "item_id"
+    ]
+  },
+  "catalog.item_barcode.create": {
+    "entity_type": "catalog.item_barcode",
+    "action": "catalog.item_barcode.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "item_id"
+    ]
+  },
+  "catalog.item_barcode.update": {
+    "entity_type": "catalog.item_barcode",
+    "action": "catalog.item_barcode.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "item_id"
+    ]
+  },
+  "catalog.item_category.activate": {
+    "entity_type": "catalog.item_category",
+    "action": "catalog.item_category.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "parent_id",
+      "scheme_id"
+    ]
+  },
+  "catalog.item_category.create": {
+    "entity_type": "catalog.item_category",
+    "action": "catalog.item_category.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "parent_id",
+      "scheme_id"
+    ]
+  },
+  "catalog.item_category.deactivate": {
+    "entity_type": "catalog.item_category",
+    "action": "catalog.item_category.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "parent_id",
+      "scheme_id"
+    ]
+  },
+  "catalog.item_category.move": {
+    "entity_type": "catalog.item_category",
+    "action": "catalog.item_category.move",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "parent_id",
+      "scheme_id"
+    ]
+  },
+  "catalog.item_category.update": {
+    "entity_type": "catalog.item_category",
+    "action": "catalog.item_category.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "parent_id",
+      "scheme_id"
+    ]
+  },
+  "catalog.item_commercial_policy.close": {
+    "entity_type": "catalog.item_commercial_policy",
+    "action": "catalog.item_commercial_policy.close",
+    "category": "money",
+    "safe_fields": [
+      "free_sale_allowed",
+      "item_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_commercial_policy.create": {
+    "entity_type": "catalog.item_commercial_policy",
+    "action": "catalog.item_commercial_policy.create",
+    "category": "money",
+    "safe_fields": [
+      "free_sale_allowed",
+      "item_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_commercial_policy.publish": {
+    "entity_type": "catalog.item_commercial_policy",
+    "action": "catalog.item_commercial_policy.publish",
+    "category": "money",
+    "safe_fields": [
+      "free_sale_allowed",
+      "item_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_commercial_policy.update": {
+    "entity_type": "catalog.item_commercial_policy",
+    "action": "catalog.item_commercial_policy.update",
+    "category": "money",
+    "safe_fields": [
+      "free_sale_allowed",
+      "item_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_group.activate": {
+    "entity_type": "catalog.item_group",
+    "action": "catalog.item_group.activate",
+    "category": "admin",
+    "safe_fields": [
+      "allowed_kind",
+      "is_active"
+    ]
+  },
+  "catalog.item_group.create": {
+    "entity_type": "catalog.item_group",
+    "action": "catalog.item_group.create",
+    "category": "admin",
+    "safe_fields": [
+      "allowed_kind",
+      "is_active"
+    ]
+  },
+  "catalog.item_group.deactivate": {
+    "entity_type": "catalog.item_group",
+    "action": "catalog.item_group.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "allowed_kind",
+      "is_active"
+    ]
+  },
+  "catalog.item_group.move": {
+    "entity_type": "catalog.item_group",
+    "action": "catalog.item_group.move",
+    "category": "admin",
+    "safe_fields": [
+      "allowed_kind",
+      "is_active"
+    ]
+  },
+  "catalog.item_group.update": {
+    "entity_type": "catalog.item_group",
+    "action": "catalog.item_group.update",
+    "category": "admin",
+    "safe_fields": [
+      "allowed_kind",
+      "is_active"
+    ]
+  },
+  "catalog.item_group_parent.close": {
+    "entity_type": "catalog.item_group_parent",
+    "action": "catalog.item_group_parent.close",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "parent_group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_group_parent.create": {
+    "entity_type": "catalog.item_group_parent",
+    "action": "catalog.item_group_parent.create",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "parent_group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_inventory_profile.close": {
+    "entity_type": "catalog.item_inventory_profile",
+    "action": "catalog.item_inventory_profile.close",
+    "category": "admin",
+    "safe_fields": [
+      "base_unit_id",
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "item_id",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "serial_tracking",
+      "shelf_life_days",
+      "template_revision_id",
+      "valuation_method"
+    ]
+  },
+  "catalog.item_inventory_profile.create": {
+    "entity_type": "catalog.item_inventory_profile",
+    "action": "catalog.item_inventory_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "base_unit_id",
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "item_id",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "serial_tracking",
+      "shelf_life_days",
+      "template_revision_id",
+      "valuation_method"
+    ]
+  },
+  "catalog.item_inventory_profile.publish": {
+    "entity_type": "catalog.item_inventory_profile",
+    "action": "catalog.item_inventory_profile.publish",
+    "category": "admin",
+    "safe_fields": [
+      "base_unit_id",
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "item_id",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "serial_tracking",
+      "shelf_life_days",
+      "template_revision_id",
+      "valuation_method"
+    ]
+  },
+  "catalog.item_inventory_profile.update": {
+    "entity_type": "catalog.item_inventory_profile",
+    "action": "catalog.item_inventory_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "base_unit_id",
+      "expiry_required",
+      "identifier_profile_id",
+      "issue_strategy",
+      "item_id",
+      "lot_tracking",
+      "manufacture_date_required",
+      "minimum_remaining_life_days",
+      "serial_tracking",
+      "shelf_life_days",
+      "template_revision_id",
+      "valuation_method"
+    ]
+  },
+  "catalog.item_mrp.close": {
+    "entity_type": "catalog.item_mrp",
+    "action": "catalog.item_mrp.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_mrp.create": {
+    "entity_type": "catalog.item_mrp",
+    "action": "catalog.item_mrp.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_mrp.publish": {
+    "entity_type": "catalog.item_mrp",
+    "action": "catalog.item_mrp.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_mrp.update": {
+    "entity_type": "catalog.item_mrp",
+    "action": "catalog.item_mrp.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price.close": {
+    "entity_type": "catalog.item_price",
+    "action": "catalog.item_price.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "source_draft_id",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price.create": {
+    "entity_type": "catalog.item_price",
+    "action": "catalog.item_price.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "source_draft_id",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price.publish": {
+    "entity_type": "catalog.item_price",
+    "action": "catalog.item_price.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "source_draft_id",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price.update": {
+    "entity_type": "catalog.item_price",
+    "action": "catalog.item_price.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "source_draft_id",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_draft.close": {
+    "entity_type": "catalog.item_price_draft",
+    "action": "catalog.item_price_draft.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "status",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_draft.create": {
+    "entity_type": "catalog.item_price_draft",
+    "action": "catalog.item_price_draft.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "status",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_draft.publish": {
+    "entity_type": "catalog.item_price_draft",
+    "action": "catalog.item_price_draft.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "status",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_draft.update": {
+    "entity_type": "catalog.item_price_draft",
+    "action": "catalog.item_price_draft.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "series_id",
+      "status",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_formula.close": {
+    "entity_type": "catalog.item_price_formula",
+    "action": "catalog.item_price_formula.close",
+    "category": "money",
+    "safe_fields": [
+      "draft_id",
+      "percentage",
+      "price_id",
+      "rounding_mode"
+    ]
+  },
+  "catalog.item_price_formula.create": {
+    "entity_type": "catalog.item_price_formula",
+    "action": "catalog.item_price_formula.create",
+    "category": "money",
+    "safe_fields": [
+      "draft_id",
+      "percentage",
+      "price_id",
+      "rounding_mode"
+    ]
+  },
+  "catalog.item_price_formula.publish": {
+    "entity_type": "catalog.item_price_formula",
+    "action": "catalog.item_price_formula.publish",
+    "category": "money",
+    "safe_fields": [
+      "draft_id",
+      "percentage",
+      "price_id",
+      "rounding_mode"
+    ]
+  },
+  "catalog.item_price_formula.update": {
+    "entity_type": "catalog.item_price_formula",
+    "action": "catalog.item_price_formula.update",
+    "category": "money",
+    "safe_fields": [
+      "draft_id",
+      "percentage",
+      "price_id",
+      "rounding_mode"
+    ]
+  },
+  "catalog.item_price_numeric_revision.close": {
+    "entity_type": "catalog.item_price_numeric_revision",
+    "action": "catalog.item_price_numeric_revision.close",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "price_decimal_places",
+      "price_increment",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_numeric_revision.create": {
+    "entity_type": "catalog.item_price_numeric_revision",
+    "action": "catalog.item_price_numeric_revision.create",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "price_decimal_places",
+      "price_increment",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_numeric_revision.publish": {
+    "entity_type": "catalog.item_price_numeric_revision",
+    "action": "catalog.item_price_numeric_revision.publish",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "price_decimal_places",
+      "price_increment",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_numeric_revision.update": {
+    "entity_type": "catalog.item_price_numeric_revision",
+    "action": "catalog.item_price_numeric_revision.update",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "price_decimal_places",
+      "price_increment",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_price_scope.close": {
+    "entity_type": "catalog.item_price_scope",
+    "action": "catalog.item_price_scope.close",
+    "category": "money",
+    "safe_fields": [
+      "item_id",
+      "lot_currency",
+      "lot_id",
+      "lot_mrp",
+      "lot_unit_id"
+    ]
+  },
+  "catalog.item_price_scope.create": {
+    "entity_type": "catalog.item_price_scope",
+    "action": "catalog.item_price_scope.create",
+    "category": "money",
+    "safe_fields": [
+      "item_id",
+      "lot_currency",
+      "lot_id",
+      "lot_mrp",
+      "lot_unit_id"
+    ]
+  },
+  "catalog.item_price_scope.publish": {
+    "entity_type": "catalog.item_price_scope",
+    "action": "catalog.item_price_scope.publish",
+    "category": "money",
+    "safe_fields": [
+      "item_id",
+      "lot_currency",
+      "lot_id",
+      "lot_mrp",
+      "lot_unit_id"
+    ]
+  },
+  "catalog.item_price_scope.update": {
+    "entity_type": "catalog.item_price_scope",
+    "action": "catalog.item_price_scope.update",
+    "category": "money",
+    "safe_fields": [
+      "item_id",
+      "lot_currency",
+      "lot_id",
+      "lot_mrp",
+      "lot_unit_id"
+    ]
+  },
+  "catalog.item_price_series.close": {
+    "entity_type": "catalog.item_price_series",
+    "action": "catalog.item_price_series.close",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "plan_id",
+      "price_scope_id",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.item_price_series.create": {
+    "entity_type": "catalog.item_price_series",
+    "action": "catalog.item_price_series.create",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "plan_id",
+      "price_scope_id",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.item_price_series.publish": {
+    "entity_type": "catalog.item_price_series",
+    "action": "catalog.item_price_series.publish",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "plan_id",
+      "price_scope_id",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.item_price_series.update": {
+    "entity_type": "catalog.item_price_series",
+    "action": "catalog.item_price_series.update",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "item_id",
+      "plan_id",
+      "price_scope_id",
+      "unit_revision_id"
+    ]
+  },
+  "catalog.item_price_tier.close": {
+    "entity_type": "catalog.item_price_tier",
+    "action": "catalog.item_price_tier.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "draft_id",
+      "max_quantity",
+      "min_quantity",
+      "price_id"
+    ]
+  },
+  "catalog.item_price_tier.create": {
+    "entity_type": "catalog.item_price_tier",
+    "action": "catalog.item_price_tier.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "draft_id",
+      "max_quantity",
+      "min_quantity",
+      "price_id"
+    ]
+  },
+  "catalog.item_price_tier.publish": {
+    "entity_type": "catalog.item_price_tier",
+    "action": "catalog.item_price_tier.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "draft_id",
+      "max_quantity",
+      "min_quantity",
+      "price_id"
+    ]
+  },
+  "catalog.item_price_tier.update": {
+    "entity_type": "catalog.item_price_tier",
+    "action": "catalog.item_price_tier.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "draft_id",
+      "max_quantity",
+      "min_quantity",
+      "price_id"
+    ]
+  },
+  "catalog.item_reference_cost.close": {
+    "entity_type": "catalog.item_reference_cost",
+    "action": "catalog.item_reference_cost.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_reference_cost.create": {
+    "entity_type": "catalog.item_reference_cost",
+    "action": "catalog.item_reference_cost.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_reference_cost.publish": {
+    "entity_type": "catalog.item_reference_cost",
+    "action": "catalog.item_reference_cost.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_reference_cost.update": {
+    "entity_type": "catalog.item_reference_cost",
+    "action": "catalog.item_reference_cost.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "item_id",
+      "numeric_revision_id",
+      "price_basis_quantity",
+      "unit_revision_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_regulatory_classification.create": {
+    "entity_type": "catalog.item_regulatory_classification",
+    "action": "catalog.item_regulatory_classification.create",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_regulatory_classification.update": {
+    "entity_type": "catalog.item_regulatory_classification",
+    "action": "catalog.item_regulatory_classification.update",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_replenishment_policy.create": {
+    "entity_type": "catalog.item_replenishment_policy",
+    "action": "catalog.item_replenishment_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "item_id",
+      "lead_time_days",
+      "max_order_quantity",
+      "min_order_quantity",
+      "order_multiple",
+      "purchase_binding_id",
+      "reorder_quantity",
+      "safety_quantity",
+      "scope_warehouse_id",
+      "target_quantity",
+      "warehouse_id"
+    ]
+  },
+  "catalog.item_replenishment_policy.update": {
+    "entity_type": "catalog.item_replenishment_policy",
+    "action": "catalog.item_replenishment_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "item_id",
+      "lead_time_days",
+      "max_order_quantity",
+      "min_order_quantity",
+      "order_multiple",
+      "purchase_binding_id",
+      "reorder_quantity",
+      "safety_quantity",
+      "scope_warehouse_id",
+      "target_quantity",
+      "warehouse_id"
+    ]
+  },
+  "catalog.item_stock_choice.close": {
+    "entity_type": "catalog.item_stock_choice",
+    "action": "catalog.item_stock_choice.close",
+    "category": "admin",
+    "safe_fields": [
+      "batch_enabled",
+      "item_id"
+    ]
+  },
+  "catalog.item_stock_choice.create": {
+    "entity_type": "catalog.item_stock_choice",
+    "action": "catalog.item_stock_choice.create",
+    "category": "admin",
+    "safe_fields": [
+      "batch_enabled",
+      "item_id"
+    ]
+  },
+  "catalog.item_stock_choice.publish": {
+    "entity_type": "catalog.item_stock_choice",
+    "action": "catalog.item_stock_choice.publish",
+    "category": "admin",
+    "safe_fields": [
+      "batch_enabled",
+      "item_id"
+    ]
+  },
+  "catalog.item_stock_choice.update": {
+    "entity_type": "catalog.item_stock_choice",
+    "action": "catalog.item_stock_choice.update",
+    "category": "admin",
+    "safe_fields": [
+      "batch_enabled",
+      "item_id"
+    ]
+  },
+  "catalog.item_unit_binding.close": {
+    "entity_type": "catalog.item_unit_binding",
+    "action": "catalog.item_unit_binding.close",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "unit_id"
+    ]
+  },
+  "catalog.item_unit_binding.create": {
+    "entity_type": "catalog.item_unit_binding",
+    "action": "catalog.item_unit_binding.create",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "unit_id"
+    ]
+  },
+  "catalog.item_unit_binding.update": {
+    "entity_type": "catalog.item_unit_binding",
+    "action": "catalog.item_unit_binding.update",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "unit_id"
+    ]
+  },
+  "catalog.item_unit_revision.close": {
+    "entity_type": "catalog.item_unit_revision",
+    "action": "catalog.item_unit_revision.close",
+    "category": "admin",
+    "safe_fields": [
+      "denominator",
+      "numerator",
+      "quantity_increment",
+      "revision",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_unit_revision.create": {
+    "entity_type": "catalog.item_unit_revision",
+    "action": "catalog.item_unit_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "denominator",
+      "numerator",
+      "quantity_increment",
+      "revision",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_unit_revision.update": {
+    "entity_type": "catalog.item_unit_revision",
+    "action": "catalog.item_unit_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "denominator",
+      "numerator",
+      "quantity_increment",
+      "revision",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.item_variant_key.close": {
+    "entity_type": "catalog.item_variant_key",
+    "action": "catalog.item_variant_key.close",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "item_id"
+    ]
+  },
+  "catalog.item_variant_key.create": {
+    "entity_type": "catalog.item_variant_key",
+    "action": "catalog.item_variant_key.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "item_id"
+    ]
+  },
+  "catalog.item_variant_key.update": {
+    "entity_type": "catalog.item_variant_key",
+    "action": "catalog.item_variant_key.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "item_id"
+    ]
+  },
+  "catalog.item_warehouse_permission.create": {
+    "entity_type": "catalog.item_warehouse_permission",
+    "action": "catalog.item_warehouse_permission.create",
+    "category": "admin",
+    "safe_fields": [
+      "allow_adjustment",
+      "allow_customer_return_receipt",
+      "allow_opening_stock",
+      "allow_purchase_receipt",
+      "allow_sale_issue",
+      "allow_supplier_return_issue",
+      "allow_transfer_in",
+      "allow_transfer_out",
+      "is_active",
+      "item_id",
+      "warehouse_id"
+    ]
+  },
+  "catalog.item_warehouse_permission.update": {
+    "entity_type": "catalog.item_warehouse_permission",
+    "action": "catalog.item_warehouse_permission.update",
+    "category": "admin",
+    "safe_fields": [
+      "allow_adjustment",
+      "allow_customer_return_receipt",
+      "allow_opening_stock",
+      "allow_purchase_receipt",
+      "allow_sale_issue",
+      "allow_supplier_return_issue",
+      "allow_transfer_in",
+      "allow_transfer_out",
+      "is_active",
+      "item_id",
+      "warehouse_id"
+    ]
+  },
+  "catalog.item_warehouse_policy.create": {
+    "entity_type": "catalog.item_warehouse_policy",
+    "action": "catalog.item_warehouse_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "default_customer_return_warehouse_id",
+      "default_opening_warehouse_id",
+      "default_purchase_warehouse_id",
+      "default_sale_warehouse_id",
+      "item_id",
+      "selection_mode"
+    ]
+  },
+  "catalog.item_warehouse_policy.update": {
+    "entity_type": "catalog.item_warehouse_policy",
+    "action": "catalog.item_warehouse_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "default_customer_return_warehouse_id",
+      "default_opening_warehouse_id",
+      "default_purchase_warehouse_id",
+      "default_sale_warehouse_id",
+      "item_id",
+      "selection_mode"
+    ]
+  },
+  "catalog.manufacturer.activate": {
+    "entity_type": "catalog.manufacturer",
+    "action": "catalog.manufacturer.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturer.create": {
+    "entity_type": "catalog.manufacturer",
+    "action": "catalog.manufacturer.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturer.deactivate": {
+    "entity_type": "catalog.manufacturer",
+    "action": "catalog.manufacturer.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturer.update": {
+    "entity_type": "catalog.manufacturer",
+    "action": "catalog.manufacturer.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturer_site.activate": {
+    "entity_type": "catalog.manufacturer_site",
+    "action": "catalog.manufacturer_site.activate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "manufacturer_id",
+      "state_code"
+    ]
+  },
+  "catalog.manufacturer_site.create": {
+    "entity_type": "catalog.manufacturer_site",
+    "action": "catalog.manufacturer_site.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "manufacturer_id",
+      "state_code"
+    ]
+  },
+  "catalog.manufacturer_site.deactivate": {
+    "entity_type": "catalog.manufacturer_site",
+    "action": "catalog.manufacturer_site.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "manufacturer_id",
+      "state_code"
+    ]
+  },
+  "catalog.manufacturer_site.update": {
+    "entity_type": "catalog.manufacturer_site",
+    "action": "catalog.manufacturer_site.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "manufacturer_id",
+      "state_code"
+    ]
+  },
+  "catalog.manufacturing_operation.activate": {
+    "entity_type": "catalog.manufacturing_operation",
+    "action": "catalog.manufacturing_operation.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_operation.create": {
+    "entity_type": "catalog.manufacturing_operation",
+    "action": "catalog.manufacturing_operation.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_operation.deactivate": {
+    "entity_type": "catalog.manufacturing_operation",
+    "action": "catalog.manufacturing_operation.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_operation.update": {
+    "entity_type": "catalog.manufacturing_operation",
+    "action": "catalog.manufacturing_operation.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_operation_revision.create": {
+    "entity_type": "catalog.manufacturing_operation_revision",
+    "action": "catalog.manufacturing_operation_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_operation_revision.publish": {
+    "entity_type": "catalog.manufacturing_operation_revision",
+    "action": "catalog.manufacturing_operation_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_operation_revision.retire": {
+    "entity_type": "catalog.manufacturing_operation_revision",
+    "action": "catalog.manufacturing_operation_revision.retire",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_operation_revision.update": {
+    "entity_type": "catalog.manufacturing_operation_revision",
+    "action": "catalog.manufacturing_operation_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_route.activate": {
+    "entity_type": "catalog.manufacturing_route",
+    "action": "catalog.manufacturing_route.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_route.create": {
+    "entity_type": "catalog.manufacturing_route",
+    "action": "catalog.manufacturing_route.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_route.deactivate": {
+    "entity_type": "catalog.manufacturing_route",
+    "action": "catalog.manufacturing_route.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_route.update": {
+    "entity_type": "catalog.manufacturing_route",
+    "action": "catalog.manufacturing_route.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.manufacturing_route_revision.create": {
+    "entity_type": "catalog.manufacturing_route_revision",
+    "action": "catalog.manufacturing_route_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_route_revision.publish": {
+    "entity_type": "catalog.manufacturing_route_revision",
+    "action": "catalog.manufacturing_route_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_route_revision.retire": {
+    "entity_type": "catalog.manufacturing_route_revision",
+    "action": "catalog.manufacturing_route_revision.retire",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.manufacturing_route_revision.update": {
+    "entity_type": "catalog.manufacturing_route_revision",
+    "action": "catalog.manufacturing_route_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision",
+      "status"
+    ]
+  },
+  "catalog.master_alias.activate": {
+    "entity_type": "catalog.master_alias",
+    "action": "catalog.master_alias.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.master_alias.create": {
+    "entity_type": "catalog.master_alias",
+    "action": "catalog.master_alias.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.master_alias.deactivate": {
+    "entity_type": "catalog.master_alias",
+    "action": "catalog.master_alias.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.master_external_key.activate": {
+    "entity_type": "catalog.master_external_key",
+    "action": "catalog.master_external_key.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.master_external_key.create": {
+    "entity_type": "catalog.master_external_key",
+    "action": "catalog.master_external_key.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.master_external_key.deactivate": {
+    "entity_type": "catalog.master_external_key",
+    "action": "catalog.master_external_key.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.pack_type.activate": {
+    "entity_type": "catalog.pack_type",
+    "action": "catalog.pack_type.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.pack_type.create": {
+    "entity_type": "catalog.pack_type",
+    "action": "catalog.pack_type.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.pack_type.deactivate": {
+    "entity_type": "catalog.pack_type",
+    "action": "catalog.pack_type.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.pack_type.update": {
+    "entity_type": "catalog.pack_type",
+    "action": "catalog.pack_type.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.price_level.close": {
+    "entity_type": "catalog.price_level",
+    "action": "catalog.price_level.close",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.price_level.create": {
+    "entity_type": "catalog.price_level",
+    "action": "catalog.price_level.create",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.price_level.publish": {
+    "entity_type": "catalog.price_level",
+    "action": "catalog.price_level.publish",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.price_level.update": {
+    "entity_type": "catalog.price_level",
+    "action": "catalog.price_level.update",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.price_plan.close": {
+    "entity_type": "catalog.price_plan",
+    "action": "catalog.price_plan.close",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "purpose"
+    ]
+  },
+  "catalog.price_plan.create": {
+    "entity_type": "catalog.price_plan",
+    "action": "catalog.price_plan.create",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "purpose"
+    ]
+  },
+  "catalog.price_plan.publish": {
+    "entity_type": "catalog.price_plan",
+    "action": "catalog.price_plan.publish",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "purpose"
+    ]
+  },
+  "catalog.price_plan.update": {
+    "entity_type": "catalog.price_plan",
+    "action": "catalog.price_plan.update",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "purpose"
+    ]
+  },
+  "catalog.product_configuration_adoption.close": {
+    "entity_type": "catalog.product_configuration_adoption",
+    "action": "catalog.product_configuration_adoption.close",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "revision",
+      "source_version"
+    ]
+  },
+  "catalog.product_configuration_adoption.create": {
+    "entity_type": "catalog.product_configuration_adoption",
+    "action": "catalog.product_configuration_adoption.create",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "revision",
+      "source_version"
+    ]
+  },
+  "catalog.product_configuration_adoption.update": {
+    "entity_type": "catalog.product_configuration_adoption",
+    "action": "catalog.product_configuration_adoption.update",
+    "category": "admin",
+    "safe_fields": [
+      "item_id",
+      "policy_generation",
+      "revision",
+      "source_version"
+    ]
+  },
+  "catalog.product_configuration_adoption_source.close": {
+    "entity_type": "catalog.product_configuration_adoption_source",
+    "action": "catalog.product_configuration_adoption_source.close",
+    "category": "admin",
+    "safe_fields": [
+      "revision_id",
+      "scope_id"
+    ]
+  },
+  "catalog.product_configuration_adoption_source.create": {
+    "entity_type": "catalog.product_configuration_adoption_source",
+    "action": "catalog.product_configuration_adoption_source.create",
+    "category": "admin",
+    "safe_fields": [
+      "revision_id",
+      "scope_id"
+    ]
+  },
+  "catalog.product_configuration_adoption_source.update": {
+    "entity_type": "catalog.product_configuration_adoption_source",
+    "action": "catalog.product_configuration_adoption_source.update",
+    "category": "admin",
+    "safe_fields": [
+      "revision_id",
+      "scope_id"
+    ]
+  },
+  "catalog.product_configuration_draft.create": {
+    "entity_type": "catalog.product_configuration_draft",
+    "action": "catalog.product_configuration_draft.create",
+    "category": "admin",
+    "safe_fields": [
+      "effective_from",
+      "scope_id",
+      "status"
+    ]
+  },
+  "catalog.product_configuration_draft.publish": {
+    "entity_type": "catalog.product_configuration_draft",
+    "action": "catalog.product_configuration_draft.publish",
+    "category": "admin",
+    "safe_fields": [
+      "effective_from",
+      "scope_id",
+      "status"
+    ]
+  },
+  "catalog.product_configuration_draft.update": {
+    "entity_type": "catalog.product_configuration_draft",
+    "action": "catalog.product_configuration_draft.update",
+    "category": "admin",
+    "safe_fields": [
+      "effective_from",
+      "scope_id",
+      "status"
+    ]
+  },
+  "catalog.product_configuration_revision.create": {
+    "entity_type": "catalog.product_configuration_revision",
+    "action": "catalog.product_configuration_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "effective_from",
+      "published_at",
+      "revision",
+      "scope_id",
+      "source_draft_id"
+    ]
+  },
+  "catalog.product_configuration_revision.publish": {
+    "entity_type": "catalog.product_configuration_revision",
+    "action": "catalog.product_configuration_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "effective_from",
+      "published_at",
+      "revision",
+      "scope_id",
+      "source_draft_id"
+    ]
+  },
+  "catalog.product_configuration_revision.update": {
+    "entity_type": "catalog.product_configuration_revision",
+    "action": "catalog.product_configuration_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "effective_from",
+      "published_at",
+      "revision",
+      "scope_id",
+      "source_draft_id"
+    ]
+  },
+  "catalog.product_configuration_scope.create": {
+    "entity_type": "catalog.product_configuration_scope",
+    "action": "catalog.product_configuration_scope.create",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id",
+      "latest_revision",
+      "product_type_id"
+    ]
+  },
+  "catalog.product_configuration_scope.publish": {
+    "entity_type": "catalog.product_configuration_scope",
+    "action": "catalog.product_configuration_scope.publish",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id",
+      "latest_revision",
+      "product_type_id"
+    ]
+  },
+  "catalog.product_configuration_scope.update": {
+    "entity_type": "catalog.product_configuration_scope",
+    "action": "catalog.product_configuration_scope.update",
+    "category": "admin",
+    "safe_fields": [
+      "family_id",
+      "group_id",
+      "item_id",
+      "latest_revision",
+      "product_type_id"
+    ]
+  },
+  "catalog.product_entry_option_policy.create": {
+    "entity_type": "catalog.product_entry_option_policy",
+    "action": "catalog.product_entry_option_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "revision_id"
+    ]
+  },
+  "catalog.product_entry_option_policy.publish": {
+    "entity_type": "catalog.product_entry_option_policy",
+    "action": "catalog.product_entry_option_policy.publish",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "revision_id"
+    ]
+  },
+  "catalog.product_entry_option_policy.update": {
+    "entity_type": "catalog.product_entry_option_policy",
+    "action": "catalog.product_entry_option_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "revision_id"
+    ]
+  },
+  "catalog.product_family.create": {
+    "entity_type": "catalog.product_family",
+    "action": "catalog.product_family.create",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "kind",
+      "series_id",
+      "status"
+    ]
+  },
+  "catalog.product_family.update": {
+    "entity_type": "catalog.product_family",
+    "action": "catalog.product_family.update",
+    "category": "admin",
+    "safe_fields": [
+      "brand_id",
+      "kind",
+      "series_id",
+      "status"
+    ]
+  },
+  "catalog.product_numeric_default.create": {
+    "entity_type": "catalog.product_numeric_default",
+    "action": "catalog.product_numeric_default.create",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "dimension",
+      "draft_id",
+      "price_basis_quantity",
+      "price_decimal_places",
+      "price_increment",
+      "quantity_increment",
+      "revision_id"
+    ]
+  },
+  "catalog.product_numeric_default.publish": {
+    "entity_type": "catalog.product_numeric_default",
+    "action": "catalog.product_numeric_default.publish",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "dimension",
+      "draft_id",
+      "price_basis_quantity",
+      "price_decimal_places",
+      "price_increment",
+      "quantity_increment",
+      "revision_id"
+    ]
+  },
+  "catalog.product_numeric_default.update": {
+    "entity_type": "catalog.product_numeric_default",
+    "action": "catalog.product_numeric_default.update",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "dimension",
+      "draft_id",
+      "price_basis_quantity",
+      "price_decimal_places",
+      "price_increment",
+      "quantity_increment",
+      "revision_id"
+    ]
+  },
+  "catalog.product_pricing_policy.create": {
+    "entity_type": "catalog.product_pricing_policy",
+    "action": "catalog.product_pricing_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "additional_currencies_mode",
+      "channel_prices_mode",
+      "draft_id",
+      "formula_prices_mode",
+      "multiple_price_levels_mode",
+      "quantity_tiers_mode",
+      "revision_id",
+      "unit_prices_mode"
+    ]
+  },
+  "catalog.product_pricing_policy.publish": {
+    "entity_type": "catalog.product_pricing_policy",
+    "action": "catalog.product_pricing_policy.publish",
+    "category": "admin",
+    "safe_fields": [
+      "additional_currencies_mode",
+      "channel_prices_mode",
+      "draft_id",
+      "formula_prices_mode",
+      "multiple_price_levels_mode",
+      "quantity_tiers_mode",
+      "revision_id",
+      "unit_prices_mode"
+    ]
+  },
+  "catalog.product_pricing_policy.update": {
+    "entity_type": "catalog.product_pricing_policy",
+    "action": "catalog.product_pricing_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "additional_currencies_mode",
+      "channel_prices_mode",
+      "draft_id",
+      "formula_prices_mode",
+      "multiple_price_levels_mode",
+      "quantity_tiers_mode",
+      "revision_id",
+      "unit_prices_mode"
+    ]
+  },
+  "catalog.product_type.activate": {
+    "entity_type": "catalog.product_type",
+    "action": "catalog.product_type.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "kind"
+    ]
+  },
+  "catalog.product_type.create": {
+    "entity_type": "catalog.product_type",
+    "action": "catalog.product_type.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "kind"
+    ]
+  },
+  "catalog.product_type.deactivate": {
+    "entity_type": "catalog.product_type",
+    "action": "catalog.product_type.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "kind"
+    ]
+  },
+  "catalog.product_type.update": {
+    "entity_type": "catalog.product_type",
+    "action": "catalog.product_type.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "kind"
+    ]
+  },
+  "catalog.product_type_revision.create": {
+    "entity_type": "catalog.product_type_revision",
+    "action": "catalog.product_type_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "product_type_id",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.product_type_revision.publish": {
+    "entity_type": "catalog.product_type_revision",
+    "action": "catalog.product_type_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "product_type_id",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.product_type_revision.update": {
+    "entity_type": "catalog.product_type_revision",
+    "action": "catalog.product_type_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "product_type_id",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.promotion_limit_definition.activate": {
+    "entity_type": "catalog.promotion_limit_definition",
+    "action": "catalog.promotion_limit_definition.activate",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "is_active",
+      "unit_id"
+    ]
+  },
+  "catalog.promotion_limit_definition.create": {
+    "entity_type": "catalog.promotion_limit_definition",
+    "action": "catalog.promotion_limit_definition.create",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "is_active",
+      "unit_id"
+    ]
+  },
+  "catalog.promotion_limit_definition.deactivate": {
+    "entity_type": "catalog.promotion_limit_definition",
+    "action": "catalog.promotion_limit_definition.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "is_active",
+      "unit_id"
+    ]
+  },
+  "catalog.promotion_limit_definition.update": {
+    "entity_type": "catalog.promotion_limit_definition",
+    "action": "catalog.promotion_limit_definition.update",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "is_active",
+      "unit_id"
+    ]
+  },
+  "catalog.promotion_limit_revision.create": {
+    "entity_type": "catalog.promotion_limit_revision",
+    "action": "catalog.promotion_limit_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "maximum_amount",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.promotion_limit_revision.publish": {
+    "entity_type": "catalog.promotion_limit_revision",
+    "action": "catalog.promotion_limit_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "maximum_amount",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.promotion_limit_revision.update": {
+    "entity_type": "catalog.promotion_limit_revision",
+    "action": "catalog.promotion_limit_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "maximum_amount",
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.promotion_stack_draft.create": {
+    "entity_type": "catalog.promotion_stack_draft",
+    "action": "catalog.promotion_stack_draft.create",
+    "category": "admin",
+    "safe_fields": [
+      "group_count",
+      "maximum_applied",
+      "permission_count",
+      "published_policy_id",
+      "status"
+    ]
+  },
+  "catalog.promotion_stack_draft.publish": {
+    "entity_type": "catalog.promotion_stack_draft",
+    "action": "catalog.promotion_stack_draft.publish",
+    "category": "admin",
+    "safe_fields": [
+      "group_count",
+      "maximum_applied",
+      "permission_count",
+      "published_policy_id",
+      "status"
+    ]
+  },
+  "catalog.promotion_stack_draft.update": {
+    "entity_type": "catalog.promotion_stack_draft",
+    "action": "catalog.promotion_stack_draft.update",
+    "category": "admin",
+    "safe_fields": [
+      "group_count",
+      "maximum_applied",
+      "permission_count",
+      "published_policy_id",
+      "status"
+    ]
+  },
+  "catalog.promotion_stack_draft_group.create": {
+    "entity_type": "catalog.promotion_stack_draft_group",
+    "action": "catalog.promotion_stack_draft_group.create",
+    "category": "admin",
+    "safe_fields": [
+      "changes_basket",
+      "draft_id",
+      "position",
+      "selection",
+      "stage"
+    ]
+  },
+  "catalog.promotion_stack_draft_group.publish": {
+    "entity_type": "catalog.promotion_stack_draft_group",
+    "action": "catalog.promotion_stack_draft_group.publish",
+    "category": "admin",
+    "safe_fields": [
+      "changes_basket",
+      "draft_id",
+      "position",
+      "selection",
+      "stage"
+    ]
+  },
+  "catalog.promotion_stack_draft_group.update": {
+    "entity_type": "catalog.promotion_stack_draft_group",
+    "action": "catalog.promotion_stack_draft_group.update",
+    "category": "admin",
+    "safe_fields": [
+      "changes_basket",
+      "draft_id",
+      "position",
+      "selection",
+      "stage"
+    ]
+  },
+  "catalog.promotion_stack_draft_permission.create": {
+    "entity_type": "catalog.promotion_stack_draft_permission",
+    "action": "catalog.promotion_stack_draft_permission.create",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "earlier_group_id",
+      "include_reward_units",
+      "later_group_id"
+    ]
+  },
+  "catalog.promotion_stack_draft_permission.publish": {
+    "entity_type": "catalog.promotion_stack_draft_permission",
+    "action": "catalog.promotion_stack_draft_permission.publish",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "earlier_group_id",
+      "include_reward_units",
+      "later_group_id"
+    ]
+  },
+  "catalog.promotion_stack_draft_permission.update": {
+    "entity_type": "catalog.promotion_stack_draft_permission",
+    "action": "catalog.promotion_stack_draft_permission.update",
+    "category": "admin",
+    "safe_fields": [
+      "draft_id",
+      "earlier_group_id",
+      "include_reward_units",
+      "later_group_id"
+    ]
+  },
+  "catalog.promotion_stack_group.create": {
+    "entity_type": "catalog.promotion_stack_group",
+    "action": "catalog.promotion_stack_group.create",
+    "category": "admin",
+    "safe_fields": [
+      "changes_basket",
+      "policy_revision_id",
+      "position",
+      "selection",
+      "stage"
+    ]
+  },
+  "catalog.promotion_stack_group.publish": {
+    "entity_type": "catalog.promotion_stack_group",
+    "action": "catalog.promotion_stack_group.publish",
+    "category": "admin",
+    "safe_fields": [
+      "changes_basket",
+      "policy_revision_id",
+      "position",
+      "selection",
+      "stage"
+    ]
+  },
+  "catalog.promotion_stack_group.update": {
+    "entity_type": "catalog.promotion_stack_group",
+    "action": "catalog.promotion_stack_group.update",
+    "category": "admin",
+    "safe_fields": [
+      "changes_basket",
+      "policy_revision_id",
+      "position",
+      "selection",
+      "stage"
+    ]
+  },
+  "catalog.promotion_stack_permission.create": {
+    "entity_type": "catalog.promotion_stack_permission",
+    "action": "catalog.promotion_stack_permission.create",
+    "category": "admin",
+    "safe_fields": [
+      "earlier_group_id",
+      "include_reward_units",
+      "later_group_id",
+      "policy_revision_id"
+    ]
+  },
+  "catalog.promotion_stack_permission.publish": {
+    "entity_type": "catalog.promotion_stack_permission",
+    "action": "catalog.promotion_stack_permission.publish",
+    "category": "admin",
+    "safe_fields": [
+      "earlier_group_id",
+      "include_reward_units",
+      "later_group_id",
+      "policy_revision_id"
+    ]
+  },
+  "catalog.promotion_stack_permission.update": {
+    "entity_type": "catalog.promotion_stack_permission",
+    "action": "catalog.promotion_stack_permission.update",
+    "category": "admin",
+    "safe_fields": [
+      "earlier_group_id",
+      "include_reward_units",
+      "later_group_id",
+      "policy_revision_id"
+    ]
+  },
+  "catalog.promotion_stack_policy.create": {
+    "entity_type": "catalog.promotion_stack_policy",
+    "action": "catalog.promotion_stack_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "maximum_applied",
+      "published_at",
+      "source_sha256"
+    ]
+  },
+  "catalog.promotion_stack_policy.publish": {
+    "entity_type": "catalog.promotion_stack_policy",
+    "action": "catalog.promotion_stack_policy.publish",
+    "category": "admin",
+    "safe_fields": [
+      "maximum_applied",
+      "published_at",
+      "source_sha256"
+    ]
+  },
+  "catalog.promotion_stack_policy.update": {
+    "entity_type": "catalog.promotion_stack_policy",
+    "action": "catalog.promotion_stack_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "maximum_applied",
+      "published_at",
+      "source_sha256"
+    ]
+  },
+  "catalog.purchase_price_term.close": {
+    "entity_type": "catalog.purchase_price_term",
+    "action": "catalog.purchase_price_term.close",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "discount_value",
+      "draft_id",
+      "gross_amount",
+      "price_id"
+    ]
+  },
+  "catalog.purchase_price_term.create": {
+    "entity_type": "catalog.purchase_price_term",
+    "action": "catalog.purchase_price_term.create",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "discount_value",
+      "draft_id",
+      "gross_amount",
+      "price_id"
+    ]
+  },
+  "catalog.purchase_price_term.publish": {
+    "entity_type": "catalog.purchase_price_term",
+    "action": "catalog.purchase_price_term.publish",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "discount_value",
+      "draft_id",
+      "gross_amount",
+      "price_id"
+    ]
+  },
+  "catalog.purchase_price_term.update": {
+    "entity_type": "catalog.purchase_price_term",
+    "action": "catalog.purchase_price_term.update",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "discount_value",
+      "draft_id",
+      "gross_amount",
+      "price_id"
+    ]
+  },
+  "catalog.return_policy.activate": {
+    "entity_type": "catalog.return_policy",
+    "action": "catalog.return_policy.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.return_policy.create": {
+    "entity_type": "catalog.return_policy",
+    "action": "catalog.return_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.return_policy.deactivate": {
+    "entity_type": "catalog.return_policy",
+    "action": "catalog.return_policy.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.return_policy.update": {
+    "entity_type": "catalog.return_policy",
+    "action": "catalog.return_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.return_policy_revision.create": {
+    "entity_type": "catalog.return_policy_revision",
+    "action": "catalog.return_policy_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.return_policy_revision.publish": {
+    "entity_type": "catalog.return_policy_revision",
+    "action": "catalog.return_policy_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.return_policy_revision.update": {
+    "entity_type": "catalog.return_policy_revision",
+    "action": "catalog.return_policy_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.sales_channel.activate": {
+    "entity_type": "catalog.sales_channel",
+    "action": "catalog.sales_channel.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.sales_channel.create": {
+    "entity_type": "catalog.sales_channel",
+    "action": "catalog.sales_channel.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.sales_channel.deactivate": {
+    "entity_type": "catalog.sales_channel",
+    "action": "catalog.sales_channel.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.sales_channel.update": {
+    "entity_type": "catalog.sales_channel",
+    "action": "catalog.sales_channel.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.simple_product_creation.complete": {
+    "entity_type": "catalog.simple_product_creation",
+    "action": "catalog.simple_product_creation.complete",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.simple_product_creation.create": {
+    "entity_type": "catalog.simple_product_creation",
+    "action": "catalog.simple_product_creation.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.simple_product_creation.revise": {
+    "entity_type": "catalog.simple_product_creation",
+    "action": "catalog.simple_product_creation.revise",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "catalog.stock_source_fence.acquire": {
+    "entity_type": "catalog.stock_source_fence",
+    "action": "catalog.stock_source_fence.acquire",
+    "category": "system",
+    "safe_fields": []
+  },
+  "catalog.stock_source_fence.release": {
+    "entity_type": "catalog.stock_source_fence",
+    "action": "catalog.stock_source_fence.release",
+    "category": "system",
+    "safe_fields": []
+  },
+  "catalog.tax_category.close": {
+    "entity_type": "catalog.tax_category",
+    "action": "catalog.tax_category.close",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.tax_category.create": {
+    "entity_type": "catalog.tax_category",
+    "action": "catalog.tax_category.create",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.tax_category.publish": {
+    "entity_type": "catalog.tax_category",
+    "action": "catalog.tax_category.publish",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.tax_category.update": {
+    "entity_type": "catalog.tax_category",
+    "action": "catalog.tax_category.update",
+    "category": "money",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.tax_classification.close": {
+    "entity_type": "catalog.tax_classification",
+    "action": "catalog.tax_classification.close",
+    "category": "money",
+    "safe_fields": [
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_classification.create": {
+    "entity_type": "catalog.tax_classification",
+    "action": "catalog.tax_classification.create",
+    "category": "money",
+    "safe_fields": [
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_classification.publish": {
+    "entity_type": "catalog.tax_classification",
+    "action": "catalog.tax_classification.publish",
+    "category": "money",
+    "safe_fields": [
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_classification.update": {
+    "entity_type": "catalog.tax_classification",
+    "action": "catalog.tax_classification.update",
+    "category": "money",
+    "safe_fields": [
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_classification.withdraw": {
+    "entity_type": "catalog.tax_classification",
+    "action": "catalog.tax_classification.withdraw",
+    "category": "money",
+    "safe_fields": [
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_history_action.close": {
+    "entity_type": "catalog.tax_history_action",
+    "action": "catalog.tax_history_action.close",
+    "category": "money",
+    "safe_fields": [
+      "release_id"
+    ]
+  },
+  "catalog.tax_history_action.create": {
+    "entity_type": "catalog.tax_history_action",
+    "action": "catalog.tax_history_action.create",
+    "category": "money",
+    "safe_fields": [
+      "release_id"
+    ]
+  },
+  "catalog.tax_history_action.publish": {
+    "entity_type": "catalog.tax_history_action",
+    "action": "catalog.tax_history_action.publish",
+    "category": "money",
+    "safe_fields": [
+      "release_id"
+    ]
+  },
+  "catalog.tax_history_action.update": {
+    "entity_type": "catalog.tax_history_action",
+    "action": "catalog.tax_history_action.update",
+    "category": "money",
+    "safe_fields": [
+      "release_id"
+    ]
+  },
+  "catalog.tax_impact_review.chunk": {
+    "entity_type": "catalog.tax_impact_review",
+    "action": "catalog.tax_impact_review.chunk",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_impact_review.failed": {
+    "entity_type": "catalog.tax_impact_review",
+    "action": "catalog.tax_impact_review.failed",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_impact_review.stale": {
+    "entity_type": "catalog.tax_impact_review",
+    "action": "catalog.tax_impact_review.stale",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_impact_review.start": {
+    "entity_type": "catalog.tax_impact_review",
+    "action": "catalog.tax_impact_review.start",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rate.close": {
+    "entity_type": "catalog.tax_rate",
+    "action": "catalog.tax_rate.close",
+    "category": "money",
+    "safe_fields": [
+      "series_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_rate.create": {
+    "entity_type": "catalog.tax_rate",
+    "action": "catalog.tax_rate.create",
+    "category": "money",
+    "safe_fields": [
+      "series_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_rate.publish": {
+    "entity_type": "catalog.tax_rate",
+    "action": "catalog.tax_rate.publish",
+    "category": "money",
+    "safe_fields": [
+      "series_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_rate.update": {
+    "entity_type": "catalog.tax_rate",
+    "action": "catalog.tax_rate.update",
+    "category": "money",
+    "safe_fields": [
+      "series_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_rate.withdraw": {
+    "entity_type": "catalog.tax_rate",
+    "action": "catalog.tax_rate.withdraw",
+    "category": "money",
+    "safe_fields": [
+      "series_id",
+      "source_sha256",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.tax_rate_component.close": {
+    "entity_type": "catalog.tax_rate_component",
+    "action": "catalog.tax_rate_component.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "basis_quantity",
+      "currency",
+      "kind",
+      "percentage",
+      "position",
+      "rounding_mode",
+      "unit_id"
+    ]
+  },
+  "catalog.tax_rate_component.create": {
+    "entity_type": "catalog.tax_rate_component",
+    "action": "catalog.tax_rate_component.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "basis_quantity",
+      "currency",
+      "kind",
+      "percentage",
+      "position",
+      "rounding_mode",
+      "unit_id"
+    ]
+  },
+  "catalog.tax_rate_component.publish": {
+    "entity_type": "catalog.tax_rate_component",
+    "action": "catalog.tax_rate_component.publish",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "basis_quantity",
+      "currency",
+      "kind",
+      "percentage",
+      "position",
+      "rounding_mode",
+      "unit_id"
+    ]
+  },
+  "catalog.tax_rate_component.update": {
+    "entity_type": "catalog.tax_rate_component",
+    "action": "catalog.tax_rate_component.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "basis_quantity",
+      "currency",
+      "kind",
+      "percentage",
+      "position",
+      "rounding_mode",
+      "unit_id"
+    ]
+  },
+  "catalog.tax_rate_series.close": {
+    "entity_type": "catalog.tax_rate_series",
+    "action": "catalog.tax_rate_series.close",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rate_series.create": {
+    "entity_type": "catalog.tax_rate_series",
+    "action": "catalog.tax_rate_series.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rate_series.publish": {
+    "entity_type": "catalog.tax_rate_series",
+    "action": "catalog.tax_rate_series.publish",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rate_series.update": {
+    "entity_type": "catalog.tax_rate_series",
+    "action": "catalog.tax_rate_series.update",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_release.close": {
+    "entity_type": "catalog.tax_release",
+    "action": "catalog.tax_release.close",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_release.create": {
+    "entity_type": "catalog.tax_release",
+    "action": "catalog.tax_release.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_release.publish": {
+    "entity_type": "catalog.tax_release",
+    "action": "catalog.tax_release.publish",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_release.update": {
+    "entity_type": "catalog.tax_release",
+    "action": "catalog.tax_release.update",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rule.close": {
+    "entity_type": "catalog.tax_rule",
+    "action": "catalog.tax_rule.close",
+    "category": "money",
+    "safe_fields": [
+      "classification_scope",
+      "is_active",
+      "source_sha256",
+      "tax_category_id"
+    ]
+  },
+  "catalog.tax_rule.create": {
+    "entity_type": "catalog.tax_rule",
+    "action": "catalog.tax_rule.create",
+    "category": "money",
+    "safe_fields": [
+      "classification_scope",
+      "is_active",
+      "source_sha256",
+      "tax_category_id"
+    ]
+  },
+  "catalog.tax_rule.publish": {
+    "entity_type": "catalog.tax_rule",
+    "action": "catalog.tax_rule.publish",
+    "category": "money",
+    "safe_fields": [
+      "classification_scope",
+      "is_active",
+      "source_sha256",
+      "tax_category_id"
+    ]
+  },
+  "catalog.tax_rule.update": {
+    "entity_type": "catalog.tax_rule",
+    "action": "catalog.tax_rule.update",
+    "category": "money",
+    "safe_fields": [
+      "classification_scope",
+      "is_active",
+      "source_sha256",
+      "tax_category_id"
+    ]
+  },
+  "catalog.tax_rule_applicability.close": {
+    "entity_type": "catalog.tax_rule_applicability",
+    "action": "catalog.tax_rule_applicability.close",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rule_applicability.create": {
+    "entity_type": "catalog.tax_rule_applicability",
+    "action": "catalog.tax_rule_applicability.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rule_applicability.publish": {
+    "entity_type": "catalog.tax_rule_applicability",
+    "action": "catalog.tax_rule_applicability.publish",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.tax_rule_applicability.update": {
+    "entity_type": "catalog.tax_rule_applicability",
+    "action": "catalog.tax_rule_applicability.update",
+    "category": "money",
+    "safe_fields": []
+  },
+  "catalog.unit_conversion.create": {
+    "entity_type": "catalog.unit_conversion",
+    "action": "catalog.unit_conversion.create",
+    "category": "admin",
+    "safe_fields": [
+      "canonical_unit_id",
+      "denominator",
+      "from_unit_id",
+      "numerator"
+    ]
+  },
+  "catalog.unit_of_measure.activate": {
+    "entity_type": "catalog.unit_of_measure",
+    "action": "catalog.unit_of_measure.activate",
+    "category": "admin",
+    "safe_fields": [
+      "decimal_places",
+      "dimension",
+      "is_active",
+      "quantity_increment"
+    ]
+  },
+  "catalog.unit_of_measure.create": {
+    "entity_type": "catalog.unit_of_measure",
+    "action": "catalog.unit_of_measure.create",
+    "category": "admin",
+    "safe_fields": [
+      "decimal_places",
+      "dimension",
+      "is_active",
+      "quantity_increment"
+    ]
+  },
+  "catalog.unit_of_measure.deactivate": {
+    "entity_type": "catalog.unit_of_measure",
+    "action": "catalog.unit_of_measure.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "decimal_places",
+      "dimension",
+      "is_active",
+      "quantity_increment"
+    ]
+  },
+  "catalog.unit_of_measure.update": {
+    "entity_type": "catalog.unit_of_measure",
+    "action": "catalog.unit_of_measure.update",
+    "category": "admin",
+    "safe_fields": [
+      "decimal_places",
+      "dimension",
+      "is_active",
+      "quantity_increment"
+    ]
+  },
+  "catalog.unit_tax_code.close": {
+    "entity_type": "catalog.unit_tax_code",
+    "action": "catalog.unit_tax_code.close",
+    "category": "admin",
+    "safe_fields": [
+      "unit_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.unit_tax_code.create": {
+    "entity_type": "catalog.unit_tax_code",
+    "action": "catalog.unit_tax_code.create",
+    "category": "admin",
+    "safe_fields": [
+      "unit_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.warehouse.activate": {
+    "entity_type": "catalog.warehouse",
+    "action": "catalog.warehouse.activate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "is_system",
+      "kind",
+      "state_code"
+    ]
+  },
+  "catalog.warehouse.assign": {
+    "entity_type": "catalog.warehouse",
+    "action": "catalog.warehouse.assign",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "is_system",
+      "kind",
+      "state_code"
+    ]
+  },
+  "catalog.warehouse.create": {
+    "entity_type": "catalog.warehouse",
+    "action": "catalog.warehouse.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "is_system",
+      "kind",
+      "state_code"
+    ]
+  },
+  "catalog.warehouse.deactivate": {
+    "entity_type": "catalog.warehouse",
+    "action": "catalog.warehouse.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "is_system",
+      "kind",
+      "state_code"
+    ]
+  },
+  "catalog.warehouse.update": {
+    "entity_type": "catalog.warehouse",
+    "action": "catalog.warehouse.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "is_active",
+      "is_system",
+      "kind",
+      "state_code"
+    ]
+  },
+  "catalog.warehouse_bin.activate": {
+    "entity_type": "catalog.warehouse_bin",
+    "action": "catalog.warehouse_bin.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_bin.create": {
+    "entity_type": "catalog.warehouse_bin",
+    "action": "catalog.warehouse_bin.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_bin.deactivate": {
+    "entity_type": "catalog.warehouse_bin",
+    "action": "catalog.warehouse_bin.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_bin.update": {
+    "entity_type": "catalog.warehouse_bin",
+    "action": "catalog.warehouse_bin.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_group.activate": {
+    "entity_type": "catalog.warehouse_group",
+    "action": "catalog.warehouse_group.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warehouse_group.create": {
+    "entity_type": "catalog.warehouse_group",
+    "action": "catalog.warehouse_group.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warehouse_group.deactivate": {
+    "entity_type": "catalog.warehouse_group",
+    "action": "catalog.warehouse_group.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warehouse_group.move": {
+    "entity_type": "catalog.warehouse_group",
+    "action": "catalog.warehouse_group.move",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warehouse_group.update": {
+    "entity_type": "catalog.warehouse_group",
+    "action": "catalog.warehouse_group.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warehouse_group_assignment.close": {
+    "entity_type": "catalog.warehouse_group_assignment",
+    "action": "catalog.warehouse_group_assignment.close",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "valid_from",
+      "valid_to",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_group_assignment.create": {
+    "entity_type": "catalog.warehouse_group_assignment",
+    "action": "catalog.warehouse_group_assignment.create",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "valid_from",
+      "valid_to",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_group_parent.close": {
+    "entity_type": "catalog.warehouse_group_parent",
+    "action": "catalog.warehouse_group_parent.close",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "parent_group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.warehouse_group_parent.create": {
+    "entity_type": "catalog.warehouse_group_parent",
+    "action": "catalog.warehouse_group_parent.create",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "parent_group_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "catalog.warehouse_operation_policy_revision.create": {
+    "entity_type": "catalog.warehouse_operation_policy_revision",
+    "action": "catalog.warehouse_operation_policy_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "allow_adjustment",
+      "allow_customer_return_receipt",
+      "allow_opening_stock",
+      "allow_purchase_receipt",
+      "allow_sale_issue",
+      "allow_supplier_return_issue",
+      "allow_transfer_in",
+      "allow_transfer_out",
+      "effective_from",
+      "effective_to",
+      "revision",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warehouse_operation_policy_revision.update": {
+    "entity_type": "catalog.warehouse_operation_policy_revision",
+    "action": "catalog.warehouse_operation_policy_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "allow_adjustment",
+      "allow_customer_return_receipt",
+      "allow_opening_stock",
+      "allow_purchase_receipt",
+      "allow_sale_issue",
+      "allow_supplier_return_issue",
+      "allow_transfer_in",
+      "allow_transfer_out",
+      "effective_from",
+      "effective_to",
+      "revision",
+      "warehouse_id"
+    ]
+  },
+  "catalog.warranty_policy.activate": {
+    "entity_type": "catalog.warranty_policy",
+    "action": "catalog.warranty_policy.activate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warranty_policy.create": {
+    "entity_type": "catalog.warranty_policy",
+    "action": "catalog.warranty_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warranty_policy.deactivate": {
+    "entity_type": "catalog.warranty_policy",
+    "action": "catalog.warranty_policy.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warranty_policy.update": {
+    "entity_type": "catalog.warranty_policy",
+    "action": "catalog.warranty_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "is_active"
+    ]
+  },
+  "catalog.warranty_policy_revision.create": {
+    "entity_type": "catalog.warranty_policy_revision",
+    "action": "catalog.warranty_policy_revision.create",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.warranty_policy_revision.publish": {
+    "entity_type": "catalog.warranty_policy_revision",
+    "action": "catalog.warranty_policy_revision.publish",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  },
+  "catalog.warranty_policy_revision.update": {
+    "entity_type": "catalog.warranty_policy_revision",
+    "action": "catalog.warranty_policy_revision.update",
+    "category": "admin",
+    "safe_fields": [
+      "published_at",
+      "revision"
+    ]
+  }
+}

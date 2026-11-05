@@ -1,0 +1,6 @@
+ID,Area,Reusable steps,Expected result,Actual result,Status,Evidence
+PPS-01,Default precision,Open product creation; Add price,Two decimal places selected by default,Verified in simple and family modes,PASS,.test_artifacts/product-price-setup-results.json
+PPS-02,Single price labels,Add one price and inspect its controls,Price labels and Remove price have no row number,Verified for region and visible field/action labels,PASS,.test_artifacts/product-price-setup-results.json
+PPS-03,Multiple price labels,Add second and third prices,Matching numbers 1 through 3; each new price defaults to two decimals,Verified without resetting the first edited precision,PASS,.test_artifacts/product-price-setup-results.json
+PPS-04,Removal and retained edits,Enter amounts; change precision; remove middle row then return to one price,Renumber retained rows; preserve amounts and precision; remove singleton numbering,Verified in both product modes; newly added replacement defaults to two decimals,PASS,.test_artifacts/product-price-setup-results.json
+PPS-05,Regression and types,Run five affected suites and console TypeScript,Related product creation behavior and types pass,70 tests passed; TypeScript exited successfully,PASS,.test_artifacts/product-price-setup-results.json; .test_artifacts/product-price-setup-typescript.txt

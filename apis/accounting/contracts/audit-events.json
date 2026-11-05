@@ -1,0 +1,4378 @@
+{
+  "accounting.account.activate": {
+    "entity_type": "accounting.account",
+    "action": "accounting.account.activate",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "currency_mode",
+      "group_id",
+      "inventory_affected",
+      "kind",
+      "party_id",
+      "rounding_limit",
+      "rounding_method",
+      "sort_order",
+      "status"
+    ]
+  },
+  "accounting.account.create": {
+    "entity_type": "accounting.account",
+    "action": "accounting.account.create",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "currency_mode",
+      "group_id",
+      "inventory_affected",
+      "kind",
+      "party_id",
+      "rounding_limit",
+      "rounding_method",
+      "sort_order",
+      "status"
+    ]
+  },
+  "accounting.account.deactivate": {
+    "entity_type": "accounting.account",
+    "action": "accounting.account.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "currency_mode",
+      "group_id",
+      "inventory_affected",
+      "kind",
+      "party_id",
+      "rounding_limit",
+      "rounding_method",
+      "sort_order",
+      "status"
+    ]
+  },
+  "accounting.account.export": {
+    "entity_type": "accounting.account",
+    "action": "accounting.account.export",
+    "category": "access",
+    "safe_fields": [
+      "currency",
+      "currency_mode",
+      "group_id",
+      "inventory_affected",
+      "kind",
+      "party_id",
+      "rounding_limit",
+      "rounding_method",
+      "sort_order",
+      "status"
+    ]
+  },
+  "accounting.account.update": {
+    "entity_type": "accounting.account",
+    "action": "accounting.account.update",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "currency_mode",
+      "group_id",
+      "inventory_affected",
+      "kind",
+      "party_id",
+      "rounding_limit",
+      "rounding_method",
+      "sort_order",
+      "status"
+    ]
+  },
+  "accounting.account_alias.activate": {
+    "entity_type": "accounting.account_alias",
+    "action": "accounting.account_alias.activate",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_alias.create": {
+    "entity_type": "accounting.account_alias",
+    "action": "accounting.account_alias.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_alias.deactivate": {
+    "entity_type": "accounting.account_alias",
+    "action": "accounting.account_alias.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_alias.export": {
+    "entity_type": "accounting.account_alias",
+    "action": "accounting.account_alias.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_alias.update": {
+    "entity_type": "accounting.account_alias",
+    "action": "accounting.account_alias.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_bank_profile.create": {
+    "entity_type": "accounting.account_bank_profile",
+    "action": "accounting.account_bank_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_bank_profile.export": {
+    "entity_type": "accounting.account_bank_profile",
+    "action": "accounting.account_bank_profile.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_bank_profile.read": {
+    "entity_type": "accounting.account_bank_profile",
+    "action": "accounting.account_bank_profile.read",
+    "category": "access",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_bank_profile.update": {
+    "entity_type": "accounting.account_bank_profile",
+    "action": "accounting.account_bank_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_external_key.activate": {
+    "entity_type": "accounting.account_external_key",
+    "action": "accounting.account_external_key.activate",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_external_key.create": {
+    "entity_type": "accounting.account_external_key",
+    "action": "accounting.account_external_key.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_external_key.deactivate": {
+    "entity_type": "accounting.account_external_key",
+    "action": "accounting.account_external_key.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_external_key.export": {
+    "entity_type": "accounting.account_external_key",
+    "action": "accounting.account_external_key.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_external_key.update": {
+    "entity_type": "accounting.account_external_key",
+    "action": "accounting.account_external_key.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "status"
+    ]
+  },
+  "accounting.account_group.activate": {
+    "entity_type": "accounting.account_group",
+    "action": "accounting.account_group.activate",
+    "category": "admin",
+    "safe_fields": [
+      "affects_gross_profit",
+      "allocation_method",
+      "head_id",
+      "is_deemed_positive",
+      "is_primary",
+      "is_reserved",
+      "is_revenue",
+      "nett_balances",
+      "parent_id",
+      "sort_order",
+      "status",
+      "sub_ledger_behaviour",
+      "used_for_calculation"
+    ]
+  },
+  "accounting.account_group.create": {
+    "entity_type": "accounting.account_group",
+    "action": "accounting.account_group.create",
+    "category": "admin",
+    "safe_fields": [
+      "affects_gross_profit",
+      "allocation_method",
+      "head_id",
+      "is_deemed_positive",
+      "is_primary",
+      "is_reserved",
+      "is_revenue",
+      "nett_balances",
+      "parent_id",
+      "sort_order",
+      "status",
+      "sub_ledger_behaviour",
+      "used_for_calculation"
+    ]
+  },
+  "accounting.account_group.deactivate": {
+    "entity_type": "accounting.account_group",
+    "action": "accounting.account_group.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "affects_gross_profit",
+      "allocation_method",
+      "head_id",
+      "is_deemed_positive",
+      "is_primary",
+      "is_reserved",
+      "is_revenue",
+      "nett_balances",
+      "parent_id",
+      "sort_order",
+      "status",
+      "sub_ledger_behaviour",
+      "used_for_calculation"
+    ]
+  },
+  "accounting.account_group.export": {
+    "entity_type": "accounting.account_group",
+    "action": "accounting.account_group.export",
+    "category": "access",
+    "safe_fields": [
+      "affects_gross_profit",
+      "allocation_method",
+      "head_id",
+      "is_deemed_positive",
+      "is_primary",
+      "is_reserved",
+      "is_revenue",
+      "nett_balances",
+      "parent_id",
+      "sort_order",
+      "status",
+      "sub_ledger_behaviour",
+      "used_for_calculation"
+    ]
+  },
+  "accounting.account_group.update": {
+    "entity_type": "accounting.account_group",
+    "action": "accounting.account_group.update",
+    "category": "admin",
+    "safe_fields": [
+      "affects_gross_profit",
+      "allocation_method",
+      "head_id",
+      "is_deemed_positive",
+      "is_primary",
+      "is_reserved",
+      "is_revenue",
+      "nett_balances",
+      "parent_id",
+      "sort_order",
+      "status",
+      "sub_ledger_behaviour",
+      "used_for_calculation"
+    ]
+  },
+  "accounting.account_group_alias.activate": {
+    "entity_type": "accounting.account_group_alias",
+    "action": "accounting.account_group_alias.activate",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "status"
+    ]
+  },
+  "accounting.account_group_alias.create": {
+    "entity_type": "accounting.account_group_alias",
+    "action": "accounting.account_group_alias.create",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "status"
+    ]
+  },
+  "accounting.account_group_alias.deactivate": {
+    "entity_type": "accounting.account_group_alias",
+    "action": "accounting.account_group_alias.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "status"
+    ]
+  },
+  "accounting.account_group_alias.export": {
+    "entity_type": "accounting.account_group_alias",
+    "action": "accounting.account_group_alias.export",
+    "category": "access",
+    "safe_fields": [
+      "group_id",
+      "status"
+    ]
+  },
+  "accounting.account_group_alias.update": {
+    "entity_type": "accounting.account_group_alias",
+    "action": "accounting.account_group_alias.update",
+    "category": "admin",
+    "safe_fields": [
+      "group_id",
+      "status"
+    ]
+  },
+  "accounting.account_group_closure.export": {
+    "entity_type": "accounting.account_group_closure",
+    "action": "accounting.account_group_closure.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.account_head.create": {
+    "entity_type": "accounting.account_head",
+    "action": "accounting.account_head.create",
+    "category": "admin",
+    "safe_fields": [
+      "nature"
+    ]
+  },
+  "accounting.account_head.export": {
+    "entity_type": "accounting.account_head",
+    "action": "accounting.account_head.export",
+    "category": "access",
+    "safe_fields": [
+      "nature"
+    ]
+  },
+  "accounting.account_posting_mapping.create": {
+    "entity_type": "accounting.account_posting_mapping",
+    "action": "accounting.account_posting_mapping.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_posting_mapping.draft_create": {
+    "entity_type": "accounting.account_posting_mapping",
+    "action": "accounting.account_posting_mapping.draft_create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_posting_mapping.draft_publish": {
+    "entity_type": "accounting.account_posting_mapping",
+    "action": "accounting.account_posting_mapping.draft_publish",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_posting_mapping.draft_update": {
+    "entity_type": "accounting.account_posting_mapping",
+    "action": "accounting.account_posting_mapping.draft_update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_posting_mapping.export": {
+    "entity_type": "accounting.account_posting_mapping",
+    "action": "accounting.account_posting_mapping.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_posting_mapping.update": {
+    "entity_type": "accounting.account_posting_mapping",
+    "action": "accounting.account_posting_mapping.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_tax_default.create": {
+    "entity_type": "accounting.account_tax_default",
+    "action": "accounting.account_tax_default.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "apportion_by",
+      "assessable_inclusion",
+      "code_system",
+      "itc_eligibility",
+      "rcm_applicable",
+      "rule_id",
+      "supply_kind",
+      "treatment",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_tax_default.export": {
+    "entity_type": "accounting.account_tax_default",
+    "action": "accounting.account_tax_default.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "apportion_by",
+      "assessable_inclusion",
+      "code_system",
+      "itc_eligibility",
+      "rcm_applicable",
+      "rule_id",
+      "supply_kind",
+      "treatment",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_tax_default.update": {
+    "entity_type": "accounting.account_tax_default",
+    "action": "accounting.account_tax_default.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "apportion_by",
+      "assessable_inclusion",
+      "code_system",
+      "itc_eligibility",
+      "rcm_applicable",
+      "rule_id",
+      "supply_kind",
+      "treatment",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.account_tax_profile.create": {
+    "entity_type": "accounting.account_tax_profile",
+    "action": "accounting.account_tax_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_tax_profile.export": {
+    "entity_type": "accounting.account_tax_profile",
+    "action": "accounting.account_tax_profile.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_tax_profile.read": {
+    "entity_type": "accounting.account_tax_profile",
+    "action": "accounting.account_tax_profile.read",
+    "category": "access",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_tax_profile.update": {
+    "entity_type": "accounting.account_tax_profile",
+    "action": "accounting.account_tax_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id"
+    ]
+  },
+  "accounting.account_template_binding.export": {
+    "entity_type": "accounting.account_template_binding",
+    "action": "accounting.account_template_binding.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.account_template_installation.create": {
+    "entity_type": "accounting.account_template_installation",
+    "action": "accounting.account_template_installation.create",
+    "category": "admin",
+    "safe_fields": [
+      "template_version"
+    ]
+  },
+  "accounting.account_template_installation.export": {
+    "entity_type": "accounting.account_template_installation",
+    "action": "accounting.account_template_installation.export",
+    "category": "access",
+    "safe_fields": [
+      "template_version"
+    ]
+  },
+  "accounting.accounting_setup.create": {
+    "entity_type": "accounting.accounting_setup",
+    "action": "accounting.accounting_setup.create",
+    "category": "admin",
+    "safe_fields": [
+      "base_currency",
+      "metadata_version",
+      "template_version"
+    ]
+  },
+  "accounting.accounting_setup.export": {
+    "entity_type": "accounting.accounting_setup",
+    "action": "accounting.accounting_setup.export",
+    "category": "access",
+    "safe_fields": [
+      "base_currency",
+      "metadata_version",
+      "template_version"
+    ]
+  },
+  "accounting.accounting_setup.metadata_upgrade": {
+    "entity_type": "accounting.accounting_setup",
+    "action": "accounting.accounting_setup.metadata_upgrade",
+    "category": "admin",
+    "safe_fields": [
+      "base_currency",
+      "metadata_version",
+      "template_version"
+    ]
+  },
+  "accounting.accounting_setup.update": {
+    "entity_type": "accounting.accounting_setup",
+    "action": "accounting.accounting_setup.update",
+    "category": "admin",
+    "safe_fields": [
+      "base_currency",
+      "metadata_version",
+      "template_version"
+    ]
+  },
+  "accounting.allocation.approve": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.approve",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.close": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.consume": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.consume",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.create": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.export": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.export",
+    "category": "access",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.finalize": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.finalize",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.post": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.post",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.reject": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.reject",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.release": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.release",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.reverse": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.reverse",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.update": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.void": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.void",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.allocation.waive": {
+    "entity_type": "accounting.allocation",
+    "action": "accounting.allocation.waive",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "base_currency",
+      "credit_base_amount",
+      "currency",
+      "posting_date"
+    ]
+  },
+  "accounting.bank_adjustment_proposal.export": {
+    "entity_type": "accounting.bank_adjustment_proposal",
+    "action": "accounting.bank_adjustment_proposal.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "statement_entry_id",
+      "status",
+      "voucher_id"
+    ]
+  },
+  "accounting.bank_adjustment_proposal.prepare": {
+    "entity_type": "accounting.bank_adjustment_proposal",
+    "action": "accounting.bank_adjustment_proposal.prepare",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "statement_entry_id",
+      "status",
+      "voucher_id"
+    ]
+  },
+  "accounting.bank_adjustment_proposal.rejected": {
+    "entity_type": "accounting.bank_adjustment_proposal",
+    "action": "accounting.bank_adjustment_proposal.rejected",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "statement_entry_id",
+      "status",
+      "voucher_id"
+    ]
+  },
+  "accounting.bank_adjustment_proposal.resolved": {
+    "entity_type": "accounting.bank_adjustment_proposal",
+    "action": "accounting.bank_adjustment_proposal.resolved",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "statement_entry_id",
+      "status",
+      "voucher_id"
+    ]
+  },
+  "accounting.bank_instrument.create": {
+    "entity_type": "accounting.bank_instrument",
+    "action": "accounting.bank_instrument.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency"
+    ]
+  },
+  "accounting.bank_instrument.export": {
+    "entity_type": "accounting.bank_instrument",
+    "action": "accounting.bank_instrument.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency"
+    ]
+  },
+  "accounting.bank_instrument_event.create": {
+    "entity_type": "accounting.bank_instrument_event",
+    "action": "accounting.bank_instrument_event.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.bank_instrument_event.export": {
+    "entity_type": "accounting.bank_instrument_event",
+    "action": "accounting.bank_instrument_event.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.bank_match_event.export": {
+    "entity_type": "accounting.bank_match_event",
+    "action": "accounting.bank_match_event.export",
+    "category": "access",
+    "safe_fields": [
+      "amount",
+      "instrument_id",
+      "reverses_id",
+      "statement_entry_id"
+    ]
+  },
+  "accounting.bank_match_event.match": {
+    "entity_type": "accounting.bank_match_event",
+    "action": "accounting.bank_match_event.match",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "instrument_id",
+      "reverses_id",
+      "statement_entry_id"
+    ]
+  },
+  "accounting.bank_match_event.unmatch": {
+    "entity_type": "accounting.bank_match_event",
+    "action": "accounting.bank_match_event.unmatch",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "instrument_id",
+      "reverses_id",
+      "statement_entry_id"
+    ]
+  },
+  "accounting.bank_opening_item.export": {
+    "entity_type": "accounting.bank_opening_item",
+    "action": "accounting.bank_opening_item.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "cutoff_date",
+      "instrument_id"
+    ]
+  },
+  "accounting.bank_opening_item.review": {
+    "entity_type": "accounting.bank_opening_item",
+    "action": "accounting.bank_opening_item.review",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "cutoff_date",
+      "instrument_id"
+    ]
+  },
+  "accounting.bank_reconciliation_policy.export": {
+    "entity_type": "accounting.bank_reconciliation_policy",
+    "action": "accounting.bank_reconciliation_policy.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "match_window_days",
+      "mode",
+      "require_separate_reviewer",
+      "revision"
+    ]
+  },
+  "accounting.bank_reconciliation_policy.publish": {
+    "entity_type": "accounting.bank_reconciliation_policy",
+    "action": "accounting.bank_reconciliation_policy.publish",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "match_window_days",
+      "mode",
+      "require_separate_reviewer",
+      "revision"
+    ]
+  },
+  "accounting.bank_reconciliation_session.amend": {
+    "entity_type": "accounting.bank_reconciliation_session",
+    "action": "accounting.bank_reconciliation_session.amend",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_reconciliation_session.draft": {
+    "entity_type": "accounting.bank_reconciliation_session",
+    "action": "accounting.bank_reconciliation_session.draft",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_reconciliation_session.export": {
+    "entity_type": "accounting.bank_reconciliation_session",
+    "action": "accounting.bank_reconciliation_session.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_reconciliation_session.finalize": {
+    "entity_type": "accounting.bank_reconciliation_session",
+    "action": "accounting.bank_reconciliation_session.finalize",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_statement_entry.duplicate_decision": {
+    "entity_type": "accounting.bank_statement_entry",
+    "action": "accounting.bank_statement_entry.duplicate_decision",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "review_status"
+    ]
+  },
+  "accounting.bank_statement_entry.export": {
+    "entity_type": "accounting.bank_statement_entry",
+    "action": "accounting.bank_statement_entry.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "review_status"
+    ]
+  },
+  "accounting.bank_statement_import.commit": {
+    "entity_type": "accounting.bank_statement_import",
+    "action": "accounting.bank_statement_import.commit",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_statement_import.export": {
+    "entity_type": "accounting.bank_statement_import",
+    "action": "accounting.bank_statement_import.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_statement_import.preview": {
+    "entity_type": "accounting.bank_statement_import",
+    "action": "accounting.bank_statement_import.preview",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_statement_import.reject": {
+    "entity_type": "accounting.bank_statement_import",
+    "action": "accounting.bank_statement_import.reject",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "period_from",
+      "period_to",
+      "status"
+    ]
+  },
+  "accounting.bank_statement_mapping.export": {
+    "entity_type": "accounting.bank_statement_mapping",
+    "action": "accounting.bank_statement_mapping.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "revision"
+    ]
+  },
+  "accounting.bank_statement_mapping.publish": {
+    "entity_type": "accounting.bank_statement_mapping",
+    "action": "accounting.bank_statement_mapping.publish",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "revision"
+    ]
+  },
+  "accounting.charge_assessment.approve": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.approve",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.close": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.close",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.consume": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.consume",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.create": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.export": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.export",
+    "category": "access",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.finalize": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.finalize",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.post": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.post",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.reject": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.reject",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.release": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.release",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.reverse": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.reverse",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.update": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.update",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.void": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.void",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_assessment.waive": {
+    "entity_type": "accounting.charge_assessment",
+    "action": "accounting.charge_assessment.waive",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "cumulative_amount",
+      "currency",
+      "due_date",
+      "exchange_rate",
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.charge_policy.approve": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.approve",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.close": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.close",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.consume": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.consume",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.create": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.export": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.finalize": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.finalize",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.post": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.post",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.reject": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.reject",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.release": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.release",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.reverse": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.reverse",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.update": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.void": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.void",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_policy.waive": {
+    "entity_type": "accounting.charge_policy",
+    "action": "accounting.charge_policy.waive",
+    "category": "admin",
+    "safe_fields": [
+      "account_id",
+      "currency",
+      "rate",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.charge_tax_snapshot.approve": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.approve",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.close": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.close",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.consume": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.consume",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.create": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.create",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.export": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.export",
+    "category": "access",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.finalize": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.finalize",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.post": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.post",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.reject": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.reject",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.release": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.release",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.reverse": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.reverse",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.update": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.update",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.void": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.void",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.charge_tax_snapshot.waive": {
+    "entity_type": "accounting.charge_tax_snapshot",
+    "action": "accounting.charge_tax_snapshot.waive",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "gross_amount",
+      "net_amount"
+    ]
+  },
+  "accounting.credit_override.approve": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.approve",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.close": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.close",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.consume": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.consume",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.create": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.export": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.finalize": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.finalize",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.post": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.post",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.reject": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.reject",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.release": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.release",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.reverse": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.reverse",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.update": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.update",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.void": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.void",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_override.waive": {
+    "entity_type": "accounting.credit_override",
+    "action": "accounting.credit_override.waive",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.approve": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.approve",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.close": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.close",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.consume": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.consume",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.create": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.export": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.finalize": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.finalize",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.post": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.post",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.reject": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.reject",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.release": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.release",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.reverse": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.reverse",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.update": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.update",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.void": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.void",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.credit_reservation.waive": {
+    "entity_type": "accounting.credit_reservation",
+    "action": "accounting.credit_reservation.waive",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "journal_id",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.exchange_rate_quote.approve": {
+    "entity_type": "accounting.exchange_rate_quote",
+    "action": "accounting.exchange_rate_quote.approve",
+    "category": "money",
+    "safe_fields": [
+      "source_kind",
+      "status"
+    ]
+  },
+  "accounting.exchange_rate_quote.create": {
+    "entity_type": "accounting.exchange_rate_quote",
+    "action": "accounting.exchange_rate_quote.create",
+    "category": "money",
+    "safe_fields": [
+      "source_kind",
+      "status"
+    ]
+  },
+  "accounting.exchange_rate_quote.withdraw": {
+    "entity_type": "accounting.exchange_rate_quote",
+    "action": "accounting.exchange_rate_quote.withdraw",
+    "category": "money",
+    "safe_fields": [
+      "source_kind",
+      "status"
+    ]
+  },
+  "accounting.exchange_rate_usage.create": {
+    "entity_type": "accounting.exchange_rate_usage",
+    "action": "accounting.exchange_rate_usage.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.financial_opening_chunk.create": {
+    "entity_type": "accounting.financial_opening_chunk",
+    "action": "accounting.financial_opening_chunk.create",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "journal_id",
+      "ordinal",
+      "revision_id"
+    ]
+  },
+  "accounting.financial_opening_chunk.export": {
+    "entity_type": "accounting.financial_opening_chunk",
+    "action": "accounting.financial_opening_chunk.export",
+    "category": "access",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "journal_id",
+      "ordinal",
+      "revision_id"
+    ]
+  },
+  "accounting.financial_opening_chunk.update": {
+    "entity_type": "accounting.financial_opening_chunk",
+    "action": "accounting.financial_opening_chunk.update",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "journal_id",
+      "ordinal",
+      "revision_id"
+    ]
+  },
+  "accounting.financial_opening_entry.create": {
+    "entity_type": "accounting.financial_opening_entry",
+    "action": "accounting.financial_opening_entry.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_count",
+      "ordinal",
+      "party_id",
+      "revision_id",
+      "role",
+      "side"
+    ]
+  },
+  "accounting.financial_opening_entry.export": {
+    "entity_type": "accounting.financial_opening_entry",
+    "action": "accounting.financial_opening_entry.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_count",
+      "ordinal",
+      "party_id",
+      "revision_id",
+      "role",
+      "side"
+    ]
+  },
+  "accounting.financial_opening_entry.update": {
+    "entity_type": "accounting.financial_opening_entry",
+    "action": "accounting.financial_opening_entry.update",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_count",
+      "ordinal",
+      "party_id",
+      "revision_id",
+      "role",
+      "side"
+    ]
+  },
+  "accounting.financial_opening_import.create": {
+    "entity_type": "accounting.financial_opening_import",
+    "action": "accounting.financial_opening_import.create",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "row_version",
+      "state"
+    ]
+  },
+  "accounting.financial_opening_import.export": {
+    "entity_type": "accounting.financial_opening_import",
+    "action": "accounting.financial_opening_import.export",
+    "category": "access",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "row_version",
+      "state"
+    ]
+  },
+  "accounting.financial_opening_import.update": {
+    "entity_type": "accounting.financial_opening_import",
+    "action": "accounting.financial_opening_import.update",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "row_version",
+      "state"
+    ]
+  },
+  "accounting.financial_opening_revision.create": {
+    "entity_type": "accounting.financial_opening_revision",
+    "action": "accounting.financial_opening_revision.create",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "manifest_hash",
+      "revision"
+    ]
+  },
+  "accounting.financial_opening_revision.export": {
+    "entity_type": "accounting.financial_opening_revision",
+    "action": "accounting.financial_opening_revision.export",
+    "category": "access",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "manifest_hash",
+      "revision"
+    ]
+  },
+  "accounting.financial_opening_revision.update": {
+    "entity_type": "accounting.financial_opening_revision",
+    "action": "accounting.financial_opening_revision.update",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "batch_id",
+      "manifest_hash",
+      "revision"
+    ]
+  },
+  "accounting.financial_setup.create": {
+    "entity_type": "accounting.financial_setup",
+    "action": "accounting.financial_setup.create",
+    "category": "money",
+    "safe_fields": [
+      "base_currency"
+    ]
+  },
+  "accounting.financial_setup.export": {
+    "entity_type": "accounting.financial_setup",
+    "action": "accounting.financial_setup.export",
+    "category": "access",
+    "safe_fields": [
+      "base_currency"
+    ]
+  },
+  "accounting.financial_setup.reconciled": {
+    "entity_type": "accounting.financial_setup",
+    "action": "accounting.financial_setup.reconciled",
+    "category": "money",
+    "safe_fields": [
+      "base_currency"
+    ]
+  },
+  "accounting.financial_setup.update": {
+    "entity_type": "accounting.financial_setup",
+    "action": "accounting.financial_setup.update",
+    "category": "money",
+    "safe_fields": [
+      "base_currency"
+    ]
+  },
+  "accounting.fiscal_period.create": {
+    "entity_type": "accounting.fiscal_period",
+    "action": "accounting.fiscal_period.create",
+    "category": "money",
+    "safe_fields": [
+      "end_date",
+      "fiscal_year_id",
+      "start_date",
+      "status"
+    ]
+  },
+  "accounting.fiscal_period.export": {
+    "entity_type": "accounting.fiscal_period",
+    "action": "accounting.fiscal_period.export",
+    "category": "access",
+    "safe_fields": [
+      "end_date",
+      "fiscal_year_id",
+      "start_date",
+      "status"
+    ]
+  },
+  "accounting.fiscal_period.transition": {
+    "entity_type": "accounting.fiscal_period",
+    "action": "accounting.fiscal_period.transition",
+    "category": "money",
+    "safe_fields": [
+      "end_date",
+      "fiscal_year_id",
+      "start_date",
+      "status"
+    ]
+  },
+  "accounting.fiscal_period.update": {
+    "entity_type": "accounting.fiscal_period",
+    "action": "accounting.fiscal_period.update",
+    "category": "money",
+    "safe_fields": [
+      "end_date",
+      "fiscal_year_id",
+      "start_date",
+      "status"
+    ]
+  },
+  "accounting.fiscal_transition.export": {
+    "entity_type": "accounting.fiscal_transition",
+    "action": "accounting.fiscal_transition.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.fiscal_year.create": {
+    "entity_type": "accounting.fiscal_year",
+    "action": "accounting.fiscal_year.create",
+    "category": "money",
+    "safe_fields": [
+      "end_date",
+      "start_date"
+    ]
+  },
+  "accounting.fiscal_year.export": {
+    "entity_type": "accounting.fiscal_year",
+    "action": "accounting.fiscal_year.export",
+    "category": "access",
+    "safe_fields": [
+      "end_date",
+      "start_date"
+    ]
+  },
+  "accounting.fiscal_year.update": {
+    "entity_type": "accounting.fiscal_year",
+    "action": "accounting.fiscal_year.update",
+    "category": "money",
+    "safe_fields": [
+      "end_date",
+      "start_date"
+    ]
+  },
+  "accounting.import_job.cleanup": {
+    "entity_type": "accounting.import_job",
+    "action": "accounting.import_job.cleanup",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.import_job.create": {
+    "entity_type": "accounting.import_job",
+    "action": "accounting.import_job.create",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "accounting.import_job.export": {
+    "entity_type": "accounting.import_job",
+    "action": "accounting.import_job.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.import_job.update": {
+    "entity_type": "accounting.import_job",
+    "action": "accounting.import_job.update",
+    "category": "admin",
+    "safe_fields": []
+  },
+  "accounting.invoice_allocation_fact.export": {
+    "entity_type": "accounting.invoice_allocation_fact",
+    "action": "accounting.invoice_allocation_fact.export",
+    "category": "access",
+    "safe_fields": [
+      "amount"
+    ]
+  },
+  "accounting.invoice_component_fact.export": {
+    "entity_type": "accounting.invoice_component_fact",
+    "action": "accounting.invoice_component_fact.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount"
+    ]
+  },
+  "accounting.invoice_credit_action.create": {
+    "entity_type": "accounting.invoice_credit_action",
+    "action": "accounting.invoice_credit_action.create",
+    "category": "money",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "posting_date"
+    ]
+  },
+  "accounting.invoice_credit_action.export": {
+    "entity_type": "accounting.invoice_credit_action",
+    "action": "accounting.invoice_credit_action.export",
+    "category": "access",
+    "safe_fields": [
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "posting_date"
+    ]
+  },
+  "accounting.invoice_credit_event.create": {
+    "entity_type": "accounting.invoice_credit_event",
+    "action": "accounting.invoice_credit_event.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.invoice_credit_event.export": {
+    "entity_type": "accounting.invoice_credit_event",
+    "action": "accounting.invoice_credit_event.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.invoice_posting_line.export": {
+    "entity_type": "accounting.invoice_posting_line",
+    "action": "accounting.invoice_posting_line.export",
+    "category": "access",
+    "safe_fields": [
+      "due_date"
+    ]
+  },
+  "accounting.invoice_record.export": {
+    "entity_type": "accounting.invoice_record",
+    "action": "accounting.invoice_record.export",
+    "category": "access",
+    "safe_fields": [
+      "currency",
+      "document_date",
+      "due_date",
+      "kind",
+      "posting_date"
+    ]
+  },
+  "accounting.invoice_record.prepare": {
+    "entity_type": "accounting.invoice_record",
+    "action": "accounting.invoice_record.prepare",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "document_date",
+      "due_date",
+      "kind",
+      "posting_date"
+    ]
+  },
+  "accounting.invoice_supply_fact.export": {
+    "entity_type": "accounting.invoice_supply_fact",
+    "action": "accounting.invoice_supply_fact.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "supply_kind",
+      "treatment"
+    ]
+  },
+  "accounting.invoice_tax_component.export": {
+    "entity_type": "accounting.invoice_tax_component",
+    "action": "accounting.invoice_tax_component.export",
+    "category": "access",
+    "safe_fields": [
+      "amount",
+      "percentage"
+    ]
+  },
+  "accounting.journal.create": {
+    "entity_type": "accounting.journal",
+    "action": "accounting.journal.create",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "document_date",
+      "fiscal_period_id",
+      "kind",
+      "posting_date",
+      "reversal_of_id",
+      "status",
+      "total_credit",
+      "total_debit"
+    ]
+  },
+  "accounting.journal.export": {
+    "entity_type": "accounting.journal",
+    "action": "accounting.journal.export",
+    "category": "access",
+    "safe_fields": [
+      "base_currency",
+      "document_date",
+      "fiscal_period_id",
+      "kind",
+      "posting_date",
+      "reversal_of_id",
+      "status",
+      "total_credit",
+      "total_debit"
+    ]
+  },
+  "accounting.journal.post": {
+    "entity_type": "accounting.journal",
+    "action": "accounting.journal.post",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "document_date",
+      "fiscal_period_id",
+      "kind",
+      "posting_date",
+      "reversal_of_id",
+      "status",
+      "total_credit",
+      "total_debit"
+    ]
+  },
+  "accounting.journal.prepare": {
+    "entity_type": "accounting.journal",
+    "action": "accounting.journal.prepare",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "document_date",
+      "fiscal_period_id",
+      "kind",
+      "posting_date",
+      "reversal_of_id",
+      "status",
+      "total_credit",
+      "total_debit"
+    ]
+  },
+  "accounting.journal.update": {
+    "entity_type": "accounting.journal",
+    "action": "accounting.journal.update",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "document_date",
+      "fiscal_period_id",
+      "kind",
+      "posting_date",
+      "reversal_of_id",
+      "status",
+      "total_credit",
+      "total_debit"
+    ]
+  },
+  "accounting.journal.void": {
+    "entity_type": "accounting.journal",
+    "action": "accounting.journal.void",
+    "category": "money",
+    "safe_fields": [
+      "base_currency",
+      "document_date",
+      "fiscal_period_id",
+      "kind",
+      "posting_date",
+      "reversal_of_id",
+      "status",
+      "total_credit",
+      "total_debit"
+    ]
+  },
+  "accounting.journal_line.create": {
+    "entity_type": "accounting.journal_line",
+    "action": "accounting.journal_line.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "exchange_rate",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_line.export": {
+    "entity_type": "accounting.journal_line",
+    "action": "accounting.journal_line.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "exchange_rate",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_line.update": {
+    "entity_type": "accounting.journal_line",
+    "action": "accounting.journal_line.update",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "exchange_rate",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.approve": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.approve",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.close": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.close",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.consume": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.consume",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.create": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.create",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.export": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.export",
+    "category": "access",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.finalize": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.finalize",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.post": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.post",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.reject": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.reject",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.release": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.release",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.reverse": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.reverse",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.update": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.update",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.void": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.void",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.journal_tax.waive": {
+    "entity_type": "accounting.journal_tax",
+    "action": "accounting.journal_tax.waive",
+    "category": "money",
+    "safe_fields": [
+      "currency",
+      "journal_id",
+      "party_id"
+    ]
+  },
+  "accounting.open_item.approve": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.approve",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.close": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.close",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.consume": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.consume",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.create": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.export": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.finalize": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.finalize",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.post": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.post",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.reject": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.reject",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.release": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.release",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.reverse": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.reverse",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.update": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.update",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.void": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.void",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.open_item.waive": {
+    "entity_type": "accounting.open_item",
+    "action": "accounting.open_item.waive",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "document_date",
+      "due_date",
+      "party_id",
+      "posting_date"
+    ]
+  },
+  "accounting.opening_batch.approve": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.approve",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.close": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.close",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.consume": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.consume",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.create": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.create",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.export": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.export",
+    "category": "access",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.finalize": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.finalize",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.post": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.post",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.reject": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.reject",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.release": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.release",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.reverse": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.reverse",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.update": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.update",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.void": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.void",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.opening_batch.waive": {
+    "entity_type": "accounting.opening_batch",
+    "action": "accounting.opening_batch.waive",
+    "category": "money",
+    "safe_fields": [
+      "journal_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.party.activate": {
+    "entity_type": "accounting.party",
+    "action": "accounting.party.activate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "status"
+    ]
+  },
+  "accounting.party.create": {
+    "entity_type": "accounting.party",
+    "action": "accounting.party.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "status"
+    ]
+  },
+  "accounting.party.deactivate": {
+    "entity_type": "accounting.party",
+    "action": "accounting.party.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "status"
+    ]
+  },
+  "accounting.party.export": {
+    "entity_type": "accounting.party",
+    "action": "accounting.party.export",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "status"
+    ]
+  },
+  "accounting.party.update": {
+    "entity_type": "accounting.party",
+    "action": "accounting.party.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "status"
+    ]
+  },
+  "accounting.party_accounting_policy.create": {
+    "entity_type": "accounting.party_accounting_policy",
+    "action": "accounting.party_accounting_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "payment_term_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_accounting_policy.export": {
+    "entity_type": "accounting.party_accounting_policy",
+    "action": "accounting.party_accounting_policy.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "payment_term_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_accounting_policy.update": {
+    "entity_type": "accounting.party_accounting_policy",
+    "action": "accounting.party_accounting_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "payment_term_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_address.activate": {
+    "entity_type": "accounting.party_address",
+    "action": "accounting.party_address.activate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "status"
+    ]
+  },
+  "accounting.party_address.create": {
+    "entity_type": "accounting.party_address",
+    "action": "accounting.party_address.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "status"
+    ]
+  },
+  "accounting.party_address.deactivate": {
+    "entity_type": "accounting.party_address",
+    "action": "accounting.party_address.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "status"
+    ]
+  },
+  "accounting.party_address.export": {
+    "entity_type": "accounting.party_address",
+    "action": "accounting.party_address.export",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "status"
+    ]
+  },
+  "accounting.party_address.update": {
+    "entity_type": "accounting.party_address",
+    "action": "accounting.party_address.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "status"
+    ]
+  },
+  "accounting.party_address_use.activate": {
+    "entity_type": "accounting.party_address_use",
+    "action": "accounting.party_address_use.activate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_address_use.create": {
+    "entity_type": "accounting.party_address_use",
+    "action": "accounting.party_address_use.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_address_use.deactivate": {
+    "entity_type": "accounting.party_address_use",
+    "action": "accounting.party_address_use.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_address_use.export": {
+    "entity_type": "accounting.party_address_use",
+    "action": "accounting.party_address_use.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_address_use.update": {
+    "entity_type": "accounting.party_address_use",
+    "action": "accounting.party_address_use.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_bank_account.activate": {
+    "entity_type": "accounting.party_bank_account",
+    "action": "accounting.party_bank_account.activate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "currency",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_bank_account.create": {
+    "entity_type": "accounting.party_bank_account",
+    "action": "accounting.party_bank_account.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "currency",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_bank_account.deactivate": {
+    "entity_type": "accounting.party_bank_account",
+    "action": "accounting.party_bank_account.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "currency",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_bank_account.export": {
+    "entity_type": "accounting.party_bank_account",
+    "action": "accounting.party_bank_account.export",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "currency",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_bank_account.read": {
+    "entity_type": "accounting.party_bank_account",
+    "action": "accounting.party_bank_account.read",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "currency",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_bank_account.update": {
+    "entity_type": "accounting.party_bank_account",
+    "action": "accounting.party_bank_account.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "currency",
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_commercial_type.activate": {
+    "entity_type": "accounting.party_commercial_type",
+    "action": "accounting.party_commercial_type.activate",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.party_commercial_type.create": {
+    "entity_type": "accounting.party_commercial_type",
+    "action": "accounting.party_commercial_type.create",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.party_commercial_type.deactivate": {
+    "entity_type": "accounting.party_commercial_type",
+    "action": "accounting.party_commercial_type.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.party_commercial_type.export": {
+    "entity_type": "accounting.party_commercial_type",
+    "action": "accounting.party_commercial_type.export",
+    "category": "access",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.party_commercial_type.update": {
+    "entity_type": "accounting.party_commercial_type",
+    "action": "accounting.party_commercial_type.update",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.party_commercial_type_membership.create": {
+    "entity_type": "accounting.party_commercial_type_membership",
+    "action": "accounting.party_commercial_type_membership.create",
+    "category": "admin",
+    "safe_fields": [
+      "commercial_type_id",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_commercial_type_membership.export": {
+    "entity_type": "accounting.party_commercial_type_membership",
+    "action": "accounting.party_commercial_type_membership.export",
+    "category": "access",
+    "safe_fields": [
+      "commercial_type_id",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_commercial_type_membership.update": {
+    "entity_type": "accounting.party_commercial_type_membership",
+    "action": "accounting.party_commercial_type_membership.update",
+    "category": "admin",
+    "safe_fields": [
+      "commercial_type_id",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_contact.activate": {
+    "entity_type": "accounting.party_contact",
+    "action": "accounting.party_contact.activate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact.create": {
+    "entity_type": "accounting.party_contact",
+    "action": "accounting.party_contact.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact.deactivate": {
+    "entity_type": "accounting.party_contact",
+    "action": "accounting.party_contact.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact.export": {
+    "entity_type": "accounting.party_contact",
+    "action": "accounting.party_contact.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact.update": {
+    "entity_type": "accounting.party_contact",
+    "action": "accounting.party_contact.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact_use.activate": {
+    "entity_type": "accounting.party_contact_use",
+    "action": "accounting.party_contact_use.activate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact_use.create": {
+    "entity_type": "accounting.party_contact_use",
+    "action": "accounting.party_contact_use.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact_use.deactivate": {
+    "entity_type": "accounting.party_contact_use",
+    "action": "accounting.party_contact_use.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact_use.export": {
+    "entity_type": "accounting.party_contact_use",
+    "action": "accounting.party_contact_use.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_contact_use.update": {
+    "entity_type": "accounting.party_contact_use",
+    "action": "accounting.party_contact_use.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_credit_policy.create": {
+    "entity_type": "accounting.party_credit_policy",
+    "action": "accounting.party_credit_policy.create",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "limit_amount",
+      "overdue_days",
+      "overdue_tolerance",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_credit_policy.export": {
+    "entity_type": "accounting.party_credit_policy",
+    "action": "accounting.party_credit_policy.export",
+    "category": "access",
+    "safe_fields": [
+      "currency",
+      "limit_amount",
+      "overdue_days",
+      "overdue_tolerance",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_credit_policy.update": {
+    "entity_type": "accounting.party_credit_policy",
+    "action": "accounting.party_credit_policy.update",
+    "category": "admin",
+    "safe_fields": [
+      "currency",
+      "limit_amount",
+      "overdue_days",
+      "overdue_tolerance",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_drug_licence.create": {
+    "entity_type": "accounting.party_drug_licence",
+    "action": "accounting.party_drug_licence.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_drug_licence.export": {
+    "entity_type": "accounting.party_drug_licence",
+    "action": "accounting.party_drug_licence.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_drug_licence.read": {
+    "entity_type": "accounting.party_drug_licence",
+    "action": "accounting.party_drug_licence.read",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_drug_licence.update": {
+    "entity_type": "accounting.party_drug_licence",
+    "action": "accounting.party_drug_licence.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_identifier.create": {
+    "entity_type": "accounting.party_identifier",
+    "action": "accounting.party_identifier.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_identifier.export": {
+    "entity_type": "accounting.party_identifier",
+    "action": "accounting.party_identifier.export",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_identifier.read": {
+    "entity_type": "accounting.party_identifier",
+    "action": "accounting.party_identifier.read",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_identifier.update": {
+    "entity_type": "accounting.party_identifier",
+    "action": "accounting.party_identifier.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_opening_balance.create": {
+    "entity_type": "accounting.party_opening_balance",
+    "action": "accounting.party_opening_balance.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "party_id",
+      "role",
+      "side",
+      "status"
+    ]
+  },
+  "accounting.party_opening_balance.withdraw": {
+    "entity_type": "accounting.party_opening_balance",
+    "action": "accounting.party_opening_balance.withdraw",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "base_amount",
+      "base_currency",
+      "currency",
+      "party_id",
+      "role",
+      "side",
+      "status"
+    ]
+  },
+  "accounting.party_registration_address.create": {
+    "entity_type": "accounting.party_registration_address",
+    "action": "accounting.party_registration_address.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_registration_address.export": {
+    "entity_type": "accounting.party_registration_address",
+    "action": "accounting.party_registration_address.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_registration_address.read": {
+    "entity_type": "accounting.party_registration_address",
+    "action": "accounting.party_registration_address.read",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_registration_address.update": {
+    "entity_type": "accounting.party_registration_address",
+    "action": "accounting.party_registration_address.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_role.activate": {
+    "entity_type": "accounting.party_role",
+    "action": "accounting.party_role.activate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_role.create": {
+    "entity_type": "accounting.party_role",
+    "action": "accounting.party_role.create",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_role.deactivate": {
+    "entity_type": "accounting.party_role",
+    "action": "accounting.party_role.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_role.export": {
+    "entity_type": "accounting.party_role",
+    "action": "accounting.party_role.export",
+    "category": "access",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_role.update": {
+    "entity_type": "accounting.party_role",
+    "action": "accounting.party_role.update",
+    "category": "admin",
+    "safe_fields": [
+      "party_id",
+      "status"
+    ]
+  },
+  "accounting.party_tax_registration.create": {
+    "entity_type": "accounting.party_tax_registration",
+    "action": "accounting.party_tax_registration.create",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_tax_registration.export": {
+    "entity_type": "accounting.party_tax_registration",
+    "action": "accounting.party_tax_registration.export",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_tax_registration.read": {
+    "entity_type": "accounting.party_tax_registration",
+    "action": "accounting.party_tax_registration.read",
+    "category": "access",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_tax_registration.update": {
+    "entity_type": "accounting.party_tax_registration",
+    "action": "accounting.party_tax_registration.update",
+    "category": "admin",
+    "safe_fields": [
+      "country_code",
+      "party_id",
+      "state_code",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_withholding_profile.create": {
+    "entity_type": "accounting.party_withholding_profile",
+    "action": "accounting.party_withholding_profile.create",
+    "category": "admin",
+    "safe_fields": [
+      "deductee_type",
+      "deductible",
+      "default_section_id",
+      "kind",
+      "pan_identifier_id",
+      "pan_status",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_withholding_profile.export": {
+    "entity_type": "accounting.party_withholding_profile",
+    "action": "accounting.party_withholding_profile.export",
+    "category": "access",
+    "safe_fields": [
+      "deductee_type",
+      "deductible",
+      "default_section_id",
+      "kind",
+      "pan_identifier_id",
+      "pan_status",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.party_withholding_profile.update": {
+    "entity_type": "accounting.party_withholding_profile",
+    "action": "accounting.party_withholding_profile.update",
+    "category": "admin",
+    "safe_fields": [
+      "deductee_type",
+      "deductible",
+      "default_section_id",
+      "kind",
+      "pan_identifier_id",
+      "pan_status",
+      "party_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.payment_term.activate": {
+    "entity_type": "accounting.payment_term",
+    "action": "accounting.payment_term.activate",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.payment_term.create": {
+    "entity_type": "accounting.payment_term",
+    "action": "accounting.payment_term.create",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.payment_term.deactivate": {
+    "entity_type": "accounting.payment_term",
+    "action": "accounting.payment_term.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.payment_term.export": {
+    "entity_type": "accounting.payment_term",
+    "action": "accounting.payment_term.export",
+    "category": "access",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.payment_term.update": {
+    "entity_type": "accounting.payment_term",
+    "action": "accounting.payment_term.update",
+    "category": "admin",
+    "safe_fields": [
+      "status"
+    ]
+  },
+  "accounting.payment_term_line.create": {
+    "entity_type": "accounting.payment_term_line",
+    "action": "accounting.payment_term_line.create",
+    "category": "admin",
+    "safe_fields": [
+      "payment_term_id",
+      "percentage"
+    ]
+  },
+  "accounting.payment_term_line.export": {
+    "entity_type": "accounting.payment_term_line",
+    "action": "accounting.payment_term_line.export",
+    "category": "access",
+    "safe_fields": [
+      "payment_term_id",
+      "percentage"
+    ]
+  },
+  "accounting.payment_term_line.update": {
+    "entity_type": "accounting.payment_term_line",
+    "action": "accounting.payment_term_line.update",
+    "category": "admin",
+    "safe_fields": [
+      "payment_term_id",
+      "percentage"
+    ]
+  },
+  "accounting.reporting.captured": {
+    "entity_type": "accounting.reporting",
+    "action": "accounting.reporting.captured",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.reporting.snapshot_failed": {
+    "entity_type": "accounting.reporting",
+    "action": "accounting.reporting.snapshot_failed",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.reporting.snapshot_requested": {
+    "entity_type": "accounting.reporting",
+    "action": "accounting.reporting.snapshot_requested",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.reporting.snapshot_started": {
+    "entity_type": "accounting.reporting",
+    "action": "accounting.reporting.snapshot_started",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.reporting.snapshotted": {
+    "entity_type": "accounting.reporting",
+    "action": "accounting.reporting.snapshotted",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.source_document.approve": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.approve",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.close": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.close",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.consume": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.consume",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.create": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.create",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.export": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.export",
+    "category": "access",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.finalize": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.finalize",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.post": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.post",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.reject": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.reject",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.release": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.release",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.reverse": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.reverse",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.update": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.update",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.void": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.void",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.source_document.waive": {
+    "entity_type": "accounting.source_document",
+    "action": "accounting.source_document.waive",
+    "category": "money",
+    "safe_fields": [
+      "account_id",
+      "amount",
+      "currency",
+      "journal_id",
+      "kind",
+      "party_id",
+      "posting_date",
+      "status"
+    ]
+  },
+  "accounting.stock_account_policy.close": {
+    "entity_type": "accounting.stock_account_policy",
+    "action": "accounting.stock_account_policy.close",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_account_policy.correct": {
+    "entity_type": "accounting.stock_account_policy",
+    "action": "accounting.stock_account_policy.correct",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_account_policy.publish": {
+    "entity_type": "accounting.stock_account_policy",
+    "action": "accounting.stock_account_policy.publish",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_lot.correct": {
+    "entity_type": "accounting.stock_lot",
+    "action": "accounting.stock_lot.correct",
+    "category": "admin",
+    "safe_fields": [
+      "expires_on",
+      "is_held",
+      "item_id",
+      "manufactured_on",
+      "mrp_amount",
+      "mrp_currency",
+      "mrp_unit_id",
+      "source_party_id",
+      "status"
+    ]
+  },
+  "accounting.stock_lot.hold": {
+    "entity_type": "accounting.stock_lot",
+    "action": "accounting.stock_lot.hold",
+    "category": "admin",
+    "safe_fields": [
+      "expires_on",
+      "is_held",
+      "item_id",
+      "manufactured_on",
+      "mrp_amount",
+      "mrp_currency",
+      "mrp_unit_id",
+      "source_party_id",
+      "status"
+    ]
+  },
+  "accounting.stock_lot.prepare": {
+    "entity_type": "accounting.stock_lot",
+    "action": "accounting.stock_lot.prepare",
+    "category": "admin",
+    "safe_fields": [
+      "expires_on",
+      "is_held",
+      "item_id",
+      "manufactured_on",
+      "mrp_amount",
+      "mrp_currency",
+      "mrp_unit_id",
+      "source_party_id",
+      "status"
+    ]
+  },
+  "accounting.stock_lot.reactivate": {
+    "entity_type": "accounting.stock_lot",
+    "action": "accounting.stock_lot.reactivate",
+    "category": "admin",
+    "safe_fields": [
+      "expires_on",
+      "is_held",
+      "item_id",
+      "manufactured_on",
+      "mrp_amount",
+      "mrp_currency",
+      "mrp_unit_id",
+      "source_party_id",
+      "status"
+    ]
+  },
+  "accounting.stock_lot.release": {
+    "entity_type": "accounting.stock_lot",
+    "action": "accounting.stock_lot.release",
+    "category": "admin",
+    "safe_fields": [
+      "expires_on",
+      "is_held",
+      "item_id",
+      "manufactured_on",
+      "mrp_amount",
+      "mrp_currency",
+      "mrp_unit_id",
+      "source_party_id",
+      "status"
+    ]
+  },
+  "accounting.stock_lot.retire": {
+    "entity_type": "accounting.stock_lot",
+    "action": "accounting.stock_lot.retire",
+    "category": "admin",
+    "safe_fields": [
+      "expires_on",
+      "is_held",
+      "item_id",
+      "manufactured_on",
+      "mrp_amount",
+      "mrp_currency",
+      "mrp_unit_id",
+      "source_party_id",
+      "status"
+    ]
+  },
+  "accounting.stock_opening_control.adopt": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.adopt",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_opening_control.confirm_zero": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.confirm_zero",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_opening_control.create": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_opening_control.export": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.export",
+    "category": "access",
+    "safe_fields": []
+  },
+  "accounting.stock_opening_control.finalize": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.finalize",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_opening_control.reopen": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.reopen",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_opening_control.replace": {
+    "entity_type": "accounting.stock_opening_control",
+    "action": "accounting.stock_opening_control.replace",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_policy.inspect": {
+    "entity_type": "accounting.stock_policy",
+    "action": "accounting.stock_policy.inspect",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.stock_posting.post": {
+    "entity_type": "accounting.stock_posting",
+    "action": "accounting.stock_posting.post",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_posting.reverse": {
+    "entity_type": "accounting.stock_posting",
+    "action": "accounting.stock_posting.reverse",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.stock_projection.rebuild": {
+    "entity_type": "accounting.stock_projection",
+    "action": "accounting.stock_projection.rebuild",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.stock_retirement.check": {
+    "entity_type": "accounting.stock_retirement",
+    "action": "accounting.stock_retirement.check",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.stock_unit.correct": {
+    "entity_type": "accounting.stock_unit",
+    "action": "accounting.stock_unit.correct",
+    "category": "admin",
+    "safe_fields": [
+      "is_held",
+      "item_id",
+      "lot_id",
+      "status"
+    ]
+  },
+  "accounting.stock_unit.hold": {
+    "entity_type": "accounting.stock_unit",
+    "action": "accounting.stock_unit.hold",
+    "category": "admin",
+    "safe_fields": [
+      "is_held",
+      "item_id",
+      "lot_id",
+      "status"
+    ]
+  },
+  "accounting.stock_unit.prepare": {
+    "entity_type": "accounting.stock_unit",
+    "action": "accounting.stock_unit.prepare",
+    "category": "admin",
+    "safe_fields": [
+      "is_held",
+      "item_id",
+      "lot_id",
+      "status"
+    ]
+  },
+  "accounting.stock_unit.reactivate": {
+    "entity_type": "accounting.stock_unit",
+    "action": "accounting.stock_unit.reactivate",
+    "category": "admin",
+    "safe_fields": [
+      "is_held",
+      "item_id",
+      "lot_id",
+      "status"
+    ]
+  },
+  "accounting.stock_unit.release": {
+    "entity_type": "accounting.stock_unit",
+    "action": "accounting.stock_unit.release",
+    "category": "admin",
+    "safe_fields": [
+      "is_held",
+      "item_id",
+      "lot_id",
+      "status"
+    ]
+  },
+  "accounting.stock_unit.retire": {
+    "entity_type": "accounting.stock_unit",
+    "action": "accounting.stock_unit.retire",
+    "category": "admin",
+    "safe_fields": [
+      "is_held",
+      "item_id",
+      "lot_id",
+      "status"
+    ]
+  },
+  "accounting.voucher_execution.record": {
+    "entity_type": "accounting.voucher_execution",
+    "action": "accounting.voucher_execution.record",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.voucher_money_allocation.create": {
+    "entity_type": "accounting.voucher_money_allocation",
+    "action": "accounting.voucher_money_allocation.create",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.voucher_money_intent.cancel": {
+    "entity_type": "accounting.voucher_money_intent",
+    "action": "accounting.voucher_money_intent.cancel",
+    "category": "system",
+    "safe_fields": []
+  },
+  "accounting.voucher_money_intent.commit": {
+    "entity_type": "accounting.voucher_money_intent",
+    "action": "accounting.voucher_money_intent.commit",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.voucher_money_intent.prepare": {
+    "entity_type": "accounting.voucher_money_intent",
+    "action": "accounting.voucher_money_intent.prepare",
+    "category": "money",
+    "safe_fields": []
+  },
+  "accounting.withholding_certificate.create": {
+    "entity_type": "accounting.withholding_certificate",
+    "action": "accounting.withholding_certificate.create",
+    "category": "admin",
+    "safe_fields": [
+      "amount_limit",
+      "currency",
+      "party_id",
+      "rate_percent",
+      "section_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_certificate.export": {
+    "entity_type": "accounting.withholding_certificate",
+    "action": "accounting.withholding_certificate.export",
+    "category": "access",
+    "safe_fields": [
+      "amount_limit",
+      "currency",
+      "party_id",
+      "rate_percent",
+      "section_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_certificate.read": {
+    "entity_type": "accounting.withholding_certificate",
+    "action": "accounting.withholding_certificate.read",
+    "category": "access",
+    "safe_fields": [
+      "amount_limit",
+      "currency",
+      "party_id",
+      "rate_percent",
+      "section_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_certificate.update": {
+    "entity_type": "accounting.withholding_certificate",
+    "action": "accounting.withholding_certificate.update",
+    "category": "admin",
+    "safe_fields": [
+      "amount_limit",
+      "currency",
+      "party_id",
+      "rate_percent",
+      "section_id",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_rate.create": {
+    "entity_type": "accounting.withholding_rate",
+    "action": "accounting.withholding_rate.create",
+    "category": "admin",
+    "safe_fields": [
+      "aggregate_annual_threshold",
+      "deductee_type",
+      "no_pan_rate_percent",
+      "rate_percent",
+      "section_id",
+      "single_transaction_threshold",
+      "supersedes_id",
+      "threshold_basis",
+      "threshold_currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_rate.export": {
+    "entity_type": "accounting.withholding_rate",
+    "action": "accounting.withholding_rate.export",
+    "category": "access",
+    "safe_fields": [
+      "aggregate_annual_threshold",
+      "deductee_type",
+      "no_pan_rate_percent",
+      "rate_percent",
+      "section_id",
+      "single_transaction_threshold",
+      "supersedes_id",
+      "threshold_basis",
+      "threshold_currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_rate.update": {
+    "entity_type": "accounting.withholding_rate",
+    "action": "accounting.withholding_rate.update",
+    "category": "admin",
+    "safe_fields": [
+      "aggregate_annual_threshold",
+      "deductee_type",
+      "no_pan_rate_percent",
+      "rate_percent",
+      "section_id",
+      "single_transaction_threshold",
+      "supersedes_id",
+      "threshold_basis",
+      "threshold_currency",
+      "valid_from",
+      "valid_to"
+    ]
+  },
+  "accounting.withholding_section.activate": {
+    "entity_type": "accounting.withholding_section",
+    "action": "accounting.withholding_section.activate",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "status"
+    ]
+  },
+  "accounting.withholding_section.create": {
+    "entity_type": "accounting.withholding_section",
+    "action": "accounting.withholding_section.create",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "status"
+    ]
+  },
+  "accounting.withholding_section.deactivate": {
+    "entity_type": "accounting.withholding_section",
+    "action": "accounting.withholding_section.deactivate",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "status"
+    ]
+  },
+  "accounting.withholding_section.export": {
+    "entity_type": "accounting.withholding_section",
+    "action": "accounting.withholding_section.export",
+    "category": "access",
+    "safe_fields": [
+      "kind",
+      "status"
+    ]
+  },
+  "accounting.withholding_section.update": {
+    "entity_type": "accounting.withholding_section",
+    "action": "accounting.withholding_section.update",
+    "category": "admin",
+    "safe_fields": [
+      "kind",
+      "status"
+    ]
+  }
+}

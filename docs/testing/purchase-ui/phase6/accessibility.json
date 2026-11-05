@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-31T12:06:38.705Z",
+  "browser": "156.0.4314.50",
+  "method": "Chromium Accessibility.getFullAXTree with renderer accessibility enabled; roles, required/invalid/focused properties, dialog names and denied data withholding. Browser semantic checks, not an OS screen-reader speech session.",
+  "humanScreenReader": "NVDA is not installed; no NVDA/VoiceOver or physical iOS acceptance claimed.",
+  "results": [
+    {
+      "name": "invoice",
+      "nodes": 483,
+      "focused": [
+        "Purchase UI component review",
+        "Supplier invoice number"
+      ],
+      "passed": true
+    },
+    {
+      "name": "line-editor",
+      "nodes": 526,
+      "focused": [
+        "Purchase UI component review",
+        "Line description"
+      ],
+      "passed": true
+    },
+    {
+      "name": "validation",
+      "nodes": 405,
+      "focused": [
+        "Purchase UI component review",
+        "Supplier"
+      ],
+      "passed": true
+    },
+    {
+      "name": "restricted",
+      "nodes": 15,
+      "focused": [
+        "Purchase UI component review"
+      ],
+      "passed": true
+    }
+  ]
+}

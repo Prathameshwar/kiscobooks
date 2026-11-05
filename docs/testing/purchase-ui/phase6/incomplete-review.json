@@ -1,0 +1,11 @@
+{
+  "reviewedAt": "2026-10-31T12:08:37.790Z",
+  "review": "All 40 cases have zero violations. Remaining incomplete contrast selectors are primary gradient buttons and an aria-hidden decorative disclosure glyph. Primary gradient endpoints are covered by the shared 308-test contrast suite; glyphs have named enclosing controls. Native 400% screenshots, desktop lines, WebKit focus and Firefox/WebKit phone/locale views manually inspected. Not a human screen-reader session or WCAG certification.",
+  "selectors": [
+    "[\"button[aria-label=\\\"Line details, line 1\\\"] > .janso-btn__icon[aria-hidden=\\\"true\\\"] > span[aria-hidden=\\\"true\\\"]\"]",
+    "[\".janso-btn--primary\"]",
+    "[\".janso-entry__actions > .janso-btn--primary.janso-btn\"]",
+    "[\".janso-overlay-foot > .janso-btn--primary.janso-btn\"]"
+  ],
+  "blockingFindings": []
+}

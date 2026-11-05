@@ -1,0 +1,5 @@
+# Generated / downloaded artifacts -- never committed.
+bin/
+env/
+logs/
+runtime/

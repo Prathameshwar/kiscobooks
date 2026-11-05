@@ -1,0 +1,319 @@
+/*
+ * @janso/ui — `SearchSelect`: entity lookup (design-system §5.5).
+ *
+ * The list is portalled to the body and positioned in the viewport, so nothing here may assume
+ * it is a descendant of the field. That is deliberate: an absolutely positioned popover is
+ * clipped by any ancestor with `overflow`, which is exactly how the top bar clipped `UserMenu`.
+ *
+ * Contains no colour values — every colour reads a --janso-* token.
+ */
+
+/* ---------- the field ---------- */
+
+.janso-search-select {
+  position: relative;
+  min-width: 0;
+}
+
+/*
+ * The control mirrors `.janso-input` rather than reusing it: it is a box containing an input,
+ * chips and two buttons, so it owns the border and the focus ring, and the inner input is
+ * chromeless. `--janso-control-line` because an empty field is defined entirely by its edge.
+ */
+.janso-search-select__control {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--janso-space-2);
+  min-height: var(--janso-control-h);
+  padding: var(--janso-space-1) var(--janso-space-2) var(--janso-space-1) var(--janso-space-3);
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-sm);
+  transition: border-color var(--janso-dur-fast) ease, box-shadow var(--janso-dur-fast) ease;
+}
+.janso-search-select__control:hover {
+  border-color: var(--janso-ink-faint);
+}
+/* The ring lives on the box, because the box is what reads as the control. */
+.janso-search-select__control:focus-within {
+  border-color: var(--janso-focus);
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-search-select__control[data-invalid='true'] {
+  border-color: var(--janso-danger-ink);
+}
+.janso-search-select__control[data-invalid='true']:focus-within {
+  box-shadow: var(--janso-focus-ring-danger);
+}
+.janso-search-select__control[data-disabled='true'] {
+  background: var(--janso-disabled-surface);
+  border-color: var(--janso-line-strong);
+}
+
+.janso-search-select__input {
+  flex: 1 1 6rem;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-base);
+  line-height: 1.25rem;
+  color: var(--janso-ink);
+}
+.janso-search-select__input::placeholder {
+  color: var(--janso-ink-faint);
+}
+/* The box carries the ring; a second one on the input inside it would read as two controls. */
+.janso-search-select__input:focus {
+  outline: none;
+}
+.janso-search-select__input:disabled {
+  color: var(--janso-disabled-ink);
+  cursor: not-allowed;
+}
+
+.janso-search-select__clear,
+.janso-search-select__chip-remove,
+.janso-search-select__retry,
+.janso-search-select__more {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--janso-ink-soft);
+  cursor: pointer;
+  border-radius: var(--janso-radius-sm);
+}
+.janso-search-select__clear {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.janso-search-select__clear:hover,
+.janso-search-select__chip-remove:hover {
+  background: var(--janso-hover);
+  color: var(--janso-ink);
+}
+.janso-search-select__clear:focus-visible,
+.janso-search-select__chip-remove:focus-visible,
+.janso-search-select__retry:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+
+.janso-search-select__toggle {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--janso-ink-soft);
+}
+.janso-search-select__toggle:disabled {
+  cursor: not-allowed;
+  color: var(--janso-disabled-ink);
+}
+.janso-search-select__chevron {
+  display: grid;
+  place-items: center;
+  transition: transform var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-search-select[data-open='true'] .janso-search-select__chevron {
+  transform: rotate(180deg);
+}
+
+/* ---------- chips (multiple) ---------- */
+
+.janso-search-select__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+  max-width: 14rem;
+  padding: 0.1rem 0.15rem 0.1rem 0.5rem;
+  background: var(--janso-brand-tint);
+  border: 1px solid var(--janso-brand-line);
+  color: var(--janso-brand-ink);
+  border-radius: var(--janso-radius-sm);
+  font-size: var(--janso-text-sm);
+}
+.janso-search-select__chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janso-search-select__chip-remove {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--janso-brand-ink);
+}
+/* What `maxChips` collapses into: a count, not another removable chip, so a filter with
+   fifteen selections cannot push the input out of the control. */
+.janso-search-select__chip-count {
+  flex: none;
+  padding: 0.1rem var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- the list ---------- */
+
+/*
+ * `--janso-overlay` and a `--janso-overlay-line` edge, like every other popover: a hairline where
+ * the shadow lifts the list, the 3:1 rule in dark, where black on near-black cannot.
+ */
+.janso-search-select__panel {
+  z-index: var(--janso-z-popover);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--janso-overlay);
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+}
+
+.janso-search-select__options {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+}
+
+.janso-search-select__option,
+.janso-search-select__create {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-2) var(--janso-space-3);
+  cursor: pointer;
+  color: var(--janso-ink);
+}
+.janso-search-select__option + .janso-search-select__option,
+.janso-search-select__create {
+  border-top: 1px solid var(--janso-line);
+}
+/*
+ * The highlight is `--janso-selected` plus a leading brand marker, not colour alone: the active
+ * row has to be findable in greyscale and at low contrast settings too.
+ */
+.janso-search-select__option[data-active='true'],
+.janso-search-select__create[data-active='true'] {
+  background: var(--janso-selected);
+  box-shadow: inset 2px 0 0 var(--janso-brand);
+}
+.janso-search-select__option[aria-selected='true'] {
+  color: var(--janso-brand-ink);
+}
+.janso-search-select__option[aria-disabled='true'] {
+  color: var(--janso-disabled-ink);
+  cursor: not-allowed;
+}
+
+.janso-search-select__mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.1rem;
+  color: var(--janso-brand);
+}
+.janso-search-select__option[aria-disabled='true'] .janso-search-select__mark {
+  color: var(--janso-disabled-ink);
+}
+
+.janso-search-select__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.janso-search-select__label {
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janso-search-select__meta {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janso-search-select__figure {
+  flex: none;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+
+.janso-search-select__create {
+  color: var(--janso-brand);
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+}
+
+/* ---------- status lines ---------- */
+
+/*
+ * Outside the listbox on purpose: a `role="listbox"` whose children are not options is invalid,
+ * and these lines are announced through the field's live region rather than being navigable.
+ */
+.janso-search-select__status {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  margin: 0;
+  padding: var(--janso-space-3);
+  border-top: 1px solid var(--janso-line);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-search-select__status:first-child {
+  border-top: 0;
+}
+.janso-search-select__status[data-tone='danger'] {
+  background: var(--janso-danger-tint);
+  color: var(--janso-danger-ink);
+}
+.janso-search-select__status svg {
+  flex: none;
+}
+.janso-search-select__retry {
+  margin-inline-start: auto;
+  padding: 0.1rem var(--janso-space-2);
+  color: var(--janso-danger-ink);
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.janso-search-select__sentinel {
+  display: flex;
+  justify-content: center;
+  padding: var(--janso-space-2);
+  border-top: 1px solid var(--janso-line);
+}
+.janso-search-select__more {
+  padding: var(--janso-space-1) var(--janso-space-3);
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-brand);
+}
+.janso-search-select__more:hover {
+  background: var(--janso-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .janso-search-select__control,
+  .janso-search-select__chevron {
+    transition: none;
+  }
+}

@@ -1,0 +1,131 @@
+- main:
+  - text: Purchases / Workflow preview
+  - heading "New purchase" [level=1]
+  - paragraph: Capture your supplier bill, with every detail in its place.
+  - strong: Preview workspace
+  - text: · Synthetic examples in INR. Changes stay on this page and are lost on reload.
+  - region "Purchase workflow":
+    - text: New · demo
+    - paragraph: No demo record yet · No unapplied edits
+    - link "Back to vouchers":
+      - /url: /vouchers
+  - group: Explore workflow examples
+  - region "Supplier and invoice details":
+    - heading "Supplier & invoice" [level=2]
+    - text: Internal reference
+    - strong: Unassigned
+    - text: Supplier
+    - combobox "Supplier" [expanded] [invalid]
+    - button "Toggle Supplier options"
+    - paragraph: Choose a supplier.
+    - status: 3 results
+    - text: Supplier payable account
+    - combobox "Supplier payable account" [disabled]:
+      - option "Choose a supplier first" [selected]
+    - text: Supplier invoice number
+    - textbox "Supplier invoice number" [invalid]:
+      - /placeholder: e.g. PC-261034
+    - alert: Enter the supplier invoice number.
+    - text: Supplier invoice date
+    - textbox "Supplier invoice date": 2026-10-31
+    - text: Posting date
+    - textbox "Posting date": 2026-10-31
+    - paragraph: Determines the accounting period.
+    - strong: Entry mode
+    - paragraph: Choose how this supplier bill is entered.
+    - group "Purchase entry mode":
+      - button "Items" [pressed]
+      - button "Accounts / services"
+      - button "Mixed"
+  - group "Current purchase bill":
+    - strong: New supplier bill
+    - text: 0 lines · INR
+  - region "Purchase line entry":
+    - heading "Bill lines" [level=2]
+    - paragraph: Receipt and billed quantities stay separate. Rates are entered manually.
+    - text: 0 entered
+    - list "Purchase line cards":
+      - listitem:
+        - text: Line 1 · Item
+        - button "Actions for line 1"
+        - strong: Choose an item or expense account
+        - term: Receipt qty
+        - definition: —
+        - term: Billed qty
+        - definition: —
+        - term: Rate
+        - definition: —
+        - text: Line total before tax
+        - strong: —
+        - paragraph: Add at least one item or expense account.
+        - button "Edit line 1"
+    - button "Add purchase line"
+  - region "Purchase details":
+    - heading "Purchase details" [level=2]
+    - text: Open only what this bill needs
+    - button "Discounts & charges Document discounts, freight and other charges"
+    - button "Tax details Calculation evidence needs review Needs review"
+    - button "Goods receipt Receive with bill · planned quantities"
+    - button "Line tracking Location, batch, expiry and serial details by item"
+    - button "Payment & terms Due 30 Nov 2026 · advances and payment intentions"
+    - button "Supplier bill & attachments 0 local files · supplier total, notes and additional fields"
+  - complementary "Purchase totals":
+    - region "Bill summary":
+      - heading "Bill summary" [level=2]
+      - text: Provisional
+      - paragraph:
+        - text: Line subtotal
+        - strong: —
+      - paragraph:
+        - text: Line discounts
+        - strong: —
+      - paragraph:
+        - text: After line discounts
+        - strong: —
+      - paragraph:
+        - text: Document discounts
+        - strong: —
+      - paragraph:
+        - text: Supplier charges
+        - strong: —
+      - paragraph:
+        - text: Supplier tax
+        - strong: —
+      - paragraph:
+        - text: Bill total
+        - strong: —
+      - paragraph: Tax and charges need calculation evidence. A bill total is unavailable; missing amounts are not treated as zero.
+    - region "Settlement intentions":
+      - heading "Payment & terms" [level=2]
+      - paragraph: Due 30 Nov 2026 · from invoice date
+      - paragraph:
+        - text: Advances to apply
+        - strong: ₹0.00
+      - paragraph:
+        - text: Payment to record
+        - strong: ₹0.00
+      - paragraph: Proposed only. Nothing has been applied, paid or cleared.
+    - region "Entry guidance":
+      - heading "Before you finish" [level=2]
+      - paragraph: Use the supplier’s own invoice number. Your internal voucher reference is assigned later.
+      - paragraph: Check receipt quantity against what arrived, and billed quantity against the supplier’s invoice.
+    - region "Purchase issues":
+      - heading "3 details need attention" [level=2]
+      - list:
+        - listitem:
+          - button "Choose a supplier."
+        - listitem:
+          - button "Enter the supplier invoice number."
+        - listitem:
+          - button "Add at least one item or expense account."
+  - group "Purchase actions":
+    - text: Bill total
+    - strong: —
+    - text: Provisional · Not saved
+    - button "Review bill"
+    - button "Save demo draft"
+- region "Supplier search":
+  - listbox "Supplier results":
+    - option "Paper & Co. Supplies SUP-001 · Pune · Example supplier"
+    - option "Northstar Business Services SUP-002 · Mumbai · Example supplier"
+    - option "New supplier · setup incomplete SUP-003 · No payable account configured"

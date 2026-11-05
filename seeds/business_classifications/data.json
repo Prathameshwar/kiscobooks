@@ -1,0 +1,98 @@
+{
+  "business_categories": [
+    {
+      "code": "general",
+      "label": "General",
+      "sort_order": 10
+    },
+    {
+      "code": "mobile_electronics",
+      "label": "Mobile & Electronics",
+      "sort_order": 20
+    },
+    {
+      "code": "pharmaceutical",
+      "label": "Pharmaceutical",
+      "sort_order": 30
+    },
+    {
+      "code": "fmcg",
+      "label": "FMCG",
+      "sort_order": 40
+    },
+    {
+      "code": "apparel",
+      "label": "Apparel",
+      "sort_order": 50
+    },
+    {
+      "code": "other",
+      "label": "Other",
+      "sort_order": 60
+    }
+  ],
+  "business_roles": [
+    {
+      "code": "retailer",
+      "label": "Retailer",
+      "sort_order": 10
+    },
+    {
+      "code": "manufacturer",
+      "label": "Manufacturer",
+      "sort_order": 20
+    },
+    {
+      "code": "wholesaler",
+      "label": "Wholesaler",
+      "sort_order": 30
+    },
+    {
+      "code": "distributor",
+      "label": "Distributor",
+      "sort_order": 40
+    },
+    {
+      "code": "stockist",
+      "label": "Stockist",
+      "sort_order": 50
+    },
+    {
+      "code": "online",
+      "label": "Online",
+      "sort_order": 60
+    },
+    {
+      "code": "store",
+      "label": "Store",
+      "sort_order": 70
+    }
+  ],
+  "store_formats": [
+    {
+      "code": "shop",
+      "label": "Shop",
+      "sort_order": 10
+    },
+    {
+      "code": "mart",
+      "label": "Mart",
+      "sort_order": 20
+    },
+    {
+      "code": "supermarket",
+      "label": "Supermarket",
+      "sort_order": 30
+    },
+    {
+      "code": "online",
+      "label": "Online",
+      "sort_order": 40
+    },
+    {
+      "code": "other",
+      "label": "Other",
+      "sort_order": 50
+    }
+  ]
+}

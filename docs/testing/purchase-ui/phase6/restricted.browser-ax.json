@@ -1,0 +1,129 @@
+[
+  {
+    "role": "RootWebArea",
+    "name": "Purchase UI component review",
+    "properties": [
+      {
+        "name": "focusable",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "focused",
+        "value": {
+          "type": "booleanOrUndefined",
+          "value": true
+        }
+      },
+      {
+        "name": "url",
+        "value": {
+          "type": "string",
+          "value": "http://127.0.0.1:4418/?workflow=NEW&restricted"
+        }
+      }
+    ]
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "main",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "heading",
+    "name": "Purchase voucher",
+    "properties": [
+      {
+        "name": "level",
+        "value": {
+          "type": "integer",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "role": "status",
+    "name": "",
+    "properties": [
+      {
+        "name": "live",
+        "value": {
+          "type": "token",
+          "value": "polite"
+        }
+      },
+      {
+        "name": "atomic",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "name": "relevant",
+        "value": {
+          "type": "tokenList",
+          "value": "additions text"
+        }
+      }
+    ]
+  },
+  {
+    "role": "StaticText",
+    "name": "Purchase voucher",
+    "properties": []
+  },
+  {
+    "role": "paragraph",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "generic",
+    "name": "",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Purchase voucher",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "Purchase costs are restricted",
+    "properties": []
+  },
+  {
+    "role": "StaticText",
+    "name": "This workspace needs access to purchase rates and bill totals. Ask your administrator for the appropriate access.",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "Purchase costs are restricted",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "This workspace needs access to purchase ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "rates and bill totals. Ask your administrator ",
+    "properties": []
+  },
+  {
+    "role": "InlineTextBox",
+    "name": "for the appropriate access.",
+    "properties": []
+  }
+]

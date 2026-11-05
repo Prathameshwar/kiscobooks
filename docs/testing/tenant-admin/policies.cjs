@@ -1,0 +1,20 @@
+module.exports=async function(h){
+ const {page,resources,test,ready,assert}=h;
+ async function submit(button,apiPath){const pending=page.waitForResponse(r=>r.url().endsWith('/api/product-fields')&&r.request().postDataJSON()?.path===apiPath&&r.request().postDataJSON()?.method==='POST');pending.catch(()=>{});await button.click();const response=await pending,data=await response.json();assert(response.ok(),response.status()+': '+data.error?.message);return data;}
+ for(const company of resources.companies){
+  resources.currentCompany=company.id;await h.switchCompany(company);const base='/v1/companies/'+company.id,stamp=resources.marker.slice(-8).toUpperCase(),name='QA '+company.key+' terms '+stamp;
+  await test('TA-PAYMENT-TERMS-'+company.key,'Account configuration','Create a payment term with one 100% instalment; configure '+(company.key==='services'?30:company.key==='distribution'?60:0)+' days and activate','Active payment term has complete exact instalment schedule',async()=>{
+   await ready('/accounting/payment-terms/new');await page.getByRole('textbox',{name:'Code',exact:true}).fill('QAPT-'+stamp+'-'+company.key.slice(0,3).toUpperCase());await page.getByRole('textbox',{name:'Name',exact:true}).fill(name);const term=await submit(page.getByRole('button',{name:'Create payment term',exact:true}),base+'/payment-terms');company.paymentTerm=term.id;h.save();
+   await ready('/accounting/payment-term-lines/new?payment_term_id='+term.id);await page.getByLabel('Sequence',{exact:true}).fill('1');await page.getByLabel('Percentage',{exact:true}).fill('100.0000');await page.getByLabel('Days',{exact:true}).fill(String(company.key==='services'?30:company.key==='distribution'?60:0));await submit(page.getByRole('button',{name:'Create payment instalment',exact:true}),base+'/payment-term-lines');
+   await ready('/accounting/payment-terms/'+term.id);await page.getByRole('button',{name:'Record actions',exact:true}).click();await page.getByRole('menuitem',{name:'Activate',exact:true}).click();await submit(page.getByRole('button',{name:'Activate record',exact:true}),base+'/payment-terms/'+term.id+'/activate');return 'Created complete 100% payment term '+term.id+' and activated through UI';
+  });
+  if(company.supplier&&company.paymentTerm)await test('TA-CONFIG-'+company.key+'-ACCOUNT','Account and party configuration','Set supplier policy, active payment term, INR settlement, bill-wise='+String(company.key!=='services')+' and payment hold='+String(company.key==='distribution')+'; save through UI','Active supplier policy retains the company-specific commercial/account choices',async()=>{
+   await ready('/accounting/party-accounting-policies/new?party_id='+company.supplier);await page.getByRole('combobox',{name:'Role',exact:true}).selectOption('SUPPLIER');
+   const term=page.getByRole('combobox',{name:'Payment term',exact:true});await term.fill(name);await page.getByRole('option').filter({hasText:name}).first().click();
+   const currency=page.getByLabel('Settlement currency',{exact:true});if(await currency.evaluate(el=>el.tagName==='SELECT'))await currency.selectOption('INR');else await currency.fill('INR');
+   const bill=page.getByRole('combobox',{name:'Bill wise',exact:true});if(await bill.count())await bill.selectOption(company.key==='services'?'false':'true');
+   const hold=page.getByRole('combobox',{name:'Payment hold',exact:true});if(await hold.count())await hold.selectOption(company.key==='distribution'?'true':'false');await page.getByLabel('Valid from',{exact:true}).fill('2026-10-29');
+   const policy=await submit(page.getByRole('button',{name:'Create accounting policy',exact:true}),base+'/party-accounting-policies');company.accountPolicy=policy.id;h.save();assert.equal(policy.party_id,company.supplier);assert.equal(policy.role,'SUPPLIER');assert.equal(policy.payment_term_id,company.paymentTerm);assert.equal(policy.bill_wise,company.key!=='services');return 'Saved policy '+policy.id+' with exact supplier, term, currency and bill-wise configuration';
+  });
+ }
+};

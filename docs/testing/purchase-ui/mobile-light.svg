@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1400" viewBox="0 0 390 1400" role="img" aria-labelledby="title desc">
+<title id="title">Purchase workspace blueprint - mobile</title>
+<desc id="desc">Phase 1 static Purchase UI design reference. Synthetic example PU02. Provisional values, no persistence, financial execution or functional controls.</desc>
+<style>text{font-family:Inter,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}</style>
+<rect x="0" y="0" width="390" height="1400" rx="0" fill="#f7f7f9"/>
+<rect x="0" y="0" width="390" height="58" rx="0" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="20" y="35" fill="#2e3190" font-size="18" font-weight="650" text-anchor="start">KiscoBooks</text>
+<text x="370" y="25" fill="#585d68" font-size="11" font-weight="500" text-anchor="end">Northstar · sample</text>
+<text x="370" y="45" fill="#585d68" font-size="11" font-weight="500" text-anchor="end">FY 2026–27 · INR</text>
+<text x="20" y="88" fill="#585d68" font-size="11" font-weight="600" text-anchor="start">PURCHASES  /  NEW BILL</text>
+<text x="20" y="124" fill="#15171c" font-size="25" font-weight="650" text-anchor="start">New purchase</text>
+<rect x="278" y="103" width="92" height="26" rx="13" fill="#f2f3f5" stroke="#e2e4e8"/>
+<text x="324" y="121" fill="#585d68" font-size="12" font-weight="500" text-anchor="middle">Unsaved</text>
+<rect x="20" y="148" width="350" height="39" rx="6" fill="#eef5fc" stroke="#cadcf1"/>
+<text x="195" y="172" fill="#22629f" font-size="12" font-weight="500" text-anchor="middle">Design preview · sample data</text>
+<rect x="20" y="203" width="350" height="350" rx="10" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="36" y="230" fill="#585d68" font-size="12" font-weight="500" text-anchor="start">Supplier</text>
+<rect x="36" y="240" width="318" height="40" rx="6" fill="#ffffff" stroke="#878c98"/>
+<text x="48" y="265" fill="#15171c" font-size="14" font-weight="400" text-anchor="start">Paper &amp; Co. Supplies  ⌄</text>
+<text x="36" y="294" fill="#585d68" font-size="11" font-weight="400" text-anchor="start">SUP-001 · Pune, Maharashtra</text>
+<text x="36" y="324" fill="#585d68" font-size="12" font-weight="500" text-anchor="start">Supplier invoice number</text>
+<rect x="36" y="334" width="318" height="40" rx="6" fill="#ffffff" stroke="#878c98"/>
+<text x="48" y="359" fill="#15171c" font-size="14" font-weight="400" text-anchor="start">PC-261034</text>
+<text x="36" y="407" fill="#585d68" font-size="12" font-weight="500" text-anchor="start">Supplier invoice date</text>
+<rect x="36" y="417" width="148" height="40" rx="6" fill="#ffffff" stroke="#878c98"/>
+<text x="48" y="442" fill="#15171c" font-size="14" font-weight="400" text-anchor="start">31 Oct 2026</text>
+<text x="200" y="407" fill="#585d68" font-size="12" font-weight="500" text-anchor="start">Posting date</text>
+<rect x="200" y="417" width="154" height="40" rx="6" fill="#ffffff" stroke="#878c98"/>
+<text x="212" y="442" fill="#15171c" font-size="14" font-weight="400" text-anchor="start">31 Oct 2026</text>
+<text x="36" y="505" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Due 30 Nov 2026 · Receive with bill</text>
+<text x="36" y="532" fill="#2e3190" font-size="12" font-weight="500" text-anchor="start">More bill details  ›</text>
+<text x="20" y="590" fill="#15171c" font-size="17" font-weight="600" text-anchor="start">Purchase lines</text>
+<rect x="282" y="570" width="88" height="26" rx="13" fill="#eef5fc" stroke="#cadcf1"/>
+<text x="326" y="588" fill="#22629f" font-size="12" font-weight="500" text-anchor="middle">Items  ⌄</text>
+<rect x="20" y="610" width="350" height="144" rx="10" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="36" y="639" fill="#15171c" font-size="14" font-weight="600" text-anchor="start">01  A5 ruled notebooks · pack of 4</text>
+<text x="36" y="669" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Receipt 24 · Billed 24 pcs</text>
+<text x="36" y="695" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Rate 125.00 · Discount 5%</text>
+<text x="36" y="729" fill="#2e3190" font-size="12" font-weight="500" text-anchor="start">Edit line  ›</text>
+<text x="354" y="729" fill="#15171c" font-size="16" font-weight="600" text-anchor="end">INR 2,850.00</text>
+<rect x="20" y="772" width="350" height="144" rx="10" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="36" y="801" fill="#15171c" font-size="14" font-weight="600" text-anchor="start">02  Document organisers · A4</text>
+<text x="36" y="831" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Receipt 10 · Billed 10 pcs</text>
+<text x="36" y="857" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Rate 200.00 · Discount 5%</text>
+<text x="36" y="891" fill="#2e3190" font-size="12" font-weight="500" text-anchor="start">Edit line  ›</text>
+<text x="354" y="891" fill="#15171c" font-size="16" font-weight="600" text-anchor="end">INR 1,900.00</text>
+<text x="20" y="945" fill="#2e3190" font-size="13" font-weight="600" text-anchor="start">+  Add line</text>
+<rect x="20" y="970" width="350" height="67" rx="10" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="36" y="997" fill="#15171c" font-size="14" font-weight="600" text-anchor="start">Charges, receipt &amp; payment</text>
+<text x="36" y="1021" fill="#585d68" font-size="11" font-weight="400" text-anchor="start">Freight 100.00 · Advance to apply 1,000.00  ›</text>
+<rect x="20" y="1053" width="350" height="203" rx="10" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="36" y="1083" fill="#15171c" font-size="16" font-weight="600" text-anchor="start">Bill summary  ›</text>
+<rect x="250" y="1064" width="104" height="26" rx="13" fill="#eef5fc" stroke="#cadcf1"/>
+<text x="302" y="1082" fill="#22629f" font-size="12" font-weight="500" text-anchor="middle">Provisional</text>
+<text x="36" y="1118" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Before supplier tax</text>
+<text x="354" y="1118" fill="#15171c" font-size="13" font-weight="400" text-anchor="end">4,850.00</text>
+<text x="36" y="1148" fill="#585d68" font-size="12" font-weight="400" text-anchor="start">Supplier tax · sample</text>
+<text x="354" y="1148" fill="#15171c" font-size="13" font-weight="400" text-anchor="end">873.00</text>
+<path d="M36 1167h318" stroke="#e8e9ed"/>
+<text x="36" y="1196" fill="#15171c" font-size="13" font-weight="600" text-anchor="start">Bill total · INR</text>
+<text x="354" y="1196" fill="#15171c" font-size="23" font-weight="650" text-anchor="end">5,723.00</text>
+<text x="36" y="1230" fill="#167447" font-size="11" font-weight="400" text-anchor="start">Supplier total matches · Difference 0.00</text>
+<text x="20" y="1280" fill="#15171c" font-size="13" font-weight="600" text-anchor="start">Remaining if applied: INR 4,723.00</text>
+<rect x="0" y="1300" width="390" height="100" rx="0" fill="#ffffff" stroke="#e8e9ed"/>
+<text x="20" y="1325" fill="#585d68" font-size="11" font-weight="400" text-anchor="start">UI preview only · changes are not saved</text>
+<rect x="20" y="1343" width="162" height="44" rx="6" fill="#ffffff" stroke="#878c98"/>
+<text x="101" y="1370" fill="#15171c" font-size="13" font-weight="600" text-anchor="middle">Review bill</text>
+<rect x="198" y="1343" width="172" height="44" rx="6" fill="#2e3190"/>
+<text x="284" y="1370" fill="#ffffff" font-size="13" font-weight="600" text-anchor="middle">Save demo draft</text>
+</svg>

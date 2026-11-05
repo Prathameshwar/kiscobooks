@@ -1,0 +1,39 @@
+"""Create native BOM definitions; one reversible DDL."""
+from alembic import op
+
+revision = "0197"
+down_revision = "0196"
+branch_labels = None
+depends_on = None
+
+_CREATE = """
+CREATE TABLE bom (
+	company_id BINARY(16) NOT NULL, 
+	code VARCHAR(30) NOT NULL, 
+	name VARCHAR(100) NOT NULL, 
+	row_version INTEGER NOT NULL, 
+	id BINARY(16) NOT NULL, 
+	tenant_id BINARY(16) NOT NULL, 
+	created_at DATETIME(6) NOT NULL, 
+	created_by BINARY(16) NULL,
+	updated_at DATETIME(6) NOT NULL, 
+	updated_by BINARY(16) NULL,
+	is_active BOOL NOT NULL, 
+	deactivated_at DATETIME(6) NULL,
+	deactivated_by BINARY(16) NULL,
+	CONSTRAINT pk_bom PRIMARY KEY (id), 
+	CONSTRAINT uq_bom_scope_id UNIQUE (tenant_id, company_id, id), 
+	CONSTRAINT uq_bom_scope_code UNIQUE (tenant_id, company_id, code), 
+	CONSTRAINT ck_bom_bom_version CHECK (row_version >= 1),
+	KEY ix_bom_active_code (tenant_id, company_id, is_active, code, id),
+	KEY ix_bom_active_name (tenant_id, company_id, is_active, name, id),
+	KEY ix_bom_name (tenant_id, company_id, name, id),
+	KEY ix_bom_tenant_id (tenant_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC
+"""
+
+def upgrade() -> None:
+    op.execute(_CREATE)
+
+def downgrade() -> None:
+    op.execute("DROP TABLE bom")

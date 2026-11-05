@@ -1,0 +1,442 @@
+"""Reviewed row grains, columns and next-level report mappings in registry order."""
+
+from reports.domain.reporting.contracts import Drilldown
+
+LEDGERS = {"ACCOUNT_LEDGER", "DAY_BOOK", "PARTY_LEDGER", "CASH_BOOK", "BANK_BOOK"}
+STATEMENTS = {"BALANCE_SHEET", "INCOME_EXPENSE", "PROFIT_LOSS", "TRIAL_BALANCE"}
+INVOICES = {
+    "SALES_REGISTER",
+    "PURCHASE_REGISTER",
+    "INVOICE_COMPONENT_REGISTER",
+    "INVOICE_TAX_REGISTER",
+    "INVOICE_CREDIT_REGISTER",
+    "INVOICE_SETTLEMENT_REGISTER",
+    "INVOICE_GL_BRIDGE",
+    "TAX_GL_BRIDGE",
+}
+
+OUTPUTS: dict[str, tuple[str, ...]] = {
+    "BALANCE_CONTINUITY": (
+        "row_kind",
+        "account_code",
+        "account_name",
+        "account_id",
+        "item_id",
+        "reference",
+        "due_date",
+        "nature",
+        "currency",
+        "transaction_currency",
+        "previous_closing",
+        "next_opening",
+        "difference",
+        "reconciled",
+        "previous_year_code",
+        "next_year_code",
+        "previous_closing_date",
+        "next_opening_date",
+        "account_count",
+        "bill_count",
+        "advance_count",
+        "previous_debit",
+        "previous_credit",
+        "next_debit",
+        "next_credit",
+    ),
+    "SOURCE_RECONCILIATION": ("kind", "source", "count", "currency", "DEBIT", "CREDIT"),
+    **{
+        code: (
+            "row_kind",
+            "period",
+            "date",
+            "number",
+            "kind",
+            "account_code",
+            "account_name",
+            "party_id",
+            "role",
+            "currency",
+            "debit",
+            "credit",
+            "balance",
+        )
+        for code in LEDGERS
+    },
+    "BALANCE_SHEET": (
+        "row_kind",
+        "period",
+        "account_code",
+        "account_name",
+        "group_code",
+        "group_name",
+        "nature",
+        "currency",
+        "amount",
+        "assets",
+        "liabilities",
+        "equity",
+        "untransferred_earnings",
+        "difference",
+    ),
+    **{
+        code: (
+            "row_kind",
+            "period",
+            "account_code",
+            "account_name",
+            "group_code",
+            "group_name",
+            "nature",
+            "currency",
+            "amount",
+            "imported_ytd_amount",
+        )
+        for code in {"INCOME_EXPENSE", "PROFIT_LOSS"}
+    },
+    "TRIAL_BALANCE": (
+        "row_kind",
+        "period",
+        "account_code",
+        "account_name",
+        "group_code",
+        "group_name",
+        "nature",
+        "currency",
+        "opening",
+        "debit",
+        "credit",
+        "closing",
+        "balance_debit",
+        "balance_credit",
+        "difference",
+    ),
+    "ACCOUNT_SUMMARY": (
+        "row_kind",
+        "period",
+        "account_id",
+        "account_code",
+        "account_name",
+        "group_id",
+        "group_code",
+        "group_name",
+        "date",
+        "grain",
+        "currency",
+        "opening",
+        "debit",
+        "credit",
+        "net",
+        "closing",
+    ),
+    **{
+        code: (
+            "row_kind",
+            "period",
+            "reference",
+            "account_id",
+            "account_code",
+            "account_name",
+            "party_id",
+            "role",
+            "direction",
+            "document_date",
+            "posting_date",
+            "due_date",
+            "currency",
+            "report_currency",
+            "original_amount",
+            "allocated_amount",
+            "remaining",
+            "report_amount",
+            "tracking",
+            "days_overdue",
+            "aging_bucket",
+        )
+        for code in {"OUTSTANDING_BILLS", "ADVANCES"}
+    },
+    "AGING": (
+        "row_kind",
+        "period",
+        "party_id",
+        "role",
+        "account_id",
+        "account_code",
+        "account_name",
+        "currency",
+        "debt",
+        "unapplied_credit",
+        "CURRENT",
+        "DAYS_1_30",
+        "DAYS_31_60",
+        "DAYS_61_90",
+        "DAYS_OVER_90",
+        "UNKNOWN",
+    ),
+    "BANK_RECONCILIATION": (
+        "row_kind",
+        "period",
+        "account_id",
+        "instrument_id",
+        "booking_date",
+        "instrument_date",
+        "mode",
+        "reference",
+        "state",
+        "currency",
+        "amount",
+        "signed_amount",
+        "cleared",
+        "book_balance",
+        "uncleared_signed",
+        "expected_statement_balance",
+        "statement_balance",
+        "difference",
+    ),
+    "BANK_RECONCILIATION_EVIDENCE": (
+        "row_kind",
+        "period",
+        "account_id",
+        "statement_entry_id",
+        "instrument_id",
+        "transaction_date",
+        "booking_date",
+        "reference",
+        "currency",
+        "side",
+        "amount",
+        "residual",
+        "mode",
+        "status",
+        "opening_balance",
+        "closing_balance",
+        "matched_amount",
+        "book_balance",
+        "outstanding_book_amount",
+    ),
+    "BANK_RECONCILIATION_WORKLIST": (
+        "row_kind",
+        "period",
+        "account_id",
+        "statement_entry_id",
+        "instrument_id",
+        "reference",
+        "status",
+        "mode",
+        "currency",
+        "date",
+        "source_id",
+        "side",
+        "age_days",
+        "amount",
+        "matched_amount",
+        "residual",
+    ),
+    **{
+        code: (
+            "row_kind",
+            "period",
+            "number",
+            "voucher_kind",
+            "posting_date",
+            "account_id",
+            "account_code",
+            "account_name",
+            "instrument_id",
+            "mode",
+            "reference",
+            "instrument_date",
+            "recognition",
+            "side",
+            "currency",
+            "amount",
+            "signed_amount",
+        )
+        for code in {"PAYMENT_REGISTER", "RECEIPT_REGISTER"}
+    },
+    **{
+        code: (
+            "row_kind",
+            "period",
+            "invoice_id",
+            "bill_reference",
+            "invoice_kind",
+            "direction",
+            "party_account_id",
+            "account_code",
+            "account_name",
+            "party_id",
+            "role",
+            "document_date",
+            "posting_date",
+            "due_date",
+            "currency",
+            "commercial_total",
+            "tax_total",
+            "charged_tax_total",
+            "rounding",
+            "payable",
+            "supplier_difference",
+        )
+        for code in {"SALES_REGISTER", "PURCHASE_REGISTER"}
+    },
+    "INVOICE_COMPONENT_REGISTER": (
+        "row_kind",
+        "period",
+        "invoice_id",
+        "bill_reference",
+        "invoice_kind",
+        "component_id",
+        "source_id",
+        "purpose",
+        "scope",
+        "effect",
+        "input_kind",
+        "basis_amount",
+        "basis_quantity",
+        "posting_date",
+        "currency",
+        "component_amount",
+        "allocation_amount",
+    ),
+    "INVOICE_TAX_REGISTER": (
+        "row_kind",
+        "period",
+        "invoice_id",
+        "bill_reference",
+        "invoice_kind",
+        "account_name",
+        "taxable_value",
+        "direction",
+        "supply_id",
+        "component_id",
+        "tax_code",
+        "tax_point_date",
+        "posting_date",
+        "currency",
+        "component_taxable_basis",
+        "percentage",
+        "supplier_charged",
+        "treatment",
+        "credit_state",
+        "tax_amount",
+    ),
+    "INVOICE_CREDIT_REGISTER": (
+        "row_kind",
+        "period",
+        "invoice_id",
+        "bill_reference",
+        "account_name",
+        "tax_code",
+        "component_id",
+        "event_id",
+        "action",
+        "event_date",
+        "posting_date",
+        "as_of",
+        "reference",
+        "currency",
+        "event_amount",
+        "recorded_tax",
+        "pending",
+        "eligible_unclaimed",
+        "claimed",
+        "suspended",
+        "blocked",
+        "rcm_discharged",
+    ),
+    "INVOICE_SETTLEMENT_REGISTER": (
+        "row_kind",
+        "period",
+        "invoice_id",
+        "bill_reference",
+        "allocation_id",
+        "bill_item_id",
+        "other_item_id",
+        "posting_date",
+        "reversal_date",
+        "as_of",
+        "active",
+        "currency",
+        "settlement_amount",
+    ),
+    **{
+        code: (
+            "row_kind",
+            "period",
+            "invoice_id",
+            "bill_reference",
+            "journal_id",
+            "line_id",
+            "component_id",
+            "tax_code",
+            "tax_purpose",
+            "event_date",
+            "posting_date",
+            "account_id",
+            "account_code",
+            "account_name",
+            "side",
+            "currency",
+            "amount",
+            "signed_debit",
+        )
+        for code in {"INVOICE_GL_BRIDGE", "TAX_GL_BRIDGE"}
+    },
+}
+
+
+def drilldowns(code: str) -> tuple[Drilldown, ...]:
+    links = [Drilldown("row_detail", "View retained row detail", code)]
+    if code in LEDGERS | INVOICES | {
+        "PAYMENT_REGISTER",
+        "RECEIPT_REGISTER",
+        "BANK_RECONCILIATION",
+        "BANK_RECONCILIATION_EVIDENCE",
+        "BANK_RECONCILIATION_WORKLIST",
+    }:
+        links.append(Drilldown("journal_entries", "View journal entries", "DAY_BOOK"))
+    if code in STATEMENTS | {
+        "ACCOUNT_SUMMARY",
+        "OUTSTANDING_BILLS",
+        "ADVANCES",
+        "AGING",
+        "BALANCE_CONTINUITY",
+    }:
+        links.append(Drilldown("account_entries", "View account entries", "ACCOUNT_LEDGER"))
+    if code in {"PROFIT_LOSS", "BALANCE_SHEET"}:
+        links.append(
+            Drilldown(
+                "comparison_account_entries", "View previous account entries", "ACCOUNT_LEDGER"
+            )
+        )
+    if code == "ACCOUNT_SUMMARY":
+        links.append(Drilldown("group_entries", "View group entries", "ACCOUNT_LEDGER"))
+    if code in {"PARTY_LEDGER", "AGING"}:
+        links.append(Drilldown("party_bills", "View outstanding bills", "OUTSTANDING_BILLS"))
+    if code in {"OUTSTANDING_BILLS", "ADVANCES"}:
+        links.append(Drilldown("party_bills", "View party bills", "OUTSTANDING_BILLS"))
+    if code == "BALANCE_CONTINUITY":
+        links.append(Drilldown("party_bills", "View carried bills", "OUTSTANDING_BILLS"))
+    if code in INVOICES:
+        for key, title, target in (
+            ("invoice_components", "View invoice components", "INVOICE_COMPONENT_REGISTER"),
+            ("invoice_taxes", "View invoice tax detail", "INVOICE_TAX_REGISTER"),
+            ("invoice_settlements", "View invoice settlements", "INVOICE_SETTLEMENT_REGISTER"),
+            ("invoice_gl", "View invoice journal bridge", "INVOICE_GL_BRIDGE"),
+        ):
+            if code != target:
+                links.append(Drilldown(key, title, target))
+    if code == "BALANCE_SHEET":
+        links = [
+            Drilldown(
+                "balance_account_entries"
+                if link.key == "account_entries"
+                else "balance_comparison_entries"
+                if link.key == "comparison_account_entries"
+                else link.key,
+                link.title,
+                link.target,
+            )
+            for link in links
+        ]
+    return tuple(links)

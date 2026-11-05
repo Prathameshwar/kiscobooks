@@ -1,0 +1,1294 @@
+{
+  "checkedAt": "2026-10-31T12:07:30.145Z",
+  "surface": "http://127.0.0.1:4418",
+  "axe": "4.10.3",
+  "note": "Firefox/WebKit phone/tablet viewport profiles on Windows; not physical iOS/Safari. Semantic snapshots are not a human screen-reader session. Native Chromium zoom uses isolated review profiles.",
+  "results": [
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-desktop",
+      "query": "workflow=NEW",
+      "geometry": {
+        "innerWidth": 1440,
+        "innerHeight": 1000,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1440,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 44
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-tablet-dark",
+      "query": "workflow=NEW&theme=dark",
+      "geometry": {
+        "innerWidth": 768,
+        "innerHeight": 1024,
+        "outerWidth": 768,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 768,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 45
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-phone",
+      "query": "workflow=NEW",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-narrow-ledger",
+      "query": "workflow=NEW&theme=ledger&locale&long",
+      "geometry": {
+        "innerWidth": 320,
+        "innerHeight": 740,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 320,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-line",
+      "query": "workflow=NEW",
+      "panel": "line",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-receipt",
+      "query": "workflow=NEW&scenario=receipt",
+      "panel": "Goods receipt",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-tracking",
+      "query": "workflow=NEW&scenario=tracking",
+      "panel": "Line tracking",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-evidence",
+      "query": "workflow=NEW&theme=dark",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-validation",
+      "query": "workflow=NEW&blank",
+      "panel": "validate",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 47
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-submission",
+      "query": "workflow=DRAFT",
+      "panel": "review",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 356,
+            "scrollWidth": 356,
+            "height": 780
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-entry__actions > .janso-btn--primary.janso-btn"
+              ],
+              [
+                ".janso-overlay-foot > .janso-btn--primary.janso-btn"
+              ]
+            ]
+          }
+        ],
+        "passes": 49
+      },
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "browser": "157.0",
+      "name": "firefox-approved",
+      "query": "workflow=APPROVED&theme=ledger",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 500,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 42
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-desktop",
+      "query": "workflow=NEW",
+      "geometry": {
+        "innerWidth": 1440,
+        "innerHeight": 1000,
+        "outerWidth": 1456,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1440,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 44
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-tablet-dark",
+      "query": "workflow=NEW&theme=dark",
+      "geometry": {
+        "innerWidth": 768,
+        "innerHeight": 1024,
+        "outerWidth": 784,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 768,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 45
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-phone",
+      "query": "workflow=NEW",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-narrow-ledger",
+      "query": "workflow=NEW&theme=ledger&locale&long",
+      "geometry": {
+        "innerWidth": 320,
+        "innerHeight": 740,
+        "outerWidth": 336,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 320,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-line",
+      "query": "workflow=NEW",
+      "panel": "line",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-receipt",
+      "query": "workflow=NEW&scenario=receipt",
+      "panel": "Goods receipt",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 49
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-tracking",
+      "query": "workflow=NEW&scenario=tracking",
+      "panel": "Line tracking",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-evidence",
+      "query": "workflow=NEW&theme=dark",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scrollWidth": 389,
+            "height": 844
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-validation",
+      "query": "workflow=NEW&blank",
+      "panel": "validate",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 47
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-submission",
+      "query": "workflow=DRAFT",
+      "panel": "review",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [
+          {
+            "width": 356,
+            "scrollWidth": 356,
+            "height": 780
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-entry__actions > .janso-btn--primary.janso-btn"
+              ],
+              [
+                ".janso-overlay-foot > .janso-btn--primary.janso-btn"
+              ]
+            ]
+          }
+        ],
+        "passes": 49
+      },
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "27.2",
+      "name": "webkit-approved",
+      "query": "workflow=APPROVED&theme=ledger",
+      "geometry": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "outerWidth": 406,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 390,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 42
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 100,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-100-light",
+      "query": "workflow=NEW&theme=light",
+      "geometry": {
+        "innerWidth": 1414,
+        "innerHeight": 907,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1414,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 45
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 100,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-100-dark",
+      "query": "workflow=NEW&theme=dark",
+      "geometry": {
+        "innerWidth": 1414,
+        "innerHeight": 907,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1414,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 45
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 100,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-100-ledger",
+      "query": "workflow=NEW&theme=ledger",
+      "geometry": {
+        "innerWidth": 1414,
+        "innerHeight": 907,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1414,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 45
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 200,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-200-light",
+      "query": "workflow=NEW&theme=light",
+      "geometry": {
+        "innerWidth": 707,
+        "innerHeight": 453,
+        "outerWidth": 1440,
+        "dpr": 2,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 707,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 200,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-200-dark",
+      "query": "workflow=NEW&theme=dark",
+      "geometry": {
+        "innerWidth": 707,
+        "innerHeight": 453,
+        "outerWidth": 1440,
+        "dpr": 2,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 707,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 200,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-200-ledger",
+      "query": "workflow=NEW&theme=ledger",
+      "geometry": {
+        "innerWidth": 707,
+        "innerHeight": 453,
+        "outerWidth": 1440,
+        "dpr": 2,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 707,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 400,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-400-light",
+      "query": "workflow=NEW&theme=light",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 353,
+        "innerHeight": 226,
+        "outerWidth": 1440,
+        "dpr": 4,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 353,
+        "dialogs": [
+          {
+            "width": 353,
+            "scrollWidth": 353,
+            "height": 226.75
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 400,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-400-dark",
+      "query": "workflow=NEW&theme=dark",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 353,
+        "innerHeight": 226,
+        "outerWidth": 1440,
+        "dpr": 4,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 353,
+        "dialogs": [
+          {
+            "width": 353,
+            "scrollWidth": 353,
+            "height": 226.75
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "msedge",
+      "browser": "156.0.4314.50",
+      "nativeZoomPercent": 400,
+      "baselineWidth": 1414,
+      "name": "msedge-zoom-400-ledger",
+      "query": "workflow=NEW&theme=ledger",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 353,
+        "innerHeight": 226,
+        "outerWidth": 1440,
+        "dpr": 4,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 353,
+        "dialogs": [
+          {
+            "width": 353,
+            "scrollWidth": 353,
+            "height": 226.75
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 100,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-100-light",
+      "query": "workflow=NEW&theme=light",
+      "geometry": {
+        "innerWidth": 1422,
+        "innerHeight": 904,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1422,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 44
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 100,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-100-dark",
+      "query": "workflow=NEW&theme=dark",
+      "geometry": {
+        "innerWidth": 1422,
+        "innerHeight": 904,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1422,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 44
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 100,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-100-ledger",
+      "query": "workflow=NEW&theme=ledger",
+      "geometry": {
+        "innerWidth": 1422,
+        "innerHeight": 904,
+        "outerWidth": 1440,
+        "dpr": 1,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 1422,
+        "dialogs": [],
+        "compact": false
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 44
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 200,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-200-light",
+      "query": "workflow=NEW&theme=light",
+      "geometry": {
+        "innerWidth": 711,
+        "innerHeight": 452,
+        "outerWidth": 1440,
+        "dpr": 2,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 711,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 200,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-200-dark",
+      "query": "workflow=NEW&theme=dark",
+      "geometry": {
+        "innerWidth": 711,
+        "innerHeight": 452,
+        "outerWidth": 1440,
+        "dpr": 2,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 711,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 200,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-200-ledger",
+      "query": "workflow=NEW&theme=ledger",
+      "geometry": {
+        "innerWidth": 711,
+        "innerHeight": 452,
+        "outerWidth": 1440,
+        "dpr": 2,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 711,
+        "dialogs": [],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "targets": [
+              [
+                ".janso-btn--primary"
+              ]
+            ]
+          }
+        ],
+        "passes": 43
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 400,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-400-light",
+      "query": "workflow=NEW&theme=light",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 355,
+        "innerHeight": 226,
+        "outerWidth": 1440,
+        "dpr": 4,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 355,
+        "dialogs": [
+          {
+            "width": 355,
+            "scrollWidth": 355,
+            "height": 226
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 400,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-400-dark",
+      "query": "workflow=NEW&theme=dark",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 355,
+        "innerHeight": 226,
+        "outerWidth": 1440,
+        "dpr": 4,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 355,
+        "dialogs": [
+          {
+            "width": 355,
+            "scrollWidth": 355,
+            "height": 226
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    },
+    {
+      "engine": "chrome",
+      "browser": "156.0.8078.48",
+      "nativeZoomPercent": 400,
+      "baselineWidth": 1422,
+      "name": "chrome-zoom-400-ledger",
+      "query": "workflow=NEW&theme=ledger",
+      "panel": "Supplier bill & attachments",
+      "geometry": {
+        "innerWidth": 355,
+        "innerHeight": 226,
+        "outerWidth": 1440,
+        "dpr": 4,
+        "visualScale": 1,
+        "cssZoom": "1",
+        "pageWidth": 355,
+        "dialogs": [
+          {
+            "width": 355,
+            "scrollWidth": 355,
+            "height": 226
+          }
+        ],
+        "compact": true
+      },
+      "accessibility": {
+        "violations": [],
+        "incomplete": [],
+        "passes": 50
+      },
+      "errors": []
+    }
+  ]
+}

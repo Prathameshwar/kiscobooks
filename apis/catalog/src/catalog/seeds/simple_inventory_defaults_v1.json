@@ -1,0 +1,22 @@
+{
+  "goods_type": {"code": "DEFAULT_GOODS", "name": "Goods", "kind": "GOODS"},
+  "goods_revision": {
+    "kind": "GOODS", "inventory_modes": ["STOCK"], "tracking_modes": ["NONE"],
+    "unit_dimensions": ["COUNT", "MASS", "VOLUME", "LENGTH", "AREA"],
+    "allow_variants": true, "require_brand": false, "require_manufacturer": false,
+    "require_expiry": false
+  },
+  "template": {"code": "SIMPLE_STOCK", "name": "Simple stock"},
+  "revision": {
+    "lot_tracking": false,
+    "serial_tracking": false,
+    "expiry_required": false,
+    "manufacture_date_required": false,
+    "shelf_life_days": null,
+    "minimum_remaining_life_days": null,
+    "issue_strategy": "FIFO",
+    "valuation_method": "FIFO",
+    "negative_stock_policy": "BLOCK",
+    "identifier_profile_id": null
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "options": {
+    "variants_mode": "DISABLED",
+    "barcode_mode": "DISABLED",
+    "brand_mode": "DISABLED",
+    "model_mode": "DISABLED",
+    "category_mode": "DISABLED",
+    "manufacturer_mode": "DISABLED",
+    "alternate_units_mode": "DISABLED",
+    "compound_units_mode": "DISABLED",
+    "measured_units_mode": "DISABLED"
+  },
+  "profiles": {
+    "inventory_template_revision_mode": "CLEAR",
+    "warranty_revision_mode": "CLEAR",
+    "return_policy_revision_mode": "CLEAR",
+    "handling_revision_mode": "CLEAR",
+    "identifier_profile_mode": "CLEAR"
+  },
+  "pricing": {
+    "multiple_price_levels_mode": "DISABLED",
+    "purchase_reference_mode": "OPTIONAL",
+    "sale_price_mode": "OPTIONAL",
+    "mrp_mode": "DISABLED",
+    "sale_level_count": 1,
+    "unit_prices_mode": "DISABLED",
+    "quantity_tiers_mode": "DISABLED",
+    "channel_prices_mode": "DISABLED",
+    "additional_currencies_mode": "DISABLED",
+    "formula_prices_mode": "DISABLED"
+  }
+}

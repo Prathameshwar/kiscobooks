@@ -1,0 +1,74 @@
+[project]
+name = "design"
+version = "0.1.0"
+description = "Invoice Designer: document layout authoring, resolution and print evidence."
+requires-python = "==3.12.*"
+dependencies = [
+  "billing-platform[crypto,mariadb,messaging]",
+  # Each dependency states its reason (CLAUDE.md §5.15).
+  # The HTTP surface, and the ASGI server that serves it.
+  "fastapi==0.115.14",
+  "uvicorn[standard]==0.34.3",
+  # This service owns its migration tree (dbs/design).
+  "alembic>=1.14.0,<1.15",
+  # The audit publisher drains the outbox onto the broker.
+  "aio-pika>=9.5.0,<10",
+]
+
+[dependency-groups]
+dev = [
+  "billing-platform[testing]",
+  # The test client speaks ASGI directly; no service is ever live in a unit test.
+  "httpx==0.28.1",
+  "pytest==8.4.2",
+  "pytest-asyncio==0.25.3",
+  "pytest-cov==6.3.0",
+  "mypy==1.19.1",
+  "ruff==0.8.6",
+  # In-memory schema for the suites, with foreign keys enforced.
+  "aiosqlite>=0.20.0,<0.21",
+]
+
+[tool.uv.sources]
+billing-platform = { path = "../../libs/platform", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/design"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "T20", "RUF", "S"]
+ignore = ["S101", "B008"]  # assert is how tests assert; FastAPI markers live in defaults
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106", "E402"]
+"tools/*" = ["T201"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = [".", "../../libs/platform/src", "src"]
+addopts = "--strict-markers"
+
+[tool.coverage.run]
+concurrency = ["greenlet", "thread"]  # SQLAlchemy greenlets and FastAPI sync dependencies
+source = ["src/design"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

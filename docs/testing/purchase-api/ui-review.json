@@ -1,0 +1,76 @@
+{
+  "observed_at": "2026-10-31T13:09:58.529Z",
+  "evidence": "Actual connected components with mocked owner responses; no authenticated E2E claim",
+  "results": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "width": 800,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "surface": "native-details-staging",
+      "result": "PASS"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "width": 800,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "surface": "native-details-staging",
+      "result": "PASS"
+    },
+    {
+      "theme": "ledger",
+      "width": 1440,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "ledger",
+      "width": 800,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "ledger",
+      "width": 390,
+      "surface": "saved-account-purchase",
+      "violations": []
+    },
+    {
+      "theme": "ledger",
+      "surface": "native-details-staging",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

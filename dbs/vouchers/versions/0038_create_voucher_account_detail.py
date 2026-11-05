@@ -1,0 +1,15 @@
+"""voucher_account_detail; one atomic CREATE with scoped ownership."""
+from alembic import op
+
+revision = "0038"
+down_revision = "0037"
+branch_labels = None
+depends_on = None
+
+UPGRADE = "CREATE TABLE voucher_account_detail (\n\trevision_id BINARY(16) NOT NULL, \n\tsequence INTEGER NOT NULL, \n\tline_key BINARY(16) NOT NULL, \n\taccount_id BINARY(16) NOT NULL, \n\tsource_version INTEGER NOT NULL, \n\tside VARCHAR(6) NOT NULL, \n\tcurrency VARCHAR(3) NOT NULL, \n\tamount NUMERIC(19, 4) NOT NULL, \n\texchange_rate NUMERIC(19, 8) NOT NULL, \n\tpurpose VARCHAR(20) NOT NULL, \n\tdescription VARCHAR(1000) NOT NULL, \n\ttracking VARCHAR(20) NOT NULL, \n\tbill_reference VARCHAR(120), \n\tdue_date DATE, \n\tcompany_id BINARY(16) NOT NULL, \n\trow_version INTEGER NOT NULL, \n\tid BINARY(16) NOT NULL, \n\ttenant_id BINARY(16) NOT NULL, \n\tcreated_at DATETIME(6) NOT NULL, \n\tcreated_by BINARY(16), \n\tupdated_at DATETIME(6) NOT NULL, \n\tupdated_by BINARY(16), \n\tCONSTRAINT pk_voucher_account_detail PRIMARY KEY (id), \n\tCONSTRAINT uq_voucher_account_detail_tenant_id_company_id_id UNIQUE (tenant_id, company_id, id), \n\tCONSTRAINT uq_voucher_account_detail_tenant_id_company_id_revision__2f67 UNIQUE (tenant_id, company_id, revision_id, line_key), \n\tCONSTRAINT fk_voucher_account_detail_revision FOREIGN KEY(tenant_id, company_id, revision_id) REFERENCES voucher_revision (tenant_id, company_id, id), \n\tCONSTRAINT ck_voucher_account_detail_voucher_account_detail_c0 CHECK (amount > 0 AND exchange_rate > 0), \n\tCONSTRAINT ck_voucher_account_detail_voucher_account_detail_c1 CHECK (side IN ('DEBIT', 'CREDIT')),\n\tINDEX ix_voucher_account_detail_tenant_id (tenant_id)\n)ENGINE=InnoDB CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COLLATE utf8mb4_unicode_ci"
+
+def upgrade() -> None:
+    op.execute(UPGRADE)
+
+def downgrade() -> None:
+    op.execute("DROP TABLE voucher_account_detail")

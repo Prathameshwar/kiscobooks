@@ -1,0 +1,416 @@
+{
+  "reviewedAt": "2026-10-31T12:07:37.460Z",
+  "review": "Remaining gradient backgrounds are checked against both theme-token stops by the 308-test shared contrast suite. Disclosure glyphs are decorative and their enclosing buttons have explicit accessible names. Unsupported generic ARIA labels were fixed, not waived. This review is not a human screen-reader or WCAG certification.",
+  "cases": [
+    {
+      "name": "desktop-light",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "details": [
+            {
+              "target": [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "desktop-dark",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "details": [
+            {
+              "target": [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "desktop-ledger",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "details": [
+            {
+              "target": [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tablet-light",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tablet-dark",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tablet-ledger",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mobile-light",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mobile-dark",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mobile-ledger",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "narrow-320",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "landscape-dark",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reflow-200-light",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reflow-200-dark",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reflow-200-ledger",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "locale-long-desktop",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "details": [
+            {
+              "target": [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "locale-long-mobile",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "empty-validation",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                "#_r_3_-row-2 > .janso-search-select__text > .janso-search-select__meta"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "submission-mobile",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-overlay-foot > .janso-btn--primary.janso-btn"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "correction-mobile",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "details": [
+            {
+              "target": [
+                ".janso-entry-workflow__dialog"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mixed-mobile",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bundle-ledger",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "details": [
+            {
+              "target": [
+                "button[aria-label=\"Line details, line 1\"] > .janso-btn__icon[aria-hidden=\"true\"] > span[aria-hidden=\"true\"]"
+              ],
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                ".janso-btn--primary"
+              ],
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "supplier-mismatch",
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "details": [
+            {
+              "target": [
+                ".janso-numeric__unit"
+              ],
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

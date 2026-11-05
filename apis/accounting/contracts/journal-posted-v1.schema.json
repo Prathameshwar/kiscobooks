@@ -1,0 +1,180 @@
+{
+  "$defs": {
+    "PostedLine": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "amount": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Amount",
+          "type": "string"
+        },
+        "base_amount": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Base Amount",
+          "type": "string"
+        },
+        "base_currency": {
+          "title": "Base Currency",
+          "type": "string"
+        },
+        "component": {
+          "title": "Component",
+          "type": "string"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "exchange_rate": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Exchange Rate",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Party Id"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Role"
+        },
+        "side": {
+          "title": "Side",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "account_id",
+        "party_id",
+        "role",
+        "component",
+        "side",
+        "currency",
+        "amount",
+        "exchange_rate",
+        "base_currency",
+        "base_amount"
+      ],
+      "title": "PostedLine",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authorization_journal_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Authorization Journal Id"
+    },
+    "company_id": {
+      "format": "uuid",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "journal_id": {
+      "format": "uuid",
+      "title": "Journal Id",
+      "type": "string"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "lines": {
+      "items": {
+        "$ref": "#/$defs/PostedLine"
+      },
+      "maxItems": 200,
+      "minItems": 2,
+      "title": "Lines",
+      "type": "array"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "posting_date": {
+      "format": "date",
+      "title": "Posting Date",
+      "type": "string"
+    },
+    "reversal_of_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reversal Of Id"
+    },
+    "source_id": {
+      "title": "Source Id",
+      "type": "string"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "source_type": {
+      "title": "Source Type",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "company_id",
+    "journal_id",
+    "number",
+    "kind",
+    "posting_date",
+    "source_system",
+    "source_type",
+    "source_id",
+    "reversal_of_id",
+    "authorization_journal_id",
+    "lines"
+  ],
+  "title": "JournalPosted",
+  "type": "object"
+}

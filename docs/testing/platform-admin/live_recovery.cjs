@@ -1,0 +1,86 @@
+/* Disposable accounts only. Never persist credentials, tokens or recovery URLs. */
+const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
+
+module.exports = async function ({ browser, origin, output, link, credentials }) {
+  assert(credentials?.username?.startsWith('bill-admin-'));
+  const contexts = [];
+  let stage = 'initial sign-in', currentPage;
+  async function freshPage() {
+    const context = await browser.newContext({ ignoreHTTPSErrors: true });
+    contexts.push(context);
+    currentPage = await context.newPage(); currentPage.setDefaultTimeout(30000);
+    return currentPage;
+  }
+  async function signIn(password, expectSuccess) {
+    const page = await freshPage();
+    await page.goto((process.env.QA_AUTH_URL || 'http://localhost:4310') + '/login', { timeout: 120000 });
+    await page.getByRole('button', { name: 'Continue to sign in', exact: true }).click();
+    let submissions = 0;
+    for (let tick = 0; tick < 150; tick++) {
+      if (new URL(page.url()).origin === origin) { assert(expectSuccess); return page; }
+      if (await page.locator('ak-loading-overlay:visible').count()) { await page.waitForTimeout(1000); continue; }
+      const username = page.getByRole('textbox', { name: /Email or Username|Username/i }).and(page.locator(':visible')).first();
+      const input = page.locator('input[type="password"]:visible').first();
+      if (await username.isVisible()) {
+        await username.fill(credentials.username); await username.press('Tab');
+        await page.getByRole('button', { name: /log in|sign in|continue|next/i }).first().click();
+        await username.waitFor({ state: 'hidden' });
+      } else if (await input.isVisible()) {
+        assert(submissions < 3, 'Too many native sign-in prompts');
+        await input.fill(password); await input.press('Tab');
+        await page.getByRole('button', { name: /log in|sign in|continue/i }).first().click();
+        submissions++;
+        if (!expectSuccess) {
+          await page.getByText(/invalid password|invalid credentials|incorrect password/i).first().waitFor();
+          assert.notEqual(new URL(page.url()).origin, origin); return page;
+        }
+        await input.waitFor({ state: 'hidden' });
+      }
+      await page.waitForTimeout(1000);
+    }
+    throw new Error('Native sign-in did not finish');
+  }
+  try {
+    await signIn(credentials.password, true);
+    stage = 'recovery form';
+    const page = await freshPage(); await page.goto(link, { timeout: 120000 });
+    const inputs = page.locator('input[type="password"]');
+    await inputs.first().waitFor(); assert.equal(await inputs.count(), 2);
+    async function submit(password, repeat) {
+      await inputs.nth(0).fill(password); await inputs.nth(1).fill(repeat);
+      await inputs.nth(1).press('Tab');
+      await page.getByRole('button', { name: /continue|next/i }).first().click();
+    }
+    stage = 'mismatched password rejection';
+    const password = crypto.randomBytes(24).toString('base64url');
+    await submit(password, password + 'x');
+    await page.getByText(/passwords (must match|don't match|do not match)/i).first().waitFor();
+    stage = 'same password rejection';
+    await submit(credentials.password, credentials.password);
+    await page.getByText(/different password/i).first().waitFor();
+    stage = 'password completion';
+    await submit(password, password);
+    await page.getByText('Your password has been changed. Close this page and sign in to JANSO with your new password.', { exact: true }).waitFor();
+    await page.screenshot({ path: path.join(output, 'disposable-recovery-complete.png') });
+    stage = 'new password sign-in'; await signIn(password, true);
+    stage = 'old password rejection'; await signIn(credentials.password, false);
+    stage = 'used link rejection';
+    const replay = await freshPage(); await replay.goto(link, { timeout: 120000 });
+    await replay.getByText(/invalid|expired|denied|permission/i).first().waitFor();
+    assert.equal(await replay.locator('input[type="password"]').count(), 0);
+    return 'Disposable administrator initial sign-in, native reset, mismatched/same password rejection, new-password sign-in, old-password rejection and one-use link replay rejection passed';
+  } catch {
+    // Playwright errors can include URLs and typed values; publish only the stage.
+    if (currentPage) {
+      await currentPage.screenshot({ path: path.join(output, 'disposable-recovery-blocked.png') }).catch(() => {});
+      const body = await currentPage.locator('body').innerText().catch(() => '');
+      fs.writeFileSync(path.join(output, 'disposable-recovery-stage.txt'), stage + '\n' + body.replaceAll(credentials.password, '[redacted]'));
+    }
+    throw new Error('Disposable recovery verification failed at: ' + stage);
+  } finally {
+    for (const context of contexts) await context.close();
+  }
+};

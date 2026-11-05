@@ -1,0 +1,2102 @@
+{
+  "notification.attachment.created": {
+    "entity_type": "notification.attachment",
+    "action": "notification.attachment.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.attachment.deleted": {
+    "entity_type": "notification.attachment",
+    "action": "notification.attachment.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.attachment.updated": {
+    "entity_type": "notification.attachment",
+    "action": "notification.attachment.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.channel_setting.created": {
+    "entity_type": "notification.channel_setting",
+    "action": "notification.channel_setting.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.channel_setting.deleted": {
+    "entity_type": "notification.channel_setting",
+    "action": "notification.channel_setting.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.channel_setting.updated": {
+    "entity_type": "notification.channel_setting",
+    "action": "notification.channel_setting.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.consent_event.created": {
+    "entity_type": "notification.consent_event",
+    "action": "notification.consent_event.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.consent_event.deleted": {
+    "entity_type": "notification.consent_event",
+    "action": "notification.consent_event.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.consent_event.updated": {
+    "entity_type": "notification.consent_event",
+    "action": "notification.consent_event.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.consent_state.created": {
+    "entity_type": "notification.consent_state",
+    "action": "notification.consent_state.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.consent_state.deleted": {
+    "entity_type": "notification.consent_state",
+    "action": "notification.consent_state.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.consent_state.updated": {
+    "entity_type": "notification.consent_state",
+    "action": "notification.consent_state.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_attachment.created": {
+    "entity_type": "notification.delivery_attachment",
+    "action": "notification.delivery_attachment.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_attachment.deleted": {
+    "entity_type": "notification.delivery_attachment",
+    "action": "notification.delivery_attachment.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_attachment.updated": {
+    "entity_type": "notification.delivery_attachment",
+    "action": "notification.delivery_attachment.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_attempt.created": {
+    "entity_type": "notification.delivery_attempt",
+    "action": "notification.delivery_attempt.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_attempt.deleted": {
+    "entity_type": "notification.delivery_attempt",
+    "action": "notification.delivery_attempt.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_attempt.updated": {
+    "entity_type": "notification.delivery_attempt",
+    "action": "notification.delivery_attempt.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_event.created": {
+    "entity_type": "notification.delivery_event",
+    "action": "notification.delivery_event.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_event.deleted": {
+    "entity_type": "notification.delivery_event",
+    "action": "notification.delivery_event.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.delivery_event.updated": {
+    "entity_type": "notification.delivery_event",
+    "action": "notification.delivery_event.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_content.created": {
+    "entity_type": "notification.notification_content",
+    "action": "notification.notification_content.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_content.deleted": {
+    "entity_type": "notification.notification_content",
+    "action": "notification.notification_content.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_content.updated": {
+    "entity_type": "notification.notification_content",
+    "action": "notification.notification_content.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_delivery.created": {
+    "entity_type": "notification.notification_delivery",
+    "action": "notification.notification_delivery.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_delivery.deleted": {
+    "entity_type": "notification.notification_delivery",
+    "action": "notification.notification_delivery.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_delivery.updated": {
+    "entity_type": "notification.notification_delivery",
+    "action": "notification.notification_delivery.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_job.created": {
+    "entity_type": "notification.notification_job",
+    "action": "notification.notification_job.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_job.deleted": {
+    "entity_type": "notification.notification_job",
+    "action": "notification.notification_job.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_job.updated": {
+    "entity_type": "notification.notification_job",
+    "action": "notification.notification_job.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_planning_outcome.created": {
+    "entity_type": "notification.notification_planning_outcome",
+    "action": "notification.notification_planning_outcome.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_planning_outcome.deleted": {
+    "entity_type": "notification.notification_planning_outcome",
+    "action": "notification.notification_planning_outcome.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_planning_outcome.updated": {
+    "entity_type": "notification.notification_planning_outcome",
+    "action": "notification.notification_planning_outcome.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_preference.created": {
+    "entity_type": "notification.notification_preference",
+    "action": "notification.notification_preference.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_preference.deleted": {
+    "entity_type": "notification.notification_preference",
+    "action": "notification.notification_preference.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_preference.updated": {
+    "entity_type": "notification.notification_preference",
+    "action": "notification.notification_preference.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_request.created": {
+    "entity_type": "notification.notification_request",
+    "action": "notification.notification_request.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_request.deleted": {
+    "entity_type": "notification.notification_request",
+    "action": "notification.notification_request.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_request.updated": {
+    "entity_type": "notification.notification_request",
+    "action": "notification.notification_request.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_space.created": {
+    "entity_type": "notification.notification_space",
+    "action": "notification.notification_space.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_space.deleted": {
+    "entity_type": "notification.notification_space",
+    "action": "notification.notification_space.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_space.updated": {
+    "entity_type": "notification.notification_space",
+    "action": "notification.notification_space.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_template.created": {
+    "entity_type": "notification.notification_template",
+    "action": "notification.notification_template.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_template.deleted": {
+    "entity_type": "notification.notification_template",
+    "action": "notification.notification_template.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_template.updated": {
+    "entity_type": "notification.notification_template",
+    "action": "notification.notification_template.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_use_case_binding.created": {
+    "entity_type": "notification.notification_use_case_binding",
+    "action": "notification.notification_use_case_binding.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_use_case_binding.deleted": {
+    "entity_type": "notification.notification_use_case_binding",
+    "action": "notification.notification_use_case_binding.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.notification_use_case_binding.updated": {
+    "entity_type": "notification.notification_use_case_binding",
+    "action": "notification.notification_use_case_binding.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.party_endpoint_checkpoint.created": {
+    "entity_type": "notification.party_endpoint_checkpoint",
+    "action": "notification.party_endpoint_checkpoint.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.party_endpoint_checkpoint.deleted": {
+    "entity_type": "notification.party_endpoint_checkpoint",
+    "action": "notification.party_endpoint_checkpoint.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.party_endpoint_checkpoint.updated": {
+    "entity_type": "notification.party_endpoint_checkpoint",
+    "action": "notification.party_endpoint_checkpoint.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_account.created": {
+    "entity_type": "notification.provider_account",
+    "action": "notification.provider_account.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_account.deleted": {
+    "entity_type": "notification.provider_account",
+    "action": "notification.provider_account.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_account.updated": {
+    "entity_type": "notification.provider_account",
+    "action": "notification.provider_account.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_event.created": {
+    "entity_type": "notification.provider_event",
+    "action": "notification.provider_event.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_event.deleted": {
+    "entity_type": "notification.provider_event",
+    "action": "notification.provider_event.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_event.updated": {
+    "entity_type": "notification.provider_event",
+    "action": "notification.provider_event.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_template_binding.created": {
+    "entity_type": "notification.provider_template_binding",
+    "action": "notification.provider_template_binding.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_template_binding.deleted": {
+    "entity_type": "notification.provider_template_binding",
+    "action": "notification.provider_template_binding.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.provider_template_binding.updated": {
+    "entity_type": "notification.provider_template_binding",
+    "action": "notification.provider_template_binding.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.recipient_endpoint.created": {
+    "entity_type": "notification.recipient_endpoint",
+    "action": "notification.recipient_endpoint.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.recipient_endpoint.deleted": {
+    "entity_type": "notification.recipient_endpoint",
+    "action": "notification.recipient_endpoint.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.recipient_endpoint.updated": {
+    "entity_type": "notification.recipient_endpoint",
+    "action": "notification.recipient_endpoint.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.routing_rule.created": {
+    "entity_type": "notification.routing_rule",
+    "action": "notification.routing_rule.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.routing_rule.deleted": {
+    "entity_type": "notification.routing_rule",
+    "action": "notification.routing_rule.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.routing_rule.updated": {
+    "entity_type": "notification.routing_rule",
+    "action": "notification.routing_rule.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.sender_identity.created": {
+    "entity_type": "notification.sender_identity",
+    "action": "notification.sender_identity.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.sender_identity.deleted": {
+    "entity_type": "notification.sender_identity",
+    "action": "notification.sender_identity.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.sender_identity.updated": {
+    "entity_type": "notification.sender_identity",
+    "action": "notification.sender_identity.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.suppression.created": {
+    "entity_type": "notification.suppression",
+    "action": "notification.suppression.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.suppression.deleted": {
+    "entity_type": "notification.suppression",
+    "action": "notification.suppression.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.suppression.updated": {
+    "entity_type": "notification.suppression",
+    "action": "notification.suppression.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_activation.created": {
+    "entity_type": "notification.template_activation",
+    "action": "notification.template_activation.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_activation.deleted": {
+    "entity_type": "notification.template_activation",
+    "action": "notification.template_activation.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_activation.updated": {
+    "entity_type": "notification.template_activation",
+    "action": "notification.template_activation.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_variant.created": {
+    "entity_type": "notification.template_variant",
+    "action": "notification.template_variant.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_variant.deleted": {
+    "entity_type": "notification.template_variant",
+    "action": "notification.template_variant.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_variant.updated": {
+    "entity_type": "notification.template_variant",
+    "action": "notification.template_variant.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_version.created": {
+    "entity_type": "notification.template_version",
+    "action": "notification.template_version.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_version.deleted": {
+    "entity_type": "notification.template_version",
+    "action": "notification.template_version.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.template_version.updated": {
+    "entity_type": "notification.template_version",
+    "action": "notification.template_version.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.voucher_send_state.created": {
+    "entity_type": "notification.voucher_send_state",
+    "action": "notification.voucher_send_state.created",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.voucher_send_state.deleted": {
+    "entity_type": "notification.voucher_send_state",
+    "action": "notification.voucher_send_state.deleted",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  },
+  "notification.voucher_send_state.updated": {
+    "entity_type": "notification.voucher_send_state",
+    "action": "notification.voucher_send_state.updated",
+    "categories": [
+      "admin",
+      "system"
+    ],
+    "safe_values": [
+      "approval_status",
+      "attempt_count",
+      "health_status",
+      "is_active",
+      "is_enabled",
+      "outcome",
+      "processing_status",
+      "scan_status",
+      "state",
+      "status",
+      "verification_status"
+    ],
+    "context_fields": [
+      "notification_realm",
+      "notification_space_id"
+    ]
+  }
+}

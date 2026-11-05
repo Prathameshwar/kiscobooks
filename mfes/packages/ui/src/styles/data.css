@@ -1,0 +1,1275 @@
+/*
+ * @janso/ui — content and data primitives: cards, stat tiles, list rows, badges,
+ * meters, tabs, toolbars, page headers, empty/error states (design-system §5.3).
+ *
+ * Contains no colour values — every colour reads a --janso-* token. Tones are data
+ * attributes (`data-tone="warn"`), each resolving to a signal {ink,tint,line} triplet.
+ */
+
+/* ---------- page layout (design-system §4.2) ---------- */
+
+/* Fluid with a gutter, capped so an ultrawide monitor doesn't stretch a table to 3000px. */
+.janso-page {
+  width: 100%;
+  max-width: var(--janso-page-max);
+  margin: 0 auto;
+  padding: var(--janso-space-6) var(--janso-page-gutter) var(--janso-space-8);
+}
+
+/*
+ * Vertical rhythm for a column of page blocks.
+ *
+ * One uniform `gap` is what made the spacing read as arbitrary: a toolbar belongs to the
+ * section heading above it, and the meta line is a caption on that toolbar's current
+ * selection — yet all three sat the same 32px apart as unrelated blocks, and `.janso-meta`'s
+ * own 4px top margin (which it needs inside a card) compounded on top of the gap.
+ *
+ * So spacing is stated per *relationship*, and with margins rather than `gap`, so there is one
+ * mechanism and nothing can compound. Margins don't collapse in a flex column, which makes
+ * these predictable.
+ *
+ * `.janso-page` is one such column; a tab panel nested inside it is another, which is why this
+ * is a utility rather than rules bound to the page.
+ */
+.janso-page,
+.janso-flow {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The default: two unrelated blocks. */
+.janso-page > * + *,
+.janso-flow > * + * {
+  margin-top: var(--janso-space-5);
+}
+
+/* A new section is a bigger break than a block within one. */
+.janso-page > * + .janso-section-header,
+.janso-flow > * + .janso-section-header {
+  margin-top: var(--janso-space-6);
+}
+
+/* …and whatever a section heading introduces sits close under it. */
+.janso-page > .janso-section-header + *,
+.janso-flow > .janso-section-header + * {
+  margin-top: var(--janso-space-4);
+}
+
+/* The tab strip belongs to the page header it filters, not to the content below. */
+.janso-page > .janso-page-header + .janso-tabs,
+.janso-flow > .janso-page-header + .janso-tabs {
+  margin-top: var(--janso-space-5);
+}
+
+/*
+ * The filter bar, the bulk bar and the table under them are one control, so they sit at the small
+ * step rather than the block-to-block one. The components carry no outer margin of their own — the
+ * column owns all of its spacing, so there is one regime, not two.
+ */
+.janso-page > :is(.janso-filter-bar, .janso-bulk-bar) + *,
+.janso-flow > :is(.janso-filter-bar, .janso-bulk-bar) + *,
+/* …including a bar wrapped in its own `<form method="get">`, which is how a URL-driven list
+ * submits one: the flow child is then the form, and the rule above would stop matching. */
+.janso-page > form:has(> .janso-filter-bar) + *,
+.janso-flow > form:has(> .janso-filter-bar) + * {
+  margin-top: var(--janso-space-3);
+}
+
+/* The meta line captions the toolbar; it is not a block of its own. */
+.janso-page > .janso-toolbar + .janso-meta,
+.janso-flow > .janso-toolbar + .janso-meta {
+  margin-top: var(--janso-space-2);
+}
+.janso-page > .janso-meta + *,
+.janso-flow > .janso-meta + * {
+  margin-top: var(--janso-space-5);
+}
+
+/*
+ * Consecutive bands of cards keep the grid's own gutter, so the space between two rows of
+ * cards matches the space between two cards side by side. At `space-6` the rows read as
+ * separate sections when they are one field of cards.
+ */
+.janso-page > :is(.janso-grid, .janso-stat-row) + :is(.janso-grid, .janso-stat-row),
+.janso-flow > :is(.janso-grid, .janso-stat-row) + :is(.janso-grid, .janso-stat-row) {
+  margin-top: var(--janso-space-4);
+}
+
+.janso-action-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: var(--janso-space-4);
+}
+/*
+ * `--janso-control-line`, not `--janso-line`: an ActionCard is an `<a>` — a user interface
+ * component, so WCAG 1.4.11 owes its boundary 3:1, and the decorative rule does not carry
+ * that in any palette. It matters most on the administration landing pages, which are nothing
+ * but a grid of these.
+ */
+.janso-action-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--janso-space-6);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-grad-panel);
+  box-shadow: var(--janso-shadow-card);
+  color: var(--janso-ink);
+  text-decoration: none;
+  transition: border-color var(--janso-dur-fast), box-shadow var(--janso-dur-fast);
+}
+a.janso-action-card:hover { border-color: var(--janso-brand-line); box-shadow: var(--janso-shadow-popover); }
+a.janso-action-card:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); }
+.janso-action-card__top { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-3); }
+.janso-action-card__icon {
+  display: grid; place-items: center; padding: var(--janso-space-3);
+  border-radius: var(--janso-radius-md); background: var(--janso-grad-mark); color: var(--janso-ink-invert);
+}
+.janso-action-card__icon svg { width: var(--janso-space-6); height: var(--janso-space-6); }
+.janso-action-card__title { margin: var(--janso-space-5) 0 var(--janso-space-2); font-family: var(--janso-font-display); font-size: var(--janso-text-lg); color: var(--janso-ink); }
+.janso-action-card__description { margin: 0; color: var(--janso-ink-soft); font-size: var(--janso-text-sm); line-height: 1.6; }
+.janso-action-card__footer { margin-top: auto; padding-top: var(--janso-space-6); color: var(--janso-brand); font-weight: 600; font-size: var(--janso-text-sm); }
+.janso-action-card__footer > span { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-3); }
+.janso-action-card__footer--setup { display: flex; flex-direction: column; align-items: flex-start; gap: var(--janso-space-2); }
+.janso-action-card__footer--setup > button { max-inline-size: 100%; white-space: normal; text-align: start; padding-inline: 0; justify-content: flex-start; }
+.janso-action-card__footer--setup > a { white-space: nowrap; flex-shrink: 0; }
+.janso-action-card[data-disabled='true'] .janso-action-card__icon { background: var(--janso-neutral-tint); color: var(--janso-neutral-ink); }
+/* Keep short sections and filtered results aligned with full catalogue rows. */
+.janso-action-card-grid--compact {
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--janso-action-card-compact-min), 100%), 1fr));
+}
+.janso-action-card-grid--compact .janso-action-card {
+  box-sizing: border-box;
+  block-size: var(--janso-action-card-compact-height);
+  padding: var(--janso-space-4);
+}
+.janso-action-card-grid--compact .janso-action-card__icon { padding: var(--janso-space-2); }
+.janso-action-card-grid--compact .janso-action-card__top .janso-badge { white-space: normal; min-width: 0; }
+.janso-action-card-grid--compact .janso-action-card__icon svg { width: var(--janso-space-4); height: var(--janso-space-4); }
+.janso-action-card-grid--compact .janso-action-card__title {
+  margin-top: var(--janso-space-3);
+  font-size: var(--janso-text-md);
+  line-height: 1.4;
+}
+.janso-action-card-grid--compact .janso-action-card__description { line-height: 1.5; }
+.janso-action-card-grid--compact .janso-action-card__footer { padding-top: var(--janso-space-3); }
+.janso-action-card-grid--compact .janso-action-card:has(.janso-action-card__footer--setup) { block-size: auto; min-block-size: var(--janso-action-card-compact-height); }
+@media (prefers-reduced-motion: reduce) { .janso-action-card { transition: none; } }
+
+.janso-grid {
+  display: grid;
+  gap: var(--janso-space-4);
+}
+.janso-grid--start { align-items: start; }
+
+/* The KPI band: 4-up → 2-up → 1-up. */
+.janso-grid--kpi {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Content beside a sidebar. `minmax(0,…)` on both tracks so a long figure can't force
+ * the column wider than its share — grid's default `min-width:auto` would let it. */
+.janso-grid--split {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .janso-grid--kpi {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .janso-grid--split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .janso-grid--kpi {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The muted second line under a title, and under a figure: always tabular, because these
+ * are dates, counts and references that should align down a column. */
+.janso-meta {
+  margin: var(--janso-space-1) 0 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* The eyebrow above a title. Sentence case at the small step: an uppercase tracked label over
+ * every heading was the loudest thing on the page and said the least. */
+.janso-overline {
+  margin: 0 0 var(--janso-space-1);
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--janso-ink-faint);
+}
+.janso-overline--brand {
+  color: var(--janso-brand);
+}
+
+/* ---------- page & section headers ---------- */
+
+.janso-page-navigation { display: flex; align-items: center; flex-wrap: wrap; gap: var(--janso-space-2) var(--janso-space-4); min-width: 0; font-size: var(--janso-text-sm); }
+/* The back chip is a link drawn as an outline control, so its edge owes 3:1 like any other
+ * control edge — `--janso-line` left it at 1.23:1 on dark, where the chip was its own border. */
+.janso-page-navigation__back { display: inline-flex; align-items: center; gap: var(--janso-space-1); flex-shrink: 0; padding: var(--janso-space-2); border: 1px solid var(--janso-control-line); border-radius: var(--janso-radius-sm); color: var(--janso-ink-soft); background: var(--janso-surface); text-decoration: none; font-weight: 500; }
+.janso-page-navigation__back:hover { color: var(--janso-brand); border-color: var(--janso-brand-line); background: var(--janso-brand-tint); }
+.janso-page-navigation__back:focus-visible, .janso-breadcrumbs a:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); }
+.janso-page-navigation__back svg { width: var(--janso-space-4); height: var(--janso-space-4); }
+.janso-breadcrumbs { min-width: 0; }
+.janso-breadcrumbs ol { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--janso-space-1) var(--janso-space-2); list-style: none; padding: 0; margin: 0; }
+.janso-breadcrumbs li { display: inline-flex; align-items: baseline; gap: var(--janso-space-2); min-width: 0; overflow-wrap: anywhere; }
+.janso-breadcrumbs li + li::before { content: '/'; color: var(--janso-ink-faint); }
+.janso-breadcrumbs a { color: var(--janso-ink-soft); text-decoration: none; border-radius: var(--janso-radius-sm); }
+.janso-breadcrumbs a:hover { color: var(--janso-brand); text-decoration: underline; }
+.janso-breadcrumbs [aria-current='page'] { color: var(--janso-ink); font-weight: 500; }
+.janso-page > .janso-page-navigation + .janso-page-header, .janso-flow > .janso-page-navigation + .janso-page-header { margin-top: var(--janso-space-3); }
+
+.janso-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--janso-space-5);
+  flex-wrap: wrap;
+}
+.janso-page-header__text {
+  min-width: 0;
+}
+.janso-page-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--janso-space-2);
+  margin-top: var(--janso-space-3);
+}
+.janso-page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  flex-wrap: wrap;
+}
+
+.janso-section-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+}
+.janso-section-header__icon {
+  display: grid;
+  place-items: center;
+  color: var(--janso-brand);
+}
+.janso-section-header__title {
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-weight: 600;
+  font-size: var(--janso-text-lg);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--janso-ink);
+}
+/*
+ * Wider than the 80ch prose ceiling on purpose. This is a caption under a heading — one or two
+ * sentences qualifying what the figures below mean — not running body copy, and the sentences
+ * that actually appear here run past 90 characters. Capping it shorter split a single sentence
+ * across two lines with half the page empty beside it. It still wraps once the container
+ * genuinely runs out of room.
+ */
+.janso-section-header__desc {
+  margin: var(--janso-space-1) 0 0;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+  max-width: 96ch;
+}
+
+/* ---------- toolbar ---------- */
+
+.janso-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  flex-wrap: wrap;
+}
+.janso-toolbar__side {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+/* `auto` margin rather than `space-between`: a toolbar with only a trailing slot still
+ * sits right, and a wrapped row doesn't spread its own items apart. */
+.janso-toolbar__side--end {
+  margin-left: auto;
+}
+
+/* ---------- tabs ---------- */
+
+/*
+ * The row wraps; it is not a scroll container.
+ *
+ * It used to carry `overflow-x: auto` for narrow widths, which had two side effects. Setting
+ * one axis to `auto` computes the other from `visible` to `auto`, and the selected tab's
+ * underline sits at `bottom: -1px` — so the row overflowed itself by one pixel and grew a
+ * vertical scrollbar down its right edge. The horizontal padding added to keep the focus ring
+ * from being clipped then widened the scrollable area on top of that.
+ *
+ * Wrapping removes the scroll container, so nothing clips the focus ring and the padding
+ * workaround goes with it. Five short labels wrap to a second line only on a phone.
+ */
+.janso-tabs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--janso-space-1);
+  border-bottom: 1px solid var(--janso-line);
+}
+.janso-tabs__tab {
+  position: relative;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  color: var(--janso-ink-soft);
+  padding: 0.625rem var(--janso-space-3);
+  cursor: pointer;
+  white-space: nowrap;
+  isolation: isolate;
+  /* The strip is also used for routed section links, which are anchors. */
+  text-decoration: none;
+  transition: color var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-tabs__tab:hover {
+  color: var(--janso-ink);
+}
+/* Hover lands on a pill inside the tab's box, so the selected underline never moves. */
+.janso-tabs__tab::before {
+  content: '';
+  position: absolute;
+  inset: 0.25rem 0;
+  z-index: -1;
+  border-radius: var(--janso-radius-sm);
+  transition: background var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-tabs__tab:hover::before {
+  background: var(--janso-hover);
+}
+.janso-tabs__tab:focus-visible {
+  outline: none;
+  border-radius: var(--janso-radius-sm);
+  box-shadow: var(--janso-focus-ring);
+}
+/*
+ * `aria-current` beside `aria-selected`: an area reached by its own URL is a link, not a tab, so
+ * it cannot carry `aria-selected` — but a row of routed section links is the same strip to the
+ * eye, and a second near-identical block is how the two drift apart. One strip, two states
+ * (design-system §9, decision 11).
+ */
+.janso-tabs__tab[aria-selected='true'],
+.janso-tabs__tab[aria-current='page'] {
+  color: var(--janso-ink);
+}
+/* The 2px brand underline sits *on* the hairline rule, so the row reads as one edge. */
+.janso-tabs__tab[aria-selected='true']::after,
+.janso-tabs__tab[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: var(--janso-space-3);
+  right: var(--janso-space-3);
+  bottom: -1px;
+  height: 2px;
+  background: var(--janso-brand);
+  border-radius: var(--janso-radius-pill);
+}
+
+/* ---------- card ---------- */
+
+.janso-card {
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-card);
+  min-width: 0;
+}
+.janso-card--nested {
+  background: var(--janso-surface-2);
+  box-shadow: none;
+}
+.janso-card[data-tone='brand'] {
+  background: var(--janso-brand-tint);
+  border-color: var(--janso-brand-line);
+}
+.janso-card[data-tone='success'] {
+  background: var(--janso-success-tint);
+  border-color: var(--janso-success-line);
+}
+.janso-card[data-tone='warn'] {
+  background: var(--janso-warn-tint);
+  border-color: var(--janso-warn-line);
+}
+.janso-card[data-tone='danger'] {
+  background: var(--janso-danger-tint);
+  border-color: var(--janso-danger-line);
+}
+.janso-card[data-tone='info'] {
+  background: var(--janso-info-tint);
+  border-color: var(--janso-info-line);
+}
+.janso-card[data-tone='neutral'] {
+  background: var(--janso-neutral-tint);
+  border-color: var(--janso-neutral-line);
+}
+
+.janso-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--janso-space-4);
+  padding: var(--janso-space-4) var(--janso-space-5);
+  border-bottom: 1px solid var(--janso-line);
+}
+/* A header over a body that is itself padded reads as one block; the rule stays only where the body
+ * runs edge to edge (a table, a list, a chart). */
+.janso-card__header:has(+ .janso-card__body) {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.janso-card--wrap-header > .janso-card__header {
+  flex-wrap: wrap;
+}
+.janso-card__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-3);
+  min-width: 0;
+}
+.janso-card__icon {
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-soft);
+  margin-top: 1px;
+}
+.janso-card__titles {
+  min-width: 0;
+}
+.janso-card__title {
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-weight: 600;
+  font-size: var(--janso-text-md);
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: var(--janso-ink);
+}
+.janso-card__subtitle {
+  margin: var(--janso-space-1) 0 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-card__aside {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  flex: none;
+}
+.janso-card__body {
+  padding: var(--janso-space-5);
+}
+/* Related guidance, actions and history within an opt-in compact card. */
+.janso-card--compact > .janso-card__body {
+  padding: var(--janso-space-3) var(--janso-space-5) var(--janso-space-4);
+}
+.janso-card--compact > .janso-card__body > .janso-flow > * {
+  margin-top: 0;
+}
+.janso-card--compact > .janso-card__body > .janso-flow > * + * {
+  margin-top: var(--janso-space-3);
+}
+.janso-card__footer {
+  padding: var(--janso-space-3) var(--janso-space-5);
+  border-top: 1px solid var(--janso-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- stat tile ---------- */
+
+.janso-stat-row {
+  display: grid;
+  gap: var(--janso-space-4);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.janso-stat-row[data-columns='3'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1100px) {
+  .janso-stat-row,
+  .janso-stat-row[data-columns='3'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 680px) {
+  .janso-stat-row,
+  .janso-stat-row[data-columns='3'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.janso-stat {
+  background: var(--janso-surface);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-card);
+  padding: var(--janso-space-4) var(--janso-space-5);
+  min-width: 0;
+}
+.janso-stat__label {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  color: var(--janso-ink-soft);
+}
+.janso-stat__icon {
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+}
+.janso-stat__value {
+  margin: var(--janso-space-2) 0 0;
+  font-family: var(--janso-font-display);
+  font-size: var(--janso-figure-lg);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--janso-ink);
+}
+/* The footnote and an optional trend share the tile's last row, so a tile with a sparkline and one
+ * without stay the same height in a row of four. */
+.janso-stat__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  margin-top: var(--janso-space-2);
+  min-width: 0;
+}
+.janso-stat__footnote {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-stat__trend {
+  display: block;
+  flex: 0 1 5.5rem;
+  min-width: 2.5rem;
+  height: 1.75rem;
+}
+
+/* A tile inside a card: quieter surface, no lift, the smaller figure step. */
+.janso-stat--nested {
+  background: var(--janso-surface-2);
+  box-shadow: none;
+  padding: var(--janso-space-4);
+}
+.janso-stat--nested .janso-stat__value {
+  font-size: var(--janso-figure-sm);
+}
+
+/* `tone` colours the figure only … */
+.janso-stat[data-tone='brand'] .janso-stat__value {
+  color: var(--janso-brand-ink);
+}
+.janso-stat[data-tone='success'] .janso-stat__value {
+  color: var(--janso-success-ink);
+}
+.janso-stat[data-tone='warn'] .janso-stat__value {
+  color: var(--janso-warn-ink);
+}
+.janso-stat[data-tone='danger'] .janso-stat__value {
+  color: var(--janso-danger-ink);
+}
+
+/* … `emphasis` adds the rest of the triplet, which is how one tile in a row reads as the
+ * lead metric. `default` has no tint of its own, so it borrows the neutral one. */
+.janso-stat--emphasis[data-tone='default'] {
+  background: var(--janso-neutral-tint);
+  border-color: var(--janso-neutral-line);
+}
+.janso-stat--emphasis[data-tone='brand'] {
+  background: var(--janso-brand-tint);
+  border-color: var(--janso-brand-line);
+}
+.janso-stat--emphasis[data-tone='success'] {
+  background: var(--janso-success-tint);
+  border-color: var(--janso-success-line);
+}
+.janso-stat--emphasis[data-tone='warn'] {
+  background: var(--janso-warn-tint);
+  border-color: var(--janso-warn-line);
+}
+.janso-stat--emphasis[data-tone='danger'] {
+  background: var(--janso-danger-tint);
+  border-color: var(--janso-danger-line);
+}
+
+/* ---------- badge ---------- */
+
+.janso-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+  padding: 0.0625rem 0.5rem;
+  border-radius: var(--janso-radius-pill);
+  border: 1px solid transparent;
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+.janso-badge--tint[data-tone='neutral'] {
+  background: var(--janso-neutral-tint);
+  border-color: var(--janso-neutral-line);
+  color: var(--janso-neutral-ink);
+}
+.janso-badge--tint[data-tone='brand'] {
+  background: var(--janso-brand-tint);
+  border-color: var(--janso-brand-line);
+  color: var(--janso-brand-ink);
+}
+.janso-badge--tint[data-tone='success'] {
+  background: var(--janso-success-tint);
+  border-color: var(--janso-success-line);
+  color: var(--janso-success-ink);
+}
+.janso-badge--tint[data-tone='warn'] {
+  background: var(--janso-warn-tint);
+  border-color: var(--janso-warn-line);
+  color: var(--janso-warn-ink);
+}
+.janso-badge--tint[data-tone='danger'] {
+  background: var(--janso-danger-tint);
+  border-color: var(--janso-danger-line);
+  color: var(--janso-danger-ink);
+}
+.janso-badge--tint[data-tone='info'] {
+  background: var(--janso-info-tint);
+  border-color: var(--janso-info-line);
+  color: var(--janso-info-ink);
+}
+
+/* The quiet form: a hairline on the card surface, ink from the tone. */
+.janso-badge--outline {
+  background: var(--janso-surface);
+  border-color: var(--janso-line);
+  color: var(--janso-ink-soft);
+  font-weight: 500;
+}
+.janso-badge--outline[data-tone='brand'] {
+  border-color: var(--janso-brand-line);
+  color: var(--janso-brand-ink);
+}
+.janso-badge--outline[data-tone='success'] {
+  border-color: var(--janso-success-line);
+  color: var(--janso-success-ink);
+}
+.janso-badge--outline[data-tone='warn'] {
+  border-color: var(--janso-warn-line);
+  color: var(--janso-warn-ink);
+}
+.janso-badge--outline[data-tone='danger'] {
+  border-color: var(--janso-danger-line);
+  color: var(--janso-danger-ink);
+}
+.janso-badge--outline[data-tone='info'] {
+  border-color: var(--janso-info-line);
+  color: var(--janso-info-ink);
+}
+
+/* Codes — `INR`, `GSTIN`, a document series. Mono because character width is meaning. */
+.janso-badge--mono {
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-text-overline);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-neutral-tint);
+  border-color: var(--janso-neutral-line);
+  color: var(--janso-neutral-ink);
+}
+.janso-badge--mono[data-tone='brand'] {
+  background: var(--janso-brand-tint);
+  border-color: var(--janso-brand-line);
+  color: var(--janso-brand-ink);
+}
+.janso-badge--mono[data-tone='success'] {
+  background: var(--janso-success-tint);
+  border-color: var(--janso-success-line);
+  color: var(--janso-success-ink);
+}
+.janso-badge--mono[data-tone='warn'] {
+  background: var(--janso-warn-tint);
+  border-color: var(--janso-warn-line);
+  color: var(--janso-warn-ink);
+}
+.janso-badge--mono[data-tone='danger'] {
+  background: var(--janso-danger-tint);
+  border-color: var(--janso-danger-line);
+  color: var(--janso-danger-ink);
+}
+.janso-badge--mono[data-tone='info'] {
+  background: var(--janso-info-tint);
+  border-color: var(--janso-info-line);
+  color: var(--janso-info-ink);
+}
+
+/* ---------- list row ---------- */
+
+.janso-list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-3);
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--janso-line);
+  min-width: 0;
+}
+.janso-list-row:last-child {
+  border-bottom: 0;
+}
+/* `min-width`, not `width`: a rank of 100 or more is four characters wide and a fixed 1.6rem
+ * simply loses the leading digit. The column still aligns for the common 1–99 case. */
+.janso-list-row__rank {
+  flex: none;
+  min-width: 1.6rem;
+  text-align: right;
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink-faint);
+  line-height: 1.5;
+}
+.janso-list-row__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  color: var(--janso-ink-soft);
+}
+.janso-list-row[data-tone='success'] .janso-list-row__icon {
+  color: var(--janso-success-ink);
+}
+.janso-list-row[data-tone='warn'] .janso-list-row__icon {
+  color: var(--janso-warn-ink);
+}
+.janso-list-row[data-tone='danger'] .janso-list-row__icon {
+  color: var(--janso-danger-ink);
+}
+.janso-list-row[data-tone='info'] .janso-list-row__icon {
+  color: var(--janso-info-ink);
+}
+.janso-list-row[data-tone='brand'] .janso-list-row__icon {
+  color: var(--janso-brand);
+}
+.janso-list-row__main {
+  flex: 1;
+  min-width: 0;
+}
+.janso-list-row__top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--janso-space-3);
+}
+.janso-list-row__primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  color: var(--janso-ink);
+  min-width: 0;
+}
+/* A link keeps the brand ink; the plain span stays body ink. */
+a.janso-list-row__primary {
+  color: var(--janso-brand);
+}
+.janso-list-row__primary svg {
+  flex: none;
+  color: var(--janso-ink-faint);
+}
+.janso-list-row__figure {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink);
+}
+
+/* ---------- meter ---------- */
+
+.janso-meter {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  margin-top: var(--janso-space-2);
+}
+.janso-meter__track {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-meter-track);
+  overflow: hidden;
+  min-width: 0;
+}
+.janso-meter__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-meter-fill);
+  transition: width var(--janso-dur) var(--janso-ease);
+}
+.janso-meter[data-tone='success'] .janso-meter__fill {
+  background: var(--janso-success-ink);
+}
+.janso-meter[data-tone='warn'] .janso-meter__fill {
+  background: var(--janso-warn-ink);
+}
+.janso-meter[data-tone='danger'] .janso-meter__fill {
+  background: var(--janso-danger-ink);
+}
+.janso-meter[data-tone='info'] .janso-meter__fill {
+  background: var(--janso-info-ink);
+}
+.janso-meter[data-tone='neutral'] .janso-meter__fill {
+  background: var(--janso-neutral-ink);
+}
+/* `100%` is four characters and a `share` of 1 is reachable, so 3ch clipped the value that
+ * matters most. `min-width` keeps the column aligned without capping it. */
+.janso-meter__percent {
+  flex: none;
+  min-width: 4ch;
+  text-align: right;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- disclosure ---------- */
+
+.janso-disclosure {
+  border-top: 1px solid var(--janso-line);
+}
+.janso-disclosure__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  padding: var(--janso-space-3) 0;
+  cursor: pointer;
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  color: var(--janso-ink);
+  list-style: none;
+}
+/* Both are needed: WebKit uses the pseudo-element, everyone else uses `list-style`. */
+.janso-disclosure__summary::-webkit-details-marker {
+  display: none;
+}
+.janso-disclosure__summary:hover {
+  color: var(--janso-brand);
+}
+.janso-disclosure__summary:focus-visible {
+  outline: none;
+  border-radius: var(--janso-radius-sm);
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-disclosure__caret {
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+  transition: transform var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-disclosure[open] .janso-disclosure__caret {
+  transform: rotate(90deg);
+}
+.janso-disclosure__body {
+  padding-bottom: var(--janso-space-3);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+}
+
+/* `Select` lives in `janso-ui.css` with the other form controls — a form field is a framework
+ * primitive, and `data.css` is not imported by every app. */
+
+/* ---------- empty / error states ---------- */
+
+.janso-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--janso-space-1);
+  padding: var(--janso-space-7) var(--janso-space-5);
+  border: 1px dashed var(--janso-line-strong);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface);
+}
+.janso-state__icon {
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+  margin-bottom: var(--janso-space-2);
+}
+.janso-state__title {
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-weight: 600;
+  font-size: var(--janso-text-md);
+  color: var(--janso-ink);
+}
+.janso-state__body {
+  margin: 0;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+  max-width: 46ch;
+}
+.janso-state__detail {
+  margin: var(--janso-space-1) 0 0;
+}
+.janso-state__action {
+  margin-top: var(--janso-space-4);
+}
+
+/* A failure is the danger triplet, plus an icon — never colour alone. */
+.janso-state--error[data-tone='danger'] {
+  border-style: solid;
+  background: var(--janso-danger-tint);
+  border-color: var(--janso-danger-line);
+}
+.janso-state--error[data-tone='danger'] .janso-state__icon,
+.janso-state--error[data-tone='danger'] .janso-state__title {
+  color: var(--janso-danger-ink);
+}
+.janso-state--error[data-tone='danger'] .janso-state__body,
+.janso-state--error[data-tone='danger'] .janso-state__detail {
+  color: var(--janso-danger-ink);
+}
+
+/* ---------- skeleton ---------- */
+
+.janso-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+}
+.janso-skeleton__line {
+  display: block;
+  height: 0.75rem;
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-neutral-tint);
+  background-image: linear-gradient(
+    90deg,
+    var(--janso-neutral-tint) 0%,
+    var(--janso-hover) 50%,
+    var(--janso-neutral-tint) 100%
+  );
+  background-size: 200% 100%;
+  animation: janso-shimmer 1.4s var(--janso-ease) infinite;
+}
+/* The last bar is short: a paragraph's last line is, and the placeholder should look like
+ * the content it stands in for. */
+.janso-skeleton__line:last-child {
+  width: 62%;
+}
+@keyframes janso-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+/* Honoured here as well as at the root: a skeleton can render outside `.janso-root`, and a
+ * looping shimmer is exactly the motion this media query exists for. */
+@media (prefers-reduced-motion: reduce) {
+  .janso-skeleton__line {
+    animation: none;
+  }
+}
+/* Reporting workspace composes existing fields and tables using shared layout tokens. */
+.janso-report-workspace { display: grid; gap: var(--janso-space-4); min-width: 0; }
+.janso-report-workspace > section { display: grid; gap: var(--janso-space-4); min-width: 0; padding: var(--janso-space-5); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-md); background: var(--janso-surface); box-shadow: var(--janso-shadow-card); }
+.janso-report-workspace h1, .janso-report-workspace h2, .janso-report-workspace p { margin-block: 0; }
+.janso-report-workspace .janso-form-grid { padding-top: var(--janso-space-4); border-top: 1px solid var(--janso-line); }
+.janso-report-workspace > .janso-btn { justify-self: start; }
+.janso-report-header, .janso-report-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--janso-space-3); }
+.janso-report-header { justify-content: space-between; padding-block: var(--janso-space-3); }
+.janso-report-header p, .janso-report-source { color: var(--janso-ink-soft); overflow-wrap: anywhere; }
+.janso-report-workspace h2 { font-size: var(--janso-text-lg); }
+.janso-report-workspace caption { text-align: start; padding: var(--janso-space-3) var(--janso-space-4); color: var(--janso-ink-soft); font-size: var(--janso-text-xs); }
+.janso-report-status { display: grid; gap: var(--janso-space-2); }
+.janso-report-workspace ul { display: grid; gap: var(--janso-space-2); padding: 0; margin: 0; list-style: none; }
+.janso-report-history .janso-btn { max-inline-size: 100%; white-space: normal; overflow-wrap: anywhere; text-align: start; }
+
+/* ---------- Audit and activity list surfaces ---------- */
+
+.janso-event-log { min-width: 0; }
+.janso-event-log__toolbar { padding: var(--janso-space-4) var(--janso-space-5); }
+.janso-event-log__note {
+  margin: 0;
+  padding: 0 var(--janso-space-5) var(--janso-space-4);
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+  line-height: 1.5;
+}
+.janso-event-log .janso-filter-bar__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--janso-filter-search-min)), 1fr));
+}
+.janso-event-log .janso-filter-bar__controls > .janso-field { width: 100%; }
+.janso-event-log .janso-meta { margin: 0; align-self: center; }
+.janso-event-log > .janso-table-shell { border: 0; border-radius: 0; }
+.janso-event-log > .janso-pager { border-top: 1px solid var(--janso-line); }
+.janso-event-log .janso-table td { overflow-wrap: anywhere; }
+.janso-event-log .janso-table__code { white-space: normal; overflow-wrap: anywhere; }
+.janso-event-log .janso-filter-bar__actions { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+
+/* Existing audit panel class names retain compatibility; styles live in @janso/ui. */
+.console-audit-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-4);
+  min-width: 0;
+}
+.console-audit-detail__pending {
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+  margin: 0 0 var(--janso-space-2);
+}
+.console-audit-detail__reason {
+  margin: 0;
+  font-size: var(--janso-text-base);
+  color: var(--janso-ink);
+}
+.console-audit-detail__block {
+  min-width: 0;
+}
+.console-audit-detail__heading {
+  margin: 0 0 var(--janso-space-2);
+  font-size: var(--janso-text-overline);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--janso-ink-faint);
+}
+
+/* Term above value, wrapping into as many columns as the row width allows — a fact is a short
+   pair, and a two-column dl would leave half the width empty on a wide table. */
+.console-audit-detail__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--janso-filter-controls-min)), 1fr));
+  gap: var(--janso-space-3) var(--janso-space-5);
+  margin: 0;
+}
+.console-audit-detail__fact {
+  min-width: 0;
+}
+.console-audit-detail__term {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-faint);
+}
+.console-audit-detail__value {
+  margin: 0;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  /* An id, a trace or a hash has no spaces to break at, so it is allowed to break anywhere
+     rather than pushing the table into a horizontal scroll. */
+  overflow-wrap: anywhere;
+}
+
+/* The before/after grid. Ruled like a ledger, because that is what a reader compares down. */
+.console-audit-changes {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--janso-text-sm);
+}
+.console-audit-changes th,
+.console-audit-changes td {
+  padding: var(--janso-space-2) var(--janso-space-3);
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--janso-line);
+  overflow-wrap: anywhere;
+}
+.console-audit-changes thead th {
+  font-size: var(--janso-text-xs);
+  font-weight: 600;
+  color: var(--janso-ink-faint);
+}
+.console-audit-changes tbody th {
+  font-weight: 600;
+  color: var(--janso-ink);
+  white-space: normal;
+}
+.console-audit-changes tbody td {
+  font-family: var(--janso-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--janso-ink-soft);
+}
+/* The value it became is the one being read, so it carries the ink. */
+.console-audit-changes tbody td:last-child {
+  color: var(--janso-ink);
+}
+.console-audit-changes tbody tr:last-child th,
+.console-audit-changes tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* A chain hash is compared character by character, so it is mono and selectable in full. */
+.console-audit-hash {
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+
+.console-audit-changes thead th:first-child { width: 28%; }
+
+@media (max-width: 44rem) {
+  .janso-event-log__toolbar { padding: var(--janso-space-3); }
+  .janso-event-log__note { padding-inline: var(--janso-space-3); }
+  .janso-event-log .janso-filter-bar__controls { grid-template-columns: minmax(0, 1fr); }
+  .console-audit-changes th, .console-audit-changes td {
+    padding-inline: var(--janso-space-1);
+    font-size: var(--janso-text-xs);
+  }
+}
+.janso-purchase-pdf {
+  display: block;
+  width: 100%;
+  min-height: 70vh;
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface);
+}
+
+/* ---------- business overview (docs/business-overview-redesign-plan.md) ---------- */
+
+/* The toolbar is the period control and the freshness line; the "about" disclosure belongs to it. */
+.janso-overview > .janso-toolbar + .janso-disclosure {
+  margin-top: var(--janso-space-2);
+}
+
+/*
+ * The body is one column of bands spaced by the grid's own gutter, so a band of tiles and a band
+ * of cards sit as far apart as two cards side by side. It states its spacing itself because the
+ * visually hidden band headings are siblings too, and the generic flow rule would otherwise
+ * stack a margin on whichever band follows one.
+ */
+.janso-overview__body {
+  gap: var(--janso-space-4);
+}
+.janso-overview__body > * {
+  margin-top: 0;
+}
+/* A refetch keeps the previous figures on screen. They are not dimmed (that would drop their
+ * contrast below the floor for as long as it lasts); the toolbar says "Updating…" instead. */
+.janso-overview[aria-busy='true'] .janso-overview__body {
+  cursor: progress;
+}
+
+.janso-overview__fresh {
+  margin: 0;
+  white-space: nowrap;
+}
+.janso-overview__about > p {
+  margin: 0;
+  max-width: 72ch;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+}
+.janso-overview__more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+  font-size: var(--janso-text-sm);
+  white-space: nowrap;
+}
+.janso-overview__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--janso-space-2) var(--janso-space-5);
+}
+.janso-overview__detail {
+  margin-top: var(--janso-space-3);
+  text-align: center;
+}
+/* The explanation and the figures are one block of reading: close the gap the page rhythm leaves. */
+.janso-overview > .janso-disclosure + .janso-overview__body {
+  margin-top: var(--janso-space-4);
+}
+
+/* A choice in a card's header sits at the form scale (still one control, one tab stop). */
+.janso-card__aside .janso-editor__segmented {
+  --janso-segment-h: 2rem;
+  --janso-segment-text: var(--janso-text-sm);
+  --janso-segment-pad: var(--janso-space-3);
+  --janso-segment-radius: var(--janso-radius-sm);
+  inline-size: auto;
+}
+
+/* Two cards of equal weight; stacks with the split grid below 1100px. */
+.janso-grid--even {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 1100px) {
+  .janso-grid--even {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The one sentence that says what the bars below it add up to. */
+.janso-overview__summary {
+  margin: 0;
+  font-size: var(--janso-text-md);
+  color: var(--janso-ink-soft);
+}
+.janso-overview__summary strong {
+  color: var(--janso-ink);
+}
+.janso-overview__rows {
+  display: flex;
+  flex-direction: column;
+}
+.janso-overview__quiet {
+  margin: 0;
+  padding: var(--janso-space-4) 0;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+}
+/* Lateness is a warning triplet's ink plus a glyph and the word "overdue" — never colour alone. */
+.janso-overview__overdue {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-1);
+  font-weight: 500;
+  color: var(--janso-warn-ink);
+}
+.janso-overview__lookup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+  padding-top: var(--janso-space-4);
+  border-top: 1px solid var(--janso-line);
+}

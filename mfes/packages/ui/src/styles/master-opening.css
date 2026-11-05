@@ -1,0 +1,36 @@
+/* Optional opening capture: one editor, bounded evidence list and token-based rhythm. */
+.janso-master-opening { display: flex; flex-direction: column; gap: var(--janso-space-3); min-width: 0; }
+.janso-master-opening > .janso-editor__segmented { --janso-segment-h: var(--janso-control-h); --janso-segment-text: var(--janso-text-sm); --janso-segment-pad: var(--janso-space-3); --janso-segment-radius: var(--janso-radius-sm); width: min(100%, calc(var(--janso-space-8) * 5)); }
+.janso-master-opening .janso-editor__segment { height: auto; min-height: var(--janso-control-h); padding-block: var(--janso-space-2); line-height: 1.25; }
+.janso-master-opening__fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--janso-space-3); align-items: start; }
+.janso-master-opening__fields > .janso-field { margin: 0; min-width: 0; }
+.janso-master-opening__bills { display: flex; flex-direction: column; align-items: start; gap: var(--janso-space-3); min-width: 0; }
+.janso-master-opening__bills > * { min-width: 0; max-width: 100%; }
+.janso-master-opening__editor { display: flex; flex-direction: column; gap: var(--janso-space-3); width: 100%; padding: var(--janso-space-3); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-md); background: var(--janso-surface-2); }
+.janso-master-opening p { margin: 0; }
+.janso-master-opening .janso-report-actions { gap: var(--janso-space-2); }
+.janso-master-opening__list { overflow: auto; width: 100%; max-height: var(--janso-report-viewport-height); border: 1px solid var(--janso-line); border-radius: var(--janso-radius-md); }
+.janso-master-opening__list:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); }
+.janso-master-opening__list table { width: 100%; border-collapse: collapse; font-size: var(--janso-text-sm); }
+.janso-master-opening__list th, .janso-master-opening__list td { text-align: start; padding: var(--janso-space-2) var(--janso-space-3); border-bottom: 1px solid var(--janso-line); vertical-align: top; }
+.janso-master-opening__list thead, .janso-master-opening__list tfoot { background: var(--janso-surface-2); }
+.janso-master-opening__list .janso-figure { text-align: end; white-space: nowrap; }
+.janso-master-opening__list small { display: block; font-weight: normal; color: var(--janso-ink-soft); overflow-wrap: anywhere; }
+.janso-master-opening__list th { overflow-wrap: anywhere; }
+.janso-master-opening__list td:last-child { white-space: nowrap; }
+.janso-master-opening__list table { min-width: calc(var(--janso-space-8) * 15); }
+.janso-master-opening__list th:first-child { min-width: calc(var(--janso-space-8) * 5); }
+@media (max-width: 40rem) {
+  .janso-master-opening-progress .janso-stepper ol { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-auto-columns: auto; }
+  .janso-master-opening__fields { grid-template-columns: minmax(0, 1fr); }
+  .janso-master-opening__list table { display: block; min-width: 0; }
+  .janso-master-opening__list thead { display: none; }
+  .janso-master-opening__list tbody, .janso-master-opening__list tfoot { display: block; }
+  .janso-master-opening__list tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: var(--janso-space-3); gap: var(--janso-space-2) var(--janso-space-3); border-bottom: 1px solid var(--janso-line); }
+  .janso-master-opening__list tbody th, .janso-master-opening__list tbody td { padding: 0; min-width: 0; border: 0; }
+  .janso-master-opening__list tbody th, .janso-master-opening__list .janso-master-opening__bill-actions { grid-column: 1 / -1; }
+  .janso-master-opening__list tbody td[data-label]::before { content: attr(data-label); display: block; color: var(--janso-ink-soft); font-size: var(--janso-text-xs); }
+  .janso-master-opening__list tfoot tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: var(--janso-space-3); gap: var(--janso-space-2); }
+  .janso-master-opening__list tfoot th, .janso-master-opening__list tfoot td { display: block; min-width: 0; padding: 0; border: 0; }
+  .janso-master-opening__list tfoot td:last-child { display: none; }
+}

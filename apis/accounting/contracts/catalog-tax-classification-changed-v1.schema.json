@@ -1,0 +1,134 @@
+{
+  "$defs": {
+    "Classification": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[0-9]{4,8}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "code_system": {
+          "enum": [
+            "HSN",
+            "SAC"
+          ],
+          "title": "Code System",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "item_kind": {
+          "enum": [
+            "GOODS",
+            "SERVICE"
+          ],
+          "title": "Item Kind",
+          "type": "string"
+        },
+        "jurisdiction": {
+          "const": "IN",
+          "title": "Jurisdiction",
+          "type": "string"
+        },
+        "source_reference": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source Reference",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "valid_from": {
+          "format": "date",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        }
+      },
+      "required": [
+        "valid_from",
+        "id",
+        "jurisdiction",
+        "code_system",
+        "code",
+        "item_kind",
+        "description",
+        "source_reference",
+        "source_sha256"
+      ],
+      "title": "Classification",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "PUBLISH",
+        "UPDATE",
+        "WITHDRAW"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "classification": {
+      "$ref": "#/$defs/Classification"
+    },
+    "company_id": {
+      "format": "uuid",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_version": {
+      "maximum": 9223372036854775807,
+      "minimum": 1,
+      "title": "Source Version",
+      "type": "integer"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "company_id",
+    "source_version",
+    "action",
+    "classification"
+  ],
+  "title": "ClassificationChanged",
+  "type": "object"
+}

@@ -1,0 +1,362 @@
+{
+  "browser": "156.0.4314.50",
+  "checkedAt": "2026-10-31T10:55:00.559Z",
+  "surface": "Actual React component harness; synthetic examples; not authenticated API E2E.",
+  "results": [
+    {
+      "name": "desktop-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "goods",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "desktop-dark",
+      "theme": "dark",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "goods",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "desktop-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "goods",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "tablet-light",
+      "theme": "light",
+      "width": 1024,
+      "height": 900,
+      "scenario": "goods",
+      "measurements": {
+        "viewport": 1024,
+        "document": 1024,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "mobile-light",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "scenario": "goods",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "actions": [
+          44,
+          44
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "empty-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "blank",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "components-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "goods",
+      "panel": "Discounts & charges",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639
+          }
+        ],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "tax-recipient-dark",
+      "theme": "dark",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "recipient",
+      "panel": "Tax details",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639
+          }
+        ],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "receipt-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "receipt",
+      "panel": "Goods receipt",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639
+          }
+        ],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "tracking-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "tracking",
+      "panel": "Line tracking",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639
+          }
+        ],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "settlement-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "goods",
+      "panel": "Payment & terms",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639
+          }
+        ],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "evidence-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "scenario": "goods",
+      "panel": "Supplier bill & attachments",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 639,
+            "scroll": 639
+          }
+        ],
+        "actions": [
+          36,
+          36
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "components-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "scenario": "goods",
+      "panel": "Discounts & charges",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389
+          }
+        ],
+        "actions": [
+          44,
+          44
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "receipt-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "scenario": "receipt",
+      "panel": "Goods receipt",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389
+          }
+        ],
+        "actions": [
+          44,
+          44
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "tracking-mobile-dark",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "scenario": "tracking",
+      "panel": "Line tracking",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389
+          }
+        ],
+        "actions": [
+          44,
+          44
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "settlement-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "scenario": "goods",
+      "panel": "Payment & terms",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389
+          }
+        ],
+        "actions": [
+          44,
+          44
+        ]
+      },
+      "runtimeErrors": []
+    },
+    {
+      "name": "evidence-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "scenario": "goods",
+      "panel": "Supplier bill & attachments",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 389,
+            "scroll": 389
+          }
+        ],
+        "actions": [
+          44,
+          44
+        ]
+      },
+      "runtimeErrors": []
+    }
+  ]
+}

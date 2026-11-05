@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-10-31T13:10:58.968Z",
+  "health": [
+    {
+      "service": "identity",
+      "status": 200
+    },
+    {
+      "service": "catalog",
+      "status": 200
+    },
+    {
+      "service": "accounting",
+      "status": 200
+    },
+    {
+      "service": "vouchers",
+      "status": 200
+    },
+    {
+      "service": "reports",
+      "status": 200
+    }
+  ],
+  "authenticated": {
+    "status": "PASS",
+    "company_count": 1,
+    "landed_path": "/onboarding"
+  },
+  "companies": [
+    {
+      "company_id": "01a19203-7533-70f9-977b-2d37e7165aed",
+      "capabilities_status": 200,
+      "capabilities": {
+        "financial_execution": false,
+        "invoice_execution": false,
+        "purchase_supporting_files": null,
+        "kinds": [
+          {
+            "kind": "PURCHASE",
+            "execution_ready": false
+          }
+        ]
+      },
+      "type_status": 200,
+      "active_purchase_type_count": 0
+    }
+  ]
+}

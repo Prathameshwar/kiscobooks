@@ -1,0 +1,1151 @@
+@import './financial-opening.css';
+
+/*
+ * @janso/ui — shared component primitives, reused across every micro-frontend.
+ * Layout that belongs to a specific MFE (e.g. the auth split screen) lives in that
+ * app, not here. This file styles the reusable pieces: the logomark, wordmark,
+ * buttons, text fields, select, phone, password field and its strength meter,
+ * checkbox, links, and helper/error text.
+ */
+
+/* ---------- base ---------- */
+
+.janso-root,
+.janso-root *,
+.janso-root *::before,
+.janso-root *::after {
+  box-sizing: border-box;
+}
+
+.janso-root {
+  margin: 0;
+  color: var(--janso-ink);
+  font-family: var(--janso-font-body);
+  font-size: var(--janso-text-base);
+  line-height: 1.5;
+  /* Inter is drawn for 16px+; at the 14px body a hair of negative tracking restores the
+   * colour of the text block. `cv11` is the single-storey a, `ss03` the round quotes. */
+  letter-spacing: -0.006em;
+  font-feature-settings: 'cv11' 1, 'ss03' 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Figures are always tabular — this is accounting software. */
+.janso-figure {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- logomark ---------- */
+/*
+ * The JANSO mark: a rounded ledger tile holding an "equals" — the one truth of
+ * double-entry, that the books balance — drawn as two ruled bars, the upper one
+ * rising (growth), with a bright tick that reads as the settled decimal point.
+ */
+.janso-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  background: var(--janso-grad-mark);
+  border-radius: 26%;
+  color: var(--janso-ink-invert);
+  box-shadow: var(--janso-shadow-inset-mark);
+}
+.janso-mark svg {
+  width: 62%;
+  height: 62%;
+  display: block;
+}
+.janso-mark--28 { width: 28px; height: 28px; }
+.janso-mark--36 { width: 36px; height: 36px; }
+.janso-mark--44 { width: 44px; height: 44px; }
+
+/* ---------- wordmark ---------- */
+.janso-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  text-decoration: none;
+  color: inherit;
+}
+.janso-wordmark__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1;
+}
+.janso-wordmark__name {
+  font-family: var(--janso-font-display);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.janso-wordmark__first { color: var(--janso-brand-ink); }
+.janso-wordmark__last { color: var(--janso-wordmark-books); }
+/* the brand signature, sat under the name */
+.janso-wordmark__strap {
+  font-family: var(--janso-font-body);
+  font-weight: 500;
+  font-size: var(--janso-text-overline);
+  letter-spacing: 0;
+  color: var(--janso-ink-faint);
+  white-space: nowrap;
+}
+
+/* ---------- headings / text ---------- */
+.janso-h1 {
+  font-family: var(--janso-font-display);
+  font-weight: 650;
+  font-size: var(--janso-text-xl);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin: 0;
+  color: var(--janso-ink);
+}
+/*
+ * 80ch, the readability ceiling — not a narrower "nice measure". A lede is one sentence, so a
+ * tighter cap wrapped it into two lines with most of the page still empty to its right, which
+ * reads as a broken layout rather than a considered one. Where the container is genuinely
+ * narrow (the auth form column) it constrains the line before this does.
+ */
+.janso-lede {
+  margin: var(--janso-space-2) 0 0;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-base);
+  max-width: 80ch;
+  text-wrap: pretty;
+}
+.janso-fine {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- links ---------- */
+.janso-link {
+  color: var(--janso-brand);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 3px;
+  text-underline-offset: 3px;
+}
+.janso-link:hover { text-decoration: underline; }
+.janso-link:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-link[aria-disabled='true'] {
+  color: var(--janso-ink-faint);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* ---------- fields ---------- */
+.janso-field {
+  display: block;
+}
+.janso-field + .janso-field {
+  margin-top: var(--janso-space-4);
+}
+.janso-field__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  margin-bottom: var(--janso-space-2);
+}
+.janso-label {
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  color: var(--janso-ink);
+}
+.janso-optional {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-faint);
+  font-weight: 400;
+}
+
+/*
+ * The required mark.
+ *
+ * `baseline` on the row would hang the asterisk below the label's baseline, because an
+ * asterisk sits high in its em box; the group is its own baseline context so the two align
+ * as one word. It is `aria-hidden` — `required` on the control is what assistive technology
+ * and the browser read — so this is purely the visual echo.
+ */
+.janso-label-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.125rem;
+}
+
+.janso-required {
+  color: var(--janso-danger-ink);
+  font-size: var(--janso-text-sm);
+  line-height: 1;
+}
+
+.janso-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.janso-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--janso-text-base);
+  color: var(--janso-ink);
+  background: var(--janso-surface);
+  /* `--janso-control-line`, not the decorative `--janso-line`: an empty field is defined
+   * entirely by this hairline, so it is a UI boundary and owes 3:1 (WCAG 1.4.11). The
+   * ledger rules on cards and lists stay on `--janso-line` — they are decoration. */
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-sm);
+  min-height: var(--janso-control-h);
+  padding: 0.4375rem 0.75rem;
+  line-height: 1.25rem;
+  box-shadow: var(--janso-shadow-card);
+  transition: border-color var(--janso-dur-fast) var(--janso-ease), box-shadow var(--janso-dur-fast) var(--janso-ease);
+  appearance: none;
+}
+.janso-input::placeholder { color: var(--janso-ink-faint); }
+/* Native calendar internals add their own height; align the outer field with text/select. */
+.janso-input:is([type='date'], [type='datetime-local'], [type='month'], [type='time']) {
+  height: var(--janso-control-h);
+  min-width: 0;
+}
+/* Hover deepens the edge; it must never fall *below* the resting 3:1 one, which is what
+ * pointing at `--janso-line-strong` used to do. */
+.janso-input:hover { border-color: var(--janso-ink-faint); }
+.janso-input:focus {
+  outline: none;
+  border-color: var(--janso-focus);
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-input[aria-invalid='true'] {
+  border-color: var(--janso-danger-ink);
+}
+.janso-input[aria-invalid='true']:focus {
+  box-shadow: var(--janso-focus-ring-danger);
+}
+.janso-input:disabled {
+  background: var(--janso-disabled-surface);
+  color: var(--janso-disabled-ink);
+  cursor: not-allowed;
+}
+/* room for the trailing toggle on password fields */
+.janso-input--trailing { padding-right: 3.6rem; }
+/* room for a leading icon */
+.janso-input--leading { padding-left: 2.25rem; }
+.janso-input__lead {
+  position: absolute;
+  left: 0.7rem;
+  display: flex;
+  color: var(--janso-ink-faint);
+  pointer-events: none;
+}
+/* the leading icon warms to the brand when the field is focused */
+.janso-input-wrap:focus-within .janso-input__lead { color: var(--janso-brand); }
+
+.janso-input__toggle {
+  position: absolute;
+  right: 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--janso-ink-soft);
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  font-weight: 500;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--janso-radius-sm);
+  cursor: pointer;
+}
+.janso-input__toggle:hover { color: var(--janso-brand); background: var(--janso-hover); }
+.janso-input__toggle:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); }
+
+.janso-hint {
+  margin-top: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+.janso-error {
+  margin-top: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-danger-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.janso-error svg { flex: none; }
+
+/* ---------- select ---------- */
+/*
+ * A native `<select>` wearing `.janso-input`, so it lines up with a text field in the same
+ * form without a second box model to keep in step. `appearance: none` on `.janso-input` is
+ * what removes the platform arrow; the caret below replaces it.
+ */
+.janso-select__wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.janso-select__control {
+  /* Inherits `.janso-input`'s padding, plus room for the caret. Overriding only the one side
+   * keeps the two controls' text on the same baseline. */
+  padding-right: 2.2rem;
+  cursor: pointer;
+}
+.janso-select__caret {
+  position: absolute;
+  right: 0.6rem;
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-faint);
+  /* The caret sits over the control, so it must not swallow the click that opens the list. */
+  pointer-events: none;
+}
+.janso-select[data-disabled='true'] .janso-select__caret {
+  color: var(--janso-disabled-ink);
+}
+.janso-select[data-invalid='true'] .janso-select__caret {
+  color: var(--janso-danger-ink);
+}
+/* Inline form: the label sits beside the control, for a toolbar's range picker. */
+.janso-select--inline {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+}
+/* The stacked field's label row owns the gap below it; inline, the row is a flex item and the
+   gap above belongs to the container. */
+.janso-select--inline .janso-field__row {
+  margin-bottom: 0;
+}
+.janso-select--inline .janso-label {
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-xs);
+  white-space: nowrap;
+}
+.janso-select--inline .janso-select__control {
+  min-height: 2rem;
+  padding: 0.3125rem 1.9rem 0.3125rem 0.625rem;
+  font-size: var(--janso-text-sm);
+}
+/*
+ * A spinner for a plain surface. `--janso-spinner-*` is deliberately white — it is drawn on a
+ * brand-filled button — so it vanishes on a panel; this one keys off the ink scale instead.
+ * The reduced-motion rule at the foot of this file stops both from spinning.
+ */
+.janso-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--janso-line-strong);
+  border-top-color: var(--janso-brand);
+  border-radius: 50%;
+  animation: janso-spin 0.6s linear infinite;
+}
+
+/* ---------- phone ---------- */
+/*
+ * Two controls, one field: the dial code (a `.janso-select__control`, so it shares the text
+ * field's box model exactly) and the national number. They are separate boxes with a gap rather
+ * than one fused pill — fusing them means one focus ring has to span two elements, and the seam
+ * always shows on the theme the seam wasn't designed against.
+ */
+.janso-phone__wrap {
+  gap: var(--janso-space-2);
+  align-items: stretch;
+}
+.janso-phone__code-wrap {
+  flex: none;
+}
+.janso-phone__code {
+  /* `.janso-input` is `width: 100%`; here the code is as wide as it needs to be and no wider,
+   * with a ceiling so a full country name cannot push the number field off the row. */
+  width: auto;
+  max-width: 11rem;
+  font-variant-numeric: tabular-nums;
+}
+.janso-phone__code:disabled + .janso-select__caret {
+  color: var(--janso-disabled-ink);
+}
+.janso-phone__number {
+  flex: 1;
+  /* Without this a long number sets the flex base size and overflows the row. */
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- caps-lock notice ---------- */
+/*
+ * A warning, not an error: the password may be perfectly correct. It reads as a hint with the
+ * warning ink, and it sits where the hint would, so nothing jumps when it appears.
+ */
+.janso-caps {
+  margin-top: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-warn-ink);
+}
+
+/* ---------- inline notice ---------- */
+/*
+ * A banner in the page's own flow — a form-level error, a qualified result, a live constraint.
+ * Toned by `data-tone` rather than by four near-identical rules, because a notice differs between
+ * tones only in which token triple it reads. The leading edge is what makes it scannable in a
+ * column of content, and the icon is what keeps the tone from being colour alone (§2.4).
+ */
+.janso-notice {
+  display: flex;
+  gap: var(--janso-space-3);
+  align-items: flex-start;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--janso-info-line);
+  border-inline-start: 3px solid var(--janso-info-ink);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-info-tint);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-info-ink);
+}
+.janso-notice[data-tone='success'] {
+  border-color: var(--janso-success-line);
+  border-inline-start-color: var(--janso-success-ink);
+  background: var(--janso-success-tint);
+  color: var(--janso-success-ink);
+}
+.janso-notice[data-tone='warning'] {
+  border-color: var(--janso-warn-line);
+  border-inline-start-color: var(--janso-warn-ink);
+  background: var(--janso-warn-tint);
+  color: var(--janso-warn-ink);
+}
+.janso-notice[data-tone='danger'] {
+  border-color: var(--janso-danger-line);
+  border-inline-start-color: var(--janso-danger-ink);
+  background: var(--janso-danger-tint);
+  color: var(--janso-danger-ink);
+}
+
+.janso-notice__icon { display: flex; flex: none; margin-top: 1px; }
+.janso-notice__body { flex: 1 1 auto; min-width: 0; }
+.janso-notice__title { margin: 0; font-weight: 600; }
+/* The body inherits the tone's ink: this text is the tone's own message, and greying it would
+ * leave the colour saying "warning" while the words looked like a caption. */
+.janso-notice__text { margin: 0; }
+.janso-notice__title + .janso-notice__text { margin-top: 0.15rem; }
+.janso-notice__action { margin-top: var(--janso-space-2); }
+/* The dismiss control is the one part that is furniture rather than message. */
+.janso-notice .janso-btn--icon { flex: none; color: inherit; }
+
+/* ---------- checkbox ---------- */
+.janso-check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  cursor: pointer;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  user-select: none;
+}
+.janso-check input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.janso-check__box {
+  pointer-events: none;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  /* An unchecked box is nothing but this hairline — the control's whole boundary, so 3:1. */
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface);
+  display: grid;
+  place-items: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+/* Both marks share the one grid cell: the tick is always in the DOM and faded, so a check does not
+ * reflow the box, and the indeterminate bar has to sit on top of it rather than beside it. */
+.janso-check__box > svg,
+.janso-check__box::after { grid-area: 1 / 1; }
+.janso-check__box svg { width: 12px; height: 12px; opacity: 0; transform: scale(0.6); transition: opacity 120ms ease, transform 120ms ease; }
+.janso-check input:checked + .janso-check__box,
+.janso-check input:indeterminate + .janso-check__box {
+  background: var(--janso-grad-action);
+  border-color: var(--janso-brand-strong);
+}
+.janso-check input:checked + .janso-check__box svg { opacity: 1; transform: scale(1); color: var(--janso-ink-invert); }
+/*
+ * A dash, not a tick. "Some of this page is selected" and "all of it is" are different facts, and a
+ * tick for the first would have the reader run a bulk verb over rows they did not choose.
+ */
+.janso-check input:indeterminate + .janso-check__box::after {
+  content: '';
+  width: 9px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--janso-ink-invert);
+}
+.janso-check input:indeterminate + .janso-check__box svg { opacity: 0; }
+.janso-check input:focus-visible + .janso-check__box { box-shadow: var(--janso-focus-ring); }
+/* A box that cannot be ticked says so: a row already posted, a column that is always shown. */
+.janso-check input:disabled + .janso-check__box,
+.janso-check input:disabled:checked + .janso-check__box {
+  background: var(--janso-surface-2);
+  border-color: var(--janso-line-strong);
+}
+/* …and one that is ticked and cannot change must still read as ticked: the tick's inverse ink is for
+ * the brand fill, and white on this pale surface is an empty box — a saved "yes" shown as "no". */
+.janso-check input:disabled:checked + .janso-check__box svg { color: var(--janso-ink-soft); }
+/* An explained option: the label row, then the explanation indented under its text rather than
+ * under the box, so a column of them reads as a list of settings. */
+.janso-check-field { display: grid; gap: 2px; min-width: 0; }
+.janso-check__hint {
+  padding-inline-start: calc(18px + var(--janso-space-3));
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- buttons ---------- */
+.janso-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--janso-space-2);
+  font-family: inherit;
+  font-size: var(--janso-text-sm);
+  font-weight: 550;
+  line-height: 1.25rem;
+  letter-spacing: -0.006em;
+  min-height: 2.25rem;
+  border-radius: var(--janso-radius-sm);
+  border: 1px solid transparent;
+  padding: 0.4375rem 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter var(--janso-dur-fast) var(--janso-ease), box-shadow var(--janso-dur-fast) var(--janso-ease),
+    background var(--janso-dur-fast) var(--janso-ease), border-color var(--janso-dur-fast) var(--janso-ease),
+    transform 60ms ease;
+  text-decoration: none;
+}
+.janso-btn:focus-visible { outline: none; box-shadow: var(--janso-focus-ring); }
+.janso-btn--block { width: 100%; min-height: 2.5rem; font-size: var(--janso-text-base); }
+
+.janso-btn--primary {
+  background: var(--janso-grad-action);
+  color: var(--janso-ink-invert);
+  box-shadow: var(--janso-shadow-action);
+}
+.janso-btn--primary:hover { filter: brightness(1.08); }
+.janso-btn--primary:active { background: var(--janso-grad-action-press); transform: translateY(1px); box-shadow: var(--janso-shadow-card); }
+.janso-btn--primary:disabled:not([aria-busy='true']) {
+  background: var(--janso-disabled-surface);
+  color: var(--janso-disabled-ink);
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/*
+ * A busy button is still the same button. It is `disabled` while the request is in flight, but it
+ * must not fall to the grey disabled fill: the reader just pressed it, and a primary that turns
+ * grey under their pointer reads as "that did not work". So the disabled fills above skip a busy
+ * button, which keeps its variant's own fill and says "in progress" through the spinner and cursor.
+ */
+.janso-btn[aria-busy='true'] {
+  cursor: progress;
+}
+/* The default spinner is drawn for a filled button; on an outline one it keys off the ink scale. */
+.janso-btn--ghost .janso-btn__spinner {
+  border-color: var(--janso-line-strong);
+  border-top-color: var(--janso-brand);
+}
+
+/* The confirming button of a destructive dialog. A flat danger fill rather than a gradient: the
+ * gradient is the *primary* action's signature, and this is deliberately not that — it is the
+ * action the user is being asked to reconsider. */
+.janso-btn--danger {
+  background: var(--janso-danger-ink);
+  color: var(--janso-ink-invert);
+  box-shadow: none;
+}
+.janso-btn--danger:hover { filter: brightness(1.06); }
+.janso-btn--danger:active { filter: brightness(0.9); transform: translateY(1px); }
+.janso-btn--danger:disabled:not([aria-busy='true']) {
+  background: var(--janso-disabled-surface);
+  color: var(--janso-disabled-ink);
+  cursor: not-allowed;
+  filter: none;
+}
+
+.janso-btn--ghost {
+  background: var(--janso-surface);
+  color: var(--janso-ink);
+  /* The outline is the button's boundary, so it is held at 3:1 even with the surface fill. */
+  border-color: var(--janso-control-line);
+  box-shadow: var(--janso-shadow-card);
+}
+.janso-btn--ghost:hover { background: var(--janso-hover); border-color: var(--janso-ink-faint); }
+.janso-btn--ghost:active { background: var(--janso-active); transform: translateY(0.5px); }
+.janso-btn--ghost:disabled:not([aria-busy='true']) {
+  background: var(--janso-disabled-surface);
+  color: var(--janso-disabled-ink);
+  border-color: var(--janso-line);
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+/* icon-only button: square, quiet, the label lives in aria-label + title */
+.janso-btn--icon {
+  padding: 0;
+  min-height: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--janso-radius-sm);
+  position: relative;
+  color: var(--janso-ink-soft);
+  background: transparent;
+}
+.janso-btn--icon:hover { background: var(--janso-hover); color: var(--janso-ink); }
+/* A size down for dense hosts (a table row, a toast), so the button sets no row height. */
+.janso-btn--icon-sm { width: 1.75rem; height: 1.75rem; }
+.janso-btn--icon:active { background: var(--janso-active); }
+/* An icon-only outline button carries no text, so the hairline is the only thing saying
+ * "this is a control" — `--janso-control-line` at 3:1, and firmer still on hover. */
+.janso-btn--icon-outline { border-color: var(--janso-control-line); background: var(--janso-surface); }
+.janso-btn--icon-outline:hover { border-color: var(--janso-ink-faint); }
+.janso-btn__icon { display: grid; place-items: center; }
+
+/* Joined actions retain separate focus targets; the existing Menu owns its portal. */
+.janso-split-button { display: inline-flex; align-items: stretch; max-width: 100%; }
+.janso-split-button[data-split='true'] > .janso-btn { border-start-end-radius: 0; border-end-end-radius: 0; }
+.janso-split-button > .janso-menu { display: inline-flex; }
+.janso-split-button > .janso-menu > .janso-btn {
+  width: 2.25rem; height: auto; min-height: 2.25rem;
+  border-start-start-radius: 0; border-end-start-radius: 0;
+}
+.janso-split-button[data-variant='ghost'] > .janso-menu > .janso-btn { border-inline-start: 0; box-shadow: var(--janso-shadow-card); }
+.janso-split-button[data-variant='primary'] > .janso-menu > .janso-btn {
+  background: var(--janso-grad-action); color: var(--janso-ink-invert);
+  /* The same seam as the primary Menu trigger: a step off the gradient, not a grey control line. */
+  border-color: transparent; border-inline-start-color: var(--janso-brand-bright);
+  box-shadow: var(--janso-shadow-action);
+}
+.janso-split-button[data-variant='primary'] > .janso-menu > .janso-btn:hover:not(:disabled) { filter: brightness(1.08); }
+.janso-split-button[data-variant='primary'] > .janso-menu > .janso-btn:disabled {
+  background: var(--janso-disabled-surface); color: var(--janso-disabled-ink); box-shadow: none; cursor: not-allowed;
+}
+/* The caret wears the face's state so the pair reads as one control. While the face shows its
+ * spinner the caret keeps the face's fill; beside a blocked face it is muted, though it still
+ * opens — its menu is where the disabled reason is read. */
+.janso-split-button[data-state='busy'] > .janso-menu > .janso-btn:disabled { cursor: progress; }
+.janso-split-button[data-variant='primary'][data-state='busy'] > .janso-menu > .janso-btn:disabled {
+  background: var(--janso-grad-action); color: var(--janso-ink-invert);
+  border-inline-start-color: var(--janso-brand-bright); box-shadow: var(--janso-shadow-action);
+}
+.janso-split-button[data-state='blocked'] > .janso-menu > .janso-btn,
+.janso-split-button[data-state='blocked'] > .janso-menu > .janso-btn:hover:not(:disabled) {
+  background: var(--janso-disabled-surface); color: var(--janso-disabled-ink);
+  border-color: var(--janso-line); box-shadow: none; filter: none;
+}
+.janso-split-button[data-variant='primary'][data-state='blocked'] > .janso-menu > .janso-btn,
+.janso-split-button[data-variant='primary'][data-state='blocked'] > .janso-menu > .janso-btn:hover:not(:disabled) {
+  border-color: transparent; border-inline-start-color: var(--janso-line);
+}
+.janso-split-button > .janso-btn:focus-visible,
+.janso-split-button > .janso-menu > .janso-btn:focus-visible { position: relative; z-index: 1; }
+/* the unread marker — an accompaniment to the label, never the only signal */
+.janso-btn__dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-danger-ink);
+  border: 1.5px solid var(--janso-surface);
+}
+
+/* social sign-in: neutral surface, brand mark carries the colour */
+.janso-btn--social {
+  background: var(--janso-surface);
+  color: var(--janso-ink);
+  border-color: var(--janso-line-strong);
+  font-weight: 500;
+  gap: var(--janso-space-3);
+}
+.janso-btn--social:hover { background: var(--janso-paper); border-color: var(--janso-ink-faint); }
+.janso-btn--social svg { flex: none; }
+
+/* loading spinner inside a button */
+.janso-btn__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--janso-spinner-track);
+  border-top-color: var(--janso-spinner-head);
+  border-radius: 50%;
+  animation: janso-spin 0.6s linear infinite;
+}
+@keyframes janso-spin { to { transform: rotate(360deg); } }
+
+/* ---------- password strength meter ---------- */
+.janso-strength {
+  margin-top: var(--janso-space-3);
+}
+.janso-strength__track {
+  display: flex;
+  gap: 4px;
+}
+.janso-strength__seg {
+  height: 4px;
+  flex: 1;
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-line);
+  transition: background 160ms ease;
+}
+.janso-strength__label {
+  margin-top: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+  display: flex;
+  justify-content: space-between;
+}
+.janso-strength[data-score='1'] .janso-strength__seg:nth-child(-n + 1) { background: var(--janso-danger-ink); }
+.janso-strength[data-score='2'] .janso-strength__seg:nth-child(-n + 2) { background: var(--janso-warn-ink); }
+.janso-strength[data-score='3'] .janso-strength__seg:nth-child(-n + 3) { background: var(--janso-brand-bright); }
+.janso-strength[data-score='4'] .janso-strength__seg { background: var(--janso-brand); }
+
+/* ---------- form grid ---------- */
+/*
+ * Fields side by side. `.janso-field + .janso-field` spaces a *stacked* column; inside a grid the gap
+ * owns the spacing, and the sibling margin would push every field after the first one down out of
+ * line with its neighbour. Columns are content-sized from a floor, so a form reflows to one column
+ * on a phone without a breakpoint of its own.
+ */
+.janso-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: var(--janso-space-4);
+  align-items: start;
+}
+.janso-form-grid > .janso-field + .janso-field {
+  margin-top: 0;
+}
+.janso-form-grid__full {
+  grid-column: 1 / -1;
+}
+
+/* Keep a configuration option beside its dependent default or reference. */
+.janso-config-fields { align-items: start; }
+.janso-config-fields__option { min-inline-size: 0; display: grid; gap: var(--janso-space-3); }
+.janso-config-fields__option > .janso-field + .janso-field { margin-block-start: 0; }
+.janso-config-nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--janso-space-3) var(--janso-space-4); }
+.janso-config-nav a { overflow-wrap: anywhere; }
+.janso-config-section { min-inline-size: 0; scroll-margin-block-start: var(--janso-space-5); }
+.janso-config-section + .janso-config-section { border-block-start: 1px solid var(--janso-line); padding-block-start: var(--janso-space-5); }
+.janso-config-section:focus-visible { outline: 2px solid var(--janso-focus); outline-offset: var(--janso-space-1); }
+.janso-form-grid--pair { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 600px) {
+  .janso-form-grid--pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- form page ---------- */
+/*
+ * A create/edit page with no standing context beside it. Still a grid, so the form card is the
+ * only column and cannot stretch a field row wider than the page gutter allows.
+ */
+.janso-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+/*
+ * The committing actions in a form card's footer. `margin-left: auto` rather than the footer's
+ * `space-between`, so the group stays right-aligned when there is no cancel link to push it.
+ */
+.janso-form-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--janso-space-3);
+  margin-left: auto;
+}
+/* A form's Cancel and submit groups must wrap inside the card on narrow screens. */
+.janso-card__footer:has(> .janso-form-actions) {
+  flex-wrap: wrap;
+}
+
+/* ---------- utilities ---------- */
+.janso-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .janso-root *,
+  .janso-root *::before,
+  .janso-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.janso-custom-fields, .janso-custom-manager, .janso-custom-editor { display: grid; gap: var(--janso-space-4, 1rem); }
+.janso-custom-manager { padding: var(--janso-space-6, 1.5rem); max-width: 70rem; }
+.janso-custom-fields__amount { border: 1px solid var(--janso-line); display: grid; gap: 1rem; }
+.janso-custom-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.janso-custom-editor { border: 1px solid var(--janso-line); padding: 1rem; }
+.janso-custom-choice { display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; align-items: end; }
+
+/* ---------------------------------------------------------------- field groups */
+
+/*
+ * A named set of fields. `fieldset` carries the grouping semantics, so the reset here is the
+ * usual one: browsers give it a border and inline padding nobody wants.
+ */
+.janso-fieldgroup {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.janso-fieldgroup__legend {
+  padding: 0;
+  color: var(--janso-ink);
+  font-family: var(--janso-font-display);
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+}
+
+.janso-fieldgroup__legend[data-has-action] {
+  inline-size: 100%;
+}
+
+.janso-fieldgroup__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+}
+
+.janso-fieldgroup__heading > .janso-check {
+  font-family: var(--janso-font-body);
+  font-weight: 400;
+}
+
+.janso-fieldgroup__hint {
+  margin: var(--janso-space-1) 0 0;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+}
+
+.janso-fieldgroup__fields {
+  display: grid;
+  gap: var(--janso-space-4);
+  margin-block-start: var(--janso-space-3);
+}
+
+/*
+ * More space between groups than inside them.
+ *
+ * Without this the gap above "Numbers" is the same as the gap between two of its own fields,
+ * so the heading reads as another row rather than as a new section — the grouping is stated
+ * in the markup and invisible on the page. `+` rather than a margin on every group, so the
+ * first one still sits tight under whatever introduces the step.
+ */
+.janso-fieldgroup + .janso-fieldgroup,
+* + .janso-fieldgroup {
+  margin-block-start: var(--janso-space-5);
+}
+
+/*
+ * Two short fields on one row, one per row when there is no room for two.
+ *
+ * `minmax(0, 1fr)` rather than `1fr`: a grid track sized `1fr` refuses to shrink below its
+ * content's min-content width, so a long hint or a wide select would push the row wider than
+ * the form and overflow it.
+ */
+.janso-fieldpair {
+  display: grid;
+  gap: var(--janso-space-4);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (max-width: 40rem) {
+  .janso-fieldpair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
+ * The grid owns the spacing in both containers, so the stacked-column margin has to go.
+ *
+ * `.janso-field + .janso-field { margin-top: var(--janso-space-4) }` spaces an ordinary
+ * stacked form. Inside a grid it is dead weight at best, and in a *row* it is a visible
+ * defect: the second field of a pair starts 16px below the first, so "Entity type" and
+ * "Incorporation date" sat side by side but out of line — the field reads as having slipped
+ * under its neighbour rather than as sharing a row with it. `.janso-form-grid` was given this
+ * reset when it was written (see *form grid* above); these two were not, which is why the
+ * pair and every group on the Presentation step carried the same offset and a doubled 32px
+ * gap between their own fields.
+ */
+.janso-fieldpair > .janso-field + .janso-field,
+.janso-fieldgroup__fields > .janso-field + .janso-field {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------- format preview */
+
+/*
+ * Read-only output, styled as a quiet panel rather than a notice: it is not telling the
+ * operator anything is wrong, it is showing them what their choices do. Tabular numerals so
+ * the values line up and a separator change is visible as a change rather than as reflow.
+ */
+.janso-preview {
+  margin: 0;
+  padding: var(--janso-space-4);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius);
+  background: var(--janso-surface-2);
+}
+
+.janso-preview__caption {
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-overline);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/*
+ * Two columns at most. `minmax(13rem, …)` fitted four of these onto a wide card and ran the
+ * pairs into each other — "An amount ₹12,34,567.89 A negative amount -₹98,765.40" with no
+ * more space between two pairs than between a label and its own value. 20rem admits two.
+ */
+.janso-preview__grid {
+  display: grid;
+  gap: var(--janso-space-2) var(--janso-space-5);
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  margin: var(--janso-space-3) 0 0;
+}
+
+.janso-preview__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  padding-block-end: var(--janso-space-1);
+  border-block-end: 1px solid var(--janso-line);
+}
+
+.janso-preview__key {
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+}
+
+.janso-preview__value {
+  margin: 0;
+  color: var(--janso-ink);
+  font-size: var(--janso-text-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  text-align: end;
+}
+
+/*
+ * Verbatim content inside the same panel — message text, a provider payload, an HTML source.
+ * Mono, because whitespace and braces are the content, and wrapped: a `<pre>` left at its UA
+ * default scrolls a card sideways on the first long line, which hides the rest of the message.
+ */
+.janso-preview__text {
+  margin: var(--janso-space-3) 0 0;
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- choice cards */
+
+/*
+ * The indent is the dependency chain. 1.75rem per level lines a dependent's checkbox up
+ * under its parent's label, so the relationship reads as structure without a connector line
+ * to maintain.
+ */
+.janso-choice {
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius);
+  background: var(--janso-surface);
+}
+
+.janso-choice[data-depth='1'] {
+  margin-inline-start: 1.75rem;
+}
+
+.janso-choice[data-depth='2'] {
+  margin-inline-start: 3.5rem;
+}
+
+/*
+ * Selected. The border is `--janso-brand`, not `--janso-brand-line`: this boundary carries a
+ * *state*, so it owes 3:1 (WCAG 1.4.11), and the line token is a tint-family hairline that
+ * measures 1.38:1 on a card. The tint and the checkbox's own tick say it too — three cues,
+ * one of which survives greyscale.
+ */
+.janso-choice[data-checked] {
+  border-color: var(--janso-brand);
+  background: var(--janso-brand-tint);
+}
+
+/* The whole card is the label, so the whole card is the target. */
+.janso-choice__hit {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-3) var(--janso-space-4);
+  cursor: pointer;
+}
+
+.janso-choice__hit:has(.janso-choice__box:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* The ring goes on the card, not the 16px box: the card is what was clicked. */
+.janso-choice:has(.janso-choice__box:focus-visible) {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 1px;
+}
+
+.janso-choice__box {
+  flex: none;
+  /* Nudged to the cap height of the title rather than the top of its line box. */
+  margin-block-start: 0.15rem;
+  inline-size: 1rem;
+  block-size: 1rem;
+  accent-color: var(--janso-brand);
+}
+
+.janso-choice__text {
+  display: grid;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.janso-choice__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--janso-space-2);
+}
+
+.janso-choice__title {
+  color: var(--janso-ink);
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+}
+
+.janso-choice__description {
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+  line-height: 1.4;
+}
+
+.janso-choice__note {
+  margin: 0;
+  padding: 0 var(--janso-space-4) var(--janso-space-3) 2.75rem;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-xs);
+}
+
+.janso-choices {
+  display: grid;
+  gap: var(--janso-space-2);
+}
+
+/*
+ * The unit beside a money or quantity box: the currency symbol, or a unit of measure.
+ *
+ * Outside the input, deliberately. A symbol inside the box is a character the caret has to be
+ * driven past on every edit, and every accounting product that puts it there is annoying to type
+ * into. It is also decoration here — the field's label names it — so it takes the quiet ink.
+ */
+.janso-numeric__unit {
+  padding-inline-end: var(--janso-space-1);
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.janso-page.janso-simple-product {
+  max-width: var(--janso-form-max);
+  margin-inline: auto;
+  width: 100%;
+}
+.janso-simple-product .janso-fieldgroup__heading > .janso-check {
+  min-block-size: calc(var(--janso-control-h) + var(--janso-space-2));
+}
+.janso-page.janso-simple-product--batches {
+  max-width: var(--janso-page-max);
+}
+.janso-product-batch-scroll {
+  position: relative;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+}
+.janso-simple-product .janso-flow > *,
+.janso-simple-product .janso-fieldgroup__fields > *,
+.janso-simple-product .janso-fieldgroup {
+  min-inline-size: 0;
+}
+.janso-product-batch-grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+.janso-product-batch-grid th,
+.janso-product-batch-grid td {
+  padding: var(--janso-space-3);
+  text-align: start;
+  vertical-align: top;
+  border-block-end: 1px solid var(--janso-line);
+}
+.janso-product-batch-grid td .janso-field {
+  min-inline-size: calc(var(--janso-control-h) * 4);
+}
+.janso-product-batch-grid caption {
+  padding: var(--janso-space-3);
+  text-align: start;
+}
+.janso-simple-product [aria-current="step"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: var(--janso-space-1);
+}
+@media (max-width: 40rem) {
+  /* Page and card gutters must leave enough room for names and tax references. */
+  .janso-page.janso-simple-product {
+    padding-inline: var(--janso-space-4);
+  }
+  .janso-simple-product .janso-card__body {
+    padding-inline: var(--janso-space-4);
+  }
+}

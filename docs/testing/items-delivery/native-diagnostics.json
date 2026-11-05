@@ -1,0 +1,158 @@
+{
+  "phase": "Before native status metadata fix",
+  "purpose": "Historical live reproduction; final acceptance is review.json",
+  "records": [
+    {
+      "route": "/products/field-set",
+      "status": 200,
+      "elapsed_ms": 2228,
+      "fields": [
+        {
+          "key": "code",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "name",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "base_unit_id",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "sellable",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "purchasable",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "min_sale_quantity",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "kind",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "product_type_revision_id",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "brand_id",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "series_id",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "model_code",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "description",
+          "visible": true,
+          "writable": true
+        }
+      ]
+    },
+    {
+      "route": "/products/field-set?operation=update&object_id=01a1922a-b49b-7630-9a8c-2313202208ef",
+      "status": 200,
+      "elapsed_ms": 4270,
+      "fields": [
+        {
+          "key": "code",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "name",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "base_unit_id",
+          "visible": true,
+          "writable": false
+        },
+        {
+          "key": "sellable",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "purchasable",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "min_sale_quantity",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "kind",
+          "visible": true,
+          "writable": false
+        },
+        {
+          "key": "product_type_revision_id",
+          "visible": true,
+          "writable": false
+        },
+        {
+          "key": "brand_id",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "series_id",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "model_code",
+          "visible": true,
+          "writable": true
+        },
+        {
+          "key": "description",
+          "visible": true,
+          "writable": true
+        }
+      ]
+    },
+    {
+      "route": "/products/01a1922a-b49b-7630-9a8c-2313202208ef",
+      "status": 200,
+      "elapsed_ms": 3582,
+      "name": "QA delivery AC/DC MVWFZCCU"
+    },
+    {
+      "route": "/products?limit=25&sort=-name",
+      "status": 200,
+      "elapsed_ms": 354,
+      "count": 1
+    },
+    {
+      "route": "/products?limit=25&sort=-name&q=QA%20delivery%20AC/DC",
+      "status": 200,
+      "elapsed_ms": 464,
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-10-31T14:03:46.337Z",
+  "checks": [
+    {
+      "name": "edit-draft-and-reload",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "qa_records": [
+    {
+      "id": "01a1922a-b49b-7630-9a8c-2313202208ef",
+      "company_id": "01a19203-7533-70f9-977b-2d37e7165aed",
+      "code": "QAREV-MVWFZCCU",
+      "name": "QA delivery AC/DC MVWFZCCU verified",
+      "status": "DRAFT"
+    }
+  ],
+  "dependency_recoveries": [],
+  "company_count": 1,
+  "company_id": "01a19203-7533-70f9-977b-2d37e7165aed",
+  "products": {
+    "status": 200,
+    "count": 3
+  },
+  "product_types": {
+    "status": 200,
+    "count": 3
+  },
+  "units": {
+    "status": 200,
+    "count": 17
+  },
+  "qa_setup": {
+    "product_type": {
+      "id": "01a19223-5dd1-729a-a31a-2cf626ca8af3",
+      "revision_id": "01a19223-6b01-73ca-9ab3-c7047b352efb",
+      "published_at": "2026-10-31T13:26:00.698706Z"
+    },
+    "product_group": {
+      "id": "01a1922a-6700-70ef-b42c-591b3973bcb1"
+    }
+  }
+}

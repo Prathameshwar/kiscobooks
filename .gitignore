@@ -1,0 +1,72 @@
+codefix-llm/config/config_llm.yaml
+codefix-llm/env_codefix/*
+.pnpm*
+
+# Local tool installations and installer downloads
+/.tools/
+
+# Python environments, packages, and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache*/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# JavaScript dependencies and build output
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Test, coverage, and local review output
+.test_artifacts/
+.tmp*
+.coverage*
+coverage/
+coverage.json
+coverage.xml
+htmlcov/
+.test-results*.xml
+test-results/
+playwright-report/
+.*review.txt
+.field-context-coverage.txt
+mfes/apps/console/.opening-review-fixes-results.json
+.source-manifest-*.json
+*.log
+
+# Local databases and editor/OS files
+*.sqlite
+*.sqlite3
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Workspace-local service installations and runtime secrets
+.tools/
+
+# Temporary agent worktrees contain separate local Git checkouts
+/.claude/worktrees/
+
+# Vite dependency pre-bundle caches written by local review harnesses
+.vite/

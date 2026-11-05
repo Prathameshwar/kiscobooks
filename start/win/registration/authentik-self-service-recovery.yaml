@@ -1,0 +1,234 @@
+version: 1
+metadata:
+  name: Bill self-service password recovery
+entries:
+  - model: authentik_flows.flow
+    identifiers: {slug: bill-self-service-recovery}
+    id: flow
+    attrs: {name: KiscoBooks forgot password, title: Reset your KiscoBooks password, designation: recovery, authentication: none, denied_action: message}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-self-service-recovery-mail-ready}
+    id: ready
+    attrs:
+      execution_logging: false
+      expression: |
+        from authentik.lib.config import CONFIG
+        host = str(CONFIG.get("email.host", "")).strip().lower()
+        sender = str(CONFIG.get("email.from", "")).strip().lower()
+        configured = bool(host and host not in ("localhost", "127.0.0.1", "::1") and "@" in sender and not sender.endswith("@authentik.local"))
+        if not configured:
+            ak_message("Email password recovery is not available yet. Contact your KiscoBooks administrator for assistance.")
+        return configured
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf flow, order: 0, policy: !KeyOf ready}
+    attrs: {failure_result: false}
+  - model: authentik_stages_identification.identificationstage
+    identifiers: {name: bill-self-service-recovery-identify}
+    id: identify
+    attrs: {user_fields: [email], case_insensitive_matching: true, show_matched_user: false, pretend_user_exists: true, enable_remember_me: false}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-self-service-recovery-request}
+    id: request-policy
+    attrs:
+      execution_logging: false
+      expression: |
+        from hashlib import sha256
+        from django.core.cache import cache
+        from django.core.exceptions import ValidationError
+        from django.core.validators import validate_email
+        from authentik.core.models import User
+        from authentik.flows.planner import PLAN_CONTEXT_PENDING_USER, PLAN_CONTEXT_IS_RESTORED
+        from authentik.flows.stage import PLAN_CONTEXT_PENDING_USER_IDENTIFIER
+        from authentik.root.middleware import ClientIPMiddleware
+        from authentik.lib.config import CONFIG
+        plan = request.context.get("flow_plan")
+        if plan is None:
+            return False
+        token = plan.context.get(PLAN_CONTEXT_IS_RESTORED)
+        user = plan.context.get(PLAN_CONTEXT_PENDING_USER)
+        if token is not None:
+            return user is not None and bool(user.pk) and token.user_id == user.pk and token.flow.slug == "bill-self-service-recovery"
+        host = str(CONFIG.get("email.host", "")).strip().lower()
+        sender = str(CONFIG.get("email.from", "")).strip().lower()
+        if not (host and host not in ("localhost", "127.0.0.1", "::1") and "@" in sender and not sender.endswith("@authentik.local")):
+            plan.context["deny_message"] = "Email password recovery is not available yet. Contact your KiscoBooks administrator."
+            return False
+        email = str(plan.context.get(PLAN_CONTEXT_PENDING_USER_IDENTIFIER, "")).strip()
+        try:
+            validate_email(email)
+        except ValidationError:
+            ak_message("Enter a valid email address.")
+            plan.context["deny_message"] = "Enter a valid email address and try again."
+            return False
+        if len(email) > 254:
+            return False
+        # Count initial sends across sessions too. The native email stage limits resends.
+        ip = str(ClientIPMiddleware.get_client_ip(request.http_request))
+        for kind, value in (("ip", ip), ("email", email.casefold())):
+            key = "bill/self-service-recovery/" + kind + "/" + sha256(value.encode()).hexdigest()
+            cache.add(key, 0, timeout=300)
+            if cache.incr(key) > 5:
+                ak_message("Too many recovery attempts. Please wait five minutes and try again.")
+                plan.context["deny_message"] = "Too many recovery attempts. Please wait five minutes and try again."
+                return False
+        matches = User.objects.filter(email__iexact=email)
+        fresh = matches.first() if matches.count() == 1 else None
+        eligible = fresh is not None and fresh.is_active and fresh.has_usable_password() and fresh.type == "external" and fresh.path == "bill/pending-registration" and fresh.attributes.get("billing_email_verified") is True and not fresh.is_superuser and not fresh.groups.exists() and not fresh.roles.exists()
+        # Native recovery EmailStage pretends to send for an unsaved User. Never expose
+        # account existence or send reset mail to unsupported, inactive or ambiguous users.
+        plan.context[PLAN_CONTEXT_PENDING_USER] = fresh if eligible else User(username=email, email=email)
+        return True
+  - model: authentik_stages_email.emailstage
+    identifiers: {name: bill-self-service-recovery-email}
+    id: email
+    # Authentik adds one minute to email token_expiry: nine produces a ten-minute link.
+    attrs: {use_global_settings: true, subject: Reset your KiscoBooks password, template: email/password_reset.html, token_expiry: 'minutes=9', activate_user_on_success: false, recovery_max_attempts: 5, recovery_cache_timeout: 'minutes=5'}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-self-service-recovery-proof}
+    id: proof
+    attrs:
+      execution_logging: false
+      expression: |
+        from authentik.core.models import User
+        from authentik.flows.planner import PLAN_CONTEXT_PENDING_USER, PLAN_CONTEXT_IS_RESTORED
+        plan = request.context.get("flow_plan")
+        if plan is None:
+            return False
+        user = plan.context.get(PLAN_CONTEXT_PENDING_USER)
+        token = plan.context.get(PLAN_CONTEXT_IS_RESTORED)
+        if user is None or not user.pk or token is None or token.user_id != user.pk or token.flow.slug != "bill-self-service-recovery" or token.is_expired:
+            return False
+        fresh = User.objects.filter(pk=user.pk).first()
+        eligible = fresh is not None and fresh.email.casefold() == user.email.casefold() and fresh.is_active and fresh.has_usable_password() and fresh.type == "external" and fresh.path == "bill/pending-registration" and fresh.attributes.get("billing_email_verified") is True and not fresh.is_superuser and not fresh.groups.exists() and not fresh.roles.exists()
+        if eligible:
+            plan.context[PLAN_CONTEXT_PENDING_USER] = fresh
+        return eligible
+  - model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+    identifiers: {name: bill-self-service-recovery-mfa}
+    id: mfa
+    attrs: {not_configured_action: skip, last_auth_threshold: seconds=0}
+  - model: authentik_stages_deny.denystage
+    identifiers: {name: bill-self-service-recovery-denied}
+    id: denied
+    attrs: {deny_message: 'Recovery could not be completed. Check your email address or request a new link. If the problem continues, contact your KiscoBooks administrator.'}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-self-service-recovery-password}
+    id: password
+    attrs: {field_key: password, label: New password, type: password, required: true, order: 10, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-self-service-recovery-repeat}
+    id: repeat
+    attrs: {field_key: password_repeat, label: Confirm new password, type: password, required: true, order: 20, placeholder: '', initial_value: ''}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-self-service-recovery-validation}
+    id: validation
+    attrs:
+      execution_logging: false
+      expression: |
+        from authentik.flows.planner import PLAN_CONTEXT_PENDING_USER
+        data = request.context.get("prompt_data", {})
+        password = data.get("password", "")
+        if set(data) - {"component", "password", "password_repeat"}:
+            return False
+        if not 6 <= len(password) <= 128:
+            ak_message("Use 6 to 128 characters for your new password.")
+            return False
+        if password != data.get("password_repeat"):
+            ak_message("Your new passwords must match.")
+            return False
+        user = request.context.get(PLAN_CONTEXT_PENDING_USER)
+        if user is None or user.check_password(password):
+            ak_message("Choose a different password from your current password.")
+            return False
+        return True
+  - model: authentik_stages_prompt.promptstage
+    identifiers: {name: bill-self-service-recovery-prompt}
+    id: prompt
+    attrs: {fields: [!KeyOf password, !KeyOf repeat], validation_policies: [!KeyOf validation]}
+  - model: authentik_stages_user_write.userwritestage
+    identifiers: {name: bill-self-service-recovery-write}
+    id: write
+    attrs: {user_creation_mode: never_create}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-self-service-recovery-completed}
+    id: completed
+    attrs:
+      execution_logging: false
+      expression: |
+        from authentik.core.models import User
+        from authentik.flows.planner import PLAN_CONTEXT_PENDING_USER
+        from authentik.stages.prompt.stage import PLAN_CONTEXT_PROMPT
+        plan = request.context.get("flow_plan")
+        user = plan.context.get(PLAN_CONTEXT_PENDING_USER) if plan is not None else None
+        data = plan.context.get(PLAN_CONTEXT_PROMPT, {}) if plan is not None else {}
+        fresh = User.objects.filter(pk=user.pk).first() if user is not None and user.pk else None
+        return fresh is not None and bool(data.get("password")) and fresh.check_password(data["password"])
+  - model: authentik_stages_redirect.redirectstage
+    identifiers: {name: bill-self-service-recovery-return}
+    id: return
+    # The deployment helper renders the trusted URL into the persistent blueprint.
+    attrs: {mode: static, keep_context: false, target_static: __BILL_RECOVERY_RETURN_URL__}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-self-service-recovery-success}
+    id: success
+    attrs: {field_key: recovery_message, label: Password reset complete, type: static, required: false, order: 10, placeholder: 'Your password has been changed. Continue to KiscoBooks and sign in with your new password.', initial_value: ''}
+  - model: authentik_stages_prompt.promptstage
+    identifiers: {name: bill-self-service-recovery-confirmation}
+    id: confirmation
+    attrs: {fields: [!KeyOf success]}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 10}
+    attrs: {stage: !KeyOf identify, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 20}
+    id: email-binding
+    attrs: {stage: !KeyOf email, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf email-binding, order: 0, policy: !KeyOf request-policy}
+    attrs: {failure_result: false}
+  # Failed stage policies SKIP stages in Authentik. Explicit deny stages stop the
+  # flow rather than letting missing proof skip MFA/write and report false success.
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 25}
+    id: deny-proof-binding
+    attrs: {stage: !KeyOf denied, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf deny-proof-binding, order: 0, policy: !KeyOf proof}
+    attrs: {negate: true, failure_result: true}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 30}
+    id: mfa-binding
+    attrs: {stage: !KeyOf mfa, evaluate_on_plan: false, re_evaluate_policies: true, invalid_response_action: retry}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf mfa-binding, order: 0, policy: !KeyOf proof}
+    attrs: {failure_result: false}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 40}
+    attrs: {stage: !KeyOf prompt}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 45}
+    id: deny-write-binding
+    attrs: {stage: !KeyOf denied, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf deny-write-binding, order: 0, policy: !KeyOf proof}
+    attrs: {negate: true, failure_result: true}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 50}
+    id: write-binding
+    attrs: {stage: !KeyOf write, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf write-binding, order: 0, policy: !KeyOf proof}
+    attrs: {failure_result: false}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 55}
+    id: deny-completion-binding
+    attrs: {stage: !KeyOf denied, evaluate_on_plan: false, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf deny-completion-binding, order: 0, policy: !KeyOf completed}
+    attrs: {negate: true, failure_result: true}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 57}
+    attrs: {stage: !KeyOf confirmation}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 60}
+    attrs: {stage: !KeyOf return}

@@ -1,0 +1,20 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
+import { DesignerShell } from '../app/(editor)/invoice-designer/DesignerShell';
+import { SAMPLE_TEMPLATES } from '../app/(editor)/invoice-designer/sample-templates';
+it('opens one compact panel at a time and returns focus on Escape without saving', () => {
+  const persistence = { saveDraft: vi.fn(), publish: vi.fn(), pending: false, failure: null, uncertain: false, reload: vi.fn() };
+  render(<DesignerShell templates={SAMPLE_TEMPLATES} initialTemplateId="tpl-gst-a4" persistence={persistence} />);
+  const palette = screen.getByRole('button', { name: 'Palette and versions' });
+  const properties = screen.getByRole('button', { name: 'Properties panel' });
+  fireEvent.click(palette);
+  expect(palette).toHaveAttribute('aria-expanded', 'true');
+  fireEvent.click(properties);
+  expect(palette).toHaveAttribute('aria-expanded', 'false');
+  expect(properties).toHaveAttribute('aria-expanded', 'true');
+  fireEvent.keyDown(within(screen.getByRole('complementary', { name: 'Properties' })).getByRole('button', { name: 'Close properties' }), { key: 'Escape' });
+  expect(properties).toHaveAttribute('aria-expanded', 'false');
+  expect(properties).toHaveFocus();
+  expect(persistence.saveDraft).not.toHaveBeenCalled();
+  expect(persistence.publish).not.toHaveBeenCalled();
+});

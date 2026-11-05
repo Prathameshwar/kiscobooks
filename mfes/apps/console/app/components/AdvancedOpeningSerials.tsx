@@ -1,0 +1,13 @@
+'use client';
+import { TextField } from '@janso/ui';
+import type { components } from '@janso/api-client/catalog';
+import type { OpeningSerial } from '../lib/advanced-product-opening';
+
+type Requirement = components['schemas']['IdentifierRequirement'];
+export function AdvancedOpeningSerials({ title, requirements, rows, onChange, disabled, maximum = 200 }: { title: string; requirements: Requirement[]; rows: OpeningSerial[]; onChange: (rows: OpeningSerial[]) => void; disabled: boolean; maximum?: number }) {
+  const add = () => onChange([...rows, { key: crypto.randomUUID(), identifiers: requirements.flatMap(rule => Array.from({ length: rule.min_count }, (_, index) => ({ identifier_type: rule.identifier_type, slot: index + 1, value: '' }))) }]);
+  const update = (rowIndex: number, itemIndex: number, next: string) => onChange(rows.map((row, at) => at === rowIndex ? { ...row, identifiers: row.identifiers.map((item, index) => index === itemIndex ? { ...item, value: next } : item) } : row));
+  return <section className="product-wizard__serials" aria-label={title}><div className="product-wizard__section-head"><div><h4>{title}</h4><p>One row for each physical unit. Keep leading zeros in identifiers.</p></div><button type="button" className="janso-btn janso-btn--secondary" disabled={disabled || rows.length >= maximum} onClick={add}>Add serial unit</button></div>
+    {rows.map((row, rowIndex) => <div className="product-wizard__serial-row" key={row.key}><div className="product-wizard__section-head"><strong>Physical unit {rowIndex + 1}</strong><button type="button" className="janso-link" disabled={disabled} onClick={() => onChange(rows.filter((_, at) => at !== rowIndex))}>Remove unit</button></div><div className="product-wizard__fields">{row.identifiers.map((item, itemIndex) => <TextField key={`${item.identifier_type}.${item.slot}`} label={`${item.identifier_type === 'IMEI' ? 'IMEI' : 'Serial number'} ${item.slot ?? 1}`} value={item.value} maxLength={120} required disabled={disabled} onChange={event => update(rowIndex, itemIndex, event.target.value)} />)}</div>{requirements.map(rule => row.identifiers.filter(item => item.identifier_type === rule.identifier_type).length < rule.max_count && <button key={rule.identifier_type} type="button" className="janso-link" disabled={disabled} onClick={() => onChange(rows.map((entry, at) => at === rowIndex ? { ...entry, identifiers: [...entry.identifiers, { identifier_type: rule.identifier_type, slot: entry.identifiers.filter(item => item.identifier_type === rule.identifier_type).length + 1, value: '' }] } : entry))}>Add {rule.identifier_type === 'IMEI' ? 'IMEI' : 'serial number'} slot</button>)}</div>)}
+  </section>;
+}

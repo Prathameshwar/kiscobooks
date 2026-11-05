@@ -1,0 +1,350 @@
+{
+  "browser": "156.0.4314.50",
+  "checkedAt": "2026-10-31T11:09:01.142Z",
+  "surface": "Actual React workflow component harness; synthetic memory adapter; not authenticated API E2E.",
+  "results": [
+    {
+      "name": "new-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "NEW",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [
+        "Real same-document browser Back is canceled; stay preserves inputs"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "new-dark",
+      "theme": "dark",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "NEW",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "new-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "NEW",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "new-tablet",
+      "theme": "light",
+      "width": 1024,
+      "height": 900,
+      "workflow": "NEW",
+      "measurements": {
+        "viewport": 1024,
+        "document": 1024,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "new-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "workflow": "NEW",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "actions": [
+          44,
+          44
+        ],
+        "dialogActions": []
+      },
+      "checks": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "empty-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "NEW",
+      "action": "empty",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "review-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "DRAFT",
+      "action": "review",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 766,
+            "scroll": 766
+          }
+        ],
+        "actions": [
+          36,
+          36,
+          36
+        ],
+        "dialogActions": [
+          36,
+          36
+        ]
+      },
+      "checks": [
+        "Review shows exact saved revision and separate full bill / remaining",
+        "Submission transitions to a frozen revision"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "submitted-dark",
+      "theme": "dark",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "SUBMITTED",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [
+        "Read-only revision has no save action"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "approved-ledger",
+      "theme": "ledger",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "APPROVED",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [
+        "Read-only revision has no save action"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "rejected-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "workflow": "REJECTED",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "actions": [
+          44
+        ],
+        "dialogActions": []
+      },
+      "checks": [
+        "Read-only revision has no save action"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "correction-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "REJECTED",
+      "action": "correction",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 510,
+            "scroll": 510
+          }
+        ],
+        "actions": [
+          36
+        ],
+        "dialogActions": [
+          36,
+          36
+        ]
+      },
+      "checks": [
+        "Read-only revision has no save action",
+        "Correction requires and focuses a reason",
+        "Separate editable correction retains original lineage"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "uncertain-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "workflow": "NEW",
+      "action": "uncertain",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [],
+        "actions": [
+          44,
+          44
+        ],
+        "dialogActions": []
+      },
+      "checks": [
+        "Unconfirmed command freezes edits and example replacement",
+        "Same-command recovery yields one editable demo record"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "stale-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "DRAFT",
+      "action": "stale",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [
+          {
+            "width": 766,
+            "scroll": 766
+          }
+        ],
+        "actions": [
+          36
+        ],
+        "dialogActions": [
+          36,
+          36,
+          36
+        ]
+      },
+      "checks": [
+        "Stale comparison retains local entries"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "name": "master-changed-light",
+      "theme": "light",
+      "width": 1440,
+      "height": 1000,
+      "workflow": "MASTER_CHANGED",
+      "measurements": {
+        "viewport": 1440,
+        "document": 1440,
+        "dialogs": [],
+        "actions": [
+          36,
+          36,
+          36
+        ],
+        "dialogActions": []
+      },
+      "checks": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "leave-mobile",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "workflow": "DRAFT",
+      "action": "leave",
+      "measurements": {
+        "viewport": 390,
+        "document": 390,
+        "dialogs": [
+          {
+            "width": 356,
+            "scroll": 356
+          }
+        ],
+        "actions": [
+          44,
+          44
+        ],
+        "dialogActions": [
+          44,
+          44
+        ]
+      },
+      "checks": [
+        "Cancel leave preserves entries and restores focus"
+      ],
+      "runtimeErrors": []
+    }
+  ]
+}

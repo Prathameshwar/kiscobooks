@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "type": {"code": "DEFAULT", "name": "Default", "kind": "BOTH", "custom_fields": {}},
+  "group": {"code": "DEFAULT", "name": "Default", "allowed_kind": "BOTH", "custom_fields": {}, "valid_from": "1000-01-01", "parent_group_id": null},
+  "revision": {
+    "inventory_modes": ["NON_STOCK"],
+    "tracking_modes": ["NONE"],
+    "unit_dimensions": ["COUNT", "MASS", "VOLUME", "LENGTH", "AREA", "TIME", "JOB"],
+    "allow_variants": true,
+    "require_brand": false,
+    "require_manufacturer": false,
+    "require_expiry": false
+  }
+}

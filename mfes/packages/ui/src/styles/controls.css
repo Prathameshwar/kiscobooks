@@ -1,0 +1,124 @@
+/*
+ * Compact choice controls shared by the designer and the form pages.
+ *
+ * The segmented choice was born in the designer's inspector and lived in `designer.css`, which
+ * only the editor routes load — so the first form page to use it got four unstyled browser
+ * buttons. It lives here, loaded by the root layout, and each surface sets its own scale:
+ *
+ *   - the designer through `canvas-tokens.css`, which defines the editor sizes it reads;
+ *   - a form page through the `--janso-segment-*` properties on a wrapper (see `entry.css`),
+ *     or the fallbacks below, which match the editor's own sizes so nothing changes there.
+ *
+ * Colours are the palettes' editor-chrome triple, defined in all three themes.
+ */
+
+/* A segmented choice: one control, one tab stop, arrow keys between options — the pattern
+ * a radiogroup already has, at a size that fits four options in a 280px panel. */
+.janso-editor__segmented {
+  display: flex;
+  inline-size: 100%;
+  padding: 2px;
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-segment-radius, var(--janso-editor-radius, 5px));
+  background: var(--janso-editor-chrome-2);
+}
+
+.janso-editor__segment {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  block-size: calc(var(--janso-segment-h, var(--janso-editor-control-h, 1.625rem)) - 4px);
+  padding-inline: var(--janso-segment-pad, var(--janso-editor-space-1, 0.25rem));
+  border: 0;
+  border-radius: calc(var(--janso-segment-radius, var(--janso-editor-radius, 5px)) - 1px);
+  background: none;
+  color: var(--janso-editor-chrome-ink-soft);
+  font: inherit;
+  font-size: var(--janso-segment-text, var(--janso-editor-text-sm, 0.75rem));
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+}
+
+.janso-editor__segment:hover {
+  color: var(--janso-editor-chrome-ink);
+}
+
+.janso-editor__segment:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: -2px;
+}
+
+.janso-editor__segment[aria-checked='true'] {
+  background: var(--janso-editor-chrome);
+  /* The token is a whole shadow; wrapped in another one the declaration was invalid and dropped. */
+  box-shadow: var(--janso-shadow-card);
+  color: var(--janso-editor-chrome-ink);
+  font-weight: 600;
+}
+
+.janso-editor__segment:disabled {
+  cursor: not-allowed;
+  color: var(--janso-disabled-ink);
+}
+
+/*
+ * A segmented choice on a form page: the question above the options, at the form's scale. The
+ * same rules as above; only the custom properties they read change, so the two cannot drift.
+ */
+.janso-segmented-field {
+  --janso-segment-h: 2.25rem; /* the height of a form input, so the two line up in a row */
+  --janso-segment-text: var(--janso-text-sm);
+  --janso-segment-pad: var(--janso-space-3);
+  --janso-segment-radius: var(--janso-radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+}
+/* Four options in a 26rem drawer: a long one wraps inside its segment rather than over the next. */
+.janso-segmented-field .janso-editor__segment {
+  block-size: auto;
+  min-block-size: calc(var(--janso-segment-h) - 4px);
+  padding-block: var(--janso-space-1);
+  line-height: 1.25;
+}
+
+/* Switches are shared by form pages and the designer. */
+.janso-editor__toggle {
+  position: relative;
+  flex: 0 0 auto;
+  inline-size: 2rem;
+  block-size: 1.125rem;
+  padding: 0;
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-pill);
+  background: var(--janso-editor-chrome-2);
+  cursor: pointer;
+}
+
+.janso-editor__toggle::after {
+  position: absolute;
+  inset-block-start: 1px;
+  inset-inline-start: 1px;
+  display: block;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  border-radius: 50%;
+  background: var(--janso-editor-chrome-ink-soft);
+  content: '';
+  transition: inset-inline-start var(--janso-dur-fast) var(--janso-ease);
+}
+
+.janso-editor__toggle[aria-checked='true'] {
+  border-color: var(--janso-brand);
+  background: var(--janso-brand-tint);
+}
+
+.janso-editor__toggle[aria-checked='true']::after {
+  inset-inline-start: calc(100% - 0.875rem - 2px);
+  background: var(--janso-brand);
+}
+
+.janso-editor__toggle:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: 2px;
+}

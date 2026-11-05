@@ -1,0 +1,981 @@
+/*
+ * @janso/ui — overlay primitives: `Menu` and `ConfirmDialog` (design-system §5.11).
+ *
+ * Both are portalled to the body, so nothing here may assume a position in the component tree.
+ * That is the whole reason they are portalled: an absolutely positioned popover is clipped by any
+ * ancestor with `overflow`, and a row kebab lives inside the table's horizontal scroller.
+ *
+ * Contains no colour values — every colour reads a --janso-* token.
+ */
+
+/* ---------- menu ---------- */
+
+/*
+ * An inline wrapper around the trigger only. The panel is not inside it, so this element sets no
+ * `position` — there is nothing left to position against.
+ */
+.janso-menu {
+  display: inline-flex;
+}
+
+/* A labelled trigger sits in a toolbar row beside 34px icon buttons, so it takes the same height
+   rather than the full button padding, which would make the row taller than the icons. */
+.janso-menu__trigger {
+  padding: 0.45rem 0.7rem;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+}
+.janso-menu__trigger-icon {
+  display: grid;
+  place-items: center;
+  color: var(--janso-ink-soft);
+}
+.janso-menu__trigger-caret {
+  display: grid;
+  place-items: center;
+}
+
+/*
+ * The leading verb of a bar or a page — "New" — whose menu is a list of ways to start the same
+ * thing. It carries the action gradient like every other primary button, so it follows the theme
+ * rather than naming a colour, and a hairline divides the caret from the label so the control
+ * reads as a split button. It stays *one* button: both halves open the same menu, and a face that
+ * navigated somewhere the caret does not would be two actions wearing one name.
+ */
+.janso-menu__trigger--primary {
+  gap: var(--janso-space-2);
+  /* The command trigger's height, not the default button's: the two stand side by side in the
+     top bar, and 4px apart they read as two rows rather than one. */
+  min-height: 2rem;
+  padding-inline: 0.7rem 0.45rem;
+  color: var(--janso-ink-invert);
+  font-weight: 600;
+}
+.janso-menu__trigger--primary .janso-menu__trigger-icon {
+  color: inherit;
+}
+.janso-menu__trigger--primary .janso-menu__trigger-caret {
+  margin-inline-start: var(--janso-space-1);
+  padding-inline-start: var(--janso-space-2);
+  /* `--janso-brand-bright` sits a step off the gradient in all three themes, so the seam reads
+     without a bespoke translucent white. */
+  border-inline-start: 1px solid var(--janso-brand-bright);
+}
+/* Pressed and open share one treatment: while the panel is up, the face is held down. */
+.janso-menu__trigger--primary[aria-expanded='true'] {
+  background: var(--janso-grad-action-press);
+}
+
+/*
+ * `--janso-overlay` on a `--janso-overlay-line` edge, like every other popover: a quiet hairline
+ * where the shadow lifts the panel (light, ledger), and the 3:1 rule in dark, where it cannot.
+ * `min-width` rather than a fixed one — "Duplicate" and "Reverse this entry" are the same menu.
+ */
+.janso-menu__panel {
+  z-index: var(--janso-z-popover);
+  display: flex;
+  flex-direction: column;
+  min-width: min(11rem, calc(100vw - 1rem));
+  max-width: min(20rem, calc(100vw - 1rem));
+  padding: var(--janso-space-1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--janso-overlay);
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+}
+
+.janso-menu__item {
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-3);
+  width: 100%;
+  padding: 0.4375rem 0.625rem;
+  border: 0;
+  border-radius: var(--janso-radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  text-align: start;
+  cursor: pointer;
+}
+.janso-menu__item:hover {
+  background: var(--janso-hover);
+}
+/* Inset ring, not the standard outer one: the item spans the panel's full width, so an outer ring
+   would be clipped by the panel's own `overflow`. */
+.janso-menu__item:focus-visible {
+  outline: none;
+  background: var(--janso-selected);
+  box-shadow: inset 0 0 0 2px var(--janso-focus);
+}
+.janso-menu__item[data-tone='danger'] {
+  color: var(--janso-danger-ink);
+}
+.janso-menu__item[data-tone='danger']:hover {
+  background: var(--janso-danger-tint);
+}
+/*
+ * `aria-disabled`, so the item keeps its tab stop and its reason stays readable. The cursor and
+ * the muted ink say "not now"; the note below the label says why.
+ */
+.janso-menu__item[aria-disabled='true'] {
+  color: var(--janso-disabled-ink);
+  cursor: not-allowed;
+}
+.janso-menu__item[aria-disabled='true']:hover {
+  background: transparent;
+}
+.janso-menu__item[aria-disabled='true'][data-tone='danger'] {
+  color: var(--janso-disabled-ink);
+}
+
+.janso-menu__item-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  /* Aligned to the label's first line, not centred on a two-line item. */
+  height: 1.15rem;
+  color: var(--janso-ink-soft);
+}
+.janso-menu__item[data-tone='danger'] .janso-menu__item-icon,
+.janso-menu__item[aria-disabled='true'] .janso-menu__item-icon {
+  color: currentColor;
+}
+
+/*
+ * A checkbox item's tick. The slot keeps its width when unchecked — same box as the icon slot —
+ * because a list of toggles whose labels shift left when one is turned off is unreadable while it is
+ * being read down.
+ */
+.janso-menu__item-check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--janso-brand-strong);
+}
+
+.janso-menu__item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.janso-menu__item-note {
+  font-size: var(--janso-text-xs);
+  font-weight: 400;
+  color: var(--janso-ink-soft);
+  /* Wraps on purpose: "the period is closed" truncated to "the period is…" is not a reason. */
+  white-space: normal;
+}
+
+.janso-menu__sep {
+  height: 1px;
+  margin: var(--janso-space-1) 0;
+  background: var(--janso-line);
+}
+
+/* ---------- confirm dialog ---------- */
+
+/*
+ * Fixed and centred, above the drawer but below a popover — a `Select` opened inside the dialog
+ * must render over it.
+ */
+.janso-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: var(--janso-z-drawer);
+  display: grid;
+  place-items: center;
+  padding: var(--janso-space-4);
+}
+
+.janso-dialog__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--janso-scrim);
+}
+
+.janso-dialog__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-4);
+  width: min(30rem, 100%);
+  max-height: calc(100vh - var(--janso-space-8));
+  /* The panel itself does not scroll: the *body* does (below), so the title and the Cancel/Confirm
+     row stay on screen however long the review is. A panel that scrolled as a whole put the
+     confirming action at the very bottom of a long list, where it could not be found without
+     scrolling. */
+  overflow: hidden;
+  padding: var(--janso-space-5);
+  background: var(--janso-overlay);
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+  animation: janso-modal-in var(--janso-dur) var(--janso-ease);
+}
+/* Same two widths `Modal` offers. */
+.janso-dialog__panel[data-size='lg'] {
+  width: min(48rem, 100%);
+}
+
+/* Title and its optional badge on one baseline row. The badge is `flex: none`; the title takes the
+   rest and wraps under itself rather than under the icon. */
+.janso-dialog__header {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+}
+
+.janso-dialog__title {
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-size: var(--janso-text-md);
+  font-weight: 600;
+  color: var(--janso-ink);
+}
+
+/*
+ * The destructive tone, made visible. `data-tone='danger'` used to set only the confirm button's
+ * variant and the initial focus; the dialog itself looked identical to an ordinary confirmation.
+ * A tinted alert badge and a top accent strip say "this one is different" before the copy is read.
+ * The strip is an inset shadow, not a border, so it follows the panel's rounded corners and adds
+ * no height that would shift the layout between tones.
+ */
+.janso-dialog__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-danger-tint);
+  border: 1px solid var(--janso-danger-line);
+  color: var(--janso-danger-ink);
+}
+.janso-dialog[data-tone='danger'] .janso-dialog__panel {
+  box-shadow: var(--janso-shadow-popover), inset 0 3px 0 0 var(--janso-danger-ink);
+}
+
+.janso-dialog__body {
+  /* The one scrolling region. `min-height: 0` lets a flex child shrink below its content. */
+  min-height: 0;
+  overflow-y: auto;
+  /* A scroll box clips a focus ring drawn outside its edge, so the box is widened by the ring's
+     reach and padded back in: the content stays where it was and the ring has room. */
+  margin: calc(var(--janso-space-1) * -1);
+  padding: var(--janso-space-1);
+  font-size: var(--janso-text-sm);
+  line-height: 1.55;
+  color: var(--janso-ink-soft);
+}
+.janso-dialog__body p {
+  margin: 0 0 var(--janso-space-2);
+}
+.janso-dialog__body p:last-child {
+  margin-bottom: 0;
+}
+/* Whatever the body holds — a fact list, a paragraph, a field, a notice, a card — is spaced as a
+   column, as `.janso-flow` does on a page. Without it a list, the sentence under it and the input
+   after that sat flush against each other. Paragraphs keep their own tighter spacing. */
+.janso-dialog__body > * + * {
+  margin-top: var(--janso-space-3);
+}
+/* `p` zeroes its own top margin above, which would beat the rule just before it; this one ties with
+   it on specificity and comes later, so a paragraph after a list or a field is spaced like any
+   other block. */
+.janso-dialog__body > * + p {
+  margin-top: var(--janso-space-3);
+}
+.janso-dialog__body > p + p {
+  margin-top: 0;
+}
+
+.janso-dialog__phrase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-2);
+}
+/* The phrase has to be copyable by eye, so it is mono and unambiguous — `1` against `l`. */
+.janso-dialog__phrase-code {
+  font-family: var(--janso-font-mono);
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  padding: 0.05rem var(--janso-space-1);
+  background: var(--janso-surface-2);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-sm);
+  color: var(--janso-ink);
+}
+
+.janso-dialog__error {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  margin: 0;
+  padding: var(--janso-space-2) var(--janso-space-3);
+  background: var(--janso-danger-tint);
+  border: 1px solid var(--janso-danger-line);
+  border-radius: var(--janso-radius-sm);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-danger-ink);
+}
+.janso-dialog__error svg {
+  flex: none;
+}
+
+/* Confirm last, in reading order: the affirmative action is the one the eye lands on last before
+   the pointer moves, and Tab reaches Cancel first. */
+.janso-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--janso-space-3);
+}
+
+@media (max-width: 30rem) {
+  /* Stacked and full-width on a phone; a 50/50 split puts two same-size buttons under a thumb. */
+  .janso-dialog__actions {
+    flex-direction: column-reverse;
+  }
+  .janso-dialog__actions .janso-btn {
+    width: 100%;
+  }
+}
+
+/* ---------- toasts ---------- */
+
+/*
+ * The floated stack of transient status messages. Portalled to the body and fixed to a corner, so
+ * like the dialog it assumes no place in the tree. The container is click-through — only the toasts
+ * themselves take the pointer — so the gaps between them never swallow a click on the page beneath.
+ */
+.janso-toasts {
+  position: fixed;
+  z-index: var(--janso-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--janso-space-3);
+  width: min(24rem, calc(100vw - 2 * var(--janso-space-4)));
+  pointer-events: none;
+}
+.janso-toasts[data-placement='bottom-end'] {
+  inset-inline-end: var(--janso-space-4);
+  inset-block-end: var(--janso-space-4);
+}
+/* Top placement grows downward, so the newest — appended last — must render first to sit nearest
+   the corner the eye is drawn to. */
+.janso-toasts[data-placement='top-end'] {
+  inset-inline-end: var(--janso-space-4);
+  inset-block-start: var(--janso-space-4);
+  flex-direction: column-reverse;
+}
+
+/*
+ * One toast: a floating overlay surface in body ink, with the tone carried by its icon. A toast sits
+ * over arbitrary content, so a full signal tint fights whatever is underneath it; the inline
+ * `Notice` keeps the tinted triple because it sits in the page's own flow. Same icon map as the
+ * notice (decision 68), so the two still speak one tone language — and the icon is what keeps the
+ * tone from being colour alone.
+ */
+.janso-toast {
+  pointer-events: auto;
+  display: flex;
+  gap: var(--janso-space-3);
+  align-items: flex-start;
+  padding: 0.75rem 0.75rem 0.75rem 0.875rem;
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-overlay);
+  box-shadow: var(--janso-shadow-popover);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  animation: janso-toast-in var(--janso-dur) var(--janso-ease);
+  --janso-toast-accent: var(--janso-info-ink);
+}
+.janso-toast[data-tone='success'] {
+  --janso-toast-accent: var(--janso-success-ink);
+}
+.janso-toast[data-tone='warning'] {
+  --janso-toast-accent: var(--janso-warn-ink);
+}
+.janso-toast[data-tone='danger'] {
+  --janso-toast-accent: var(--janso-danger-ink);
+}
+
+.janso-toast__icon {
+  display: flex;
+  flex: none;
+  margin-top: 1px;
+  color: var(--janso-toast-accent);
+}
+.janso-toast__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.janso-toast__title {
+  margin: 0;
+  font-weight: 600;
+}
+/* The title is the fact; the text under it is its detail, one step quieter. */
+.janso-toast__text {
+  margin: 0;
+  color: var(--janso-ink-soft);
+}
+.janso-toast__title + .janso-toast__text {
+  margin-top: 0.15rem;
+}
+.janso-toast .janso-btn--icon {
+  flex: none;
+  margin: -0.25rem -0.25rem 0 0;
+}
+
+@keyframes janso-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The entrance is decorative; a reader who asked for less motion gets the toast without the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .janso-toast {
+    animation: none;
+  }
+}
+
+/* ---------- modal and drawer ---------- */
+
+/*
+ * `Modal` (centred) and `Drawer` (inline-end sheet) are the same overlay with different placement,
+ * so they share the `janso-overlay-*` chrome and differ only in the frame and the entrance. Both
+ * sit on `--janso-z-drawer`, below a popover, so a `Select` opened inside either renders over it.
+ */
+.janso-modal,
+.janso-drawer,
+.janso-command {
+  position: fixed;
+  inset: 0;
+  z-index: var(--janso-z-drawer);
+}
+.janso-modal {
+  display: grid;
+  place-items: center;
+  padding: var(--janso-space-4);
+}
+.janso-drawer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.janso-modal__scrim,
+.janso-drawer__scrim,
+.janso-command__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--janso-scrim);
+}
+
+.janso-modal__panel,
+.janso-drawer__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--janso-overlay);
+  box-shadow: var(--janso-shadow-popover);
+}
+
+.janso-modal__panel {
+  width: min(32rem, 100%);
+  max-height: calc(100vh - var(--janso-space-8));
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  animation: janso-modal-in var(--janso-dur) var(--janso-ease);
+}
+.janso-modal__panel[data-size='sm'] {
+  width: min(24rem, 100%);
+}
+.janso-modal__panel[data-size='lg'] {
+  width: min(48rem, 100%);
+}
+
+/* The sheet spans the full height and hangs off the inline-end edge, so only its leading edge needs
+   a border — the other three sit against the viewport. */
+.janso-drawer__panel {
+  width: min(28rem, 100%);
+  height: 100%;
+  border-inline-start: 1px solid var(--janso-overlay-line);
+  animation: janso-drawer-in var(--janso-dur) var(--janso-ease);
+}
+.janso-drawer__panel[data-size='sm'] {
+  width: min(22rem, 100%);
+}
+.janso-drawer__panel[data-size='lg'] {
+  width: min(40rem, 100%);
+}
+
+/* Shared chrome: header row, scrolling body, action footer — one set of rules for both frames. */
+.janso-overlay-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-5) var(--janso-space-5) var(--janso-space-3);
+}
+.janso-overlay-title {
+  margin: 0;
+  font-family: var(--janso-font-display);
+  font-size: var(--janso-text-md);
+  font-weight: 600;
+  color: var(--janso-ink);
+}
+/* The body is the one part that scrolls, so the header and footer stay pinned; its own padding keeps
+   content off the edges, and `:last-child` restores the bottom padding a footer would otherwise own. */
+.janso-overlay-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--janso-space-5);
+  font-size: var(--janso-text-sm);
+  line-height: 1.55;
+  color: var(--janso-ink-soft);
+}
+.janso-overlay-body:last-child {
+  padding-bottom: var(--janso-space-5);
+}
+.janso-overlay-body:focus-visible {
+  outline: 2px solid var(--janso-focus);
+  outline-offset: calc(-1 * var(--janso-space-1));
+}
+.janso-overlay-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-4) var(--janso-space-5) var(--janso-space-5);
+}
+.janso-overlay-head .janso-btn--icon {
+  flex: none;
+  margin-inline-end: -0.25rem;
+}
+/*
+ * A drawer is a full-height sheet whose body scrolls under a pinned header and footer, so both get a
+ * rule: without one, content scrolling under the title reads as the title's own paragraph. The
+ * centred modal is short enough to read as one block and keeps its open frame.
+ */
+.janso-drawer .janso-overlay-head {
+  align-items: center;
+  padding-bottom: var(--janso-space-4);
+  border-bottom: 1px solid var(--janso-line);
+}
+.janso-drawer .janso-overlay-title {
+  font-size: var(--janso-text-lg);
+  letter-spacing: -0.015em;
+}
+.janso-drawer .janso-overlay-body {
+  padding-top: var(--janso-space-5);
+}
+.janso-drawer .janso-overlay-foot {
+  padding-top: var(--janso-space-4);
+  padding-bottom: var(--janso-space-4);
+  border-top: 1px solid var(--janso-line);
+  background: var(--janso-surface-2);
+}
+
+@keyframes janso-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes janso-drawer-in {
+  from {
+    transform: translateX(1rem);
+    opacity: 0.5;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+/* The entrance is decorative; a reader who asked for less motion gets the surface without the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .janso-modal__panel,
+  .janso-drawer__panel,
+  .janso-dialog__panel,
+  .janso-command__panel {
+    animation: none;
+  }
+}
+
+@media (max-width: 30rem) {
+  /* Stacked and full-width on a phone; the footer's buttons take the width rather than crowd. */
+  .janso-overlay-foot {
+    flex-direction: column-reverse;
+  }
+  .janso-overlay-foot .janso-btn {
+    width: 100%;
+  }
+}
+
+/* ---------- command palette ---------- */
+
+/*
+ * Anchored high rather than centred: the list grows downward as results arrive, and a centred panel
+ * would jump up and down with every keystroke. The layer and scrim are the modal's (above); only the
+ * placement and the panel's size are its own.
+ */
+.janso-command {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh var(--janso-space-4) var(--janso-space-4);
+}
+.janso-command__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(38rem, 100%);
+  max-height: min(32rem, 76vh);
+  overflow: hidden;
+  background: var(--janso-overlay);
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+  animation: janso-modal-in var(--janso-dur) var(--janso-ease);
+}
+
+.janso-command__search {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: 0 var(--janso-space-4);
+  border-bottom: 1px solid var(--janso-line);
+}
+.janso-command__search-icon {
+  display: flex;
+  flex: none;
+  color: var(--janso-ink-faint);
+}
+/*
+ * The input is borderless because the panel is its frame. Its focus is therefore shown by the
+ * caret and by the highlighted option the arrows are moving — and the panel itself carries the
+ * ring below, so a keyboard reader never loses track of where focus is.
+ */
+.janso-command__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 3.25rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-md);
+  color: var(--janso-ink);
+  outline: none;
+}
+.janso-command__input::placeholder {
+  color: var(--janso-ink-faint);
+}
+.janso-command__panel:focus-within {
+  box-shadow: var(--janso-shadow-popover), 0 0 0 1px var(--janso-focus);
+}
+
+.janso-command__list {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: var(--janso-space-1) var(--janso-space-2) var(--janso-space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+.janso-command__options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.janso-command__group {
+  margin: var(--janso-space-2) 0 var(--janso-space-1);
+  padding: 0 var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  font-weight: 500;
+  color: var(--janso-ink-faint);
+}
+.janso-command__option {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  min-height: 2.5rem;
+  padding: 0 var(--janso-space-3);
+  border-radius: var(--janso-radius-sm);
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink);
+  cursor: pointer;
+}
+/* The highlight is the focus indicator of a combobox, so it is a shape as well as a tint: the inset
+ * edge in `--janso-focus` survives a tint that a good few people will never see. */
+.janso-command__option[aria-selected='true'] {
+  background: var(--janso-selected);
+  box-shadow: inset 2px 0 0 0 var(--janso-focus);
+}
+.janso-command__option-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--janso-ink-soft);
+}
+.janso-command__option[aria-selected='true'] .janso-command__option-icon {
+  color: var(--janso-brand);
+}
+.janso-command__option-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janso-command__option-hint {
+  flex: none;
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+.janso-command__empty {
+  margin: 0;
+  padding: var(--janso-space-6) var(--janso-space-4);
+  text-align: center;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+}
+
+.janso-command__foot {
+  display: flex;
+  gap: var(--janso-space-4);
+  padding: var(--janso-space-2) var(--janso-space-4);
+  border-top: 1px solid var(--janso-line);
+  background: var(--janso-surface-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+
+/* A key cap. Shared by the palette and its trigger. */
+.janso-command__kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  margin-inline-end: 0.2rem;
+  border: 1px solid var(--janso-line-strong);
+  border-bottom-width: 2px;
+  border-radius: calc(var(--janso-radius-sm) - 2px);
+  background: var(--janso-surface);
+  font-family: var(--janso-font-body);
+  font-size: var(--janso-text-overline);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--janso-ink-soft);
+}
+
+/* ---------- command trigger (top bar) ---------- */
+
+.janso-command-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+  width: min(20rem, 100%);
+  min-height: 2rem;
+  padding: 0 var(--janso-space-2) 0 var(--janso-space-3);
+  border: 1px solid var(--janso-control-line);
+  border-radius: var(--janso-radius-sm);
+  background: var(--janso-surface-2);
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+  text-align: start;
+  cursor: pointer;
+  transition: background var(--janso-dur-fast) var(--janso-ease), border-color var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-command-trigger:hover {
+  background: var(--janso-hover);
+  border-color: var(--janso-ink-faint);
+}
+.janso-command-trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--janso-focus-ring);
+}
+.janso-command-trigger__icon {
+  display: flex;
+  flex: none;
+  color: var(--janso-ink-faint);
+}
+.janso-command-trigger__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.janso-command-trigger .janso-command__kbd {
+  margin-inline-end: 0;
+}
+
+/* ---------- context switcher (company / financial year) ---------- */
+/*
+ * The panel lives beside the menu's on purpose: both are portalled, fixed-position surfaces
+ * placed by `lib/placement`, and the two must agree on elevation, radius and overlay ink or a
+ * rail popup and a row kebab read as different products.
+ */
+.janso-switcher__panel {
+  z-index: var(--janso-z-popover);
+  display: flex;
+  flex-direction: column;
+  min-width: 16rem;
+  max-width: 24rem;
+  padding: var(--janso-space-1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--janso-overlay);
+  border: 1px solid var(--janso-overlay-line);
+  border-radius: var(--janso-radius-md);
+  box-shadow: var(--janso-shadow-popover);
+}
+.janso-switcher__search {
+  flex: none;
+  padding: var(--janso-space-2) var(--janso-space-2) var(--janso-space-1);
+}
+.janso-switcher__list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  /* Keep rows inside the available space between search and footer actions. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.janso-switcher__option {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--janso-space-3);
+  width: 100%;
+  padding: var(--janso-space-2) 0.625rem;
+  border: 0;
+  border-radius: var(--janso-radius-sm);
+  background: transparent;
+  font: inherit;
+  color: var(--janso-ink);
+  text-align: start;
+  cursor: pointer;
+}
+.janso-switcher__option:hover {
+  background: var(--janso-hover);
+}
+/* Inset ring, not the standard outer one: the row spans the panel's full width, so an outer
+   ring would be clipped by the panel's own `overflow`. */
+.janso-switcher__option:focus-visible {
+  outline: none;
+  background: var(--janso-selected);
+  box-shadow: inset 0 0 0 2px var(--janso-focus);
+}
+.janso-switcher__option[data-selected='true'] {
+  background: var(--janso-selected);
+}
+.janso-switcher__option[aria-disabled='true'] {
+  color: var(--janso-disabled-ink);
+  cursor: not-allowed;
+}
+.janso-switcher__option[aria-disabled='true']:hover {
+  background: transparent;
+}
+.janso-switcher__option-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.janso-switcher__option-code {
+  font-size: var(--janso-text-overline);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--janso-ink-soft);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* A long trading name truncates; it never widens the panel past its max. */
+.janso-switcher__option-name {
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.janso-switcher__option-note {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+/* Kept at a fixed width whether or not this row is the selected one, so every badge in the
+ * list stays in one column rather than shifting by a tick. */
+.janso-switcher__check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  color: var(--janso-brand);
+}
+.janso-switcher__actions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  margin-top: var(--janso-space-1);
+  padding-top: var(--janso-space-1);
+  border-top: 1px solid var(--janso-overlay-line);
+}
+.janso-switcher__action {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  width: 100%;
+  padding: 0.4375rem 0.625rem;
+  border: 0;
+  border-radius: var(--janso-radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-brand-ink);
+  text-align: start;
+  cursor: pointer;
+}
+.janso-switcher__action:hover {
+  background: var(--janso-hover);
+}
+.janso-switcher__action:focus-visible {
+  outline: none;
+  background: var(--janso-selected);
+  box-shadow: inset 0 0 0 2px var(--janso-focus);
+}
+.janso-switcher__action-icon {
+  display: flex;
+  flex: none;
+  color: var(--janso-brand);
+}
+.janso-switcher__status {
+  margin: 0;
+  padding: var(--janso-space-3) 0.625rem;
+  font-size: var(--janso-text-sm);
+  color: var(--janso-ink-soft);
+}

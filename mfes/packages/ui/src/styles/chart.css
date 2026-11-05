@@ -1,0 +1,184 @@
+/*
+ * @janso/ui — chart chrome: plot frame, gridlines, axis ticks, value annotations and
+ * the legend. Series colour comes from --janso-chart-1..8, assigned by index.
+ *
+ * Contains no colour values — every colour reads a --janso-* token.
+ */
+
+/* ---------- frame ---------- */
+/* `.janso-chart` itself needs no box styles — it is the hook the series slot hangs off. */
+
+/*
+ * The chart is its own clipping box. Its table twin is visually hidden but still a table: a
+ * table ignores the 1px width, so its real size would otherwise count towards the page's
+ * scrollable width and give a phone a horizontal scrollbar for something nobody can see.
+ */
+.janso-chart {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Intrinsic width/height attributes on the <svg> give the aspect ratio; `height: auto`
+ * then lets the card set the width and the chart scale with it, with no JS measuring. */
+.janso-chart__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- gridlines & axis ---------- */
+/* Solid hairlines, one step off the surface: a grid is a reference, never data ink.
+ * `non-scaling-stroke` keeps them 1px however far the viewBox is scaled up. */
+
+.janso-chart__gridline,
+.janso-chart__axis {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.janso-chart__gridline {
+  stroke: var(--janso-chart-grid);
+}
+/* the zero line — a shade firmer than the grid, because bars grow out of it */
+.janso-chart__axis {
+  stroke: var(--janso-chart-axis);
+}
+
+/* ---------- text ---------- */
+
+/* Ticks and the annotation are *text*, at 12.5px, so they owe 4.5:1 — not the 3:1 a line
+ * or a bar owes. `--janso-chart-axis` is scaled for a graphic (it measured 2.62:1 in light)
+ * and the annotation is the only money value on the picture, so both read `--janso-ink-soft`
+ * (5.84 light / 6.96 dark / 7.13 ledger). The zero line and gridlines keep the chart tokens:
+ * those are graphics, and they are the reason `--janso-chart-axis` exists. */
+.janso-chart__tick,
+.janso-chart__annotation {
+  fill: var(--janso-ink-soft);
+  font-family: var(--janso-font-body);
+  font-size: var(--janso-text-xs);
+}
+.janso-chart__annotation {
+  font-weight: 500;
+}
+
+/* ---------- bars ---------- */
+/*
+ * Series colour is assigned by index (design-system §3.2): the call site picks a slot,
+ * these rules own the token. One series, so no legend — the card title names it.
+ */
+.janso-chart__bar {
+  fill: var(--janso-chart-1);
+  transition: opacity var(--janso-dur-fast) var(--janso-ease);
+}
+.janso-chart__bar:hover {
+  opacity: 0.82;
+}
+
+.janso-chart[data-series='1'] .janso-chart__bar { fill: var(--janso-chart-1); }
+.janso-chart[data-series='2'] .janso-chart__bar { fill: var(--janso-chart-2); }
+.janso-chart[data-series='3'] .janso-chart__bar { fill: var(--janso-chart-3); }
+.janso-chart[data-series='4'] .janso-chart__bar { fill: var(--janso-chart-4); }
+.janso-chart[data-series='5'] .janso-chart__bar { fill: var(--janso-chart-5); }
+.janso-chart[data-series='6'] .janso-chart__bar { fill: var(--janso-chart-6); }
+.janso-chart[data-series='7'] .janso-chart__bar { fill: var(--janso-chart-7); }
+.janso-chart[data-series='8'] .janso-chart__bar { fill: var(--janso-chart-8); }
+
+/*
+ * A grouped chart assigns the slot per bar (`data-series` on the path), because one chart
+ * holds several series. The container rules above stay for single-series charts; these are
+ * more specific only against the unslotted default, so the two never fight.
+ */
+.janso-chart__bar[data-series='2'] { fill: var(--janso-chart-2); }
+.janso-chart__bar[data-series='3'] { fill: var(--janso-chart-3); }
+.janso-chart__bar[data-series='4'] { fill: var(--janso-chart-4); }
+.janso-chart__bar[data-series='5'] { fill: var(--janso-chart-5); }
+.janso-chart__bar[data-series='6'] { fill: var(--janso-chart-6); }
+.janso-chart__bar[data-series='7'] { fill: var(--janso-chart-7); }
+.janso-chart__bar[data-series='8'] { fill: var(--janso-chart-8); }
+
+/* ---------- legend ---------- */
+/* Text in ink, never in the series colour — the swatch carries the identity. */
+.janso-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--janso-space-2) var(--janso-space-5);
+  margin: var(--janso-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+}
+.janso-chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--janso-space-2);
+}
+.janso-chart__legend-total {
+  color: var(--janso-ink);
+  font-weight: 600;
+}
+.janso-chart__swatch {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
+  background: var(--janso-chart-1);
+}
+.janso-chart__swatch[data-series='2'] { background: var(--janso-chart-2); }
+.janso-chart__swatch[data-series='3'] { background: var(--janso-chart-3); }
+.janso-chart__swatch[data-series='4'] { background: var(--janso-chart-4); }
+.janso-chart__swatch[data-series='5'] { background: var(--janso-chart-5); }
+.janso-chart__swatch[data-series='6'] { background: var(--janso-chart-6); }
+.janso-chart__swatch[data-series='7'] { background: var(--janso-chart-7); }
+.janso-chart__swatch[data-series='8'] { background: var(--janso-chart-8); }
+
+/* ---------- sparkline ---------- */
+/*
+ * Stretched to its box (`preserveAspectRatio="none"`), so the stroke opts out of the scaling or a
+ * wide tile would draw a hairline and a narrow one a marker pen. The area under the line is the
+ * series colour at a low opacity — a reading aid, never data ink of its own.
+ */
+.janso-sparkline {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: var(--janso-chart-1);
+}
+.janso-sparkline__line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.janso-sparkline__area {
+  fill: currentColor;
+  fill-opacity: 0.1;
+  stroke: none;
+}
+.janso-sparkline[data-series='2'] { color: var(--janso-chart-2); }
+.janso-sparkline[data-series='3'] { color: var(--janso-chart-3); }
+.janso-sparkline[data-series='4'] { color: var(--janso-chart-4); }
+.janso-sparkline[data-series='5'] { color: var(--janso-chart-5); }
+.janso-sparkline[data-series='6'] { color: var(--janso-chart-6); }
+.janso-sparkline[data-series='7'] { color: var(--janso-chart-7); }
+.janso-sparkline[data-series='8'] { color: var(--janso-chart-8); }
+
+/* ---------- empty ---------- */
+
+.janso-chart__empty {
+  margin: 0;
+  padding: var(--janso-space-6) 0;
+  text-align: center;
+  color: var(--janso-ink-soft);
+  font-size: var(--janso-text-sm);
+}
+
+/* The chart itself never animates; the hover response is the only transition, and it
+ * stops here as well as at the root, so this file is honest on its own. */
+@media (prefers-reduced-motion: reduce) {
+  .janso-chart__bar {
+    transition: none;
+  }
+}

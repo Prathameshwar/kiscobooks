@@ -1,0 +1,189 @@
+/*
+ * Console-app layout that is genuinely this app's own, not shared. Everything else comes
+ * from @janso/ui — if a second MFE ever needs a piece of this, it moves there.
+ *
+ * No colour values: every colour reads a --janso-* token.
+ */
+
+/* Who you are signed in as, at the foot of the rail. A label, not a control — the top
+   bar's user menu is the interactive copy. */
+.console-rail-user {
+  display: flex;
+  align-items: center;
+  gap: var(--janso-space-3);
+  padding: var(--janso-space-3) var(--janso-space-2);
+  margin-top: var(--janso-space-2);
+  border-top: 1px solid var(--janso-line);
+  min-width: 0;
+}
+.console-rail-user__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+.console-rail-user__name {
+  font-size: var(--janso-text-sm);
+  font-weight: 600;
+  color: var(--janso-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.console-rail-user__org {
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A collapsed rail keeps the avatar and drops the text, like every other rail item. */
+.janso-shell[data-collapsed='true'] .console-rail-user__text {
+  display: none;
+}
+.janso-shell[data-collapsed='true'] .console-rail-user {
+  justify-content: center;
+}
+
+/* Why this company is the one open, when the user did not choose it. A quiet line under the
+   switcher: the rail never claims a stored default that was only a fallback. */
+.console-context__note {
+  margin: 0;
+  padding-inline: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-ink-soft);
+}
+/* A refused company switch. In the rail, not in the panel: choosing an option closes the
+   panel, so a message inside it would be gone before it could be read. */
+.console-context__error {
+  margin: 0;
+  padding-inline: var(--janso-space-2);
+  font-size: var(--janso-text-xs);
+  color: var(--janso-danger-ink);
+}
+
+/* The creation run: one line per step, each carrying its own outcome so a failure names the
+   step that failed rather than the whole wizard. */
+.console-wizard__tasks {
+  display: grid;
+  gap: var(--janso-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.console-wizard__tasks li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--janso-space-3);
+}
+.console-wizard__tasks li > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+/* A step not yet reached is quieter than one in hand, without being unreadable. */
+.console-wizard__tasks li[data-state='pending'] {
+  color: var(--janso-ink-soft);
+}
+
+/* What the chosen money and date settings will actually print. Set apart from the fields it
+   previews, so it reads as a consequence rather than as more form. */
+.console-wizard__preview {
+  display: grid;
+  gap: var(--janso-space-2);
+  padding: var(--janso-space-4);
+  border: 1px solid var(--janso-line);
+  border-radius: var(--janso-radius-md);
+  background: var(--janso-surface-2);
+}
+
+/*
+ * The two forms on the document-routing page: five fields on "Add a rule", three on "Check a
+ * document" — and the one-field "default template" form on a voucher kind's print page, which
+ * wants the same column edges. `.janso-form-grid` is auto-fit from a 16rem floor, which on a wide screen sets five
+ * fields four to a row with one stranded beneath, and gives the two cards different column edges.
+ * Three to a row from a wide viewport, two on a tablet, one on a phone — so both cards share the
+ * same edges, and "Document kind" is wide enough to show its whole option label. Declared after
+ * `janso-ui.css`, so it overrides the shared template by order at equal specificity.
+ */
+.console-routing-fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 40rem) {
+  .console-routing-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 80rem) {
+  .console-routing-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Share the label/control/hint rows with the inline action, including long labels. */
+.console-reference-create {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--janso-space-2) var(--janso-space-3);
+  min-inline-size: 0;
+}
+.console-reference-create__field,
+.console-reference-create__field > .janso-flow,
+.console-reference-create__field > .janso-field,
+.console-reference-create__field > .janso-flow > .janso-field {
+  display: contents;
+}
+.console-reference-create .janso-field__row {
+  grid-column: 1;
+  grid-row: 1;
+}
+.console-reference-create .janso-search-select__control {
+  grid-column: 1;
+  grid-row: 2;
+  min-inline-size: 0;
+}
+.console-reference-create .janso-hint,
+.console-reference-create .janso-error {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin: 0;
+}
+.console-reference-create__action {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+}
+/*
+ * The create-from-the-bill drawers (supplier, expense account): a compact two-column form rather than the page's
+ * airy rhythm. Fields pair up (code and country, GST status and state); a field that needs room spans both.
+ */
+.console-quick-create {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--janso-space-3) var(--janso-space-4);
+  align-items: start;
+}
+.console-quick-create > * { min-inline-size: 0; }
+.console-quick-create .janso-field + .janso-field { margin-top: 0; }
+.console-quick-create__wide { grid-column: 1 / -1; }
+.console-quick-create > .janso-fine { margin: 0; }
+.console-quick-create__full { margin-inline-end: auto; }
+@media (max-width: 30rem) {
+  .console-quick-create { grid-template-columns: minmax(0, 1fr); }
+}
+/*
+ * Where the lookup must sit exactly as a plain field beside it does (the bill's header row), the grid's own row gap
+ * would stack on the label row's margin and push the box down: the label row keeps its margin, the grid adds none.
+ */
+.console-reference-create--flush { row-gap: 0; }
+.console-reference-create--flush .janso-hint,
+.console-reference-create--flush .janso-error { margin-top: var(--janso-space-1); }
+.console-reference-create-drawer .janso-page {
+  padding: 0;
+  min-inline-size: 0;
+}
+.console-reference-create-drawer .janso-form-layout,
+.console-reference-create-drawer .janso-grid--split {
+  grid-template-columns: minmax(0, 1fr);
+}

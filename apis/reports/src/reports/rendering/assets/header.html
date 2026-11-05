@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; base-uri 'none'; form-action 'none'">
+<title>{{ document.title }} · {{ document.display.company_label }}</title>
+<style>{{ css }}</style></head>
+<body class="report-document"><main class="report-shell report-{{ document.layout | lower }}">
+<header class="report-header"><div class="report-eyebrow">{{ document.category }}</div>
+<h1 class="report-title">{{ document.title }}</h1><p class="report-company">{{ document.display.company_label }}</p>
+<dl class="report-meta"><div><dt>Period</dt><dd>{{ document.period }}</dd></div>
+<div><dt>Base currency</dt><dd>{{ document.display.base_currency }}</dd></div>
+<div><dt>Source as of</dt><dd>{{ document.source_as_of }}</dd></div>
+{% for key, text in document.filters %}<div><dt>{{ key }}</dt><dd>{{ text }}</dd></div>{% endfor %}</dl></header>
+<div class="report-table-wrap"><table class="report-table"><caption class="report-eyebrow">{{ document.title }}</caption><thead>
+{% if document.column_groups %}<tr>{% for title, span in document.column_groups %}<th scope="colgroup" colspan="{{ span }}">{{ title }}</th>{% endfor %}</tr>{% endif %}<tr>
+{% for column in columns %}<th scope="col"{% if column.kind in ['MONEY', 'DECIMAL', 'INTEGER'] %} class="report-number"{% endif %}>{{ column.title }}</th>{% endfor %}
+</tr></thead><tbody>

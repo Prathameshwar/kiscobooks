@@ -1,0 +1,145 @@
+version: 1
+metadata:
+  name: Bill administrator password recovery
+entries:
+  - model: authentik_flows.flow
+    identifiers: {slug: bill-administrator-recovery}
+    id: flow
+    attrs: {name: KiscoBooks password recovery, title: Reset your password, designation: recovery, authentication: none, denied_action: message}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-administrator-recovery-account}
+    id: account
+    attrs:
+      execution_logging: false
+      expression: |
+        from authentik.flows.planner import PLAN_CONTEXT_PENDING_USER
+        plan = request.context.get("flow_plan")
+        user = request.context.get(PLAN_CONTEXT_PENDING_USER)
+        if user is None and plan is not None:
+            user = plan.context.get(PLAN_CONTEXT_PENDING_USER)
+        if user is None or not user.pk or not user.is_active or not user.has_usable_password():
+            return False
+        from uuid import UUID
+        if user.path == "bill/tenant-administrators":
+            marker = user.attributes.get("billing_tenant_provision_command")
+            try:
+                if not isinstance(marker, str) or str(UUID(marker)) != marker:
+                    return False
+            except ValueError:
+                return False
+        return user.type == "external" and user.path in ("bill/pending-registration", "bill/tenant-administrators") and user.attributes.get("billing_email_verified") is True and not user.is_superuser and not user.ak_groups.exists() and not user.roles.exists()
+  - model: authentik_events.notificationrule
+    identifiers: {name: bill-administrator-recovery-permissions}
+    id: permission-handoff
+    attrs: {destination_group: null, destination_event_user: false, transports: []}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-administrator-recovery-provision-handoff}
+    id: provision-handoff
+    attrs:
+      execution_logging: false
+      expression: |
+        from hashlib import sha256
+        from uuid import UUID
+        from authentik.core.models import User
+        from authentik.rbac.models import Role
+        event = request.context.get("event")
+        actor = request.user
+        if event is None or event.action not in ("model_created", "model_updated"):
+            return False
+        if actor.username != "bill-tenant-provision-service" or actor.type != "service_account" or not actor.is_active or event.user.get("pk") != actor.pk:
+            return False
+        model = event.context.get("model", {})
+        if model.get("app") != "authentik_core" or model.get("model_name") != "user" or type(model.get("pk")) is not int:
+            return False
+        user = User.objects.filter(pk=model["pk"], path="bill/tenant-administrators", type="external").first()
+        if user is None or user.is_superuser or user.ak_groups.exists() or user.roles.exists() or user.attributes.get("billing_email_verified") is not True:
+            return False
+        marker = user.attributes.get("billing_tenant_provision_command")
+        try:
+            if not isinstance(marker, str) or str(UUID(marker)) != marker:
+                return False
+        except ValueError:
+            return False
+        if user.username != "bill-admin-" + sha256(user.email.strip().casefold().encode()).hexdigest()[:32]:
+            return False
+        role = Role.objects.filter(name="bill-administrator-recovery-service").first()
+        if role is not None:
+            # Authentik's generic object POST guard checks add_user before the
+            # action-specific reset permission. Object-only add cannot create users.
+            role.assign_perms(["authentik_core.view_user", "authentik_core.add_user", "authentik_core.reset_user_password"], user)
+        # Trusted asynchronous permission handoff only; never send a notification.
+        return False
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf permission-handoff, order: 0, policy: !KeyOf provision-handoff}
+    attrs: {failure_result: false}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf flow, order: 0, policy: !KeyOf account}
+    attrs: {failure_result: false}
+  - model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+    identifiers: {name: bill-administrator-recovery-mfa}
+    id: mfa
+    attrs: {not_configured_action: skip, last_auth_threshold: seconds=0}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-administrator-recovery-new}
+    id: password
+    attrs: {field_key: password, label: New password, type: password, required: true, order: 10, placeholder: '', initial_value: ''}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-administrator-recovery-repeat}
+    id: repeat
+    attrs: {field_key: password_repeat, label: Confirm new password, type: password, required: true, order: 20, placeholder: '', initial_value: ''}
+  - model: authentik_policies_expression.expressionpolicy
+    identifiers: {name: bill-administrator-recovery-validation}
+    id: validation
+    attrs:
+      execution_logging: false
+      expression: |
+        data = request.context.get("prompt_data", {})
+        password = data.get("password", "")
+        if set(data) - {"component", "password", "password_repeat"}:
+            return False
+        if not 6 <= len(password) <= 128:
+            ak_message("Use 6 to 128 characters for your new password.")
+            return False
+        if password != data.get("password_repeat"):
+            ak_message("Your new passwords must match.")
+            return False
+        if request.user.check_password(password):
+            ak_message("Choose a different password from your current password.")
+            return False
+        return True
+  - model: authentik_stages_prompt.promptstage
+    identifiers: {name: bill-administrator-recovery-prompt}
+    id: prompt
+    attrs: {fields: [!KeyOf password, !KeyOf repeat], validation_policies: [!KeyOf validation]}
+  - model: authentik_stages_user_write.userwritestage
+    identifiers: {name: bill-administrator-recovery-write}
+    id: write
+    attrs: {user_creation_mode: never_create}
+  - model: authentik_stages_prompt.prompt
+    identifiers: {name: bill-administrator-recovery-success}
+    id: success
+    attrs: {field_key: recovery_message, label: Password reset complete, type: static, required: false, order: 10, placeholder: '', initial_value: 'Your password has been changed. Close this page and sign in to KiscoBooks with your new password.'}
+  - model: authentik_stages_prompt.promptstage
+    identifiers: {name: bill-administrator-recovery-complete}
+    id: complete
+    attrs: {fields: [!KeyOf success]}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 10}
+    id: mfa-binding
+    attrs: {stage: !KeyOf mfa, evaluate_on_plan: true, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf mfa-binding, order: 0, policy: !KeyOf account}
+    attrs: {failure_result: false}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 20}
+    attrs: {stage: !KeyOf prompt}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 30}
+    id: write-binding
+    attrs: {stage: !KeyOf write, evaluate_on_plan: true, re_evaluate_policies: true}
+  - model: authentik_policies.policybinding
+    identifiers: {target: !KeyOf write-binding, order: 0, policy: !KeyOf account}
+    attrs: {failure_result: false}
+  - model: authentik_flows.flowstagebinding
+    identifiers: {target: !KeyOf flow, order: 40}
+    attrs: {stage: !KeyOf complete}
