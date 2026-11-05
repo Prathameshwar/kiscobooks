@@ -6,6 +6,12 @@ import { COMPANY, CATEGORY, RATE, context, evidence, taxFields } from './tax-fix
 
 const root = '/v1/companies/' + COMPANY;
 describe('tax proxy boundary and navigation', () => {
+  it('permits kind-scoped HSN and GST treatment choices for product creation', () => {
+    expect(allowedProductRequest('catalog', 'GET', root + '/tax-classifications?limit=50&item_kind=GOODS&as_of=2026-11-05')).toBe(true);
+    expect(allowedProductRequest('catalog', 'GET', root + '/tax-rules?limit=50&item_kind=SERVICE&is_active=true')).toBe(true);
+    expect(allowedProductRequest('catalog', 'GET', root + '/tax-rules?item_kind=OTHER')).toBe(false);
+    expect(allowedProductRequest('catalog', 'GET', root + '/tax-rates?item_kind=GOODS')).toBe(false);
+  });
   it.each(['tax-categories', 'tax-rules', 'tax-classifications', 'tax-rates', 'tax-rate-series', 'tax-rate-components', 'tax-rule-applicabilities', 'tax-history-actions'])('allows only supported reads for %s', resource => {
     expect(allowedProductRequest('catalog', 'GET', root + '/' + resource + '?limit=50&sort=-id')).toBe(true);
     expect(allowedProductRequest('catalog', 'DELETE', root + '/' + resource + '/' + RATE)).toBe(false);

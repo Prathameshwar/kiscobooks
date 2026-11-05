@@ -313,6 +313,26 @@ it('one Save sends exact opening quantity and purchase price and finishes ready'
   expect(sessionStorage.getItem('simple-product-save:' + COMPANY)).toBeNull();
 });
 
+it('waits for the new product to reach Vouchers before finishing its opening', async () => {
+  const original = replies(); let advances = 0;
+  api.mockImplementation((endpoint, request) => {
+    if (request.path.endsWith('/advance')) {
+      advances += 1;
+      if (advances === 1) return Promise.resolve({ ...saved, step: 'VOUCHER', item_id: UNIT } as never);
+      if (advances === 2) return Promise.reject({ status: 409, message: 'voucher master evidence is unavailable or stale' });
+    }
+    return original(endpoint, request);
+  });
+  renderSimpleProduct(); const user = await fillProduct();
+  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '1');
+  await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
+  await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '200');
+  await user.click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText(/active and ready/, {}, { timeout: 6000 })).toBeVisible();
+  expect(advances).toBe(3);
+  expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
+});
+
 it('requires purchase price for positive opening quantity before any write', async () => {
   renderSimpleProduct(); const user = await fillProduct();
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
@@ -524,7 +544,7 @@ it('explains a retained posting that takes longer than the foreground wait', asy
     renderSimpleProduct(); const user = await fillProduct();
     await user.click(screen.getByRole('button', { name: 'Save product' }));
     await screen.findByText('Posting opening stock…');
-    vi.setSystemTime(Date.now() + 61000);
+    vi.setSystemTime(Date.now() + 301000);
     expect(await screen.findByText(/Product setup is saved and still processing/, {}, { timeout: 3000 })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Retry Save' })).toBeEnabled();
     expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
@@ -569,6 +589,7 @@ it('saves configured Brand, series, Model, MRP and GST in the one Save', async (
   expect(new URL(series.path, 'http://test').searchParams.get('parent_id')).toBe(ID);
   const tax = api.mock.calls.find(([, request]) => request.path.includes('/tax-rules?'))![1];
   expect(new URL(tax.path, 'http://test').searchParams.get('item_kind')).toBe('GOODS');
+  expect(new URL(tax.path, 'http://test').searchParams.has('as_of')).toBe(false);
 });
 
 it('validates exact decimal amounts and opening quantity together', async () => {

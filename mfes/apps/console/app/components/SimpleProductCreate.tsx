@@ -34,7 +34,7 @@ function ProductChoice({ company, field, resource, value, onChange, kind, date, 
     if (q.trim().length >= 2) params.set('q', q.trim());
     if (cursor) params.set('cursor', cursor);
     if (tax && kind) params.set('item_kind', kind);
-    if (tax && date) params.set('as_of', date);
+    if (resource === 'tax-classifications' && date) params.set('as_of', date);
     if (resource === 'tax-rules') params.set('is_active', 'true');
     if (parent) params.set('parent_id', parent);
     const page = await masterRequest<Choices>({ path: path + '?' + params, signal });
@@ -147,12 +147,14 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     const started = Date.now();
     let budget = 60000;
     while (alive.current && current.status !== 'COMPLETE') {
-      if ((current.step.startsWith('BATCH') || current.step === 'SERIAL')) budget = 300000;
+      if (current.step.startsWith('BATCH') || current.step === 'SERIAL' || ['OPENING', 'VOUCHER', 'SUBMIT', 'ISSUE', 'POST', 'FINALIZE'].includes(current.step)) budget = 300000;
       if (Date.now() - started > budget) throw { status: 503, message: 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
       try {
         current = await masterRequest<Status>({ path: root + '/' + current.id + '/advance', method: 'POST' });
       } catch (error) {
-        if (requestFailure(error).status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL')) throw error;
+        const problem = requestFailure(error);
+        const sourceLag = current.step === 'VOUCHER' && problem.status === 409 && problem.message === 'voucher master evidence is unavailable or stale';
+        if (!sourceLag && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
         await new Promise(resolve => setTimeout(resolve, 2000));
         continue;
       }

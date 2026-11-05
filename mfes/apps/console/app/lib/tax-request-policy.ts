@@ -105,6 +105,9 @@ export function allowedTaxRequest(
     )
       ? ['q']
       : []),
+    ...(['tax-rules', 'tax-classifications'].includes(resource)
+      ? ['item_kind']
+      : []),
     ...(['tax-categories', 'tax-rules'].includes(resource)
       ? ['is_active']
       : []),
@@ -136,6 +139,7 @@ export function allowedTaxRequest(
           : []),
       ].includes(value);
     if (key === 'is_active') return ['true', 'false'].includes(value);
+    if (key === 'item_kind') return ['GOODS', 'SERVICE'].includes(value);
     if (key === 'code_system') return ['HSN', 'SAC'].includes(value);
     if (key === 'as_of') return /^\d{4}-\d\d-\d\d$/.test(value);
     return false;
