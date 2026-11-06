@@ -85,6 +85,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [waitingForStock, setWaitingForStock] = useState(false);
+  const [waitingForPricing, setWaitingForPricing] = useState(false);
   const [job, setJob] = useState<Status | null>(null);
   const [intent, setIntent] = useState<{ key: string; body: Input; revision?: number } | null>(null);
   const [editing, setEditing] = useState(false);
@@ -148,9 +149,12 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     let current = initial;
     const started = Date.now();
     let budget = 60000;
+    let refreshingPrice = false;
     while (alive.current && current.status !== 'COMPLETE') {
       if (current.step.startsWith('BATCH') || current.step === 'SERIAL' || ['OPENING', 'VOUCHER', 'SUBMIT', 'ISSUE', 'POST', 'FINALIZE'].includes(current.step)) budget = 300000;
-      if (Date.now() - started > budget) throw { status: 503, message: 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
+      if (Date.now() - started > budget) throw { status: 503, message: refreshingPrice
+        ? 'Product setup is saved, but its pricing source keeps changing. Retry Save to check its current price preview.'
+        : 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
       try {
         current = await retryStockWait(
           () => masterRequest<Status>({ path: root + '/' + current.id + '/advance', method: 'POST' }),
@@ -159,10 +163,14 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
       } catch (error) {
         const problem = requestFailure(error);
         const sourceLag = current.step === 'VOUCHER' && problem.status === 409 && problem.message === 'voucher master evidence is unavailable or stale';
-        if (!sourceLag && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
+        const pricingSourceChanged = problem.status === 409 && problem.message === 'pricing policy or Identity source changed; preview again';
+        if (!sourceLag && !pricingSourceChanged && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
+        if (pricingSourceChanged) { refreshingPrice = true; budget = 300000; if (alive.current) setWaitingForPricing(true); }
         await new Promise(resolve => setTimeout(resolve, 2000));
         continue;
       }
+      refreshingPrice = false;
+      if (alive.current) setWaitingForPricing(false);
       if (current.company_id !== company || current.id !== initial.id) throw new Error('Product progress could not be verified.');
       if (!alive.current) return;
       setJob(current);
@@ -227,7 +235,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
       }
       for (const key of (batchEnabled ? [] : ['purchase_price', 'sale_price', 'mrp']) as Array<'purchase_price' | 'sale_price' | 'mrp'>) {
         if (writable(key) && values[key]) {
-          if (!decimals.test(values[key]!) || (key === 'mrp' && !nonzero(values[key]!))) problems[key] = key === 'mrp' ? 'Enter a positive MRP with up to four decimal places.' : 'Enter an amount of zero or more with up to four decimal places.';
+          if (!decimals.test(values[key]!) || (['mrp', 'purchase_price'].includes(key) && !nonzero(values[key]!))) problems[key] = key === 'mrp' ? 'Enter a positive MRP with up to four decimal places.' : key === 'purchase_price' ? 'Enter a positive Purchase price with up to four decimal places.' : 'Enter an amount of zero or more with up to four decimal places.';
           input[key] = values[key];
         }
       }
@@ -260,7 +268,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
         const quantity = serialEnabled ? String(serials.length) : values.opening_quantity || '0';
         if (serialEnabled) { const prepared = serialInputs(serials, options); input.serials = prepared.serials; Object.assign(problems, prepared.errors); }
         if (!decimals.test(quantity)) problems.opening_quantity = 'Enter a quantity of zero or more with up to four decimal places.';
-        if (nonzero(quantity) && !input.purchase_price) problems.purchase_price = 'Enter Purchase price to value opening stock.';
+        if (nonzero(quantity) && (!input.purchase_price || !nonzero(String(input.purchase_price)))) problems.purchase_price = values.purchase_price ? 'Enter a positive Purchase price to value opening stock.' : 'Enter Purchase price to value opening stock.';
         input.opening_quantity = quantity;
         if (nonzero(quantity)) input.opening_date = options.opening_date;
       }
@@ -268,7 +276,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
       command = { key: crypto.randomUUID(), body: input, ...(editing && job ? { revision: job.row_version } : {}) };
       setIntent(command); if (!job) sessionStorage.setItem(storageKey, command.key);
     }
-    active.current = true; setBusy(true);
+    active.current = true; setBusy(true); setWaitingForPricing(false);
     try {
       const saved = job && !editing ? job : await retryStockWait(
         () => command?.revision && job
@@ -459,7 +467,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
           {(customs('custom_fields.').length > 0 || customs('shared_custom_fields.').length > 0) && <FieldGroup title="Additional information"><CustomFields fields={customs('custom_fields.')} values={custom} onChange={value => { setDirty(true); setCustom(value); }} nativeValues={{ ...values, kind }} creating disabled={locked} errors={customErrors('custom_fields.')} loadOptions={customOptions} currencies={[options.currency]} /><CustomFields fields={customs('shared_custom_fields.')} values={shared} onChange={value => { setDirty(true); setShared(value); }} nativeValues={{ ...values, kind }} creating disabled={locked} errors={customErrors('shared_custom_fields.')} loadOptions={customOptions} currencies={[options.currency]} />{validation.custom_fields && <Notice tone="danger">{validation.custom_fields}</Notice>}{validation.shared_custom_fields && <Notice tone="danger">{validation.shared_custom_fields}</Notice>}</FieldGroup>}
           </div>
         </div></CardBody></Card>
-        {busy && <p role="status">{waitingForStock ? 'Waiting for the current stock posting to finish; product setup will resume automatically…' : job?.step === 'FINALIZE' ? 'Posting opening stock…' : 'Saving product and preparing it for use…'}</p>}
+        {busy && <p role="status">{waitingForStock ? 'Waiting for the current stock posting to finish; product setup will resume automatically…' : waitingForPricing ? 'Refreshing the price preview after a source change; product setup will resume automatically…' : job?.step === 'FINALIZE' ? 'Posting opening stock…' : 'Saving product and preparing it for use…'}</p>}
         <div className="janso-form-actions">{stockStep && step === 1 && <Button type="button" variant="ghost" disabled={locked} onClick={() => setStep(0)}>Back to product details</Button>}<Button type="submit" disabled={busy || loading || ((!job || editing) && (!!blocked || !!openingBlocked))}>{stockStep && step === 0 && !job && !intent && !recoverKey ? 'Next: Stock and prices' : busy ? 'Saving…' : editing ? 'Save corrected product' : job || intent || recoverKey ? 'Retry Save' : 'Save product'}</Button>{job?.can_edit && !busy && !editing && !recoverKey && <Button type="button" variant="ghost" onClick={() => { setEditing(true); setIntent(null); setFailure(null); }}>Correct details</Button>}{!locked && <a className="janso-btn janso-btn--ghost" href={back}>Cancel</a>}</div>
       </form>}
   </section>;

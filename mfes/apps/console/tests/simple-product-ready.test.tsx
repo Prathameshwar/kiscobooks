@@ -381,6 +381,41 @@ it('requires purchase price for positive opening quantity before any write', asy
   expect(api.mock.calls.some(([, request]) => request.method === 'POST')).toBe(false);
 });
 
+it('rejects zero purchase price for 100 opening units before creating a product', async () => {
+  renderSimpleProduct(); const user = await fillProduct();
+  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '0');
+  await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
+  await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '100');
+  await user.click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText('Enter a positive Purchase price to value opening stock.')).toBeVisible();
+  expect(api.mock.calls.some(([, request]) => request.method === 'POST')).toBe(false);
+  await user.clear(screen.getByRole('textbox', { name: 'Purchase price' }));
+  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText(/active and ready/)).toBeVisible();
+  expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
+});
+
+it('refreshes a rejected price preview and resumes the saved product without another create', { timeout: 10000 }, async () => {
+  const original = replies(); let advances = 0;
+  api.mockImplementation((endpoint, request) => {
+    if (request.path.endsWith('/advance')) {
+      advances += 1;
+      if (advances === 1) return Promise.resolve({ ...saved, step: 'PUBLISH', item_id: UNIT } as never);
+      if (advances === 2) return Promise.reject({ status: 409, message: 'pricing policy or Identity source changed; preview again' });
+    }
+    return original(endpoint, request);
+  });
+  renderSimpleProduct(); const user = await fillProduct();
+  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
+  await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '100');
+  await user.click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText(/active and ready/, {}, { timeout: 6000 })).toBeVisible();
+  expect(advances).toBe(3);
+  expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
+});
+
 it('retries an uncertain Save with the original body and key', async () => {
   const original = replies(); let count = 0;
   api.mockImplementation(async (endpoint, request) => {

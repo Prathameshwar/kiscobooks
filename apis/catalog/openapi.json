@@ -524,7 +524,6 @@
                 "type": "null"
               }
             ],
-            "default": null,
             "title": "Measurement Dimension"
           },
           "name": {
@@ -583,7 +582,6 @@
                 "type": "null"
               }
             ],
-            "default": null,
             "title": "Books Begin Date"
           },
           "company_id": {
@@ -1853,7 +1851,6 @@
                 "type": "null"
               }
             ],
-            "default": null,
             "title": "Attribute Set Revision Id"
           },
           "id": {
@@ -38775,7 +38772,7 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/ExactDecimal-Input",
-                "ge": 0
+                "gt": 0
               },
               {
                 "type": "null"
@@ -39047,7 +39044,7 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/ExactDecimal-Input",
-                "ge": 0
+                "gt": 0
               },
               {
                 "type": "null"

@@ -52,7 +52,7 @@ class SimpleBatchInput(StrictInput):
     manufactured_on: dt.date | None = Field(default=None, ge=dt.date(1000, 1, 1))
     expires_on: dt.date | None = Field(default=None, ge=dt.date(1000, 1, 1))
     opening_quantity: ExactDecimal = Field(default=Decimal("0"), ge=0)
-    purchase_price: ExactDecimal | None = Field(default=None, ge=0)
+    purchase_price: ExactDecimal | None = Field(default=None, gt=0)
     sale_price: ExactDecimal | None = Field(default=None, ge=0)
     sale_prices: list[SimpleSalePrice] = Field(default_factory=list, max_length=64)
     mrp: ExactDecimal | None = Field(default=None, gt=0)
@@ -96,7 +96,7 @@ class SimpleCreationInput(StrictInput):
     group_id: uuid.UUID | None = None
     base_unit_id: uuid.UUID
     tax: InitialTax | None = None
-    purchase_price: ExactDecimal | None = Field(default=None, ge=0)
+    purchase_price: ExactDecimal | None = Field(default=None, gt=0)
     sale_price: ExactDecimal | None = Field(default=None, ge=0)
     sale_prices: list[SimpleSalePrice] = Field(default_factory=list, max_length=64)
     mrp: ExactDecimal | None = Field(default=None, gt=0)

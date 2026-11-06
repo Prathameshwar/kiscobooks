@@ -53,6 +53,16 @@ it('uses a second step and saves exact row prices and quantities with one final 
   expect(body).toMatchObject({ batch_enabled: true, batches: [{ code: 'LOT-A', opening_quantity: '3', purchase_price: '12.50', sale_price: '20' }], opening_date: '2026-04-01' });
   expect(body).not.toHaveProperty('purchase_price');
 });
+it('rejects zero Purchase price for a batch opening before any write', async () => {
+  await show(); await user().click(screen.getByRole('switch', { name: 'Allow batch' }));
+  await user().type(screen.getByRole('textbox', { name: 'Batch 1' }), 'LOT-100');
+  await user().clear(screen.getByRole('textbox', { name: 'Opening quantity 1' }));
+  await user().type(screen.getByRole('textbox', { name: 'Opening quantity 1' }), '100');
+  await user().type(screen.getByRole('textbox', { name: 'Purchase price 1' }), '0');
+  await user().click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText('Enter a positive Purchase price with up to four decimal places.')).toBeVisible();
+  expect(api.mock.calls.some(([, request]) => request.path === root)).toBe(false);
+});
 it('preserves rows when moving back and uses ordinary prices when switched off', async () => {
   await show(); await user().click(screen.getByRole('switch', { name: 'Allow batch' }));
   await user().type(screen.getByRole('textbox', { name: 'Batch 1' }), 'Keep');

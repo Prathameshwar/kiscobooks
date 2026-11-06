@@ -245,10 +245,25 @@ advance; a retained opening can continue beyond the former 12-call limit for
 up to ten minutes. The UI shows the wait and preserves the saved intent if the
 bounded wait expires. Focused Console tests: 53 passed across four files;
 Console typecheck passed. Catalog owner transport already classifies the
-stock definition fence as uncertain and retains its command. Catalog
-integration tests could not run locally (no pytest) or on the VM (deployment
-venv has no pytest and the offline dev dependency cache is incomplete). This
-follow-up is not evidence for the remaining Phase 6/7 acceptance matrix.
+stock definition fence as uncertain and retains its command. At that
+follow-up, Catalog integration tests were not run; the VM deployment venv has
+no pytest and its offline dev dependency cache is incomplete. A local Python
+3.12 venv was found and used for the later tests below. This follow-up is not
+evidence for the remaining Phase 6/7 acceptance matrix.
+
+**Simple creation price correction, 2026-11-06:** A zero Purchase price is
+invalid under the native purchase price rule. Simple Goods and batch forms now
+reject it before creating a product; the Catalog input contract rejects it for
+all callers. A saved creation that receives the exact pricing policy/Identity
+source conflict retries its current step with refreshed owner evidence. The
+Catalog regression verifies source conflicts during native create and price
+publication resolve to one product with the expected published prices. The
+affected Catalog creation suites passed 23 tests; focused changed-path tests
+passed again after the final regression update. The affected Console suites
+passed 80 tests and Console typecheck passed. Catalog Ruff, schema mypy,
+OpenAPI export check and generated Catalog client check passed. The global
+client typecheck remains red on an unrelated missing Accounting `AccountCreate`
+type. This evidence does not complete the Advanced Phase 6/7 matrix.
 
 - [ ] Build native-option Business setup, optional Opening, editable Review,
   whole-draft errors, immutable Submit and verified progress/recovery views.

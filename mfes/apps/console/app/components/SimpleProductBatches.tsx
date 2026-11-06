@@ -43,7 +43,7 @@ export function batchInputs(rows: BatchRow[], options: Options): { batches: Inpu
       if (required && !value) errors[key] = `${column.label} is required.`;
       if (value && !column.writable) errors[key] = 'This field is unavailable. Review settings and field access.';
       if (!value) continue;
-      if (!column.date && column.key !== 'code' && (!decimal.test(value) || (column.key === 'mrp' && !positive(value)))) errors[key] = 'Enter a valid amount or quantity with up to four decimal places.';
+      if (!column.date && column.key !== 'code' && (!decimal.test(value) || (['mrp', 'purchase_price'].includes(column.key) && !positive(value)))) errors[key] = column.key === 'purchase_price' ? 'Enter a positive Purchase price with up to four decimal places.' : 'Enter a valid amount or quantity with up to four decimal places.';
       if (column.key.startsWith('sale_prices.')) (data.sale_prices ??= []).push({ price_level_id: column.key.slice(12), amount: value });
       else Object.assign(data, { [column.key]: value });
     }

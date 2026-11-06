@@ -9,6 +9,7 @@ from billing_platform.company_context import CompanyContext, FinancialContext, s
 from billing_platform.db import tenant_scope
 from billing_platform.ids import uuid7
 from billing_platform.permissions import PERMISSIONS
+from pydantic import ValidationError
 from sqlalchemy import func, select
 
 from catalog.models import Item, UnitOfMeasure
@@ -24,6 +25,20 @@ from tests.test_api import headers
 from tests.test_unit_defaults import provision
 
 pytestmark = pytest.mark.usefixtures("stable_product_source_clock")
+
+
+def test_zero_purchase_price_is_rejected_before_native_product_creation():
+    from catalog.schemas.simple_product_creation import SimpleBatchInput, SimpleCreationInput
+
+    with pytest.raises(ValidationError, match="greater than 0"):
+        SimpleCreationInput.model_validate(
+            {"name": "Opening stock", "base_unit_id": str(uuid7()),
+             "opening_quantity": "100", "purchase_price": "0"}
+        )
+    with pytest.raises(ValidationError, match="greater than 0"):
+        SimpleBatchInput.model_validate(
+            {"code": "B1", "opening_quantity": "100", "purchase_price": "0"}
+        )
 
 
 async def test_creation_receipts_are_tenant_isolated(factory, tenant_a, tenant_b):
@@ -190,6 +205,63 @@ async def test_stock_fence_retry_reuses_the_saved_product_command(
     assert second.status_code == 200, second.text
     assert attempts[0] == attempts[1]
     assert (await finish(client, root, auth, identity))["status"] == "COMPLETE"
+
+
+async def test_price_source_conflict_repreviews_and_publishes_once(
+    client, factory, tenant_a, monkeypatch
+):
+    root, auth, unit = await starter(factory, tenant_a)
+    created = await client.post(
+        root + "/simple-product-creations",
+        headers=auth | {"Idempotency-Key": str(uuid7())},
+        json={"name": "Price refresh product", "base_unit_id": unit,
+              "purchase_price": "12.50", "sale_price": "20.00"},
+    )
+    assert created.status_code == 201, created.text
+    identity = created.json()["id"]
+    original_call = CreationOwners.call
+    create_keys = []
+    publish_keys = []
+
+    async def once_changed(self, service, method, path, body=None, key=None):
+        if service == "catalog" and method == "POST" and path.endswith("/products"):
+            create_keys.append(key)
+            if len(create_keys) == 1:
+                raise OwnerRejectedError(
+                    409, {"message": "pricing policy or Identity source changed; preview again"}
+                )
+        if (
+            service == "catalog"
+            and method == "POST"
+            and "/price-drafts/" in path
+            and path.endswith("/publish")
+        ):
+            publish_keys.append(key)
+            if len(publish_keys) == 1:
+                raise OwnerRejectedError(
+                    409, {"message": "pricing policy or Identity source changed; preview again"}
+                )
+        return await original_call(self, service, method, path, body, key)
+
+    monkeypatch.setattr(CreationOwners, "call", once_changed)
+    route = root + f"/simple-product-creations/{identity}/advance"
+    rejected_create = await client.post(route, headers=auth)
+    assert rejected_create.status_code == 409, rejected_create.text
+    assert (await client.post(route, headers=auth)).status_code == 200
+    assert len(create_keys) == 2 and create_keys[0] != create_keys[1]
+    rejected = await client.post(route, headers=auth)
+    assert rejected.status_code == 409, rejected.text
+    status = (await client.get(root + f"/simple-product-creations/{identity}", headers=auth)).json()
+    assert status["step"] == "PUBLISH" and not status["can_edit"]
+    resumed = await client.post(route, headers=auth)
+    assert resumed.status_code == 200, resumed.text
+    assert len(publish_keys) == 2 and publish_keys[0] != publish_keys[1]
+    result = await finish(client, root, auth, identity)
+    assert result["status"] == "COMPLETE"
+    with tenant_scope(tenant_a):
+        async with factory() as db:
+            assert await db.scalar(select(func.count(Item.id))) == 1
+            assert await db.scalar(select(func.count(ItemPrice.id))) == 2
 
 
 @pytest.mark.parametrize("kind", ["GOODS", "SERVICE"])
