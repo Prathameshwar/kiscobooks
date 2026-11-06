@@ -237,6 +237,19 @@ Console Vitest/typecheck and browser checks remain unavailable without pnpm
 and workspace dependencies. Phase 6 and 7 remain open, so this is not a
 release-ready or fully verified end-to-end result.
 
+**Product creation reliability follow-up, 2026-11-06:** Simple creation now
+retries the two temporary stock posting conflicts on its initial save and
+later advances using the same request/key. Advanced creation retries them on
+definition, setup, publication, activation, opening preflight and opening
+advance; a retained opening can continue beyond the former 12-call limit for
+up to ten minutes. The UI shows the wait and preserves the saved intent if the
+bounded wait expires. Focused Console tests: 53 passed across four files;
+Console typecheck passed. Catalog owner transport already classifies the
+stock definition fence as uncertain and retains its command. Catalog
+integration tests could not run locally (no pytest) or on the VM (deployment
+venv has no pytest and the offline dev dependency cache is incomplete). This
+follow-up is not evidence for the remaining Phase 6/7 acceptance matrix.
+
 - [ ] Build native-option Business setup, optional Opening, editable Review,
   whole-draft errors, immutable Submit and verified progress/recovery views.
 - [ ] Test configuration matrix, error focus, denied field, changed source,

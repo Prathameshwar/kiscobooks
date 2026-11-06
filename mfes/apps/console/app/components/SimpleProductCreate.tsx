@@ -6,6 +6,7 @@ import { Button, Card, CardBody, CustomFields, FieldGroup, FieldPair, Notice, Pa
 import { masterRequest } from '../lib/catalog-master-api';
 import { masterCustomFields } from '../lib/catalog-masters';
 import { requestFailure, type RequestFailure } from '../lib/service-call';
+import { retryStockWait } from '../lib/product-stock-wait';
 import { useProductMode } from './ProductModeProvider';
 import { catalogBack } from '../lib/product-classification';
 import { useUnsavedChanges } from '../lib/use-unsaved-changes';
@@ -147,25 +148,21 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     let current = initial;
     const started = Date.now();
     let budget = 60000;
-    let blockedOnStock = false;
     while (alive.current && current.status !== 'COMPLETE') {
       if (current.step.startsWith('BATCH') || current.step === 'SERIAL' || ['OPENING', 'VOUCHER', 'SUBMIT', 'ISSUE', 'POST', 'FINALIZE'].includes(current.step)) budget = 300000;
-      if (Date.now() - started > budget) throw { status: 503, message: blockedOnStock
-        ? 'Product setup is saved. Stock posting is still holding these definitions. Retry Save shortly, or contact support if this continues.'
-        : 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
+      if (Date.now() - started > budget) throw { status: 503, message: 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
       try {
-        current = await masterRequest<Status>({ path: root + '/' + current.id + '/advance', method: 'POST' });
+        current = await retryStockWait(
+          () => masterRequest<Status>({ path: root + '/' + current.id + '/advance', method: 'POST' }),
+          { active: () => alive.current, onWait: () => { budget = 300000; setWaitingForStock(true); }, onResume: () => { if (alive.current) setWaitingForStock(false); } },
+        );
       } catch (error) {
         const problem = requestFailure(error);
         const sourceLag = current.step === 'VOUCHER' && problem.status === 409 && problem.message === 'voucher master evidence is unavailable or stale';
-        const stockFence = problem.status === 409 && problem.message === 'stock posting is using these definitions; retry after it completes';
-        if (!sourceLag && !stockFence && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
-        if (stockFence) { budget = 300000; blockedOnStock = true; if (alive.current) setWaitingForStock(true); }
+        if (!sourceLag && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
         await new Promise(resolve => setTimeout(resolve, 2000));
         continue;
       }
-      blockedOnStock = false;
-      if (alive.current) setWaitingForStock(false);
       if (current.company_id !== company || current.id !== initial.id) throw new Error('Product progress could not be verified.');
       if (!alive.current) return;
       setJob(current);
@@ -273,9 +270,12 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     }
     active.current = true; setBusy(true);
     try {
-      const saved = command?.revision && job
-        ? await masterRequest<Status>({ path: root + '/' + job.id, method: 'PATCH', key: command.key, body: { expected_version: command.revision, product: command.body } })
-        : job ?? await masterRequest<Status>({ path: root, method: 'POST', key: command!.key, body: command!.body });
+      const saved = job && !editing ? job : await retryStockWait(
+        () => command?.revision && job
+          ? masterRequest<Status>({ path: root + '/' + job.id, method: 'PATCH', key: command.key, body: { expected_version: command.revision, product: command.body } })
+          : masterRequest<Status>({ path: root, method: 'POST', key: command!.key, body: command!.body }),
+        { active: () => alive.current, onWait: () => setWaitingForStock(true), onResume: () => { if (alive.current) setWaitingForStock(false); } },
+      );
       if (!alive.current) return;
       setEditing(false); setJob(saved); await continueSave(saved);
     } catch (error) {

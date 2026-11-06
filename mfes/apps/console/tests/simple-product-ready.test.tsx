@@ -350,6 +350,26 @@ it('waits through a stock definition fence and resumes the same saved product au
   expect(screen.queryByText('stock posting is using these definitions; retry after it completes')).toBeNull();
 });
 
+it('waits for pending stock confirmation before creating one saved product', { timeout: 10000 }, async () => {
+  const original = replies(); let creations = 0;
+  api.mockImplementation((endpoint, request) => {
+    if (request.path === base && ++creations === 1) {
+      return Promise.reject({ status: 409, message: 'An earlier stock posting is still being confirmed. Save the product without opening stock, or retry the opening shortly.' });
+    }
+    return original(endpoint, request);
+  });
+  renderSimpleProduct(); const user = await fillProduct();
+  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
+  await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '3');
+  await user.click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText(/Waiting for the current stock posting to finish/)).toBeVisible();
+  expect(await screen.findByText(/active and ready/, {}, { timeout: 6000 })).toBeVisible();
+  const writes = api.mock.calls.filter(([, request]) => request.path === base).map(([, request]) => request);
+  expect(writes).toHaveLength(2);
+  expect(writes[0]).toEqual(writes[1]);
+});
+
 it('requires purchase price for positive opening quantity before any write', async () => {
   renderSimpleProduct(); const user = await fillProduct();
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));

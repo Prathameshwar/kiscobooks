@@ -4,6 +4,7 @@ import { Notice } from '@janso/ui';
 import type { components } from '@janso/api-client/catalog';
 import { masterRequest } from '../lib/catalog-master-api';
 import { requestFailure, type RequestFailure } from '../lib/service-call';
+import { retryStockWait } from '../lib/product-stock-wait';
 import { clearIntent, keepIntent, openingBody, setupBody, type AdvancedIntent } from '../lib/advanced-product-api';
 import type { AdvancedOptions } from '../lib/advanced-product-draft';
 
@@ -30,6 +31,13 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
   const show = (value: Status) => { if (mounted.current) setStatus(valid(value, intent.current)); };
   const note = (value: string) => { if (mounted.current) setMessage(value); };
   const saveIntent = () => keepIntent(intent.current);
+  const withStockWait = <T,>(request: () => Promise<T>, action: string) => retryStockWait(request, {
+    active: () => mounted.current,
+    onWait: reason => note(reason === 'definitions'
+      ? `Waiting for stock posting to release product definitions before ${action}…`
+      : `Waiting for an earlier stock posting to be confirmed before ${action}…`),
+    onResume: () => note(`Continuing ${action}…`),
+  });
   async function command<T>(name: string, path: string, body: unknown): Promise<T> {
     let frozen = intent.current.commands[name];
     if (!frozen) {
@@ -37,7 +45,10 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
       intent.current.commands[name] = frozen;
       saveIntent();
     }
-    const result = await masterRequest<T>({ path: frozen.path, method: 'POST', body: frozen.body, key: frozen.key });
+    const result = await withStockWait(
+      () => masterRequest<T>({ path: frozen.path, method: 'POST', body: frozen.body, key: frozen.key }),
+      name,
+    );
     delete intent.current.commands[name];
     saveIntent();
     return result;
@@ -69,7 +80,10 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
       const current = intent.current;
       if (!current.creation_id) {
         note('Creating the Product Profile and explicit SKUs…');
-        const result = await masterRequest<Result>({ path: base + '/definitions', method: 'POST', body: current.definition, key: current.key });
+        const result = await withStockWait(
+          () => masterRequest<Result>({ path: base + '/definitions', method: 'POST', body: current.definition, key: current.key }),
+          'creating the Product Profile',
+        );
         if (result.creation.company_id !== current.company || result.creation.sku_ids.length !== current.work.skus.length || result.family.company_id !== current.company) throw { status: 502, message: 'Creation receipt could not be verified.' };
         current.creation_id = result.creation.id;
         saveIntent(); show(result.creation);
@@ -119,17 +133,28 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
         if (openingState === 'NOT_REQUESTED') {
           if (opening.decision === 'OPEN') {
             note(`Checking opening for SKU ${index + 1}…`);
-            const checked = await masterRequest<components['schemas']['AdvancedOpeningCheck']>({ path: `${base}/definitions/${id}/skus/${itemId}/opening-preflight`, method: 'POST', body: opening });
+            const checked = await withStockWait(
+              () => masterRequest<components['schemas']['AdvancedOpeningCheck']>({ path: `${base}/definitions/${id}/skus/${itemId}/opening-preflight`, method: 'POST', body: opening }),
+              `checking SKU ${index + 1} opening`,
+            );
             if (checked.item_id !== itemId) throw { status: 502, message: 'Opening preflight did not match the SKU.' };
           }
           note(`Saving opening decision for SKU ${index + 1}…`);
           state = await command<Status>(`opening:${itemId}`, `${base}/definitions/${id}/skus/${itemId}/opening`, { expected_creation_version: state.row_version, opening });
           show(state);
         }
-        for (let attempt = 0; state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS' && attempt < 12; attempt++) {
+        const openingDeadline = Date.now() + 600_000;
+        while (state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS' && Date.now() < openingDeadline) {
           note(`Posting and reconciling opening for SKU ${index + 1}…`);
-          state = await masterRequest<Status>({ path: `${base}/definitions/${id}/skus/${itemId}/opening/advance`, method: 'POST' });
+          const previousVersion = state.row_version;
+          state = await withStockWait(
+            () => masterRequest<Status>({ path: `${base}/definitions/${id}/skus/${itemId}/opening/advance`, method: 'POST' }),
+            `posting SKU ${index + 1} opening`,
+          );
           show(state);
+          if (state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS' && state.row_version === previousVersion) {
+            await new Promise(resolve => setTimeout(resolve, 1_500));
+          }
         }
         if (state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS') throw { status: 503, message: `Opening for SKU ${index + 1} remains in progress. Continue this creation to check its retained owner receipts.` };
       }
