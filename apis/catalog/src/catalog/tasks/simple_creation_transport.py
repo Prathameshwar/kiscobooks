@@ -23,6 +23,11 @@ class OwnerRejectedError(PlatformError):
         self.code = str(error.get("code", "validation_failed"))
         self.definite = (
             status < 500 and status not in {408, 429} and "busy" not in self.message.lower()
+            and not (
+                status == 409
+                and self.message
+                == "stock posting is using these definitions; retry after it completes"
+            )
         )
 
 

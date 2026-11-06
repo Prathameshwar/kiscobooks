@@ -2,6 +2,7 @@
 
 import datetime as dt
 import time
+import uuid
 
 import pytest
 from billing_platform.company_context import CompanyContext, FinancialContext, sign_company_context
@@ -16,6 +17,7 @@ from catalog.models.simple_product_creation import SimpleProductCreation
 from catalog.tasks.company_configuration_defaults import ensure_configuration_defaults
 from catalog.tasks.company_pricing_defaults import ensure_pricing_defaults
 from catalog.tasks.company_product_defaults import ensure_product_defaults
+from catalog.tasks.simple_creation_transport import CreationOwners, OwnerRejectedError
 from catalog.tasks.unit_defaults import ensure_unit_defaults
 from tests.conftest import ACTOR_SECRET
 from tests.test_api import headers
@@ -147,6 +149,47 @@ async def finish(client, root, auth, identity):
         if response.json()["status"] == "COMPLETE":
             return response.json()
     pytest.fail("creation did not finish")
+
+
+async def test_stock_fence_retry_reuses_the_saved_product_command(
+    client, factory, tenant_a, monkeypatch
+):
+    root, auth, unit = await starter(factory, tenant_a)
+    created = await client.post(
+        root + "/simple-product-creations",
+        headers=auth | {"Idempotency-Key": str(uuid7())},
+        json={"name": "Fence retry product", "kind": "GOODS", "base_unit_id": unit},
+    )
+    assert created.status_code == 201, created.text
+    identity = created.json()["id"]
+    original_call = CreationOwners.call
+    attempts = []
+
+    async def one_busy(self, service, method, path, body=None, key=None):
+        if service == "catalog" and method == "POST" and path.endswith("/products"):
+            attempts.append((body, key))
+            if len(attempts) == 1:
+                raise OwnerRejectedError(
+                    409,
+                    {
+                        "message": "stock posting is using these definitions; "
+                        "retry after it completes"
+                    },
+                )
+        return await original_call(self, service, method, path, body, key)
+
+    monkeypatch.setattr(CreationOwners, "call", one_busy)
+    first = await client.post(root + f"/simple-product-creations/{identity}/advance", headers=auth)
+    assert first.status_code == 409
+    with tenant_scope(tenant_a):
+        async with factory() as db:
+            row = await db.get(SimpleProductCreation, uuid.UUID(identity))
+            assert row is not None and row.step == "CREATE"
+            assert row.progress["pending"]["key"] == attempts[0][1]
+    second = await client.post(root + f"/simple-product-creations/{identity}/advance", headers=auth)
+    assert second.status_code == 200, second.text
+    assert attempts[0] == attempts[1]
+    assert (await finish(client, root, auth, identity))["status"] == "COMPLETE"
 
 
 @pytest.mark.parametrize("kind", ["GOODS", "SERVICE"])

@@ -7689,9 +7689,38 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** AdvancedAttributeMember */
+        AdvancedAttributeMember: {
+            /** Allow Variant Axis */
+            allow_variant_axis: boolean;
+            /**
+             * Definition Id
+             * Format: uuid
+             */
+            definition_id: string;
+            /** Is Required */
+            is_required: boolean;
+            /** Is Variant Capable */
+            is_variant_capable: boolean;
+            /** Measurement Dimension */
+            measurement_dimension?: string | null;
+            /** Name */
+            name: string;
+            /** Position */
+            position: number;
+            /**
+             * Value Type
+             * @enum {string}
+             */
+            value_type: "TEXT" | "INTEGER" | "DECIMAL" | "BOOLEAN" | "DATE";
+        };
         /** AdvancedCreationOptions */
         AdvancedCreationOptions: {
+            /** Attribute Members */
+            attribute_members?: components["schemas"]["AdvancedAttributeMember"][];
             batch?: components["schemas"]["SimpleBatchOptions"];
+            /** Books Begin Date */
+            books_begin_date?: string | null;
             /**
              * Company Id
              * Format: uuid
@@ -8141,6 +8170,8 @@ export interface components {
         AdvancedTypeOption: {
             /** Allow Variants */
             allow_variants: boolean;
+            /** Attribute Set Revision Id */
+            attribute_set_revision_id?: string | null;
             /**
              * Id
              * Format: uuid
@@ -8152,7 +8183,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "GOODS" | "SERVICE";
+            kind: "GOODS" | "SERVICE" | "BOTH";
             /** Require Brand */
             require_brand: boolean;
             /** Require Expiry */

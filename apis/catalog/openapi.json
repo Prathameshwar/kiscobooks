@@ -495,11 +495,96 @@
         "title": "AdoptionReview",
         "type": "object"
       },
+      "AdvancedAttributeMember": {
+        "additionalProperties": false,
+        "properties": {
+          "allow_variant_axis": {
+            "title": "Allow Variant Axis",
+            "type": "boolean"
+          },
+          "definition_id": {
+            "format": "uuid",
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "is_required": {
+            "title": "Is Required",
+            "type": "boolean"
+          },
+          "is_variant_capable": {
+            "title": "Is Variant Capable",
+            "type": "boolean"
+          },
+          "measurement_dimension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Measurement Dimension"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "value_type": {
+            "enum": [
+              "TEXT",
+              "INTEGER",
+              "DECIMAL",
+              "BOOLEAN",
+              "DATE"
+            ],
+            "title": "Value Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition_id",
+          "name",
+          "value_type",
+          "position",
+          "is_required",
+          "allow_variant_axis",
+          "is_variant_capable"
+        ],
+        "title": "AdvancedAttributeMember",
+        "type": "object"
+      },
       "AdvancedCreationOptions": {
         "additionalProperties": false,
         "properties": {
+          "attribute_members": {
+            "items": {
+              "$ref": "#/components/schemas/AdvancedAttributeMember"
+            },
+            "maxItems": 128,
+            "title": "Attribute Members",
+            "type": "array"
+          },
           "batch": {
             "$ref": "#/components/schemas/SimpleBatchOptions"
+          },
+          "books_begin_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Books Begin Date"
           },
           "company_id": {
             "format": "uuid",
@@ -1758,6 +1843,19 @@
             "title": "Allow Variants",
             "type": "boolean"
           },
+          "attribute_set_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Attribute Set Revision Id"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -1774,7 +1872,8 @@
           "kind": {
             "enum": [
               "GOODS",
-              "SERVICE"
+              "SERVICE",
+              "BOTH"
             ],
             "title": "Kind",
             "type": "string"

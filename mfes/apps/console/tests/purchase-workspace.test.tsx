@@ -86,11 +86,11 @@ describe('Purchase presentation state and exact preview', () => {
     for (const key of ['p1', 'p4', 'p2', 'p3']) draft = reduce(draft, { type: 'remove', key });
     expect(draft.lines).toHaveLength(1); expect(draft.lines[0]!.key).toBe('p5');
   });
-  it('requires a reason for paid bundles and validates dates without rollover', () => {
+  it('rejects unequal direct-bill quantities even when a reason is entered and validates dates', () => {
     const source = purchaseExample(today);
     const draft = reduce(source, { type: 'line', key: 'p1', patch: { received: '25' } });
-    expect(purchaseWorkspaceProblems(draft, policy).some(problem => problem.field === 'quantityReason')).toBe(true);
-    expect(purchaseWorkspaceProblems(reduce(draft, { type: 'line', key: 'p1', patch: { quantityReason: 'One promotional pack received' } }), policy)).toEqual([]);
+    expect(purchaseWorkspaceProblems(draft, policy).some(problem => problem.field === 'received')).toBe(true);
+    expect(purchaseWorkspaceProblems(reduce(draft, { type: 'line', key: 'p1', patch: { quantityReason: 'One promotional pack received' } }), policy).some(problem => problem.field === 'received')).toBe(true);
     expect(purchaseWorkspaceProblems({ ...source, invoiceDate: '2026-02-30' }, policy).some(problem => problem.field === 'invoiceDate')).toBe(true);
   });
   it('keeps supplied evidence when decimal text changes without changing its value', () => {
@@ -185,13 +185,14 @@ describe('Purchase workspace interactions', () => {
     expect(screen.getByLabelText(/Supplier invoice number/)).toHaveValue('PC-261034-revised');
     expect(within(table()).getByRole('combobox', { name: 'Item, line 1' })).toHaveValue('A5 ruled notebooks · pack of 4');
   });
-  it('focuses the reason editor from a quantity validation issue', async () => {
+  it('focuses the receipt quantity from a direct-bill validation issue', async () => {
     const user = userEvent.setup();
     mount(reduce(purchaseExample(today), { type: 'line', key: 'p1', patch: { received: '25' } }));
     await user.click(screen.getByRole('button', { name: 'Save demo draft' }));
-    expect(screen.getByLabelText('Quantity difference reason')).toHaveFocus();
-    await user.type(screen.getByLabelText('Quantity difference reason'), 'Promotional pack');
-    await user.click(screen.getByRole('button', { name: 'Done' }));
+    const received = within(table()).getByRole('textbox', { name: /Receipt qty, line 1/ });
+    expect(received).toHaveFocus();
+    await user.clear(received);
+    await user.type(received, '24');
     await user.click(screen.getByRole('button', { name: 'Save demo draft' }));
     expect(screen.getByText('Demo draft only')).toBeVisible();
   });
@@ -209,7 +210,7 @@ describe('Purchase workspace interactions', () => {
     await user.click(screen.getByRole('button', { name: 'Save demo draft' }));
     expect(screen.getByRole('region', { name: 'Purchase issues' })).toBeVisible();
     expect(screen.getByRole('combobox', { name: /Supplier$/ })).toHaveFocus();
-    await user.click(screen.getByRole('button', { name: 'Enter the supplier invoice number.' }));
+    await user.click(screen.getAllByRole('button', { name: 'Enter the supplier invoice number.' })[0]!);
     expect(screen.getByLabelText(/Supplier invoice number/)).toHaveFocus();
   });
   it('blocks a stale numeric preview while invalid text remains visible', async () => {

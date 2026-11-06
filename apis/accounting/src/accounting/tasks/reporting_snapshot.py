@@ -208,6 +208,8 @@ async def build(
 
                 await prepare(factory, settings, tenant, company)
                 dependency_ready = True
+                async with factory() as db, db.begin():
+                    await db.run_sync(lambda sync: feed.reconcile_head(sync, company))
                 async with read_view(engine, factory, company) as (
                     reader,
                     setup,

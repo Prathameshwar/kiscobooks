@@ -1,7 +1,10 @@
 """Fail startup configuration checks without constructing an engine or making I/O."""
 
 import pytest
+from billing_platform.ids import uuid7
 
+from vouchers.schemas.owners import Owner
+from vouchers.tasks import execution_worker
 from vouchers.tasks.execution_worker import Settings as ExecutionSettings
 from vouchers.tasks.execution_worker import check_configuration as execution
 from vouchers.tasks.source_worker import Settings as SourceSettings
@@ -34,3 +37,27 @@ def test_delivery_configuration_requires_owners_and_complete_enrollment_discover
             stock_execution_owner={"origin": "http://127.0.0.1:8011", "secret": owner["secret"]},
         )
     )
+
+
+async def test_execution_worker_discovers_enrolled_company_guards(monkeypatch, app):
+    tenant, company = uuid7(), uuid7()
+    guard = uuid7()
+
+    async def guards(_factory, after):
+        return [(guard, tenant, company)] if after is None else []
+
+    monkeypatch.setattr(execution_worker, "stock_companies", guards)
+    owner = Owner(
+        owner="accounting", origin="http://127.0.0.1:8011",
+        key_id="execution.current", secret="ephemeral-delivery-configuration-secret",
+        allow_enrolled_companies=True,
+    )
+    scopes = [
+        scope
+        async for scope in execution_worker.execution_company_scopes(
+            app.state.session_factory, owner
+        )
+    ]
+    assert scopes == [
+        (tenant, company)
+    ]

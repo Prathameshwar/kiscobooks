@@ -92,6 +92,7 @@ async def publish(app: Celery, outgoing: OutgoingMessage) -> bool:
         args=[str(envelope.tenant_id), str(company), str(identity)],
         task_id=str(outgoing.message_id),
         queue=QUEUE,
+        exchange=QUEUE,
         routing_key=QUEUE,
         mandatory=True,
         retry=False,
@@ -198,6 +199,7 @@ def main() -> None:
                 "WARNING",
                 "--without-gossip",
                 "--without-mingle",
+                "--without-heartbeat",
             ]
         )
     else:

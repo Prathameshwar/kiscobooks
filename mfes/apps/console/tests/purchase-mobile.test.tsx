@@ -8,15 +8,21 @@ import { PurchaseWorkspace } from '../app/components/PurchaseWorkspace';
 import { PurchaseWorkflowWorkspace } from '../app/components/PurchaseWorkflowWorkspace';
 import { PURCHASE_DEMO_POLICY as policy, blankPurchaseLine, purchaseExample, purchaseWorkspaceProblems } from '../app/lib/purchase-workspace';
 import { purchaseScenario } from '../app/lib/purchase-workspace-scenarios';
+import { purchaseItem } from '../app/lib/purchase-goods';
+
+vi.mock('../app/lib/purchase-goods', async importOriginal => ({ ...await importOriginal<typeof import('../app/lib/purchase-goods')>(), purchaseItem: vi.fn() }));
 
 const today = '2026-10-31';
 vi.setConfig({ testTimeout: 15000 });
 afterEach(() => vi.restoreAllMocks());
-function editor(options: { empty?: boolean; canEdit?: boolean; locale?: boolean; focusField?: string; mixed?: boolean } = {}) {
+function editor(options: { empty?: boolean; canEdit?: boolean; locale?: boolean; focusField?: string; mixed?: boolean; remoteKind?: 'ITEM' | 'ACCOUNT'; verifyItem?: boolean } = {}) {
   const draft = purchaseExample(today), onApply = vi.fn(), onClose = vi.fn();
   if (options.mixed) draft.mode = 'MIXED';
-  const line = options.empty ? blankPurchaseLine('p1', 'ITEM') : draft.lines[0]!;
-  render(<DisplayConfigProvider config={options.locale ? { decimalSeparator: ',', groupSeparator: '.', locale: 'de-DE' } : {}}><PurchaseLineEditor draft={draft} line={line} ordinal={1} policy={policy}
+  if (options.remoteKind === 'ACCOUNT') draft.mode = 'ACCOUNTS';
+  const line = options.empty || options.remoteKind ? blankPurchaseLine('p1', options.remoteKind ?? 'ITEM') : draft.lines[0]!;
+  const remote = options.remoteKind ? { ...policy, subjects: [], ...(options.verifyItem ? { stockCompany: '10000000-0000-7000-8000-000000000001' } : {}),
+    [options.remoteKind === 'ITEM' ? 'itemLookup' : 'subjectLookup']: vi.fn(async () => ({ items: [{ id: 'live-choice', label: 'Live choice' }], nextCursor: null })) } : policy;
+  render(<DisplayConfigProvider config={options.locale ? { decimalSeparator: ',', groupSeparator: '.', locale: 'de-DE' } : {}}><PurchaseLineEditor draft={draft} line={line} ordinal={1} policy={remote}
     canEdit={options.canEdit ?? true} focusField={options.focusField} onApply={onApply} onClose={onClose} /></DisplayConfigProvider>);
   return { draft, line, onApply, onClose, user: userEvent.setup() };
 }
@@ -45,6 +51,52 @@ describe('compact purchase line editor', () => {
     expect(screen.getByRole('combobox', { name: 'Item' })).toHaveFocus();
     expect(screen.getByText('Check this line')).toBeVisible(); expect(onApply).not.toHaveBeenCalled();
   });
+  it.each(['ITEM', 'ACCOUNT'] as const)('accepts a selected live %s lookup before the controller verifies it', async kind => {
+    const { user, onApply } = editor({ remoteKind: kind });
+    const lookup = screen.getByRole('combobox', { name: kind === 'ITEM' ? 'Item' : 'Expense / service account' });
+    await user.type(lookup, 'Live');
+    await user.click(await screen.findByRole('option', { name: /Live choice/ }));
+    if (kind === 'ITEM') {
+      await user.type(screen.getByLabelText('Receipt quantity'), '2');
+      expect(screen.getByLabelText('Billed quantity')).toHaveValue('2.0000');
+      await user.type(screen.getByLabelText('Unit rate'), '25');
+    } else await user.type(screen.getByLabelText('Base amount'), '50');
+    await user.click(screen.getByRole('button', { name: 'Apply line' }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ kind, subject: 'live-choice', label: 'Live choice' }));
+    expect(screen.queryByText('Choose an item or account from the list.')).not.toBeInTheDocument();
+  });
+  it('copies the first mobile receipt quantity into an empty billed quantity and keeps later billed edits', async () => {
+    const { user } = editor({ empty: true });
+    await user.type(screen.getByLabelText('Receipt quantity'), '3');
+    expect(screen.getByLabelText('Billed quantity')).toHaveValue('3.0000');
+    await user.clear(screen.getByLabelText('Billed quantity'));
+    await user.type(screen.getByLabelText('Billed quantity'), '2');
+    expect(screen.getByLabelText('Receipt quantity')).toHaveValue('3.0000');
+    expect(screen.getByLabelText('Billed quantity')).toHaveValue('2');
+  });
+  it('fills the verified product name and base unit before mobile Apply', async () => {
+    const company = '10000000-0000-7000-8000-000000000001';
+    vi.mocked(purchaseItem).mockResolvedValue({ id: 'live-choice', company, version: 1, baseUnitId: '10000000-0000-7000-8000-000000000002', label: 'Verified milk', unit: 'L' });
+    const { user, onApply } = editor({ remoteKind: 'ITEM', verifyItem: true });
+    await user.type(screen.getByRole('combobox', { name: 'Item' }), 'Live');
+    await user.click(await screen.findByRole('option', { name: /Live choice/ }));
+    expect(await screen.findByText('Verified milk')).toBeVisible();
+    await user.type(screen.getByLabelText('Receipt quantity'), '2');
+    await user.type(screen.getByLabelText('Unit rate'), '25');
+    await user.click(screen.getByRole('button', { name: 'Apply line' }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ subject: 'live-choice', label: 'Verified milk', unit: 'L', received: '2', billed: '2' }));
+  });
+  it('keeps a rejected product lookup out of the purchase line', async () => {
+    vi.mocked(purchaseItem).mockRejectedValue(Error('This product is not set up to be purchased.'));
+    const { user, onApply } = editor({ remoteKind: 'ITEM', verifyItem: true });
+    await user.type(screen.getByRole('combobox', { name: 'Item' }), 'Live');
+    await user.click(await screen.findByRole('option', { name: /Live choice/ }));
+    expect(await screen.findByText('This product is not set up to be purchased.')).toBeVisible();
+    await user.type(screen.getByLabelText('Receipt quantity'), '2');
+    await user.type(screen.getByLabelText('Unit rate'), '25');
+    await user.click(screen.getByRole('button', { name: 'Apply line' }));
+    expect(onApply).not.toHaveBeenCalled();
+  });
   it('withholds the total and blocks Apply while invalid numeric text is retained', async () => {
     const { user, onApply } = editor();
     const rate = screen.getByLabelText('Unit rate');
@@ -54,13 +106,15 @@ describe('compact purchase line editor', () => {
     expect(rate).toHaveFocus(); expect(onApply).not.toHaveBeenCalled();
     expect(screen.getByText('—')).toBeVisible();
   });
-  it('requires a quantity difference reason without converting received quantity into price', async () => {
+  it('rejects a quantity difference before applying a direct goods bill', async () => {
     const { user, onApply } = editor();
     const received = screen.getByLabelText('Receipt quantity'); await user.clear(received); await user.type(received, '25');
-    await user.click(screen.getByRole('button', { name: 'Apply line' })); expect(screen.getByLabelText('Quantity difference reason')).toHaveFocus();
-    await user.type(screen.getByLabelText('Quantity difference reason'), 'One promotional pack received');
+    await user.click(screen.getByRole('button', { name: 'Apply line' })); expect(screen.getByLabelText('Receipt quantity')).toHaveFocus();
+    expect(screen.getAllByText(/direct Purchase bill must receive the same quantity/i).length).toBeGreaterThan(0);
+    expect(onApply).not.toHaveBeenCalled();
+    await user.clear(received); await user.type(received, '24');
     await user.click(screen.getByRole('button', { name: 'Apply line' }));
-    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ received: '25', billed: '24', rate: '125' }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ received: '24', billed: '24', rate: '125' }));
   });
   it('parses configured comma decimals into canonical decimal strings', async () => {
     const { user, onApply } = editor({ locale: true });
@@ -139,7 +193,7 @@ describe('compact purchase composition and supplied capabilities', () => {
   it('supplies mixed, paid-bundle and mismatch examples with explicit expected outcomes', () => {
     const mixed = purchaseScenario('mixed', today), bundle = purchaseScenario('bundle', today), mismatch = purchaseScenario('mismatch', today);
     expect(mixed.mode).toBe('MIXED'); expect(mixed.lines.map(line => line.kind)).toEqual(['ITEM', 'ITEM', 'ACCOUNT']);
-    expect(purchaseWorkspaceProblems(mixed, policy)).toEqual([]); expect(purchaseWorkspaceProblems(bundle, policy)).toEqual([]);
+    expect(purchaseWorkspaceProblems(mixed, policy)).toEqual([]); expect(purchaseWorkspaceProblems(bundle, policy).some(problem => problem.field === 'received')).toBe(true);
     expect(bundle.lines[0]).toMatchObject({ received: '11', billed: '10' }); expect(mismatch.details.declaredTotal).toBe('5800');
     expect(purchaseWorkspaceProblems(mismatch, policy).some(problem => problem.field === 'declaredTotal')).toBe(true);
   });
@@ -165,7 +219,7 @@ describe('compact purchase composition and supplied capabilities', () => {
     render(<PurchaseWorkspace today={today} canCreate initialDraft={draft} />);
     await userEvent.click(screen.getByRole('button', { name: 'Save demo draft' }));
     expect(screen.getByRole('dialog', { name: 'Edit purchase line 1' })).toBeVisible();
-    expect(screen.getByLabelText('Quantity difference reason')).toHaveFocus();
+    expect(screen.getByLabelText('Receipt quantity')).toHaveFocus();
   });
   it('uses the supplied supplier lookup without letting a late query replace newer results', async () => {
     let resolveLate!: (result: { items: typeof policy.suppliers[number][]; nextCursor: null }) => void;

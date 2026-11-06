@@ -6,8 +6,8 @@ import { purchasePrintRequest, verifiedPurchasePdf } from '../app/lib/purchase-p
 vi.mock('../app/lib/purchase-print', () => ({ purchasePrintRequest: vi.fn(), verifiedPurchasePdf: vi.fn() }));
 const id = '01990000-0000-7000-8000-000000000001';
 const input = { company: id, voucherId: id, revisionId: id, version: 2 };
-const ready = { id, status: 'READY', revision_number: 3, document_status: 'DRAFT',
-  layout_name: 'Standard Purchase', layout_version: 'purchase-a4@1', download_token: 'signed' };
+const ready = { id, company_id: id, voucher_id: id, revision_id: id, status: 'READY', revision_number: 3, document_status: 'DRAFT',
+  layout_name: 'Standard Purchase', layout_version: 'purchase-a4@1', download_token: 'signed', content_hash: 'a'.repeat(64), size_bytes: 8 };
 const json = (body: unknown) => new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
 
 beforeEach(() => {
@@ -60,6 +60,25 @@ it('never previews a PDF whose integrity verification fails', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent(/Integrity/);
   expect(screen.queryByTitle('Purchase voucher PDF preview')).not.toBeInTheDocument();
   expect(URL.createObjectURL).not.toHaveBeenCalled();
+});
+
+it('refuses a print job for another voucher or an incomplete ready artifact', async () => {
+  vi.mocked(purchasePrintRequest).mockResolvedValueOnce(json({ ...ready, voucher_id: '01990000-0000-7000-8000-000000000002' }));
+  const view = render(<PurchasePrintPreview {...input} />);
+  expect(await screen.findByRole('alert')).toHaveTextContent(/does not match this saved Purchase/);
+  expect(screen.queryByTitle('Purchase voucher PDF preview')).not.toBeInTheDocument();
+  expect(vi.mocked(purchasePrintRequest)).toHaveBeenCalledTimes(1);
+  view.unmount();
+  vi.mocked(purchasePrintRequest).mockReset().mockResolvedValueOnce(json({ ...ready, download_token: null }));
+  render(<PurchasePrintPreview {...input} />);
+  expect(await screen.findByRole('alert')).toHaveTextContent(/does not match this saved Purchase/);
+  expect(vi.mocked(purchasePrintRequest)).toHaveBeenCalledTimes(1);
+});
+
+it('explains a failed print snapshot', async () => {
+  vi.mocked(purchasePrintRequest).mockResolvedValueOnce(json({ ...ready, status: 'FAILED', failure_code: 'SOURCE_INTEGRITY' }));
+  render(<PurchasePrintPreview {...input} />);
+  expect(await screen.findByRole('alert')).toHaveTextContent(/saved print snapshot could not be verified/);
 });
 
 it('polls the same queued identity until its PDF is ready', async () => {

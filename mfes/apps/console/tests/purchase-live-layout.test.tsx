@@ -24,6 +24,18 @@ function mount(options: { draft?: PurchaseWorkspaceDraft; policy?: Partial<Purch
 }
 
 describe('live Purchase workspace layout', () => {
+  it('rejects a zero expense amount before creating the draft', () => {
+    const draft = filled(); draft.lines[0]!.amount = '0';
+    const policy = { ...livePurchasePolicy('INR', metadata), suppliers: [supplier([payable('pay-1')])], subjects: [{ id: 'acc-1', label: 'Office expenses', meta: '', kind: 'ACCOUNT' as const, unit: '' }] };
+    expect(purchaseWorkspaceProblems(draft, policy)).toContainEqual(expect.objectContaining({ field: 'amount', message: 'Account amount must be greater than zero.' }));
+  });
+  it('lists save validation problems and lets the user jump to the first field', () => {
+    mount({ draft: accountDraft(), controller: { actions: ({ validate }) => <button type="button" onClick={validate}>Save draft</button> } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(screen.getByText(/details need correction before this Purchase can be saved or submitted/)).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Choose a supplier.' })).toBeVisible();
+    expect(screen.getByRole('combobox', { name: /Supplier/ })).toHaveFocus();
+  });
   it('uses the page header it is given, in place of its own heading', () => {
     mount();
     expect(screen.getByRole('heading', { level: 1, name: 'Page header slot' })).toBeVisible();

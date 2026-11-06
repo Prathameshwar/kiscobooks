@@ -14,7 +14,7 @@ export type QuickCreated = { id: string; label: string; meta?: string };
 /** Which bill line asked for an account. `apply` fills a staged editor instead of the bill (the mobile line editor). */
 export type QuickCreateTarget = { lineKey: string; apply?: (created: QuickCreated) => void };
 /** What the connected bill offers its fields; an absent entry means the actor cannot create that record, so no icon. */
-export type PurchaseQuickCreate = { supplier?: () => void; account?: (target: QuickCreateTarget) => void };
+export type PurchaseQuickCreate = { supplier?: () => void; account?: (target: QuickCreateTarget) => void; product?: boolean };
 
 /** A starting point for the code, never a rule: "Sharma & Sons Traders" → "SHARMA-SONS-TRADERS". */
 export function suggestCode(name: string, max = 24): string {
@@ -24,6 +24,15 @@ export function suggestCode(name: string, max = 24): string {
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+  if (code.length > max) {
+    // Keep a distinguishing numeric suffix when a long name would otherwise suggest the
+    // same code for every numbered supplier or account in a series.
+    const suffix = code.match(/-([A-Z0-9]*\d[A-Z0-9]*)$/)?.[1];
+    if (suffix && suffix.length < max - 1) {
+      const prefix = code.slice(0, max - suffix.length - 1).replace(/-+$/, '');
+      if (prefix) return `${prefix}-${suffix}`;
+    }
+  }
   return code.slice(0, max).replace(/-+$/, '');
 }
 

@@ -21,7 +21,7 @@ async def purchase_print_facts(body: PurchasePrintCommand, request: Request) -> 
     # delegated user's company, account and immutable financial-field permissions.
     command = body.preview
     operation = "voucher.purchase.print"
-    credential, key_id, framed = authorize(
+    credential, key_id, framed = await authorize(
         request, command.tenant_id, command.company_id, operation, await request.body()
     )
     current = delegated_access(

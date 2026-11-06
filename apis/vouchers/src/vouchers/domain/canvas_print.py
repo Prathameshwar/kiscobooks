@@ -290,6 +290,23 @@ class Facts:
             "voucher.narration": str(document.get("narration") or ""),
         } | {f"totals.{key}": number(amount, config) for key, amount in self.totals.items()}
         self.fields["totals.amount_in_words"] = self.words
+        receipt = document.get("stock_receipt", [])
+        if receipt:
+            descriptions = {
+                str(line["line_key"]): str(line.get("description") or "Purchase line")
+                for line in invoice["supplies"]
+            }
+            self.fields["voucher.receiving_summary"] = "\n".join(
+                " · ".join(
+                    [descriptions[row["line_key"]], "Warehouse reference " + row["warehouse_id"]]
+                    + (["Bin reference " + row["bin_id"]] if row["bin_id"] else [])
+                    + (["Batch reference " + row["lot_id"]] if row["lot_id"] else [])
+                    + (["Serial references " + ", ".join(row["unit_ids"])] if row["unit_ids"] else [])
+                )
+                for row in receipt
+            )
+        else:
+            self.fields["voucher.receiving_summary"] = ""
 
     def lines_for(self, table: str) -> list[tuple[dict[str, Any], dict[str, Any]]]:
         if not self.split:
@@ -385,7 +402,8 @@ def element_html(element: dict[str, Any], facts: Facts, *, flow: bool = False) -
         label = element.get("label")
         prefix = f'<span class="canvas-label">{escaped(label)} </span>' if label else ""
         value = facts.fields.get(str(element.get("binding_path")), "")
-        return f'<div class="canvas-el canvas-text" {box}>{prefix}{escaped(value)}</div>'
+        special = " canvas-receiving" if element.get("binding_path") == "voucher.receiving_summary" else ""
+        return f'<div class="canvas-el canvas-text{special}" {box}>{prefix}{escaped(value)}</div>'
     if kind == "DIVIDER":
         return f'<div class="canvas-el canvas-divider" {box}></div>'
     if kind == "SHAPE":
@@ -511,11 +529,26 @@ def zone_html(section: dict[str, Any], facts: Facts, left: float, top: float, bl
     elements = sorted(
         section.get("elements") or [], key=lambda row: (row.get("y", 0), row.get("x", 0))
     )
+    receiving = next(
+        (row for row in elements if row.get("binding_path") == "voucher.receiving_summary"),
+        None,
+    )
     table = next((row for row in elements if row.get("type") in LINE_TABLES), None)
     if blank and table is None:
         # Pre-printed stationery: the letterhead is on the paper, so the zone keeps its space.
         place = f"left:{mm(left)};top:{mm(top)};width:{mm(width)};height:{mm(height)}"
         return f'<div class="canvas-zone" style="{escaped(place)}"></div>'
+    if receiving is not None:
+        if len(elements) != 1 or section.get("type") == "HEADER":
+            raise ValidationFailedError("the receiving summary needs its own zone outside the header")
+        offset = bounded(receiving.get("y", 0), 0, 2000, "receiving position")
+        place = f"margin-left:{mm(left)};margin-top:{mm(top)};width:{mm(width)};min-height:{mm(height)}"
+        return (
+            f'<div class="canvas-zone canvas-zone--grows" style="{escaped(place)}">'
+            f'<div style="height:{mm(offset)}"></div>'
+            + element_html(receiving, facts, flow=True)
+            + "</div>"
+        )
     if table is None:
         place = f"left:{mm(left)};top:{mm(top)};width:{mm(width)};height:{mm(height)}"
         inner = "".join(element_html(element, facts) for element in elements)
@@ -577,11 +610,17 @@ def canvas_document(
             bands.append([section])
     blocks, cursor = [], top
     for band in bands:
+        if len(band) > 1 and any(
+            element.get("binding_path") == "voucher.receiving_summary"
+            for row in band for element in row.get("elements") or []
+        ):
+            raise ValidationFailedError("the receiving summary needs its own vertical band")
         band_top = min(row["y"] for row in band)
         band_bottom = max(row["y"] + row["height"] for row in band)
         gap = max(band_top - cursor, 0)
         grows = any(
             element.get("type") in LINE_TABLES
+            or element.get("binding_path") == "voucher.receiving_summary"
             for row in band
             for element in row.get("elements") or []
         )

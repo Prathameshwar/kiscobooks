@@ -108,9 +108,12 @@ def owner_for(
     if (
         owner is None
         or owner.owner != "accounting"
-        or not any(
-            scope.tenant_id == tenant_id and scope.company_id == company_id
-            for scope in owner.scopes
+        or not (
+            owner.allow_enrolled_companies
+            or any(
+                scope.tenant_id == tenant_id and scope.company_id == company_id
+                for scope in owner.scopes
+            )
         )
     ):
         raise ConflictError(f"{purpose} owner is not configured for this company")

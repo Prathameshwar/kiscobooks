@@ -15,12 +15,103 @@ from pydantic import ValidationError
 from reporting_contract.contract import FactPage
 from test_foundation import generation
 
+from reports.domain.invoice_reconciliation import reconcile_invoices
 from reports.domain.reconcile import immutable_claim, reconcile
 from reports.domain.statements import calculate
 from reports.models import core as m
 from reports.schemas.requests import RunRequest
 from reports.tasks import ingest, runs
 from reports.tasks.common import company_lock, get
+
+
+def test_cancelled_invoice_retains_void_source_without_an_open_bill():
+    facts, _ = invoice_dataset()
+    intent = next(row for row in facts if row.entity == "voucher_money_intent")
+    journal_id = intent.data["journal_id"]
+    native_lines = {
+        str(row.source_id)
+        for row in facts
+        if row.entity == "journal_line" and row.data["journal_id"] == journal_id
+    }
+    rows = [
+        row for row in facts
+        if row.entity != "open_item" or row.data["journal_line_id"] not in native_lines
+    ]
+    live = {(row.entity, str(row.source_id)): row.data for row in rows}
+    with pytest.raises(ConflictError, match="no matching native open item"):
+        reconcile_invoices(live)
+    live[("voucher_money_intent", str(intent.source_id))] = intent.data | {
+        "status": "CANCELLED"
+    }
+    journal = next(
+        row for row in facts if row.entity == "journal" and str(row.source_id) == journal_id
+    )
+    live[("journal", journal_id)] = journal.data | {"status": "VOID"}
+    reconcile_invoices(live)
+
+
+def test_purchase_register_nets_a_posted_reversal_on_its_own_date():
+    from reports.domain.book_summaries import BookSummary
+    from reports.domain.invoice_registers import register
+    from reports.domain.statements import Facts
+    from reports.domain.tax_summaries import summarize
+
+    facts, *_ = purchase_dataset()
+    original = next(
+        row for row in facts if row.entity == "journal" and row.data["number"] == "invoice"
+    )
+    reversal_id = uuid.uuid4()
+    facts.append(
+        source(
+            "journal",
+            reversal_id,
+            original.data
+            | {
+                "number": "purchase-reversal",
+                "posting_date": "2026-04-10",
+                "reversal_of_id": str(original.source_id),
+            },
+        )
+    )
+    for line in list(facts):
+        if line.entity != "journal_line" or line.data["journal_id"] != str(original.source_id):
+            continue
+        facts.append(
+            source(
+                "journal_line",
+                uuid.uuid4(),
+                line.data | {
+                    "journal_id": str(reversal_id),
+                    "side": "CREDIT" if line.data["side"] == "DEBIT" else "DEBIT",
+                },
+            )
+        )
+    query = RunRequest(
+        code="PURCHASE_REGISTER",
+        generation_id=uuid.uuid4(),
+        date_from="2026-04-01",
+        date_to="2026-04-30",
+    )
+    rows = register(Facts(facts), query)
+    assert [(row["posting_date"], row["direction"]) for row in rows] == [
+        ("2026-04-02", "ORIGINAL"),
+        ("2026-04-10", "REDUCTION"),
+    ]
+    assert rows[1]["journal_id"] == str(reversal_id)
+    summary = BookSummary("PURCHASE_REGISTER")
+    for row in rows:
+        summary.add(row)
+    assert summary.finish()["amounts"]["INR"]["payable"] == "0.0000"
+    before = register(Facts(facts), query.model_copy(update={"date_to": dt.date(2026, 4, 9)}))
+    assert len(before) == 1
+    tax_rows = register(Facts(facts), query.model_copy(update={"code": "INVOICE_TAX_REGISTER"}))
+    assert [(row["posting_date"], row["direction"]) for row in tax_rows] == [
+        ("2026-04-02", "ORIGINAL"),
+        ("2026-04-10", "REDUCTION"),
+    ]
+    assert summarize("INVOICE_TAX_REGISTER", tax_rows)["amounts"]["INR"]["tax_amount"] == "0.0000"
+    bridge = register(Facts(facts), query.model_copy(update={"code": "INVOICE_GL_BRIDGE"}))
+    assert {row["journal_id"] for row in bridge} == {str(original.source_id), str(reversal_id)}
 
 
 def test_invoice_dates_settlement_as_of_and_document_grains():

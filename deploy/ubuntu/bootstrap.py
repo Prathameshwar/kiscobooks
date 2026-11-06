@@ -37,6 +37,7 @@ broker_password = secrets.token_hex(32)
 source_request_secret = token()
 source_response_secret = token()
 source_event_secret = token()
+catalog_tax_event_secret = token()
 migrator_password = secrets.token_hex(32)
 database_passwords = {service: secrets.token_hex(32) for service in SERVICES}
 
@@ -142,6 +143,9 @@ for service in SERVICES:
     elif service == "accounting":
         values["ACCOUNTING_ENCRYPTION_KEY"] = secrets.token_hex(32)
         values["ACCOUNTING_STOCK_CATALOG_URL"] = "http://127.0.0.1:8090/catalog"
+        values["ACCOUNTING_CATALOG_BROKER_URL"] = source_broker_url
+        values["ACCOUNTING_CATALOG_BROKER_USER"] = "kisco-source"
+        values["ACCOUNTING_CATALOG_EVENT_SECRET"] = catalog_tax_event_secret
     elif service == "catalog":
         values["CATALOG_SIMPLE_CREATION_ORIGINS"] = json.dumps({"accounting": "http://127.0.0.1:8011", "vouchers": "http://127.0.0.1:8012"}, separators=(",", ":"))
         values["CATALOG_IDENTITY_SOURCE"] = json.dumps({"base_url": "http://127.0.0.1:8001", "request_key_id": "current", "request_secret": source_request_secret, "response_secrets": {"current": source_response_secret}}, separators=(",", ":"))
@@ -149,12 +153,13 @@ for service in SERVICES:
         values["CATALOG_SOURCE_EVENT_SECRET"] = source_event_secret
         values["CATALOG_SOURCE_BROKER_URL"] = source_broker_url
         values["CATALOG_SOURCE_BROKER_USER"] = "kisco-source"
+        values["CATALOG_ACCOUNTING_EVENT_SECRET"] = catalog_tax_event_secret
     elif service == "notification":
         values["NOTIFICATION_DATA_ENCRYPTION_KEY"] = token()
     elif service == "reports":
         values["REPORTS_ARTIFACT_ROOT"] = "/var/lib/kiscobooks/reports"
     elif service == "vouchers":
-        values.update({"VOUCHERS_PRINT_FILE_ROOT": "/var/lib/kiscobooks/vouchers/prints", "VOUCHERS_SUPPORTING_FILE_ROOT": "/var/lib/kiscobooks/vouchers/supporting"})
+        values.update({"VOUCHERS_PRINT_FILE_ROOT": "/var/lib/kiscobooks-print/pdfs", "VOUCHERS_SUPPORTING_FILE_ROOT": "/var/lib/kiscobooks/vouchers/supporting"})
     elif service == "design":
         values["DESIGN_ASSET_STORAGE_ROOT"] = "/var/lib/kiscobooks/design/assets"
     write(f"{service}.env", values)
@@ -206,7 +211,7 @@ write("console.env", {
     "DESIGN_GATEWAY_URL": "http://127.0.0.1:8090/design",
 })
 
-for path in ("reports", "vouchers/prints", "vouchers/supporting", "design/assets"):
+for path in ("reports", "vouchers/supporting", "design/assets"):
     target = Path("/var/lib/kiscobooks") / path
     target.mkdir(mode=0o750, parents=True, exist_ok=True)
     subprocess.run(["chown", "-R", "kiscobooks:kiscobooks", str(target)], check=True)

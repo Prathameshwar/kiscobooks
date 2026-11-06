@@ -72,6 +72,43 @@ async def test_negative_confirmation_never_marks_published(
     assert result.confirmed == 0 and result.deferred == 1
 
 
+async def test_critical_delivery_retries_after_twelve_failures_with_a_bounded_delay(
+    factory: async_sessionmaker[AsyncSession], tenant_a: uuid.UUID
+) -> None:
+    async with factory.begin() as db:
+        event = emit(
+            db,
+            tenant_id=tenant_a,
+            aggregate_id=uuid7(),
+            aggregate_type="posting",
+            event_type="posting.confirm",
+            payload={},
+        )
+        event.attempt_count = 12
+    sent = 0
+
+    async def publish(message: OutgoingMessage) -> bool:
+        nonlocal sent
+        sent += 1
+        if sent == 1:
+            raise RuntimeError("temporary fault")
+        return True
+
+    failed = await publish_batch(
+        factory, publish, maximum_attempts=None, retry_cap_seconds=300
+    )
+    assert failed.deferred == 1 and sent == 1
+    async with factory.begin() as db:
+        row = await db.get(Outbox, event.id)
+        assert row is not None and row.attempt_count == 13
+        assert 0 < (row.available_at - utcnow()).total_seconds() <= 300
+        row.available_at = utcnow()
+    completed = await publish_batch(
+        factory, publish, maximum_attempts=None, retry_cap_seconds=300
+    )
+    assert completed.confirmed == 1 and sent == 2
+
+
 async def test_consumer_redelivery_fanout_and_rollback(
     factory: async_sessionmaker[AsyncSession],
     tenant_a: uuid.UUID,
@@ -121,7 +158,11 @@ async def test_worker_configuration_bounds(factory: async_sessionmaker[AsyncSess
     async def handler(db: AsyncSession, incoming: MessageEnvelope) -> None:
         return None
 
-    invalid_arguments: tuple[dict[str, Any], ...] = ({"limit": 0}, {"timeout_seconds": 0})
+    invalid_arguments: tuple[dict[str, Any], ...] = (
+        {"limit": 0},
+        {"timeout_seconds": 0},
+        {"retry_cap_seconds": 0},
+    )
     for arguments in invalid_arguments:
         with pytest.raises(ValueError):
             await publish_batch(factory, publish, **arguments)

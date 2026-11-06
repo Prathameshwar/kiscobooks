@@ -16,17 +16,36 @@ it('discovers current company drafts and offers permitted review/edit routes', a
 });
 describe('a Purchase in the list', () => {
   const purchase = (status: string) => ({ ...page, items: [{ ...page.items[0], kind: 'PURCHASE', profile: 'STANDARD', status }] });
-  it.each([['DRAFT', 'Edit draft'], ['REJECTED', 'Edit rejected bill']])('opens a %s bill on its own entry screen', async (status, label) => {
+  const revision = '10000000-0000-7000-8000-000000000004';
+  it.each([['DRAFT', 'Edit draft'], ['REJECTED', 'Edit rejected bill'], ['SUBMITTED', 'Edit submitted bill'], ['APPROVED', 'Edit approved bill']])('opens a %s bill on its own entry screen', async (status, label) => {
     vi.mocked(serviceCall).mockResolvedValue(purchase(status));
     render(<VoucherDirectory company={company} permissions={['vouchers.read', 'vouchers.edit']} />);
     await screen.findByText('RCP'); fireEvent.click(screen.getByRole('button', { name: /actions/i }));
     expect(screen.getByRole('menuitem', { name: label })).toHaveAttribute('href', '/vouchers/new/purchase?voucher_id=' + voucher + '&type_id=' + type);
   });
-  it.each(['SUBMITTED', 'APPROVED', 'POSTED', 'CANCELLED'])('offers no edit for a %s bill', async status => {
+  it.each(['POSTED', 'CANCELLED'])('offers no edit for a %s bill', async status => {
     vi.mocked(serviceCall).mockResolvedValue(purchase(status));
     render(<VoucherDirectory company={company} permissions={['vouchers.read', 'vouchers.edit']} />);
     await screen.findByText('RCP'); fireEvent.click(screen.getByRole('button', { name: /actions/i }));
     expect(screen.queryByRole('menuitem', { name: /^Edit/ })).not.toBeInTheDocument();
+  });
+  it.each(['DRAFT', 'POSTED', 'CANCELLED', 'REVERSED'])('offers Print / PDF for a saved %s Purchase', async status => {
+    vi.mocked(serviceCall).mockResolvedValue({ ...purchase(status), items: [{ ...purchase(status).items[0], revision_id: revision }] });
+    render(<VoucherDirectory company={company} permissions={['vouchers.read', 'vouchers.artifact.create', 'vouchers.artifact.read', 'accounting.account.read']} />);
+    await screen.findByText('RCP'); fireEvent.click(screen.getByRole('button', { name: /actions/i }));
+    expect(screen.getByRole('menuitem', { name: 'Print / PDF' })).toHaveAttribute('href', `/vouchers/${voucher}/print?revision=${revision}&version=4`);
+  });
+  it('hides Print / PDF without the saved revision or one required permission', async () => {
+    const permissions = ['vouchers.read', 'vouchers.artifact.create', 'vouchers.artifact.read', 'accounting.account.read'];
+    vi.mocked(serviceCall).mockResolvedValue(purchase('POSTED'));
+    const view = render(<VoucherDirectory company={company} permissions={permissions} />);
+    await screen.findByText('RCP'); fireEvent.click(screen.getByRole('button', { name: /actions/i }));
+    expect(screen.queryByRole('menuitem', { name: 'Print / PDF' })).not.toBeInTheDocument();
+    view.unmount();
+    vi.mocked(serviceCall).mockResolvedValue({ ...purchase('POSTED'), items: [{ ...purchase('POSTED').items[0], revision_id: revision }] });
+    render(<VoucherDirectory company={company} permissions={permissions.filter(key => key !== 'vouchers.artifact.read')} />);
+    await screen.findByText('RCP'); fireEvent.click(screen.getByRole('button', { name: /actions/i }));
+    expect(screen.queryByRole('menuitem', { name: 'Print / PDF' })).not.toBeInTheDocument();
   });
   it('leaves another kind’s rejected voucher to its review page', async () => {
     vi.mocked(serviceCall).mockResolvedValue({ ...page, items: [{ ...page.items[0], status: 'REJECTED' }] });

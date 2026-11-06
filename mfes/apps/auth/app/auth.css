@@ -416,12 +416,12 @@
 .auth__foot--band > p { margin: 0; }
 .auth__foot--band > p + p { margin-top: var(--janso-space-2); }
 .auth__foot--links {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
   gap: var(--janso-space-2);
 }
+.auth__forgot-password { justify-self: end; }
 .auth__back {
   display: inline-flex;
   align-items: center;
@@ -507,6 +507,17 @@
  * box around the whole screen. The surface goes back to the page.
  */
 @media (max-width: 520px) {
+  .auth__foot--links { grid-template-columns: minmax(0, 1fr) auto; }
+  .auth__account-question { grid-column: 1 / -1; }
+  .auth__forgot-password { grid-column: 2; }
+  /* Give the copyright its own row so the company name is not squeezed by the links. */
+  .auth__legal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+  .auth__legal > span { white-space: nowrap; }
+  .auth__legal-links { margin-left: 0; flex-wrap: wrap; }
   .auth__foot--band {
     background: transparent;
     border-radius: 0;

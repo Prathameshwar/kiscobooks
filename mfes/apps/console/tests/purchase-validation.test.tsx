@@ -17,7 +17,7 @@ it('associates missing supplier validation with its control and focuses correcti
   fireEvent.change(screen.getByRole('combobox', { name: 'Voucher type' }), { target: { value: metadata.configuration.type_revision_id } });
   fireEvent.change(screen.getByLabelText('Document date'), { target: { value: '2026-10-30' } });
   fireEvent.click(screen.getByRole('button', { name: 'Load entry fields' }));
-  const save = await screen.findByRole('button', { name: 'Save draft' });
+  const save = await screen.findByRole('button', { name: /^(Create|Update)$/ });
   await waitFor(() => expect(save).toBeEnabled());
   fireEvent.submit(save.closest('form')!);
   const supplier = screen.getByRole('combobox', { name: 'Supplier' });

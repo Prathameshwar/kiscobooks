@@ -85,7 +85,7 @@ recovery and bank/report screens. No mobile application exists in this repositor
 generated contracts are shared with future clients.
 
 Execution delivery requires `VOUCHERS_EXECUTION_OWNER` with owner `accounting`, origin,
-key ID, secret and explicit tenant/company scopes, plus matching
+key ID, secret and either explicit tenant/company scopes or `allow_enrolled_companies=true`, plus matching
 `ACCOUNTING_VOUCHER_EXECUTION_CREDENTIALS`. Use a credential separate from snapshots.
 The `all` worker launcher skips execution delivery if it is not configured. All native
 money admission is disabled unless `VOUCHERS_MONEY_EXECUTION_ENABLED=true` and

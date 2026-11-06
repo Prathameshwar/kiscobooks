@@ -209,10 +209,9 @@ async def test_export_denied_without_permission(
 # -- integration logs ------------------------------------------------------------------
 
 
-async def test_integration_logs_crud_and_listing(
-    client: httpx.AsyncClient, session: AsyncSession, tenant_a: uuid.UUID
+async def test_deferred_integration_logs_are_not_mounted(
+    client: httpx.AsyncClient, tenant_a: uuid.UUID
 ) -> None:
-    # 1. Create integration log
     payload = {
         "integration_name": "netsuite_export",
         "direction": "outbound",
@@ -223,29 +222,12 @@ async def test_integration_logs_crud_and_listing(
         "metadata_json": {"records": 42},
     }
     headers = _headers(tenant_a, ["audit.read"])
-    create_resp = await client.post(
-        "/v1/integration-logs", json=payload, headers=headers
-    )
-    assert create_resp.status_code == 201
-    log = create_resp.json()
-    assert log["integration_name"] == "netsuite_export"
-    assert log["metadata_json"] == {"records": 42}
-    occurred_at = log["occurred_at"]
-    log_id = log["id"]
-
-    # 2. Get single log
-    get_resp = await client.get(
-        f"/v1/integration-logs/{log_id}?occurred_at={occurred_at}", headers=headers
-    )
-    assert get_resp.status_code == 200
-    assert get_resp.json()["integration_name"] == "netsuite_export"
-
-    # 3. List logs
-    list_resp = await client.get(
-        "/v1/integration-logs?integration_name=netsuite_export", headers=headers
-    )
-    assert list_resp.status_code == 200
-    body = list_resp.json()
-    assert len(body["items"]) == 1
-    assert body["items"][0]["integration_name"] == "netsuite_export"
+    assert (await client.post("/v1/integration-logs", json=payload, headers=headers)).status_code == 404
+    assert (await client.get("/v1/integration-logs", headers=headers)).status_code == 404
+    assert (
+        await client.get(
+            f"/v1/integration-logs/{uuid.uuid4()}?occurred_at=2026-11-05T00:00:00Z",
+            headers=headers,
+        )
+    ).status_code == 404
 

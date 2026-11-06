@@ -28,12 +28,17 @@ Requested 2026-11-01. On the Purchase account bill (`/vouchers/new/purchase`):
 - Icon: a small outline "+" button **in the control's own row**, after the box (supplier field, each account
   row, and the mobile line editor), named "Create a new supplier" / "Create a new expense account for line N".
   Hidden without the permission or on a read-only bill; disabled while the bill is busy.
-- Drawer (right, `md`), compact two-column form: supplier = name (also the legal name), code, country and,
+- Drawer (right, `lg` for supplier, `md` for account), compact two-column form: supplier = name (also the legal name), code, country and,
   for India, GST status (Regular / Composition / Unregistered / Add later), state, GSTIN; expense account =
   name, code, group, description. A "Full supplier form" / "Full account form" link opens the real master
   page in a new tab. Dirty close asks first; server field errors sit beside their fields.
 - Success: the record is selected through the bill's own verified path, announced in the status line, focus
   moves on (invoice number / the row's amount). Retry after a failure with no answer reuses the same key.
+
+2026-11-05 follow-up: Product and Mixed Purchase item lines now offer a "+" link with `item.create`. It opens
+the existing product creation page in a new tab because that page applies the company's simple-product or
+profile/SKU requirements. The bill stays open; the person selects the completed active product from item search.
+The supplier drawer was widened and its tax and opening sections were given clearer spacing.
 
 ## Phases
 

@@ -50,11 +50,13 @@ async def listing(
         query.issue_number is not None or (search is not None and voucher_id is None)
     )
     names = base_names | (
-        {"type_id", "type_code", "kind", "document_date", "issue_number"} if voucher_list else set()
+        {"type_id", "type_code", "kind", "document_date", "issue_number", "revision_id"}
+        if voucher_list
+        else set()
     )
     entity = "vouchers.voucher" if voucher_list else "vouchers.configuration"
     blocked = denied(current, entity, names, "read")
-    if blocked & {"id", "company_id", "row_version"}:
+    if blocked & {"id", "company_id", "row_version", "revision_id"}:
         raise PermissionDeniedError("list identity denied")
     columns = base_names - blocked
     statement = (
@@ -96,6 +98,7 @@ async def listing(
             else statement.outerjoin(assignment, number_on)
         )
         derived = {
+            "revision_id": revision.id,
             "type_id": model.type_id,
             "type_code": voucher_type.code,
             "kind": voucher_type.kind,

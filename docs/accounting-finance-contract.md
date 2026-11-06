@@ -186,11 +186,17 @@ ROUNDING_GAIN/ROUNDING_LOSS mapping. No tax rate or exemption is inferred by Acc
 Apply Identity migration 0059 and Accounting migrations through 0108 before deploying the
 corresponding services. Run each service's normal metadata/role seed process. Platform is
 0.24.0 in the current workspace (including concurrent shared-library work); the
-issuer-aware Identity posting client is 0.2.0. Configure separate Accounting
-reservation keys/scopes and response keys in Identity; Accounting receives
-`ACCOUNTING_IDENTITY_POSTING_URL` (HTTPS origin), `ACCOUNTING_IDENTITY_POSTING_KEY_ID`,
+issuer-aware Identity posting client is 0.3.1. Configure separate Accounting
+reservation keys and response keys in Identity; Accounting receives
+`ACCOUNTING_IDENTITY_POSTING_URL` (HTTPS origin, or literal loopback HTTP when both services run on the same host), `ACCOUNTING_IDENTITY_POSTING_KEY_ID`,
 `ACCOUNTING_IDENTITY_POSTING_SECRET` and `ACCOUNTING_IDENTITY_POSTING_RESPONSE_KEYS`.
 Credentials come from deployment secrets, never checked-in values.
+An Accounting reservation credential may use `allow_enrolled_companies=true` with no
+static scopes. Identity then checks the signed request against its active native
+company record before granting each request. Billing reservation credentials still
+require explicit scopes. Accounting independently checks native `AccountingSetup`
+before accepting an enrolled Vouchers execution credential. This lets new companies
+enter Purchase posting after normal company setup without editing deployment secrets.
 
 Run `python -m accounting.tasks.posting_delivery` continuously (or `--once` for a batch).
 A PREPARED journal can be retried using the same actor and idempotency key. A void emits an

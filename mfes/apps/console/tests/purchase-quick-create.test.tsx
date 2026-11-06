@@ -68,8 +68,10 @@ function supplier(props: { companyCountry?: string; canTax?: boolean } = {}) {
 describe('SupplierQuickCreate', () => {
   it('opens as a right-hand dialog that says what it makes, with the cursor already in the name', async () => {
     serve(() => supplierRecord());
-    const { name } = supplier();
+    const { name } = supplier({ canTax: true });
     const dialog = screen.getByRole('dialog', { name: 'New supplier' });
+    expect(dialog).toHaveAttribute('data-size', 'lg');
+    expect(within(dialog).getByRole('heading', { name: 'Tax registration' })).toBeVisible();
     expect(within(dialog).getByText(/with its payable account/)).toBeVisible();
     expect(name()).toHaveFocus();
     expect(await within(dialog).findByRole('combobox', { name: /Country/ })).toBeVisible();

@@ -82,7 +82,7 @@ async def options(
         from billing_platform.errors import ValidationFailedError
 
         raise ValidationFailedError("Unknown product options query parameter")
-    return await context(
+    value = await context(
         db,
         current,
         company_id,
@@ -91,6 +91,11 @@ async def options(
         group_id=group_id,
         product_type_revision_id=product_type_revision_id,
     )
+    books_begin = None
+    if request.headers.get("x-company-context") or request.headers.get("x-company-signature"):
+        facts = opening_context(request, company_id, current)
+        books_begin = facts.finance.books_begin_date if facts.finance else None
+    return value.model_copy(update={"books_begin_date": books_begin})
 
 
 @router.get(

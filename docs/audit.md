@@ -234,10 +234,21 @@ Do not audit ordinary reads — the volume dwarfs everything else and the signal
 - [x] **Tamper-evidence — RESOLVED: treated as a requirement.** The per-tenant hash chain is always written and a verification job (`domain/hash_chain` + `tasks/verify`) checks it; whether a break pages someone or files a report is ops-config on the alert, not a code toggle.
 - [x] **Activity feed push vs poll — RESOLVED: polling.** The feed is a keyset-paginated read of the same `audit_event` rows (no websocket/push infra in v1). Real-time push can be added later without a schema change.
 - [~] **Webhook/integration-log surface — DECISION: lives in `audit` (per the doc's assumption), implementation deferred.** Its schema is not specified here and it is a distinct shape from `audit_event` (delivery status, retries, response codes). `audit` v1 delivers the fully-specified `audit_event` (audit trail + activity feed + export); the integration-log table + read is a documented follow-up.
+- 2026-11-05 schema sync review: the deferred integration-log handlers are kept
+  on an unmounted router. Hiding routes from OpenAPI does not disable HTTP;
+  leaving them on the mounted router would access a table intentionally absent
+  from the v1 Alembic metadata and migration chain. The model remains a draft
+  until the schema and ingestion contract are decided together.
 - [x] **Retention vs erasure — CONFIRMED sufficient.** §5.2 (actor as `actor_user_id` reference, PII resolved at read time, anonymized in `identity`) preserves the *fact* of actions and the chain while removing PII. That is the intended reconciliation.
 - [x] **Write API — RESOLVED: no.** Events arrive over the broker only (like `notification`'s send path). There is no general write endpoint; a client-side action needs an owning service to emit it.
 
 ## 8. Decision log
+
+- **2026-11-05 — Audit schema sync review.** The integration-log model remains
+  an unshipped draft under §7; no Alembic table is added before its schema and
+  ingestion contract are decided. Its handlers now live on an unmounted router,
+  because `include_in_schema=False` hides documentation but still serves HTTP.
+  The active Audit API therefore accesses only migrated tables.
 
 - **2026-10-30 — Activity provenance and authorized organisation view.** Retain
   actor type, represented-user and source metadata in the lean activity response;

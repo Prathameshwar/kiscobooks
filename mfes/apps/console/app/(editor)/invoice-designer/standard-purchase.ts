@@ -1,13 +1,12 @@
 /**
  * The standard Purchase layout, as a canvas a person can start from (plan R4, 2026-11-04).
  *
- * Purchase prints on a built-in layout until a design is chosen for it: `purchase-a4@3`,
+ * Purchase prints on a built-in layout until a design is chosen for it: `purchase-a4@7`,
  * rendered by Vouchers' `domain/purchase_print.py::render_html` with `purchase_print.css`.
  * *Customize layout* used to open an empty page because there was no canvas to copy
- * (invoice-design.md §9 item 7). This is that canvas: the same blocks in the same order on the
- * same paper and margins — the company and title with the bill's status, the supplier and "our
- * purchase record" blocks, the lines, the bill summary with the amount in words, and the
- * narration — drawn only with what the Purchase print manifest prints.
+ * (invoice-design.md §9 item 7). This starter carries the core blocks on the same paper and
+ * margins: company, status, supplier, lines, bill summary and narration. The built-in print
+ * has more detail, which the create dialog names before a person publishes a custom layout.
  *
  * **A copy to start from, not the built-in layout itself.** The standard PDF also prints things
  * a design cannot bind to yet (the state note under the title, settlements, adjustments, the

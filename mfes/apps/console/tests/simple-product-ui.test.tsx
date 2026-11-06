@@ -199,7 +199,7 @@ it('offers simple creation while record pages remain retired', async () => {
   render(<SimpleProductDirectory company={COMPANY} access={access} />);
   expect(await screen.findByText('Tea')).toBeVisible();
   expect(screen.queryByRole('link', { name: 'Tea' })).toBeNull();
-  expect(screen.getByRole('link', { name: 'New product' })).toHaveAttribute('href', expect.stringContaining('/masters/items/new'));
+  expect(screen.getByRole('link', { name: 'Create product' })).toHaveAttribute('href', expect.stringContaining('/masters/items/new'));
   expect(screen.queryByText('Product families')).not.toBeInTheDocument();
   expect(screen.getByText('Product code')).toBeVisible();
 });

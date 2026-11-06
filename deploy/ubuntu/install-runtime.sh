@@ -143,6 +143,39 @@ WantedBy=multi-user.target
 EOF
 done
 
+for worker in catalog-accounting-publisher accounting-catalog-tax-worker; do
+  service=catalog
+  module=catalog.tasks.accounting_publisher
+  if [ "$worker" = accounting-catalog-tax-worker ]; then
+    service=accounting
+    module=accounting.tasks.catalog_tax_worker
+  fi
+  cat >"/etc/systemd/system/kiscobooks-${worker}.service" <<EOF
+[Unit]
+Description=KiscoBooks ${worker}
+After=network-online.target mysql.service rabbitmq-server.service kiscobooks-api@${service}.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kiscobooks
+Group=kiscobooks
+WorkingDirectory=/opt/kiscobooks/current
+EnvironmentFile=/etc/kiscobooks/${service}.env
+ExecStart=/opt/kiscobooks/current/apis/${service}/.venv/bin/python -m ${module}
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/kiscobooks /var/log/kiscobooks
+
+[Install]
+WantedBy=multi-user.target
+EOF
+done
+
 for app in auth console; do
   port=4310
   [ "$app" = console ] && port=4320
@@ -156,10 +189,10 @@ Wants=network-online.target
 Type=simple
 User=kiscobooks
 Group=kiscobooks
-WorkingDirectory=/opt/kiscobooks/current/mfes
+WorkingDirectory=/opt/kiscobooks/current/mfes/apps/${app}
 EnvironmentFile=/etc/kiscobooks/${app}.env
 Environment=NODE_ENV=production
-ExecStart=/usr/bin/pnpm --filter @janso/${app} start --hostname 127.0.0.1 --port ${port}
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port ${port}
 Restart=on-failure
 RestartSec=3
 TimeoutStopSec=30
@@ -258,9 +291,10 @@ EOF
 
 systemctl daemon-reload
 systemctl enable kiscobooks-api@{identity,audit,catalog,notification,accounting,vouchers,reports,design}.service
-systemctl enable kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service
+systemctl enable kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-catalog-accounting-publisher.service kiscobooks-accounting-catalog-tax-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service
 nginx -t
 systemctl start kiscobooks-api@{identity,audit,catalog,notification,accounting,vouchers,reports,design}.service
-systemctl start kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service
+systemctl start kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-catalog-accounting-publisher.service kiscobooks-accounting-catalog-tax-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service
 bash "$root/deploy/ubuntu/install-stock-runtime.sh"
+bash "$root/deploy/ubuntu/install-print-runtime.sh"
 systemctl reload nginx

@@ -136,7 +136,7 @@ Each phase ends with tests green and the repo working; services/migrations follo
   alignment, zebra, blank rows, repeated header), totals rows and the tax summary by rate print;
   copies with marks and pre-printed stationery are honoured. The band holding the line table grows
   across pages and pushes the bands below it down. One manifest per kind
-  (`domain/print_capabilities.py`, contract `apis/vouchers/contracts/print-capabilities-v1.json`) is
+  (`domain/print_capabilities.py`, current contract `apis/vouchers/contracts/print-capabilities-v2.json`) is
   checked by the renderer before any browser starts and published at `GET /print-capabilities`; the
   designer reads it (replacing P0's fixed list) and blocks publishing with the same sentences.
   Rendered through the real pipeline locally with Chromium (Edge). Not yet printable, and named
@@ -246,7 +246,8 @@ other kinds stay P6. Each phase ends with its suites green.
 | **R6 — Review** | `/simplify`, independent security review (§5/§6), fixes. | Findings reported, including none. |
 
 Not in this section, and said so wherever it shows: QR codes and barcodes (no encoder), custom
-fonts (no byte store), batches and expiry (a Purchase bill does not record them), shared
+  fonts (no byte store), batch/expiry columns (the current print facts carry only tracking
+  references, not readable batch codes or dates), shared
 components, other kinds.
 
 ### Progress

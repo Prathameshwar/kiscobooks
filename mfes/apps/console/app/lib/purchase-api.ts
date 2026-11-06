@@ -1,5 +1,5 @@
 import type { components } from '@janso/api-client/vouchers';
-import { buildPurchase, nativeProperties, purchaseAvailability, purchaseGoodsAllowed, purchaseModes, type PurchaseSource, type PurchaseTaxWire } from './purchase-entry';
+import { buildPurchase, nativeProperties, purchaseAvailability, purchaseGoodsAllowed, purchaseModes, purchaseStockAccess, type PurchaseSource, type PurchaseTaxWire } from './purchase-entry';
 import { goodsLine, PURCHASE_GOODS_LINE_LIMIT, type PurchaseGoodsContext, type PurchaseItem, type PurchaseRounding } from './purchase-goods';
 import { choiceOfProfile, isTaxed, noTaxFacts, purchaseTaxContext, TAX_PROFILES, type PurchaseTaxFacts } from './purchase-tax';
 import { blankPurchaseLine, isBlankPurchaseLine, newPurchaseWorkspace, type PurchaseWorkspaceDraft, type PurchaseWorkspacePolicy } from './purchase-workspace';
@@ -9,6 +9,7 @@ import type { FieldSet } from './voucher-fields';
 import type { ServiceRequest } from './service-call';
 import * as D from './fixed-decimal';
 import {componentDependencies,componentEvidence,componentRecipeProblem,readComponentEvidence,readCalculationPolicy,type PurchaseCalculationPolicy} from './purchase-calculation';
+import { purchaseStockLine, type PurchaseTracking } from './purchase-stock';
 import type {PurchaseComponent} from './purchase-workspace-details';
 
 export type PurchaseVoucher = components['schemas']['VoucherDetail'];
@@ -19,17 +20,26 @@ export type PurchaseAdvance = { id: string; company: string; supplier: string; p
 export type PurchasePaymentAccount = { id: string; company: string; version: number; currency: string; method: 'BANK' | 'CASH'; label: string };
 export type PurchaseBinding = { company: string; currency: string; metadata: FieldSet; sources: Map<string, PurchaseSource>; keys: Map<string, string>; partyKey: string; previous?: PurchaseInput; advances?: Map<string, PurchaseAdvance>; paymentAccounts?: Map<string, PurchasePaymentAccount>;
   /** B24: verified products by id, where goods post and land, and the company's amount rounding. */
-  items?: Map<string, PurchaseItem>; goods?: PurchaseGoodsContext; rounding?: PurchaseRounding };
+  items?: Map<string, PurchaseItem>; goods?: PurchaseGoodsContext; rounding?: PurchaseRounding;
+  tracking?: Map<string, PurchaseTracking> };
 function refuse(message: string): never { throw new Error(message); }
 /** A saved Purchase this screen does not capture (goods, quantities, stock, other tax profiles). */
 export const PURCHASE_BROADER_CAPTURE = 'This capture requires a broader Purchase profile. Its saved facts remain available in voucher review.';
 /** The GST profile of a bill for purchased goods: supplier-charged, taxed on the invoice date. */
 const GOODS_PROFILE = 'INDIA_DOMESTIC_GOODS';
 type SavedStock = { action?: string; stock_date?: string; lines?: { line_id: string; item_id: string; warehouse_id: string; quantity: string | number; [key: string]: unknown }[] };
-/** What a goods stock line may carry for this screen to save it back unchanged: no bins, lots, units or captured values. */
-const STOCK_LINE_FIELDS = new Set(['line_id', 'item_id', 'warehouse_id', 'quantity']);
+/** The stock identities this direct-bill screen can capture and save back unchanged. */
+const STOCK_LINE_FIELDS = new Set(['line_id', 'item_id', 'warehouse_id', 'quantity', 'bin_id', 'lot_id', 'unit_ids']);
 const positiveVersion = (value: unknown): value is number => typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
 const decimal = (value: unknown): value is string => typeof value === 'string' && /^-?(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/.test(value) && D.parse(value) !== null;
+function savedDecimal(value: unknown): string {
+  // The service serializes DECIMAL(19,4) values with extra zero scale. Strip only
+  // zeroes: a saved value with nonzero precision beyond the editor's scale is unsafe to edit.
+  if (typeof value !== 'string' || !/^-?(?:0|[1-9]\d{0,14})(?:\.\d+)?$/.test(value)) refuse(PURCHASE_BROADER_CAPTURE);
+  const normalized = value.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+  if (!decimal(normalized)) refuse(PURCHASE_BROADER_CAPTURE);
+  return D.format(D.parse(normalized)!);
+}
 const hash = (value: unknown): value is string => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 export function purchaseBase(company: string): string {
   if (!trackingId.test(company)) refuse('A valid company is required.');
@@ -66,6 +76,7 @@ export function purchaseWireKey(binding: PurchaseBinding, key: string): string {
 export function purchaseInput(draft: PurchaseWorkspaceDraft, binding: PurchaseBinding, facts: PurchaseTaxFacts = noTaxFacts()): PurchaseInput {
   const { company, currency, metadata, sources } = binding;
   const unavailable = purchaseAvailability(metadata); if (unavailable) refuse(unavailable);
+  if (!purchaseModes(metadata).includes(draft.mode)) refuse('This Purchase entry mode is not allowed by the selected voucher type. Choose an available mode.');
   const goodsLines = draft.lines.filter(line => !isBlankPurchaseLine(line) && line.kind === 'ITEM');
   if (draft.mode === 'ACCOUNTS' ? goodsLines.length > 0 : !purchaseGoodsAllowed(metadata)) refuse('This Purchase type records account and service bills; choose a Product or Mixed Purchase type for goods.');
   if (draft.mode === 'ITEMS' && draft.lines.some(line => !isBlankPurchaseLine(line) && line.kind !== 'ITEM')) refuse('A product bill has product lines only; choose Mixed to add expense or service lines.');
@@ -77,6 +88,7 @@ export function purchaseInput(draft: PurchaseWorkspaceDraft, binding: PurchaseBi
   const due = purchaseDueDate(draft); if (!due) refuse('Enter valid credit terms.');
   const active = draft.lines.filter(line => !isBlankPurchaseLine(line));
   const accountLines = active.filter(line => line.kind !== 'ITEM');
+  if (accountLines.length && !isTaxed(draft.tax) && metadata.configuration.policy.invoice?.allowed_supply_kinds && !metadata.configuration.policy.invoice.allowed_supply_kinds.includes('ACCOUNT')) refuse('This Purchase type does not allow untaxed account lines. Choose a type with Account supplies or use a supported taxed service bill.');
   const service: PurchaseTaxWire | undefined = isTaxed(draft.tax)
     ? { context: purchaseTaxContext({ tax: draft.tax, invoiceDate: draft.invoiceDate, invoice: draft.invoice, supplier: draft.supplier, facts }), supplyKind: 'SERVICE' }
     : undefined;
@@ -92,16 +104,24 @@ export function purchaseInput(draft: PurchaseWorkspaceDraft, binding: PurchaseBi
   }, draft.invoiceDate, metadata, tax, goodsLines.length);
   if (goodsContext && service) built.invoice!.supplies = built.invoice!.supplies.map(line => ({ ...line, tax: service.context }));
   const commonLines: NonNullable<PurchaseInput['lines']> = [];
-  const stockLines: { line_id: string; item_id: string; warehouse_id: string; quantity: string }[] = [];
+  const stockLines: NonNullable<NonNullable<PurchaseInput['stock']>['lines']> = [];
+  const usedSerials = new Set<string>();
+  const stockAccess = purchaseStockAccess(metadata);
   const goodsSupplies = goodsLines.map(line => {
     const index = active.indexOf(line), item = binding.items?.get(line.subject);
     const checked = goodsLine(line, item, binding.rounding!, index), key = purchaseWireKey(binding, line.key);
     const description = (line.description.trim() || item!.label).slice(0, 1000);
     commonLines.push({ line_key: key, line_kind: 'ITEM', description, item: { item_id: item!.id, item_version: item!.version, unit_id: item!.baseUnitId, actual_quantity: checked.quantity, billed_quantity: checked.quantity } } as NonNullable<PurchaseInput['lines']>[number]);
-    stockLines.push({ line_id: key, item_id: item!.id, warehouse_id: binding.goods!.warehouse, quantity: checked.quantity });
+    const profile = binding.tracking?.get(item!.id);
+    if (!profile || profile.companyId !== company || !trackingId.test(profile.profileRevisionId)) refuse(`Purchase line ${index + 1}: product tracking requirements could not be verified.`);
+    const stock = purchaseStockLine(line, binding.goods!.warehouse, profile, usedSerials, index + 1);
+    if ((stock.binId && !stockAccess.bin) || (stock.lotId && !stockAccess.batch) || (stock.unitIds.length > 0 && !stockAccess.serial)) refuse(`Purchase line ${index + 1}: write access to its selected bin, batch or serials is required.`);
+    stockLines.push({ line_id: key, item_id: item!.id, warehouse_id: stock.warehouseId, quantity: checked.quantity,
+      ...(stock.binId ? { bin_id: stock.binId } : {}), ...(stock.lotId ? { lot_id: stock.lotId } : {}), ...(stock.unitIds.length ? { unit_ids: stock.unitIds } : {}) });
     return { line_key: key, item_line_key: key, account_id: binding.goods!.inventory.id, account_version: binding.goods!.inventory.version, supply_kind: 'GOODS' as const, description, amount: checked.amount, unit_price: checked.rate, price_basis: 'NET_EXCL_TAX' as const,
       quantities: [{ basis: 'ACTUAL' as const, quantity: checked.quantity, unit_id: item!.baseUnitId }, { basis: 'BILLED' as const, quantity: checked.quantity, unit_id: item!.baseUnitId }] };
   });
+  if (usedSerials.size > 1000) refuse('A Purchase bill can receive at most 1,000 serials. Split the bill.');
   // Lines keep the order the person entered them in, goods and services together.
   const order = new Map(active.map((line, index) => [purchaseWireKey(binding, line.key), index]));
   built.invoice!.supplies = [...built.invoice!.supplies, ...goodsSupplies].sort((a, b) => order.get(a.line_key)! - order.get(b.line_key)!);
@@ -141,7 +161,7 @@ export function purchaseInput(draft: PurchaseWorkspaceDraft, binding: PurchaseBi
   if (goodsLines.length) {
     // B24: the bill brings its goods in on its posting date; Accounting values them at landed cost.
     writable(metadata, 'lines'); writable(metadata, 'stock');
-    result.mode = accountLines.length ? 'MIXED' : 'ITEMS';
+    result.mode = draft.mode;
     result.lines = commonLines; result.stock_date = draft.postingDate;
     result.stock = { action: 'PURCHASE_INVOICE', stock_date: draft.postingDate, currency, reason: ('Supplier bill ' + draft.invoice.trim()).slice(0, 500), lines: stockLines } as PurchaseInput['stock'];
   } else if (old?.lines?.length || old?.stock_date) {
@@ -239,9 +259,10 @@ export function purchaseFromVoucher(value: PurchaseVoucher, company: string, met
   const taxFacts = !taxed || !!context && !!context.company_registration_id && !!context.party_registration_id && !!context.place_of_supply && !!context.service_completion_date
     && context.supplier_invoice_number === body!.bill_reference && context.supplier_invoice_date === value.document_date && !context.withholding_section_id && !context.payment_date
     && (!goodsHeader || header!.service_completion_date == null && !header!.withholding_section_id && !header!.payment_date && (['company_registration_id', 'party_registration_id', 'place_of_supply', 'supplier_invoice_number', 'supplier_invoice_date'] as const).every(key => (header![key] ?? null) === (context![key] ?? null)));
-  // B24: a goods bill this screen saved — one quantity per line, received and billed alike, into one warehouse, with nothing else on its stock.
+  // Each goods row bills what it receives into its own selected physical destination.
   const common = new Map((value.lines as NonNullable<PurchaseInput['lines']> | undefined ?? []).map(line => [line.line_key, line]));
   const stock = value.stock as SavedStock | null | undefined;
+  const savedUnits = stock?.lines?.flatMap(row => Array.isArray(row.unit_ids) ? row.unit_ids : []) ?? [];
   const same = (a: unknown, b: unknown) => a != null && b != null && D.parse(String(a)) !== null && D.parse(String(a)) === D.parse(String(b));
   const goodsSupply = (line: NonNullable<PurchaseInput['invoice']>['supplies'][number]) => {
     const item = common.get(line.line_key)?.item;
@@ -253,9 +274,12 @@ export function purchaseFromVoucher(value: PurchaseVoucher, company: string, met
   const goodsShape = !goodsBill ? !common.size && !value.stock
     : goodsCount > 0 && goodsCount === common.size && (value.mode === 'MIXED' || goodsCount === body!.supplies.length) && (!taxed || goodsHeader)
       && stock?.action === 'PURCHASE_INVOICE' && stock.stock_date === value.posting_date && value.stock_date === value.posting_date && Array.isArray(stock.lines) && stock.lines.length === common.size
-      && new Set(stock.lines.map(row => row.warehouse_id)).size === 1 && stock.lines.every((row, index) => {
+      && savedUnits.length <= 1000 && new Set(savedUnits).size === savedUnits.length
+      && stock.lines.every((row, index) => {
         const line = [...common.values()][index]!;
-        return Object.entries(row).every(([key, field]) => STOCK_LINE_FIELDS.has(key) || field == null || Array.isArray(field) && !field.length)
+        return trackingId.test(row.warehouse_id) && (!row.bin_id || typeof row.bin_id === 'string' && trackingId.test(row.bin_id)) && (!row.lot_id || typeof row.lot_id === 'string' && trackingId.test(row.lot_id))
+          && (!row.unit_ids || Array.isArray(row.unit_ids) && row.unit_ids.length <= 200 && row.unit_ids.every(id => typeof id === 'string' && trackingId.test(id)))
+          && Object.entries(row).every(([key, field]) => STOCK_LINE_FIELDS.has(key) || field == null || Array.isArray(field) && !field.length)
           && row.line_id === line.line_key && row.item_id === line.item.item_id && same(row.quantity, line.item.actual_quantity) && same(line.item.actual_quantity, line.item.billed_quantity)
           && line.item.planned_quantity == null && !Object.keys(line.item.custom_fields ?? {}).length;
       });
@@ -280,7 +304,9 @@ export function purchaseFromVoucher(value: PurchaseVoucher, company: string, met
       const item = common.get(line.line_key)!.item, quantity = D.format(D.parse(String(item.billed_quantity))!);
       if (!trackingId.test(item.item_id) || !positiveVersion(item.item_version) || !trackingId.test(item.unit_id)) refuse('Saved product identity or version is not readable.');
       items.set(item.item_id, { id: item.item_id, company, version: item.item_version, baseUnitId: item.unit_id, label: labels.get(item.item_id) ?? line.description, unit: '' });
-      return { ...blankPurchaseLine(line.line_key, 'ITEM'), subject: item.item_id, label: labels.get(item.item_id) ?? line.description, description: line.description, received: quantity, billed: quantity, rate: D.format(D.parse(String(line.unit_price))!), amount: line.amount };
+      const physical = stock!.lines!.find(row => row.line_id === line.line_key)!;
+      return { ...blankPurchaseLine(line.line_key, 'ITEM'), subject: item.item_id, label: labels.get(item.item_id) ?? line.description, description: line.description, received: quantity, billed: quantity, rate: D.format(D.parse(String(line.unit_price))!), amount: line.amount,
+        stock: { warehouseId: physical.warehouse_id, binId: typeof physical.bin_id === 'string' ? physical.bin_id : '', lotId: typeof physical.lot_id === 'string' ? physical.lot_id : '', unitIds: Array.isArray(physical.unit_ids) ? physical.unit_ids as string[] : [] } };
     }
     sources.set(line.account_id, source(line.account_id, line.account_version));
     return { ...blankPurchaseLine(line.line_key, 'ACCOUNT'), subject: line.account_id, label: labels.get(line.account_id) ?? line.description, description: line.description, amount: line.amount };
@@ -312,11 +338,18 @@ export function purchaseFromVoucher(value: PurchaseVoucher, company: string, met
     paymentAccounts.set(payment.account_id, { id: payment.account_id, company, currency: value.currency!, version: payment.account_version, method: payment.tender.mode === 'CASH' ? 'CASH' : 'BANK', label: labels.get(payment.account_id) ?? payment.account_id });
   }
   const lineKeys = new Set(draft.lines.map(line => line.key));
-  draft.details.components = (body.components ?? []).map(component => {
+  draft.details.components = (body.components ?? []).flatMap(component => {
     if (!['DISCOUNT','FREIGHT','PACKING','INSURANCE','HANDLING','OTHER_CHARGE'].includes(component.purpose) || !['FIXED', 'PERCENT'].includes(component.input_kind) || component.commercial_treatment !== 'COUNTERPARTY' || component.allocation_basis !== 'VALUE' || component.account_id || component.tax_targets?.length || component.cost_targets?.length || component.targets.some(key => !lineKeys.has(key))) refuse('This adjustment needs its full native editor.');
+    const amount = savedDecimal(component.value);
+    const target = draft.lines.find(line => line.key === component.targets[0]);
+    if (component.purpose === 'DISCOUNT' && component.effect === 'DEDUCT' && component.scope === 'LINE' && component.input_kind === 'FIXED' && component.tax_treatment === 'ASSESSABLE' && (component.amount_basis ?? 'NET_EXCL_TAX') === 'NET_EXCL_TAX' && component.targets.length === 1 && !component.dependencies?.length && typeof component.source_evidence === 'string' && component.source_evidence === 'Line discount: ' + (target?.description || target?.label || '').slice(0, 470)) {
+      if (!target || (D.parse(target.discount) ?? 0n) > 0n) refuse(PURCHASE_BROADER_CAPTURE);
+      target.discount = amount;
+      return [];
+    }
     const evidence=readComponentEvidence(component.source_evidence);
     // Persisted dependencies are authoritative even if a preset has since changed.
-    return { id: component.component_key, label:evidence.label, kind: component.purpose === 'DISCOUNT' ? 'DISCOUNT' : 'CHARGE',purpose:component.purpose, basis: component.input_kind === 'FIXED' ? 'AMOUNT' : 'PERCENT', value: component.value, targets: component.scope==='INVOICE'?[]:[...component.targets], payable: true, taxTreatment: component.tax_treatment === 'NO_CHANGE' ? 'EXCLUDED' : 'INCLUDED',amountBasis:component.amount_basis??'NET_EXCL_TAX',basisRecipe:component.dependencies?.length?'AFTER_STEPS':'ORIGINAL',dependencies:[...component.dependencies??[]],scope:component.scope,presetKey:evidence.preset };
+    return [{ id: component.component_key, label:evidence.label, kind: component.purpose === 'DISCOUNT' ? 'DISCOUNT' : 'CHARGE',purpose:component.purpose, basis: component.input_kind === 'FIXED' ? 'AMOUNT' : 'PERCENT', value: amount, targets: component.scope==='INVOICE'?[]:[...component.targets], payable: true, taxTreatment: component.tax_treatment === 'NO_CHANGE' ? 'EXCLUDED' : 'INCLUDED',amountBasis:component.amount_basis??'NET_EXCL_TAX',basisRecipe:component.dependencies?.length?'AFTER_STEPS':'ORIGINAL',dependencies:[...component.dependencies??[]],scope:component.scope,presetKey:evidence.preset }];
   });
   const previous: Record<string, unknown> = {};
   for (const key of ['type_revision_id', 'class_id', 'document_date', 'posting_date', 'stock_date', 'statutory_date', 'credit_terms_date', 'mode', 'currency', 'narration', 'lines', 'parties', 'references', 'attachments', 'links', 'assignments', 'counter', 'custom_fields', 'invoice'] as const) if (value[key] !== undefined) previous[key] = value[key];
@@ -349,11 +382,11 @@ export async function purchasePaymentAccount(reader: <T>(request: ServiceRequest
   if (value.id !== id || value.company_id !== company || value.status !== 'ACTIVE' || !positiveVersion(value.row_version) || !['BANK', 'CASH'].includes(value.kind ?? '') || !['BASE', 'FIXED'].includes(value.currency_mode ?? '') || value.currency_mode === 'FIXED' && value.currency !== currency || value.posting_policy !== 'MANUAL_ALLOWED') refuse('The payment account is unavailable for this company and currency.');
   return { id, company, currency, version: value.row_version, method: value.kind === 'CASH' ? 'CASH' : 'BANK', label: value.name ?? value.code ?? id };
 }
-export function livePurchasePolicy(currency: string, metadata: FieldSet): PurchaseWorkspacePolicy {
+export function livePurchasePolicy(currency: string, metadata: FieldSet, company?: string): PurchaseWorkspacePolicy {
   const invoice = metadata.configuration.policy.invoice;
   const components = nativeProperties(metadata.native.properties?.invoice).components;
   const adjustments = !!(invoice?.manual_discounts_allowed || invoice?.charges_allowed) && !!components;
-  return { live: true, calculation:readCalculationPolicy((metadata.configuration.policy as {purchase_calculation?:PurchaseCalculationPolicy}).purchase_calculation),discountsAllowed: !!invoice?.manual_discounts_allowed, chargesAllowed: !!invoice?.charges_allowed, currency, modes: purchaseModes(metadata), suppliers: [], subjects: [], details: { panels: { components: { available: adjustments, writable: adjustments && !components?.readOnly }, tax: { available: false, writable: false }, receipt: { available: false, writable: false }, tracking: { available: false, writable: false }, settlement: { available: false, writable: false }, evidence: { available: false, writable: false } }, receipts: [], advances: [], paymentAccounts: [], locations: [], tracking: {}, customFields: [], maxFiles: 0, maxFileBytes: 0 }, costAccess: metadata.native.properties?.invoice ? 'VISIBLE' : 'DENIED' };
+  return { live: true, stockCompany: company, stockAccess: purchaseStockAccess(metadata), calculation:readCalculationPolicy((metadata.configuration.policy as {purchase_calculation?:PurchaseCalculationPolicy}).purchase_calculation),discountsAllowed: !!invoice?.manual_discounts_allowed, chargesAllowed: !!invoice?.charges_allowed, currency, modes: purchaseModes(metadata), suppliers: [], subjects: [], details: { panels: { components: { available: adjustments, writable: adjustments && !components?.readOnly }, tax: { available: false, writable: false }, receipt: { available: false, writable: false }, tracking: { available: false, writable: false }, settlement: { available: false, writable: false }, evidence: { available: false, writable: false } }, receipts: [], advances: [], paymentAccounts: [], locations: [], tracking: {}, customFields: [], maxFiles: 0, maxFileBytes: 0 }, costAccess: metadata.native.properties?.invoice ? 'VISIBLE' : 'DENIED' };
 }
 
 export type PurchaseOperationTarget = { voucherId: string; revisionId: string };

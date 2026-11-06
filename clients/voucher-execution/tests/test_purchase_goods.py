@@ -44,6 +44,34 @@ def test_the_bill_is_the_purchase_profile_of_its_stock_action():
     assert accepted.action == "PURCHASE_INVOICE"
 
 
+def test_purchase_goods_keep_independent_warehouses_bins_batches_and_serials():
+    body = stock()
+    first = body["lines"][0]
+    first.update(
+        bin_id=str(uuid.uuid4()),
+        lot_id=str(uuid.uuid4()),
+        unit_ids=[str(uuid.uuid4()), str(uuid.uuid4())],
+        quantity="2",
+    )
+    second = {
+        **first,
+        "line_id": str(uuid.uuid4()),
+        "warehouse_id": str(uuid.uuid4()),
+        "bin_id": None,
+        "lot_id": None,
+        "unit_ids": [],
+        "quantity": "5",
+    }
+    body["lines"].append(second)
+    accepted = StockInput.model_validate(body)
+    assert accepted.lines[0].warehouse_id != accepted.lines[1].warehouse_id
+    assert accepted.lines[0].lot_id is not None
+    assert len(accepted.lines[0].unit_ids) == 2
+    second["unit_ids"] = [first["unit_ids"][0]]
+    with pytest.raises(ValidationError, match="physical unit cannot occur on two source lines"):
+        StockInput.model_validate(body)
+
+
 def test_the_bill_never_carries_a_received_value_accounting_costs_it():
     with pytest.raises(ValidationError, match="landed cost"):
         StockInput.model_validate(stock(received_value="1000"))

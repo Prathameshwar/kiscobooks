@@ -3496,9 +3496,9 @@ export interface components {
             /**
              * Purpose
              * @default REFERENCE
-             * @constant
+             * @enum {string}
              */
-            purpose?: "REFERENCE";
+            purpose?: "REFERENCE" | "CORRECTION";
             /**
              * Source Revision Id
              * Format: uuid
@@ -4520,6 +4520,8 @@ export interface components {
             profile?: string | null;
             /** Ref Number */
             ref_number?: string | null;
+            /** Revision Id */
+            revision_id?: string | null;
             /** Revision Number */
             revision_number?: number | null;
             /** Row Version */

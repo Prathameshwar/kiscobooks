@@ -29,7 +29,8 @@ from catalog.schemas.simple_product_creation import (
 
 class AdvancedTypeOption(StrictInput):
     id: uuid.UUID
-    kind: Literal["GOODS", "SERVICE"]
+    attribute_set_revision_id: uuid.UUID | None = None
+    kind: Literal["GOODS", "SERVICE", "BOTH"]
     unit_dimensions: list[str] = Field(max_length=32)
     inventory_modes: list[str] = Field(max_length=16)
     tracking_modes: list[str] = Field(max_length=16)
@@ -39,15 +40,28 @@ class AdvancedTypeOption(StrictInput):
     require_expiry: bool
 
 
+class AdvancedAttributeMember(StrictInput):
+    definition_id: uuid.UUID
+    name: str
+    value_type: Literal["TEXT", "INTEGER", "DECIMAL", "BOOLEAN", "DATE"]
+    measurement_dimension: str | None = None
+    position: int
+    is_required: bool
+    allow_variant_axis: bool
+    is_variant_capable: bool
+
+
 class AdvancedCreationOptions(StrictInput):
     company_id: uuid.UUID
     kind: Literal["GOODS", "SERVICE"]
     today: dt.date
+    books_begin_date: dt.date | None = None
     currency: str
     mode: ProductModeDetail
     defaults: AuthoringDefaults
     default_group_id: uuid.UUID | None
     selected_type: AdvancedTypeOption | None
+    attribute_members: list[AdvancedAttributeMember] = Field(default_factory=list, max_length=128)
     inventory_enabled: bool
     batch: SimpleBatchOptions = Field(default_factory=SimpleBatchOptions)
     serial: SimpleSerialOptions = Field(default_factory=SimpleSerialOptions)

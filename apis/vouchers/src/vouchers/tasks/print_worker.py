@@ -28,7 +28,7 @@ from vouchers.domain.purchase_print import (
     RENDERER_VERSION,
     snapshot_hash,
 )
-from vouchers.domain.supporting_files import MAX_BYTES, object_key, store
+from vouchers.domain.supporting_files import MAX_BYTES, location, object_key, store
 from vouchers.models.printing import VoucherPrintJob
 
 DISPATCH_EVENT = "vouchers.print_job.execute"
@@ -314,6 +314,18 @@ def render(settings: PrintRuntime, snapshot: dict[str, Any]) -> bytes:
     return output
 
 
+def store_pdf(root: Path | None, key: str, pdf: bytes, digest: str) -> None:
+    """Publish a private PDF while allowing the Vouchers API group to read it."""
+    store(root, key, pdf, digest)
+    target = location(root, key)
+    assert root is not None
+    for directory in (target.parent, *target.parent.parents):
+        if directory == root:
+            break
+        directory.chmod(0o2750)
+    target.chmod(0o640)
+
+
 async def execute(
     factory: async_sessionmaker[AsyncSession],
     settings: PrintRuntime,
@@ -365,7 +377,7 @@ async def execute(
             pdf = await asyncio.to_thread(render, settings, snapshot)
             digest, size = hashlib.sha256(pdf).hexdigest(), len(pdf)
             key = object_key(tenant, company, voucher, digest)
-            await asyncio.to_thread(store, settings.print_file_root, key, pdf, digest)
+            await asyncio.to_thread(store_pdf, settings.print_file_root, key, pdf, digest)
         except TimeoutError:
             failure = "RENDER_TIMEOUT"
         except Exception:

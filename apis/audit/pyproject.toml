@@ -12,6 +12,8 @@ dependencies = [
     "fastapi>=0.115.0,<0.116",
     "uvicorn[standard]>=0.34.0,<0.35",
     "aio-pika>=9.5.0,<10",
+    # MySQL 9.x caching_sha2_password authentication requires RSA support in the driver.
+    "cryptography>=44.0.0,<51",
     # Operator inventory reads private environment files without shell interpolation.
     "python-dotenv>=1.0,<2",
 ]

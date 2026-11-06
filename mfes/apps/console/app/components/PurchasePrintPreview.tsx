@@ -6,6 +6,7 @@ import {
   purchasePrintRequest, verifiedPurchasePdf,
   type LayoutPreview, type PurchasePrintJob, type SavedPurchasePrint,
 } from '../lib/purchase-print';
+import { trackingId } from '../lib/stock-tracking-resources';
 
 /** A design version shown on a saved bill (plan R4): its identity, and the words the page names it by. */
 export type LayoutPreviewView = LayoutPreview & { templateName: string; versionNumber: number };
@@ -46,13 +47,25 @@ export function PurchasePrintPreview(input: SavedPurchasePrint & { layoutPreview
     let stopped = false;
     async function check(value: PurchasePrintJob, count = 0): Promise<void> {
       if (stopped) return;
+      if (!value || !trackingId.test(value.id) || value.company_id !== input.company || value.voucher_id !== input.voucherId
+        || value.revision_id !== input.revisionId || currentJob.current && currentJob.current.id !== value.id
+        || !['PENDING', 'RUNNING', 'READY', 'FAILED'].includes(value.status)
+        || !Number.isSafeInteger(value.revision_number) || value.revision_number < 1
+        || value.status === 'READY' && (!value.download_token || !/^[a-f0-9]{64}$/i.test(value.content_hash ?? '')
+          || !Number.isSafeInteger(value.size_bytes ?? 0) || (value.size_bytes ?? 0) < 5)) {
+        throw new Error('The print response does not match this saved Purchase. Return to the bill and try again.');
+      }
       currentJob.current = value;
       setJob(value);
       if (value.status === 'FAILED') {
         key.current = undefined; currentJob.current = undefined;
         throw new Error(value.failure_code === 'RENDER_TIMEOUT'
           ? 'This print took too long. Generate a new copy, or check a large custom layout.'
-          : 'The PDF could not be generated. Retry, or ask your administrator to check Purchase printing.');
+          : value.failure_code === 'SOURCE_INTEGRITY'
+            ? 'The saved print snapshot could not be verified. Return to the Purchase and try again; if this continues, ask an administrator to check printing.'
+            : value.failure_code === 'ATTEMPTS_EXHAUSTED'
+              ? 'The print worker could not finish after several attempts. Try a new copy; if this continues, ask an administrator to check printing.'
+              : 'The PDF could not be generated. Retry, or ask your administrator to check Purchase printing.');
       }
       if (value.status === 'READY') {
         const download = await purchasePrintRequest(`${root}/voucher-print-jobs/${value.id}/download?token=${encodeURIComponent(value.download_token ?? '')}`, 'GET', controller.signal, undefined, undefined, purpose);

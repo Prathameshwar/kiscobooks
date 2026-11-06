@@ -1,4 +1,4 @@
-/* purchase-a4@3: change its version whenever the printed presentation changes. */
+/* purchase-a4@7: change its version whenever the printed presentation changes. */
 @page { size: A4; margin: 18mm 15mm 22mm; }
 * { box-sizing: border-box; }
 html { color: #172334; font: 10pt Arial, Helvetica, sans-serif; line-height: 1.5; }
@@ -12,7 +12,9 @@ header { border-top: 1.5mm solid #263c58; padding-top: 5mm; margin-bottom: 7mm; 
 .status { border: .25mm solid #8491a1; border-radius: 1mm; padding: 1mm 2.5mm; font-size: 8pt; font-weight: 700; }
 .subtitle { color: #4a5c70; margin-top: 2mm; font-size: 8.5pt; }
 .state-note { font-weight: 700; margin-top: 3mm; }
-.bill-identity { display: grid; grid-template-columns: 1fr 1fr; gap: 9mm; margin-bottom: 8mm; }
+.bill-identity { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 7mm; break-inside: avoid; }
+.bill-identity > div { border: .2mm solid #b8c5d3; background: #f8fafc; padding: 4mm; min-width: 0; }
+.bill-identity > div + div { border-left: 0; }
 .supplier { font-size: 12pt; font-weight: 700; margin-bottom: 3mm; overflow-wrap: anywhere; }
 dl > div { display: flex; gap: 3mm; justify-content: space-between; margin: 1.5mm 0; }
 dt { color: #4a5c70; min-width: 0; overflow-wrap: anywhere; }
@@ -20,32 +22,46 @@ dd { margin: 0; font-weight: 600; text-align: right; overflow-wrap: anywhere; }
 .bill-identity dd { max-width: 66%; }
 table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 8.5pt; }
 thead { display: table-header-group; }
-th { background: #edf1f5; color: #263c58; text-align: left; font-weight: 700; padding: 3mm 1.5mm; }
-th:first-child { width: 6%; }
-th:nth-child(2) { width: 38%; }
-th:nth-child(n+3) { width: 14%; }
-td { border-bottom: .2mm solid #d8dfe7; padding: 3mm 1.5mm; vertical-align: top; }
+th { background: #e6edf4; color: #263c58; text-align: left; font-weight: 700; padding: 2.5mm 1.5mm; }
+td { padding: 2.5mm 1.5mm; vertical-align: top; }
+.line-table, .tax-table { border: .3mm solid #91a4b8; }
+.line-table th, .line-table td, .tax-table th, .tax-table td { border-right: .2mm solid #b8c5d3; border-bottom: .2mm solid #b8c5d3; }
+.line-table tr > :last-child, .tax-table tr > :last-child { border-right: 0; }
+.line-table tbody tr:last-child > *, .tax-table tbody tr:last-child > * { border-bottom: 0; }
+.line-table tbody tr:nth-child(even) td, .tax-table tbody tr:nth-child(even) > * { background: #f6f9fc; }
+.line-table th:first-child { width: 6%; }
+.line-table th:nth-child(2) { width: 38%; }
+.line-table th:nth-child(n+3) { width: 14%; }
 tr { break-inside: avoid; }
 .amount { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .amount-compact { font-size: 7pt; letter-spacing: -.1pt; }
-.wide-amounts th:first-child { width: 5%; }
-.wide-amounts th:nth-child(2) { width: 25%; }
-.wide-amounts th:nth-child(n+3) { width: 17.5%; }
+.line-table.wide-amounts th:first-child { width: 5%; }
+.line-table.wide-amounts th:nth-child(2) { width: 25%; }
+.line-table.wide-amounts th:nth-child(n+3) { width: 17.5%; }
 /* A bill with goods: HSN/SAC, quantity and rate take the base amount's place. */
-.goods th:first-child { width: 5%; }
-.goods th:nth-child(2) { width: 25%; }
-.goods th:nth-child(3) { width: 9%; }
-.goods th:nth-child(n+4) { width: 12.2%; }
-.goods.wide-amounts th:nth-child(2) { width: 19%; }
-.goods.wide-amounts th:nth-child(n+4) { width: 13.4%; }
+.line-table.goods th:first-child { width: 5%; }
+.line-table.goods th:nth-child(2) { width: 25%; }
+.line-table.goods th:nth-child(3) { width: 9%; }
+.line-table.goods th:nth-child(n+4) { width: 12.2%; }
+.line-table.goods.wide-amounts th:nth-child(2) { width: 19%; }
+.line-table.goods.wide-amounts th:nth-child(n+4) { width: 13.4%; }
+.tax-detail { margin-top: 5mm; break-inside: avoid; }
+.tax-table th:first-child { width: 22%; }
+.tax-table th:nth-child(n+2) { width: 26%; }
+.tax-table tbody th { background: #fff; }
+.tax-detail p { color: #4a5c70; font-size: 7.5pt; margin-top: 2mm; }
+.tax-empty { border: .2mm solid #d8dfe7; background: #f8fafc; padding: 3mm 4mm; }
+.tax-empty h2 { margin-bottom: 1mm; }
+.tax-empty p { margin: 0; }
 .totals .in-words { color: #172334; font-size: 8pt; margin-top: 2mm; overflow-wrap: anywhere; }
 .description { overflow-wrap: anywhere; }
 .description > div:first-child { white-space: pre-wrap; }
 .ledger { color: #4a5c70; font-size: 7.5pt; margin-top: 1mm; white-space: normal; overflow-wrap: anywhere; }
 .row-number { color: #4a5c70; }
 .closing { display: flex; gap: 8mm; justify-content: flex-end; margin-top: 6mm; align-items: flex-start; }
-.adjustments { flex: 1; font-size: 8.5pt; }
-.totals { width: 88mm; flex-shrink: 0; break-inside: avoid; }
+.closing-details { flex: 1; min-width: 0; }
+.adjustments { font-size: 8.5pt; border: .2mm solid #d8dfe7; padding: 3mm; }
+.totals { width: 88mm; flex-shrink: 0; break-inside: avoid; border: .2mm solid #b8c5d3; padding: 3mm; }
 /* An amount never wraps or shrinks; a long label beside it wraps instead. */
 .totals dd, .adjustments dd { flex: none; white-space: nowrap; }
 .totals p { font-size: 7.5pt; color: #4a5c70; margin-top: 3mm; }
@@ -55,8 +71,12 @@ tr { break-inside: avoid; }
 .balance { border-top: .25mm solid #8491a1; padding-top: 2mm; margin-top: 2mm; }
 .balance dt { color: #172334; font-weight: 700; }
 .notes { margin-top: 7mm; white-space: pre-wrap; overflow-wrap: anywhere; }
-.evidence { border-top: .2mm solid #d8dfe7; margin-top: 8mm; padding-top: 3mm; color: #4a5c70; font-size: 7.5pt; }
+.evidence { border-top: .2mm solid #d8dfe7; margin-top: 4mm; padding-top: 2mm; color: #4a5c70; font-size: 7.5pt; overflow-wrap: anywhere; }
 .reference { font-size: 7pt; margin-top: 1mm; }
+.receiving { border: .2mm solid #d8dfe7; margin-top: 3mm; padding: 3mm; font-size: 7.5pt; }
+.receiving p { color: #4a5c70; margin-bottom: 2mm; }
+.receiving ul { list-style: none; margin: 0; padding: 0; }
+.receiving li { padding: 2mm 0; border-bottom: .2mm solid #d8dfe7; overflow-wrap: anywhere; }
 /* A designed layout, printed as drawn (canvas_print.py). Millimetres throughout. */
 .canvas-copy { position: relative; }
 .canvas-copy + .canvas-copy { break-before: page; }
@@ -66,15 +86,19 @@ tr { break-inside: avoid; }
 .canvas-zone--grows { position: relative; }
 .canvas-after { position: relative; break-inside: avoid; }
 .canvas-el { overflow: hidden; overflow-wrap: anywhere; }
+.canvas-receiving { overflow: visible; break-inside: auto; }
 .canvas-text { white-space: pre-wrap; }
 .canvas-label { color: #4a5c70; }
 .canvas-divider { border-top: .3mm solid var(--canvas-primary); }
 .canvas-sign { display: flex; flex-direction: column; justify-content: flex-end; text-align: center; }
 .canvas-sign-line { display: block; border-top: .2mm solid currentColor; margin-bottom: 1mm; }
 .canvas-table-box { overflow: visible; }
-.canvas-table { width: 100%; border-collapse: collapse; table-layout: fixed; font: inherit; }
+.canvas-table { width: 100%; border-collapse: collapse; table-layout: fixed; font: inherit; border: .25mm solid #91a4b8; }
 .canvas-table th { background: var(--canvas-primary); color: #fff; font-weight: 600; text-align: left; padding: 1mm 1.5mm; }
-.canvas-table td { border-bottom: .2mm solid #d5dbe2; padding: 1mm 1.5mm; vertical-align: top; overflow-wrap: anywhere; }
+.canvas-table th, .canvas-table td { border-right: .2mm solid #b8c5d3; border-bottom: .2mm solid #b8c5d3; }
+.canvas-table tr > :last-child { border-right: 0; }
+.canvas-table td { padding: 1mm 1.5mm; vertical-align: top; overflow-wrap: anywhere; }
+.canvas-table tbody tr:nth-child(even) td { background: #f6f9fc; }
 .canvas-table tr { break-inside: avoid; }
 .canvas-table .canvas-num, .canvas-num { text-align: right; font-variant-numeric: tabular-nums; }
 .canvas-zebra td { background: #f3f6f9; }

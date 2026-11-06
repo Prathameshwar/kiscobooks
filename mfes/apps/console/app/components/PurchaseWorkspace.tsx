@@ -13,6 +13,9 @@ import { PurchaseWorkspaceTotals } from './PurchaseWorkspaceTotals';
 import { PurchaseDetailSections } from './PurchaseDetailSections';
 import { PurchaseDetailsPanel } from './PurchaseDetailsPanel';
 import { PurchaseLineEditor } from './PurchaseLineEditor';
+import { PurchaseStockDetails } from './PurchaseStockDetails';
+import { PurchaseBatchChooser } from './PurchaseBatchChooser';
+import type { PurchaseTracking } from '../lib/purchase-stock';
 import { PURCHASE_SCENARIOS, purchaseScenario } from '../lib/purchase-workspace-scenarios';
 import type { PurchasePanel } from '../lib/purchase-workspace-details';
 
@@ -31,6 +34,8 @@ export type PurchaseWorkspaceController = {
   serverProblems?: readonly PurchaseProblem[];
   /** Live page only: create-from-here for the supplier and expense-account lookups. A missing entry hides its icon. */
   quickCreate?: PurchaseQuickCreate;
+  batchPrompt?: { lineKey: string; itemId: string; profile: PurchaseTracking } | null;
+  closeBatchPrompt?: () => void;
 };
 type PurchaseWorkspaceProps = {
   today: string; canCreate: boolean; policy?: PurchaseWorkspacePolicy; initialDraft?: PurchaseWorkspaceDraft;
@@ -103,7 +108,7 @@ function PurchaseWorkspaceBody({ today, canCreate, policy = PURCHASE_DEMO_POLICY
   const rawProblems = [...unstorable.values()].filter(problem => draft.lines.some(line => line.key === problem.lineKey));
   const dirty = controller?.dirty ?? (JSON.stringify(draft) !== initial.current || rawProblems.length > 0);
   useUnsavedChanges(useCallback(() => !controller && dirty, [controller, dirty]));
-  const transient = rawProblems.length > 0 || !!panel || !!openLine || !!lineEdit;
+  const transient = rawProblems.length > 0 || !!panel || !!openLine || !!lineEdit || !!controller?.batchPrompt;
   const onTransientChange = controller?.onTransientChange;
   useLayoutEffect(() => { onTransientChange?.(transient); return () => onTransientChange?.(false); }, [onTransientChange, transient]);
   useEffect(() => {
@@ -115,10 +120,11 @@ function PurchaseWorkspaceBody({ today, canCreate, policy = PURCHASE_DEMO_POLICY
   const retained = draft.mode === 'MIXED' ? 0 : draft.lines.filter(line => !isBlankPurchaseLine(line) && line.kind !== (draft.mode === 'ITEMS' ? 'ITEM' : 'ACCOUNT')).length;
   const line = draft.lines.find(entry => entry.key === openLine);
   const editedLine = draft.lines.find(entry => entry.key === lineEdit?.key);
+  const promptLine = draft.lines.find(entry => entry.key === controller?.batchPrompt?.lineKey && entry.kind === 'ITEM' && entry.subject === controller?.batchPrompt?.itemId && !entry.stock?.lotId);
   const goToProblem = (problem: PurchaseProblem) => {
     if (problem.panel && policy.details.panels[problem.panel].available) { setPanelField(problem.field); setPanel(problem.panel); return; }
     if (problem.lineKey && [...root.current?.querySelectorAll<HTMLElement>('[data-purchase-mobile-line]') ?? []].some(card => card.dataset.purchaseMobileLine === problem.lineKey)) { setLineEdit({ key: problem.lineKey, field: problem.field }); return; }
-    if (problem.lineKey && ['description', 'quantityReason'].includes(problem.field)) { setDetailTarget(problem.field); setOpenLine(problem.lineKey); return; }
+    if (problem.lineKey && problem.field === 'description') { setDetailTarget(problem.field); setOpenLine(problem.lineKey); return; }
     // The payable account has no control of its own: a problem with it is a problem with the supplier.
     const field = problem.field === 'payable' ? 'supplier' : problem.field;
     const fields = root.current?.querySelectorAll<HTMLElement>(problem.lineKey ? '[data-entry-row]' : '[data-purchase-field]');
@@ -153,6 +159,10 @@ function PurchaseWorkspaceBody({ today, canCreate, policy = PURCHASE_DEMO_POLICY
     {!controller?.live ? <div className="janso-entry-workspace__preview"><span><strong>Preview workspace</strong> · Synthetic examples in {policy.currency}. Changes stay on this page and are lost on reload.</span>
       {!controller ? exampleControls : null}</div> : null}
     {controller?.banner(exampleControls)}
+    {attempted && allProblems.length ? <Notice tone="danger" title={`${allProblems.length} ${allProblems.length === 1 ? 'detail needs' : 'details need'} correction before this Purchase can be saved or submitted`}>
+      <ul>{allProblems.slice(0, 5).map(problem => <li key={problem.key}><Button type="button" variant="ghost" onClick={() => goToProblem(problem)}>{problem.message}</Button></li>)}</ul>
+      {allProblems.length > 5 ? <p>Correct these first, then review the remaining {allProblems.length - 5} {allProblems.length - 5 === 1 ? 'detail' : 'details'}.</p> : null}
+    </Notice> : null}
     {!canCreate ? controller?.reviewNotice ?? <Notice tone="info" title="Review only">You do not have permission to create vouchers for this company.</Notice> : null}
     {result ? <div role="status"><Notice tone={result === 'demo' ? 'info' : 'danger'} title={result === 'demo' ? 'Demo draft only' : 'Demo action failed'}>
       {result === 'demo' ? 'This bill has not been saved. Keep this page open; reloading will discard your changes.' : 'Your entries are still here. Retry the demo action when you are ready.'}</Notice></div> : null}
@@ -162,7 +172,7 @@ function PurchaseWorkspaceBody({ today, canCreate, policy = PURCHASE_DEMO_POLICY
         {retained > 0 ? <Notice tone="warning" title={`${retained} ${retained === 1 ? 'line is' : 'lines are'} retained from another mode`}>
           All entered details are preserved. Choose a matching entry mode to continue. {policy.modes.includes('MIXED') ? <Button variant="ghost" type="button" disabled={!editable || saving} onClick={() => dispatch({ type: 'mode', mode: 'MIXED' })}>Use Mixed mode</Button> : null}</Notice> : null}
         {controller?.live ? null : <div className="janso-entry-workspace__identity" role="group" aria-label="Current purchase bill"><strong title={draft.invoice}>{draft.invoice || 'New supplier bill'}</strong><span>{preview.activeCount} {preview.activeCount === 1 ? 'line' : 'lines'} · {policy.currency}</span></div>}
-        <PurchaseWorkspaceGrid key={generation} draft={draft} policy={policy} dispatch={dispatch} problems={problems} disabled={!editable || saving} onDetails={key => { setDetailTarget(null); setOpenLine(key); }} onEdit={key => setLineEdit({ key })} keepGrid={rawProblems.length > 0} onUnstorable={reportUnstorable} onCreateAccount={controller?.quickCreate?.account} />
+        <PurchaseWorkspaceGrid key={generation} draft={draft} policy={policy} dispatch={dispatch} problems={problems} disabled={!editable || saving} onDetails={key => { setDetailTarget(null); setOpenLine(key); }} onEdit={key => setLineEdit({ key })} keepGrid={rawProblems.length > 0} onUnstorable={reportUnstorable} onCreateAccount={controller?.quickCreate?.account} canCreateProduct={controller?.quickCreate?.product} />
         {removed ? <div className="janso-entry-workspace__preview" role="status"><span>Line removed: {removed.line.label || 'empty line'}</span><Button variant="ghost" type="button" disabled={!editable || saving} onClick={() => { dispatch({ type: 'restore', ...removed }); setRemoved(null); }}>Undo removal</Button></div> : null}
         <PurchaseDetailSections draft={draft} policy={policy} disabled={saving} onOpen={next => { setPanelField(undefined); setPanel(next); }} />
         {controller?.live ? controller.sections : null}
@@ -178,18 +188,18 @@ function PurchaseWorkspaceBody({ today, canCreate, policy = PURCHASE_DEMO_POLICY
     </footer>
     {panel ? <PurchaseDetailsPanel key={`${generation}:${panel}`} panel={panel} draft={draft} policy={policy} canEdit={editable && !saving} focusField={panelField}
       onApply={details => { dispatch({ type: 'details', details }); setPanel(null); setPanelField(undefined); }} onClose={() => { setPanel(null); setPanelField(undefined); }} /> : null}
-    {editedLine ? <PurchaseLineEditor key={editedLine.key} draft={draft} line={editedLine} ordinal={draft.lines.indexOf(editedLine) + 1} policy={policy} canEdit={editable && !saving} focusField={lineEdit?.field} onCreateAccount={controller?.quickCreate?.account}
+    {editedLine ? <PurchaseLineEditor key={editedLine.key} draft={draft} line={editedLine} ordinal={draft.lines.indexOf(editedLine) + 1} policy={policy} canEdit={editable && !saving} focusField={lineEdit?.field} onCreateAccount={controller?.quickCreate?.account} canCreateProduct={controller?.quickCreate?.product}
       onApply={next => { dispatch({ type: 'line', key: next.key, patch: next }); setLineEdit(null); }} onClose={() => setLineEdit(null)} /> : null}
+    {promptLine && controller?.batchPrompt && policy.stockCompany && !saving ? <PurchaseBatchChooser key={`${promptLine.key}:${promptLine.subject}`} company={policy.stockCompany} item={promptLine.subject} name={promptLine.label} postingDate={draft.postingDate}
+      profile={controller.batchPrompt.profile} canCreate={!!policy.canPrepareBatch} onClose={() => controller.closeBatchPrompt?.()}
+      onSelect={batch => { dispatch({ type: 'line', key: promptLine.key, patch: { stock: { ...(promptLine.stock ?? { warehouseId: '', binId: '', lotId: '', unitIds: [] }), lotId: batch.id, unitIds: [] } } }); controller.closeBatchPrompt?.(); }} /> : null}
     <Drawer open={!!line} title={`Line ${draft.lines.findIndex(entry => entry.key === openLine) + 1} details`} onClose={() => setOpenLine(null)}
       footer={<Button type="button" onClick={() => setOpenLine(null)}>Done</Button>}>
       {line ? <div className="janso-entry-workspace__details"><h3>{line.label || 'Choose an item or account in the bill'}</h3>
+        {line.kind === 'ITEM' && policy.stockCompany ? <PurchaseStockDetails company={policy.stockCompany} line={line} postingDate={draft.postingDate} canEdit={editable && !saving} access={policy.stockAccess} canReadBatch={policy.canReadBatch} canPrepareBatch={policy.canPrepareBatch} onChange={stock => dispatch({ type: 'line', key: line.key, patch: { stock } })} /> : null}
         <TextField label="Line description" name="purchase-description" value={line.description} disabled={!editable || saving} maxLength={1000}
           hint="Optional details to help identify this purchase." onChange={event => dispatch({ type: 'line', key: line.key, patch: { description: event.target.value } })} />
-        {line.kind === 'ITEM' ? <><p className="janso-entry-workspace__caption">Receipt quantity: {line.received || '—'} {line.unit} · Billed quantity: {line.billed || '—'} {line.unit}</p>
-          <TextField label="Quantity difference reason" name="purchase-quantityReason" value={line.quantityReason} disabled={!editable || saving} maxLength={500}
-            hint="Required when received and billed quantities differ. No discount or free quantity is inferred."
-            error={problems.find(problem => problem.lineKey === line.key && problem.field === 'quantityReason')?.message}
-            onChange={event => dispatch({ type: 'line', key: line.key, patch: { quantityReason: event.target.value } })} /></> : <p className="janso-entry-workspace__caption">Account and service lines are entered as amounts. Quantities do not affect this line.</p>}
+        {line.kind === 'ITEM' ? <p className="janso-entry-workspace__caption">Receipt quantity: {line.received || '—'} {line.unit} · Billed quantity: {line.billed || '—'} {line.unit}. Direct bills require equal quantities.</p> : <p className="janso-entry-workspace__caption">Account and service lines are entered as amounts. Quantities do not affect this line.</p>}
         <p className="janso-entry-workspace__caption">Edits apply to this page immediately.</p>
       </div> : null}
     </Drawer>
@@ -199,6 +209,7 @@ function PurchaseWorkspaceBody({ today, canCreate, policy = PURCHASE_DEMO_POLICY
     <Modal open={review} title="Review purchase bill" size="lg" onClose={() => setReview(false)} footer={<Button type="button" onClick={() => setReview(false)}>Back to bill</Button>}>
       <div className="janso-entry-workspace__details"><Notice tone="info" title={controller?.live ? 'Review entries' : 'Preview only'}>Reviewing this bill does not save, submit or post it.</Notice>
         <dl className="janso-entry-workspace__review"><dt>Supplier</dt><dd>{policy.suppliers.find(supplier => supplier.id === draft.supplier)?.label ?? 'Not selected'}</dd><dt>Supplier invoice</dt><dd>{draft.invoice || 'Not entered'}</dd><dt>Invoice date</dt><dd>{date(draft.invoiceDate)}</dd><dt>Posting date</dt><dd>{date(draft.postingDate)}</dd><dt>Entered lines</dt><dd>{preview.activeCount}</dd><dt>Provisional bill total</dt><dd>{amount}</dd></dl>
+        {policy.live && draft.lines.some(row => row.kind === 'ITEM' && !isBlankPurchaseLine(row)) ? <div><h3>Stock destinations</h3><ul>{draft.lines.filter(row => row.kind === 'ITEM' && !isBlankPurchaseLine(row)).map(row => <li key={row.key}>{row.label || 'Product'}: {row.stock?.warehouseId ? `warehouse ${row.stock.warehouseId.slice(-8)}` : 'default purchase warehouse'}{row.stock?.binId ? ` · bin ${row.stock.binId.slice(-8)}` : ''}{row.stock?.lotId ? ` · batch ${row.stock.lotId.slice(-8)}` : ''}{row.stock?.unitIds.length ? ` · ${row.stock.unitIds.length} serials` : ''}</li>)}</ul></div> : null}
         {preview.total === null ? <p>Tax and bill total need refreshed calculation evidence.</p> : null}
       </div>
     </Modal>

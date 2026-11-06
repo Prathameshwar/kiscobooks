@@ -9,10 +9,13 @@ import type {PurchaseCalculationPolicy} from './purchase-calculation';
 /** Presentation-only Purchase state. Never send this shape to the vouchers API. */
 export type PurchaseMode = 'ITEMS' | 'ACCOUNTS' | 'MIXED';
 export type PurchaseLineKind = 'ITEM' | 'ACCOUNT';
+export type PurchaseStock = { warehouseId: string; binId: string; lotId: string; unitIds: string[] };
+export const blankPurchaseStock = (): PurchaseStock => ({ warehouseId: '', binId: '', lotId: '', unitIds: [] });
 export type PurchaseLine = {
   key: string; kind: PurchaseLineKind; subject: string; label: string; unit: string;
   received: string; billed: string; rate: string; amount: string; discount: string;
   description: string; quantityReason: string;
+  stock?: PurchaseStock;
 };
 export type PurchaseWorkspaceDraft = {
   mode: PurchaseMode; supplier: string; payable: string; invoice: string;
@@ -27,6 +30,10 @@ export type PurchaseSupplier = {
 };
 export type PurchaseSubject = { id: string; label: string; meta: string; kind: PurchaseLineKind; unit: string };
 export type PurchaseWorkspacePolicy = {
+  stockCompany?: string;
+  stockAccess?: { warehouse: boolean; bin: boolean; batch: boolean; serial: boolean };
+  canReadBatch?: boolean;
+  canPrepareBatch?: boolean;
   calculation?:PurchaseCalculationPolicy;
   live?: boolean;
   discountsAllowed?: boolean;
@@ -40,6 +47,8 @@ export type PurchaseWorkspacePolicy = {
   duplicateCheck?: { supplier: string; invoice: string; references: readonly string[] };
   /** Live page only: the chosen supplier's balance, read in the background. Advice shown beside the supplier; never part of the bill. */
   supplierBalance?: SupplierBalance;
+  balanceAccess?: { ledger: boolean; stock: boolean };
+  supplierHistoryAccess?: boolean;
   details: PurchaseDetailPolicy;
   modes: readonly PurchaseMode[]; suppliers: readonly PurchaseSupplier[]; subjects: readonly PurchaseSubject[];
 };
@@ -154,9 +163,9 @@ export function purchaseWorkspaceReducer(draft: PurchaseWorkspaceDraft, action: 
     }
     case 'mode': return { ...draft, mode: action.mode, lines: draft.lines.map(line => isBlankPurchaseLine(line) ? { ...line, kind: action.mode === 'ACCOUNTS' ? 'ACCOUNT' : 'ITEM' } : line) };
     case 'line': return mapLine(action.key, line => ({ ...line, ...action.patch }));
-    case 'subject': return mapLine(action.key, line => ({ ...line, subject: action.subject?.id ?? '', label: action.subject?.label ?? '', unit: action.subject?.unit ?? '' }));
+    case 'subject': return mapLine(action.key, line => ({ ...line, subject: action.subject?.id ?? '', label: action.subject?.label ?? '', unit: action.subject?.unit ?? '', stock: action.subject?.id === line.subject ? line.stock : undefined }));
     // Changing the kind is explicit. Keep numeric facts in the draft so switching back recovers them.
-    case 'kind': return mapLine(action.key, line => ({ ...line, kind: action.kind, subject: '', label: '', unit: '' }));
+    case 'kind': return mapLine(action.key, line => ({ ...line, kind: action.kind, subject: '', label: '', unit: '', stock: undefined }));
     case 'add': {
       const lines = [...draft.lines];
       const index = action.after ? lines.findIndex(line => line.key === action.after) + 1 : lines.length;
@@ -171,7 +180,7 @@ export function purchaseWorkspaceReducer(draft: PurchaseWorkspaceDraft, action: 
       const index = draft.lines.findIndex(line => line.key === action.key);
       if (index < 0) return draft;
       const lines = [...draft.lines];
-      lines.splice(index + 1, 0, { ...lines[index]!, key: `p${draft.nextKey}` });
+      lines.splice(index + 1, 0, { ...lines[index]!, key: `p${draft.nextKey}`, stock: lines[index]!.stock ? { ...lines[index]!.stock!, unitIds: [] } : undefined });
       return { ...draft, lines, nextKey: draft.nextKey + 1 };
     }
     case 'move': {
@@ -261,8 +270,11 @@ export function purchaseWorkspaceProblems(draft: PurchaseWorkspaceDraft, policy:
       if (billed === null || billed <= 0n) add('billed', 'Billed quantity must be greater than zero.', line.key);
       if (received === null) add('received', 'Enter a valid receipt quantity.', line.key);
       if (nonnegative(line.rate) === null) add('rate', 'Enter a valid rate.', line.key);
-      if (billed !== null && received !== null && billed !== received && !line.quantityReason.trim()) add('quantityReason', 'Explain the difference between receipt and billed quantity in line details.', line.key);
-    } else if (nonnegative(line.amount) === null) add('amount', 'Enter a valid account amount.', line.key);
+      if (billed !== null && received !== null && billed !== received) add('received', 'A direct Purchase bill must receive the same quantity it bills. Use a Receipt Note for a shortage or separate receipt.', line.key);
+    } else {
+      const amount = nonnegative(line.amount);
+      if (amount === null || amount <= 0n) add('amount', 'Account amount must be greater than zero.', line.key);
+    }
     if (subject && !purchaseLineAmounts(line)) add('discount', 'Check the amount and discount. Discount cannot exceed the line amount.', line.key);
   }
   const preview = purchaseWorkspacePreview(draft);

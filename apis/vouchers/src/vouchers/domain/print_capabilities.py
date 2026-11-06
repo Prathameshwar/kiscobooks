@@ -8,7 +8,7 @@ for the same reason. The two cannot disagree because there is one list.
 import uuid
 from typing import Any
 
-MANIFEST_VERSION = "print-capabilities@1"
+MANIFEST_VERSION = "print-capabilities@2"
 
 #: The default column headings, as the designer's column catalogue shows them.
 COLUMN_LABELS = {
@@ -80,6 +80,7 @@ PURCHASE: dict[str, Any] = {
         "voucher.currency",
         "voucher.status",
         "voucher.narration",
+        "voucher.receiving_summary",
         "totals.subtotal",
         "totals.discount",
         "totals.taxable_value",
@@ -221,6 +222,40 @@ def problems(layout: dict[str, Any], manifest: dict[str, Any]) -> list[tuple[str
         if section.get("free_placement") and not options["free_placement"]:
             refuse(section.get("id"), "freely placed zones")
         here = [row for row in section.get("elements") or [] if row.get("type") in tables]
+        receiving = [
+            row for row in section.get("elements") or []
+            if row.get("type") == "FIELD_BINDING"
+            and row.get("binding_path") == "voucher.receiving_summary"
+        ]
+        if receiving and (
+            len(section.get("elements") or []) != 1 or section.get("type") == "HEADER"
+        ):
+            found.append(
+                (
+                    str(receiving[0].get("id") or section.get("id") or first),
+                    "the receiving summary needs its own zone outside the header",
+                )
+            )
+        if receiving:
+            start, height = section.get("y"), section.get("height")
+            if isinstance(start, int | float) and isinstance(height, int | float):
+                for other in sections:
+                    if other is section:
+                        continue
+                    other_start, other_height = other.get("y"), other.get("height")
+                    if (
+                        isinstance(other_start, int | float)
+                        and isinstance(other_height, int | float)
+                        and other_start < start + height
+                        and start < other_start + other_height
+                    ):
+                        found.append(
+                            (
+                                str(receiving[0].get("id") or section.get("id") or first),
+                                "the receiving summary needs its own vertical band",
+                            )
+                        )
+                        break
         if len(here) > 1:
             refuse(section.get("id"), "two line tables in the same zone")
         for element in section.get("elements") or []:

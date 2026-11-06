@@ -22,8 +22,9 @@ const createdFrom = (record: Created, fallback: string): QuickCreated => ({ id: 
  * away by a stray click on the scrim or an Escape, and a request whose outcome is unknown is never
  * "cancelled" without saying so.
  */
-function QuickCreateShell({ title, thing, intro, submit, pendingLabel, command, dirty, canSubmit = true, inline, fullForm, formRef, onSubmit, onClose, children }: {
+function QuickCreateShell({ title, thing, intro, submit, pendingLabel, command, dirty, canSubmit = true, size = 'md', formClassName = '', inline, fullForm, formRef, onSubmit, onClose, children }: {
   title: string; thing: string; intro: string; submit: string; pendingLabel: string; command: Command; dirty: boolean; canSubmit?: boolean;
+  size?: 'md' | 'lg'; formClassName?: string;
   /** The server field keys the form shows beside their fields; any other rejected field is listed in the notice. */
   inline: readonly string[];
   /** The master page with every field, for whatever this short form leaves out. It opens in a new tab so the bill stays as it is. */
@@ -40,14 +41,14 @@ function QuickCreateShell({ title, thing, intro, submit, pendingLabel, command, 
   // A rejected form says so beside its fields; repeating "validation failed" above them adds nothing.
   const beside = failure?.status === 422 && !rest.length && Object.keys(failure.fields ?? {}).length > 0;
   return <>
-    <Drawer open title={title} size="md" busy={pending} onClose={close} footer={<>
+    <Drawer open title={title} size={size} busy={pending} onClose={close} footer={<>
       <a className="janso-btn janso-btn--ghost console-quick-create__full" href={fullForm.href} target="_blank" rel="noopener noreferrer">
         <ExternalLinkIcon size={16} aria-hidden="true" />{fullForm.label}<span className="janso-visually-hidden"> (opens in a new tab)</span></a>
       <Button type="button" variant="ghost" disabled={pending} onClick={close}>Cancel</Button>
       <Button type="submit" form={formId} loading={pending} loadingLabel={pendingLabel} disabled={!canSubmit}>{uncertain ? 'Retry' : submit}</Button>
     </>}>
       {/* The bill's keyboard handlers and form live above this portal in the React tree; Enter here is this form's alone. */}
-      <form ref={formRef} id={formId} noValidate className="console-quick-create" data-quick-create-form
+      <form ref={formRef} id={formId} noValidate className={'console-quick-create' + (formClassName ? ' ' + formClassName : '')} data-quick-create-form
         onSubmit={event => { event.preventDefault(); event.stopPropagation(); onSubmit(); }} onKeyDown={event => { if (event.key === 'Enter') event.stopPropagation(); }}>
         <p className="janso-fine console-quick-create__wide">{intro}</p>
         {failure && uncertain
@@ -129,7 +130,7 @@ export function SupplierQuickCreate({ company, companyCountry, canTax, onCreated
     const saved = await command.execute<Created>({ path: `/v1/companies/${company}/parties/create-with-details`, method: 'POST', body:{...body,...(captured.opening?{opening:captured.opening}:{})} }, verifyCreated);
     if (saved) latest.current(createdFrom(saved, body.name));
   }
-  return <QuickCreateShell title="New supplier" thing="supplier" submit="Create supplier" pendingLabel="Creating supplier…" command={command}
+  return <QuickCreateShell title="New supplier" thing="supplier" submit="Create supplier" pendingLabel="Creating supplier…" command={command} size="lg" formClassName="console-quick-create--supplier"
     inline={['name', 'code', 'country_code', 'registration_type', 'registration_number', 'state_code']} fullForm={{ href: '/accounting/suppliers/new', label: 'Full supplier form' }} formRef={form}
     intro="Creates the supplier with its payable account and selects it on this bill. Add addresses and contacts later."
     dirty={!!(draft.name.trim() || draft.code.trim() || draft.gstin.trim() || draft.stateCode)||openingDirty(opening.draft)} onSubmit={() => void submit()} onClose={onClose}>
@@ -145,6 +146,7 @@ export function SupplierQuickCreate({ company, companyCountry, canTax, onCreated
         error={fieldError(errors, command, 'country_code')} onChange={value => set({ countryCode: value ?? '', stateCode: '' })} />
     </div>
     {gst ? <>
+      <h3 className="console-quick-create__section">Tax registration</h3>
       <Select label="GST registration" name="registration_type" value={draft.gstStatus} disabled={locked} options={GST_STATUS_OPTIONS.map(option => ({ value: option.value, label: option.label }))}
         error={fieldError(errors, command, 'registration_type')} onChange={value => set({ gstStatus: value as GstStatus })} />
       {draft.gstStatus !== 'NONE' ? <div data-field="state_code">
@@ -156,7 +158,7 @@ export function SupplierQuickCreate({ company, companyCountry, canTax, onCreated
           placeholder="e.g. 27ABCDE1234F1Z5" error={fieldError(errors, command, 'registration_number')} onChange={event => set({ gstin: cleanGstin(event.target.value) })} />
       </div> : null}
     </> : null}
-    <div className="console-quick-create__wide"><Checkbox checked={showOpening} disabled={locked} onChange={event=>setShowOpening(event.target.checked)}>Add opening balance</Checkbox>
+    <div className="console-quick-create__wide console-quick-create__opening"><Checkbox checked={showOpening} disabled={locked} onChange={event=>setShowOpening(event.target.checked)}>Add opening balance</Checkbox>
     {showOpening&&<MasterOpeningStep {...opening} account={openingAccount} onChange={value=>{if(!locked){if(command.failure)command.clear();opening.setDraft(value);setErrors({});}}} disabled={locked} errors={{...command.failure?.fields,...errors}}/>}</div>
   </QuickCreateShell>;
 }

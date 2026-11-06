@@ -38,13 +38,55 @@ async function fillBill(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('the Purchase page against the real wire rules', () => {
+  it('creates and submits a default Purchase through the split action, then confirms POSTED', { timeout: 90000 }, async () => {
+    const user = userEvent.setup();
+    services = installFakeServices({ approvalRequired: false });
+    render(<PurchaseEntryConnected {...props} />);
+    await screen.findByRole('heading', { level: 1, name: 'New purchase' });
+    await fillBill(user);
+    await user.click(screen.getByRole('button', { name: 'Purchase actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Create and Submit' }));
+    await screen.findByText('PENDING');
+    services.completeExecution();
+    await screen.findByText(/Posted Purchase is retained/, {}, { timeout: 6000 });
+    expect([...services.vouchers.values()].map(row => row.status)).toEqual(['POSTED']);
+    expect(wrote().map(row => row.path.replace(`/v1/companies/${COMPANY}`, '').replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g, ':id'))).toEqual([
+      '/vouchers', '/vouchers/:id/invoice-preview', '/vouchers/:id/invoice-acceptance', '/vouchers/:id/submit', '/vouchers/:id/post',
+    ]);
+    expect(services.requests.some(row => row.path.endsWith('/approve'))).toBe(false);
+  });
+
+  it('stops the split action at SUBMITTED when approval is configured', { timeout: 90000 }, async () => {
+    const user = userEvent.setup();
+    render(<PurchaseEntryConnected {...props} />);
+    await screen.findByRole('heading', { level: 1, name: 'New purchase' });
+    await fillBill(user);
+    await user.click(screen.getByRole('button', { name: 'Purchase actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Create and Submit' }));
+    await screen.findByText('Purchase submitted for approval. It has not been posted.');
+    expect([...services.vouchers.values()].map(row => row.status)).toEqual(['SUBMITTED']);
+    expect(services.requests.some(row => row.path.endsWith('/post'))).toBe(false);
+  });
+
+  it('allows submission for approval before the posting worker is ready', { timeout: 90000 }, async () => {
+    services = installFakeServices({ approvalRequired: true, executionReady: false });
+    const user = userEvent.setup();
+    render(<PurchaseEntryConnected {...props} permissions={permissions.filter(permission => permission !== 'vouchers.post' && permission !== 'vouchers.operation.read')} />);
+    await screen.findByRole('heading', { level: 1, name: 'New purchase' });
+    await fillBill(user);
+    await user.click(screen.getByRole('button', { name: 'Purchase actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Create and Submit' }));
+    await screen.findByText('Purchase submitted for approval. It has not been posted.');
+    expect([...services.vouchers.values()].map(row => row.status)).toEqual(['SUBMITTED']);
+  });
+
   it('takes a bill from an empty page to POSTED, with nothing the proxy or the service would refuse', { timeout: 90000 }, async () => {
     const user = userEvent.setup();
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
 
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await waitFor(()=>expect(wrote().length).toBeGreaterThan(0));
     await waitFor(()=>expect(screen.queryByText('Purchase needs attention')?.parentElement?.parentElement?.textContent??'').toBe(''));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
@@ -61,7 +103,7 @@ describe('the Purchase page against the real wire rules', () => {
 
     services.completeExecution();
     await user.click(screen.getByRole('button', { name: 'Refresh Purchase execution' }));
-    await screen.findByText(/Posted Purchase is immutable/);
+    await screen.findByText(/Posted Purchase is retained/);
     expect(screen.queryByText('Purchase needs attention')).toBeNull();
     expect([...services.vouchers.values()].map(row => row.status)).toEqual(['POSTED']);
     expect(sessionStorage.getItem('purchase-api-operation:' + JSON.stringify([props.actor, COMPANY, props.year]))).toBeNull();
@@ -78,7 +120,7 @@ describe('the Purchase page against the real wire rules', () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     const create = services.requests.find(row => row.method === 'POST' && row.path.endsWith('/vouchers'))!;
     expect(create.body).toMatchObject({
@@ -95,7 +137,7 @@ describe('the Purchase page against the real wire rules', () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
 
     services.reviseType(id(77));
@@ -106,7 +148,7 @@ describe('the Purchase page against the real wire rules', () => {
 
     const invoice = screen.getByLabelText(/Supplier invoice number/);
     await user.clear(invoice); await user.type(invoice, 'SOS/26-27/0419');
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 2' });
     const edit = services.requests.filter(row => row.method === 'PUT').at(-1)!;
     expect(edit.body.content.type_revision_id).toBe(id(77));
@@ -150,7 +192,7 @@ describe('the Purchase page against the real wire rules', () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     // Advice while it is still a draft, naming the earlier bill; it is not an error.
     expect(await screen.findByText('This supplier invoice number is already recorded')).toBeVisible();
@@ -176,7 +218,7 @@ describe('the Purchase page against the real wire rules', () => {
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
     await user.click(within(await screen.findByRole('dialog', { name: 'Submit a possible duplicate bill?' })).getByRole('button', { name: 'Submit anyway' }));
-    await screen.findByText(/Current status: SUBMITTED/);
+    await screen.findByText(/Purchase submitted for approval. It has not been posted/);
     const submits = services.requests.filter(row => row.path.endsWith('/submit'));
     expect(submits).toHaveLength(3);
     expect(submits[2]!.body).toMatchObject({ acknowledge_duplicate_bill: true });
@@ -190,7 +232,7 @@ describe('the Purchase page against the real wire rules', () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     await waitFor(() => expect(services.requests.some(row => row.path.includes('/vouchers/duplicate-bills'))).toBe(true));
     expect(screen.queryByText('This supplier invoice number is already recorded')).toBeNull();
@@ -202,7 +244,7 @@ describe('the Purchase page against the real wire rules', () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     expect(await screen.findByText('This supplier invoice number is already recorded')).toBeVisible();
     const lookup = services.requests.find(row => row.path.includes('/vouchers/duplicate-bills'))!;
@@ -216,14 +258,14 @@ describe('the Purchase page against the real wire rules', () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { level: 1, name: 'New purchase' });
     await fillBill(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     expect(screen.getByText(/does not need a separate approval: submitting approves the bill/)).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Calculate saved bill' }));
     await user.click(await screen.findByRole('button', { name: 'Accept Accounting calculation' }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 2' });
     await user.click(screen.getByRole('button', { name: 'Submit' }));
-    await screen.findByText(/Current status: APPROVED/);
+    await screen.findByText(/Purchase submitted and approved automatically. It is ready to post/);
     expect(screen.queryByRole('button', { name: 'Approve' })).toBeNull();
     await user.click(await screen.findByRole('button', { name: 'Post approved Purchase' }));
     await screen.findByText('PENDING');

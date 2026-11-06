@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { livePurchasePolicy, purchaseFromVoucher, purchaseInput, PURCHASE_BROADER_CAPTURE, type PurchaseBinding, type PurchaseInput, type PurchaseVoucher } from '../app/lib/purchase-api';
 import { purchaseAvailability, purchaseGoodsAllowed, purchaseModes } from '../app/lib/purchase-entry';
 import { goodsLine, pricedAmount, purchaseGoodsContext, purchaseItem, purchaseItemLookup, type PurchaseItem } from '../app/lib/purchase-goods';
-import { blankPurchaseLine, newPurchaseWorkspace, purchaseSubjectLookup, withPairedQuantity, type PurchaseWorkspaceDraft } from '../app/lib/purchase-workspace';
+import { blankPurchaseLine, newPurchaseWorkspace, purchaseSubjectLookup, purchaseWorkspaceReducer, withPairedQuantity, type PurchaseWorkspaceDraft } from '../app/lib/purchase-workspace';
 import { blankPurchaseTax, noTaxFacts, type CompanyGst, type PurchaseTaxFacts, type SupplierGst } from '../app/lib/purchase-tax';
 import { productFieldRequest } from '../app/lib/product-fields';
 import * as D from '../app/lib/fixed-decimal';
@@ -34,11 +34,13 @@ const saved = (wire: PurchaseInput): PurchaseVoucher => structuredClone({ ...wir
 beforeEach(() => {
   vi.mocked(productFieldRequest).mockReset();
   metadata = structuredClone(baseMetadata);
-  Object.assign(metadata.native.properties!, Object.fromEntries(['document_date', 'credit_terms_date', 'currency', 'narration', 'mode', 'lines', 'stock', 'attachments', 'links', 'custom_fields'].map(key => [key, {}])));
+  Object.assign(metadata.native.properties!, Object.fromEntries(['document_date', 'credit_terms_date', 'currency', 'narration', 'mode', 'lines', 'stock_date', 'stock', 'attachments', 'links', 'custom_fields'].map(key => [key, {}])));
+  metadata.native.properties!.stock = { properties: { lines: { items: { properties: Object.fromEntries(['item_id', 'quantity', 'warehouse_id', 'bin_id', 'lot_id', 'unit_ids'].map(key => [key, {}])) } } } };
   Object.assign(metadata.native.properties!.invoice!.anyOf![0]!.properties!, { components: {}, allocations: {}, tenders: {} });
   Object.assign(metadata.configuration.policy, { allowed_modes: ['ITEMS', 'ACCOUNTS', 'MIXED'], default_mode: 'ITEMS', invoice: { allowed_supply_kinds: ['GOODS', 'ACCOUNT', 'SERVICE'] } });
   binding = { company, currency: 'INR', metadata, keys: new Map(), partyKey: native.partyLineKey, sources: new Map([native.party!, native.payable!, native.supplies[0]!.account!].map(source => [source.id, source])),
-    items: new Map([[milk.id, milk], [ghee.id, ghee]]), goods, rounding: { places: 2, mode: 'half_up' } };
+    items: new Map([[milk.id, milk], [ghee.id, ghee]]), goods, rounding: { places: 2, mode: 'half_up' },
+    tracking: new Map([milk, ghee].map(product => [product.id, { itemId: product.id, companyId: company, profileRevisionId: id(67), lotTracking: false, serialTracking: false }])) };
 });
 
 describe('which Purchase types take goods', () => {
@@ -53,6 +55,19 @@ describe('which Purchase types take goods', () => {
     expect(purchaseGoodsAllowed(metadata)).toBe(false); expect(purchaseModes(metadata)).toEqual(['ACCOUNTS']);
     Object.assign(metadata.configuration.policy, { allowed_modes: ['ITEMS', 'MIXED'], invoice: { allowed_supply_kinds: ['ACCOUNT'] } });
     expect(purchaseGoodsAllowed(metadata)).toBe(false); expect(purchaseModes(metadata)).toEqual([]);
+  });
+  it('respects the type mode and the goods stock field access', () => {
+    const entry = draft(); entry.mode = 'MIXED'; entry.lines = [entry.lines[0]!];
+    expect(purchaseInput(entry, binding).mode).toBe('MIXED');
+    metadata.configuration.policy.allowed_modes = ['ITEMS'];
+    expect(() => purchaseInput(entry, binding)).toThrow(/entry mode is not allowed/);
+    metadata.configuration.policy.allowed_modes = ['ITEMS', 'MIXED'];
+    delete metadata.native.properties!.stock_date;
+    expect(purchaseAvailability(metadata)).toMatch(/stock date/);
+  });
+  it('treats omitted supply kinds as the invoice policy default', () => {
+    metadata.configuration.policy.invoice = {};
+    expect(purchaseModes(metadata)).toEqual(['ITEMS', 'ACCOUNTS', 'MIXED']);
   });
   it('searches products for an item line and accounts for the others', () => {
     const accounts = vi.fn(), products = vi.fn(), policy = { ...livePurchasePolicy('INR', metadata), subjectLookup: accounts, itemLookup: products };
@@ -106,6 +121,7 @@ describe('a product bill on the wire', () => {
     const short = draft(); short.lines[0]!.received = '9';
     expect(() => purchaseInput(short, binding)).toThrow(/line 1: a bill that brings goods in bills what it receives/);
     expect(() => purchaseInput(draft(), { ...binding, items: new Map([[milk.id, milk]]) })).toThrow(/line 2: select a verified active product/);
+    expect(() => purchaseInput(draft(), { ...binding, tracking: undefined })).toThrow(/tracking requirements could not be verified/);
   });
   it('refuses goods on an account bill, account lines on a product bill, and an empty product bill', () => {
     const accounts = draft(); accounts.mode = 'ACCOUNTS';
@@ -137,14 +153,56 @@ describe('a saved product bill reopened', () => {
     expect(reopened.draft.tax.choice).toBe('FORWARD');
     expect(reopened.binding.goods).toEqual(goods);
     expect(reopened.binding.items!.get(milk.id)).toMatchObject({ version: 3, baseUnitId: milk.baseUnitId });
-    const again = purchaseInput(reopened.draft, { ...reopened.binding, rounding: binding.rounding }, facts());
+    const again = purchaseInput(reopened.draft, { ...reopened.binding, tracking: binding.tracking, rounding: binding.rounding }, facts());
     expect(again.invoice!.supplies).toEqual(wire.invoice!.supplies);
     expect([again.lines, again.stock, again.mode, again.invoice!.tax]).toEqual([wire.lines, wire.stock, wire.mode, wire.invoice!.tax]);
   });
-  it('sends a saved bill with a second warehouse, a bin, a received value or a shortfall to voucher review', () => {
+  it('keeps distinct warehouses and a bin when reopening and saving', () => {
+    const value = saved(purchaseInput(draft(), binding));
+    const rows = (value.stock as { lines: Record<string, unknown>[] }).lines;
+    rows[0]!.bin_id = id(63); rows[1]!.warehouse_id = id(62);
+    const reopened = purchaseFromVoucher(value, company, metadata);
+    expect(reopened.draft.lines[0]!.stock).toMatchObject({ warehouseId: goods.warehouse, binId: id(63) });
+    expect(reopened.draft.lines[1]!.stock).toMatchObject({ warehouseId: id(62) });
+    const again = purchaseInput(reopened.draft, { ...reopened.binding, tracking: binding.tracking, rounding: binding.rounding });
+    expect((again.stock as { lines: Record<string, unknown>[] }).lines).toEqual(rows);
+  });
+  it('captures a prepared batch and serials and preserves their identities', () => {
+    const entry = draft();
+    entry.lines[0]!.received = '2'; entry.lines[0]!.billed = '2';
+    entry.lines[0]!.stock = { warehouseId: id(62), binId: id(63), lotId: id(64), unitIds: [id(65), id(66)] };
+    const tracked = { itemId: milk.id, companyId: company, profileRevisionId: id(67), lotTracking: true, serialTracking: true };
+    const checked = { ...binding, tracking: new Map([[milk.id, tracked], [ghee.id, { itemId: ghee.id, companyId: company, profileRevisionId: id(68), lotTracking: false, serialTracking: false }]]) };
+    const wire = purchaseInput(entry, checked);
+    expect(wire.stock!.lines[0]).toMatchObject({ warehouse_id: id(62), bin_id: id(63), lot_id: id(64), unit_ids: [id(65), id(66)] });
+    const reopened = purchaseFromVoucher(saved(wire), company, metadata);
+    const again = purchaseInput(reopened.draft, { ...reopened.binding, tracking: checked.tracking, rounding: binding.rounding });
+    expect(again.stock!.lines).toEqual(wire.stock!.lines);
+    entry.lines[1]!.subject = milk.id; entry.lines[1]!.stock = { warehouseId: id(62), binId: '', lotId: id(64), unitIds: [id(65), id(69), id(70), id(71), id(72)] };
+    expect(() => purchaseInput(entry, checked)).toThrow(/distinct prepared serials/);
+  });
+  it('requires a prepared batch and exact serial count for tracked goods', () => {
+    const entry = draft(); entry.lines[0]!.received = '2'; entry.lines[0]!.billed = '2';
+    const tracked = { itemId: milk.id, companyId: company, profileRevisionId: id(67), lotTracking: true, serialTracking: true };
+    const checked = { ...binding, tracking: new Map([[milk.id, tracked], [ghee.id, binding.tracking!.get(ghee.id)!]]) };
+    expect(() => purchaseInput(entry, checked)).toThrow(/select a prepared batch/);
+    entry.lines[0]!.stock = { warehouseId: goods.warehouse, binId: '', lotId: id(64), unitIds: [id(65)] };
+    expect(() => purchaseInput(entry, checked)).toThrow(/one prepared serial/);
+  });
+  it('honours stock-line field permissions for the chosen dimensions', () => {
+    const entry = draft(); entry.lines[0]!.stock = { warehouseId: goods.warehouse, binId: id(63), lotId: '', unitIds: [] };
+    metadata.native.properties!.stock!.properties!.lines!.items!.properties!.bin_id = { readOnly: true };
+    expect(() => purchaseInput(entry, binding)).toThrow(/write access to its selected bin/);
+  });
+  it('retains a duplicated line location but requires new serials', () => {
+    const entry = draft();
+    entry.lines[0]!.stock = { warehouseId: id(62), binId: id(63), lotId: id(64), unitIds: [id(65)] };
+    const copied = purchaseWorkspaceReducer(entry, { type: 'duplicate', key: 'p1' });
+    expect(copied.lines[1]!.stock).toEqual({ ...entry.lines[0]!.stock, unitIds: [] });
+    expect(entry.lines[0]!.stock!.unitIds).toEqual([id(65)]);
+  });
+  it('sends a saved bill with unsupported stock value or a shortfall to voucher review', () => {
     const broken: ((value: PurchaseVoucher) => void)[] = [
-      value => { (value.stock as { lines: { warehouse_id: string }[] }).lines[1]!.warehouse_id = id(62); },
-      value => { (value.stock as { lines: Record<string, unknown>[] }).lines[0]!.bin_id = id(63); },
       value => { (value.stock as { lines: Record<string, unknown>[] }).lines[0]!.received_value = '1000.0000'; },
       value => { (value.lines as { item: { actual_quantity: string } }[])[0]!.item.actual_quantity = '9.0000'; },
       value => { value.stock = null; },

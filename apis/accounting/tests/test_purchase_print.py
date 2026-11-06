@@ -10,6 +10,8 @@ from sqlalchemy import select
 from voucher_execution.printing import PurchasePrintCommand
 
 from accounting.models.masters import Account
+from accounting.models.invoice import InvoiceRecord
+from accounting.models.voucher_money import VoucherMoneyIntent
 from accounting.tasks.invoice_execution import request_for
 from tests.conftest import COMPANY, TENANT
 from tests.test_invoice_execution import invoice_command, run
@@ -33,6 +35,26 @@ async def test_purchase_print_preview_then_immutable_posted_facts_and_field_deni
     assert original.calculation.model_dump(exclude={"allocations", "tax_evidence"}) == (
         draft.calculation.model_dump(exclude={"allocations", "tax_evidence"})
     )
+    # Earlier failed attempts can leave an invoice record for the same saved
+    # revision. Only the committed intent is the posted print source.
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db, db.begin():
+            record = await db.scalar(select(InvoiceRecord).where(
+                InvoiceRecord.revision_id == execution.revision_id
+            ))
+            assert record is not None
+            intent = await db.get(VoucherMoneyIntent, record.intent_id)
+            assert intent is not None
+            abandoned_id = uuid7()
+            intent_values = {column.name: getattr(intent, column.name) for column in intent.__table__.columns}
+            intent_values.update(id=abandoned_id, execution_id=uuid7(), journal_id=None,
+                                 status="CANCELLED")
+            db.add(VoucherMoneyIntent(**intent_values))
+            await db.flush()
+            record_values = {column.name: getattr(record, column.name) for column in record.__table__.columns}
+            record_values.update(id=uuid7(), intent_id=abandoned_id)
+            db.add(InvoiceRecord(**record_values))
+    assert await transport.purchase_print(posted) == original
     # Master version drift breaks a fresh calculation, but cannot alter a posted print.
     with tenant_scope(TENANT):
         async with app.state.session_factory() as db, db.begin():

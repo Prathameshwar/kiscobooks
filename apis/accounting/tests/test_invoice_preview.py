@@ -126,6 +126,17 @@ async def test_signed_preview_is_stable_and_does_not_post(client, app):
         }
     )
     assert await transport.preview(accepted) == result
+    accepted_with_payable = command.model_copy(
+        update={
+            "invoice": command.invoice.model_copy(
+                update={
+                    "accepted_calculation_hash": result.calculation_hash,
+                    "payable_total": result.payable,
+                }
+            )
+        }
+    )
+    assert await transport.preview(accepted_with_payable) == result
     changed = command.model_copy(
         update={"invoice": command.invoice.model_copy(update={"components": ()})}
     )

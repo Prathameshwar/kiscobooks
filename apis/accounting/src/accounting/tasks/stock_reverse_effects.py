@@ -141,7 +141,11 @@ async def apply(
             )
             item = transit_item(item)
         else:
-            permitted(current_items[item.item_id], warehouse, REVERSAL_OPERATION)
+            permitted(
+                current_items[item.item_id],
+                warehouse,
+                "PURCHASE_RECEIPT" if original.action == "PURCHASE_INVOICE" else REVERSAL_OPERATION,
+            )
         movements.append(await reverse_leg(ledger, movement, item, warehouse))
     entries = []
     if original.journal_id:

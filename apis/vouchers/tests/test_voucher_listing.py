@@ -219,10 +219,28 @@ async def test_voucher_list_exposes_counterparty_account_reference_and_amount(
     listed = await client.get(prefix + "/vouchers", params={"q": document["id"]}, headers=headers())
     assert listed.status_code == 200, listed.text
     row = listed.json()["items"][0]
+    assert row["revision_id"] == accepted.json()["revision_id"]
     assert row["party_account_id"] == body["party_account_id"]
     assert row["ref_number"] == "SUP-INV-99"
     assert row["amount"] == "1000.0000"
     assert row["currency"] == request["currency"]
+
+    revision_denied = headers(
+        policies=[
+            {
+                "entity_type": "vouchers.voucher",
+                "field_key": "revision_id",
+                "access": "read",
+                "effect": "deny",
+                "scope_type": "company",
+                "scope_id": str(COMPANY),
+            }
+        ]
+    )
+    hidden_identity = await client.get(
+        prefix + "/vouchers", params={"q": document["id"]}, headers=revision_denied
+    )
+    assert hidden_identity.status_code == 403
 
     invoice_denied = headers(
         policies=[

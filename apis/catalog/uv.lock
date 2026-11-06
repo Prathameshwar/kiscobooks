@@ -94,7 +94,7 @@ wheels = [
 
 [[package]]
 name = "billing-platform"
-version = "0.44.5"
+version = "0.44.6"
 source = { editable = "../../libs/platform" }
 dependencies = [
     { name = "alembic" },

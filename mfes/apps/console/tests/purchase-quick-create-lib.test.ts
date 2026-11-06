@@ -21,6 +21,10 @@ describe('suggestCode', () => {
     ['', ''],
     ['A very long supplier name that goes on', 'A-VERY-LONG-SUPPLIER-NAM'],
   ])('turns %j into %j', (name, code) => expect(suggestCode(name)).toBe(code));
+  it('keeps a numeric suffix when a long name is truncated', () => {
+    expect(suggestCode('Purchase test supplier 1234567')).toBe('PURCHASE-TEST-SU-1234567');
+    expect(suggestCode('Purchase test supplier 7654321')).toBe('PURCHASE-TEST-SU-7654321');
+  });
 
   it('never leaves a dangling separator when it cuts a long name', () => {
     expect(suggestCode('abcdefghijklmnopqrstuvw xyz')).toBe('ABCDEFGHIJKLMNOPQRSTUVW');

@@ -6657,6 +6657,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/companies/{company_id}/stock/positions/balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Position Balance */
+        get: operations["position_balance_v1_companies__company_id__stock_positions_balance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/companies/{company_id}/stock/positions/{object_id}": {
         parameters: {
             query?: never;
@@ -18797,6 +18814,21 @@ export interface components {
              */
             updated_at: string;
             /** Warehouse Id */
+            warehouse_id?: string | null;
+        };
+        /** StockPositionBalance */
+        StockPositionBalance: {
+            /**
+             * Item Id
+             * Format: uuid
+             */
+            item_id: string;
+            /** Quantity */
+            quantity: string;
+            /**
+             * Warehouse Id
+             * Format: uuid
+             */
             warehouse_id?: string | null;
         };
         /** StockPositionListItem */
@@ -61721,6 +61753,90 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_StockPositionListItem_"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    position_balance_v1_companies__company_id__stock_positions_balance_get: {
+        parameters: {
+            query: {
+                item_id: string;
+                warehouse_id?: string | null;
+            };
+            header?: {
+                "x-actor-context"?: string | null;
+                "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
+            };
+            path: {
+                company_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StockPositionBalance"];
                 };
             };
             /** @description Unauthorized */

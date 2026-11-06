@@ -15,12 +15,17 @@ it('rebuilds a failed incremental source once and reports implementation failure
 
 it('bounds source recovery and stops on an aborted wait',async()=>{
  const failed=vi.fn().mockResolvedValue({id:'bad',status:'FAILED'});
- await expect(prepareFinanceSource('/company','old',new AbortController().signal,failed,{current:null},()=>{})).rejects.toThrow(/after rebuilding/);
+ await expect(prepareFinanceSource('/company','old',new AbortController().signal,failed,{current:null},()=>{})).rejects.toThrow(/did not complete/);
  expect(failed).toHaveBeenCalledTimes(2);
  vi.useFakeTimers();const controller=new AbortController(),command=vi.fn().mockResolvedValue({id:'build',status:'BUILDING'});
  const result=prepareFinanceSource('/company','',controller.signal,command,{current:null},()=>{});
  await Promise.resolve();controller.abort();await expect(result).rejects.toMatchObject({name:'AbortError'});
  expect(productFieldRequest).not.toHaveBeenCalled();
+});
+
+it('names a quarantined source instead of implying Accounting is offline',async()=>{
+ const failed=vi.fn().mockResolvedValue({id:'bad',status:'QUARANTINED',strategy:'FRESH',failure_code:'SOURCE_VERIFICATION_FAILED'});
+ await expect(prepareFinanceSource('/company','',new AbortController().signal,failed,{current:null},()=>{})).rejects.toThrow(/failed verification and was quarantined/);
 });
 
 it('refreshes snapshots older than five minutes without inventing an age for retained legacy data',()=>{

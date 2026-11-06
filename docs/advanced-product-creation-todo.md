@@ -209,6 +209,34 @@ Phase 6.
 
 ## Phase 6 — UI steps 3–4
 
+**Continuation review — 2026-11-05:** The existing four-step UI was ahead of this
+tracker but had not passed Phase 6 acceptance. The current change adds a dated
+base-unit binding, per-SKU native quantity/price suggestions, barcode capture,
+batch named sale prices, books-begin opening-date options, exact serial-count
+validation, expanded review, linked field errors, and receipt-aware recovery.
+The Catalog options schema, OpenAPI and client were updated together. Two
+security/correctness review passes found and fixed the base-unit/alternate
+binding limit, immutable completed-step edits, stale opening choices, and
+books-begin date trap. See [the continuation review](advanced-product-creation-phase6-review.md).
+
+Phase 6 remains **in progress**: a native whole-draft preview, readable published policy terms, and owner
+carrying-value preview are still missing. The affected pytest and Console
+Vitest suites cannot run in this workspace because `pytest_asyncio`, pnpm and
+the workspace `node_modules` are unavailable; the offline npm cache also
+lacks required packages. The integration and release gates remain pending.
+
+**Final end-to-end review, 2026-11-05:** The route, draft, definition, per-SKU
+setup, price publication, activation, opening decision and retained owner
+receipts were traced again. The review fixed a recovery path that could create
+a duplicate definition after losing its session receipt; recovery now checks a
+fresh server status. The final review now shows named batch selling prices.
+The options schema/client now accept published `BOTH` Product Types. Static
+TypeScript library and syntax checks, Python compilation, OpenAPI parsing and
+diff checks pass. Catalog pytest still cannot start without `pytest_asyncio`;
+Console Vitest/typecheck and browser checks remain unavailable without pnpm
+and workspace dependencies. Phase 6 and 7 remain open, so this is not a
+release-ready or fully verified end-to-end result.
+
 - [ ] Build native-option Business setup, optional Opening, editable Review,
   whole-draft errors, immutable Submit and verified progress/recovery views.
 - [ ] Test configuration matrix, error focus, denied field, changed source,
@@ -229,10 +257,15 @@ Phase 6.
   changed auth, tenant, money and audit paths, record findings, and request any
   separate release/publish authorization if needed.
 
-## Decisions still to record before dependent implementation
+## Owner decisions
 
-1. Selectable opening location and batch-price owner contracts.
-2. Required manufacturing/BOM setup for selected Product Types, if any.
+1. Selectable opening warehouse and batch-price owner contracts are recorded
+   in [Phase 4](advanced-product-creation-phase4.md). The current UI captures
+   named batch sale prices and preserves the chosen warehouse ID.
+2. Native SKU activation currently has no manufacturing/BOM prerequisite in
+   `product_requirements.py`; show manufacturing as a named follow-up where
+   relevant. A future Product Type rule requiring a BOM needs its own native
+   readiness and authoring contract before it becomes a wizard field.
 
 Do not hide these behind client defaults. Resolve each in its owning phase and
 update the plan decision log and this tracker together.

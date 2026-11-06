@@ -84,7 +84,10 @@ async def reverse(
         stock = StockInput.model_validate(original.source_payload["stock"])
         if not stock_enabled or (original.kind, original.profile) != STOCK_PROFILES[stock.action]:
             raise ConflictError("native stock execution has not been activated for this profile")
-    elif not money_enabled or original.kind not in {"JOURNAL", "CONTRA", "PAYMENT", "RECEIPT"}:
+    elif not money_enabled or (
+        original.kind not in {"JOURNAL", "CONTRA", "PAYMENT", "RECEIPT"}
+        and not (original.kind == "PURCHASE" and original.source_payload.get("invoice") is not None)
+    ):
         raise ConflictError("this kind does not have a supported reversal execution")
     period = await fiscal_evidence(db, voucher.company_id, date)
     evidence = dict(original.configuration_evidence or {})
@@ -175,6 +178,31 @@ async def post(
     kind = evidence["kind"]
     from vouchers.schemas.documents import VoucherInput
 
+    corrections = [link for link in payload.get("links", []) if link.get("purpose") == "CORRECTION"]
+    if corrections:
+        if kind != "PURCHASE" or len(corrections) != 1:
+            raise ConflictError("a replacement Purchase requires exactly one correction source")
+        source = await get(
+            db, current, m.Voucher, uuid.UUID(corrections[0]["source_voucher_id"]), lock=True
+        )
+        if source.id == voucher.id or source.status != "REVERSED":
+            raise ConflictError("the original Purchase must be reversed before replacement posting")
+        linked_revisions = select(m.VoucherLink.revision_id).where(
+            m.VoucherLink.company_id == voucher.company_id,
+            m.VoucherLink.source_voucher_id == source.id,
+            m.VoucherLink.purpose == "CORRECTION",
+        )
+        competing = await db.scalar(
+            select(m.VoucherOperation.id).where(
+                m.VoucherOperation.company_id == voucher.company_id,
+                m.VoucherOperation.voucher_id != voucher.id,
+                m.VoucherOperation.revision_id.in_(linked_revisions),
+                m.VoucherOperation.purpose == "POST",
+                m.VoucherOperation.status.in_(["PENDING", "COMMITTED"]),
+            ).limit(1)
+        )
+        if competing is not None:
+            raise ConflictError("this reversed Purchase already has a posting replacement")
     await validate_masters(
         db,
         current,

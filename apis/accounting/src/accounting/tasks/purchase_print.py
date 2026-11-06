@@ -179,9 +179,17 @@ async def facts(
     rows = list(
         await db.scalars(
             select(m.InvoiceRecord)
+            .join(
+                VoucherMoneyIntent,
+                (VoucherMoneyIntent.id == m.InvoiceRecord.intent_id)
+                & (VoucherMoneyIntent.tenant_id == m.InvoiceRecord.tenant_id)
+                & (VoucherMoneyIntent.company_id == m.InvoiceRecord.company_id),
+            )
             .where(
                 m.InvoiceRecord.company_id == command.company_id,
                 m.InvoiceRecord.revision_id == body.revision_id,
+                VoucherMoneyIntent.status == "COMMITTED",
+                VoucherMoneyIntent.journal_id.is_not(None),
             )
             .limit(2)
         )

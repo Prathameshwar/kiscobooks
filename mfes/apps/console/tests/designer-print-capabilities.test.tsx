@@ -21,7 +21,7 @@ vi.mock('../app/lib/design-api', async (original) => ({
 }));
 beforeEach(() => { vi.mocked(designRequest).mockReset(); });
 
-const CONTRACT = JSON.parse(readFileSync(resolve(__dirname, '../../../../apis/vouchers/contracts/print-capabilities-v1.json'), 'utf8')) as PrintCapabilities;
+const CONTRACT = JSON.parse(readFileSync(resolve(__dirname, '../../../../apis/vouchers/contracts/print-capabilities-v2.json'), 'utf8')) as PrintCapabilities;
 const PURCHASE = manifestFor(verifyPrintCapabilities(CONTRACT), 'PURCHASE')!;
 const GST = SAMPLE_TEMPLATES.find((template) => template.id === 'tpl-gst-a4')!;
 const at = (id: string, type: CanvasElement['type'], xMm: number, yMm: number, widthMm: number, heightMm: number, extra: Partial<CanvasElement> = {}): CanvasElement =>

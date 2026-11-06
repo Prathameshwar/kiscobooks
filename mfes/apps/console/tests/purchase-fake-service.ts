@@ -92,7 +92,7 @@ function metadata(typeRevision: string, approvalRequired = true): Json {
 }
 
 /** `balances` seeds what each supplier's payable account has posted; an account without an entry has none. */
-export function installFakeServices(options: { typeRevision?: string; approvalRequired?: boolean; balances?: Record<string, { debit: string; credit: string }> } = {}): FakeServices {
+export function installFakeServices(options: { typeRevision?: string; approvalRequired?: boolean; executionReady?: boolean; balances?: Record<string, { debit: string; credit: string }> } = {}): FakeServices {
   const approvalRequired = options.approvalRequired ?? true;
   let balanceGate: Promise<void> | null = null;
   const cancelled: string[] = [];
@@ -149,7 +149,7 @@ export function installFakeServices(options: { typeRevision?: string; approvalRe
     if (failure >= 0) { const [row] = failures.splice(failure, 1); return refuse(row!.status, row!.message); }
 
     if (route === `${base}/voucher-types`) return reply(page([{ id: TYPE, company_id: COMPANY, kind: 'PURCHASE', profile: 'STANDARD', name: 'Account purchases' }]));
-    if (route === `${base}/voucher-capabilities`) return reply({ financial_execution: false, invoice_execution: true, purchase_supporting_files: false, kinds: [{ kind: 'PURCHASE', execution_ready: true }] });
+    if (route === `${base}/voucher-capabilities`) return reply({ financial_execution: false, invoice_execution: options.executionReady ?? true, purchase_supporting_files: false, kinds: [{ kind: 'PURCHASE', execution_ready: options.executionReady ?? true }] });
     if (route === `${base}/voucher-types/${TYPE}/field-set`) return reply(metadata(typeRevision, approvalRequired));
     // A party list takes `role` as an active role of the party (tasks/reads.py `listing`: active_party_role).
     if (route === `${base}/parties`) return reply(page(parties.filter(row => (!query.get('q') || row.name.toLowerCase().includes(query.get('q')!.toLowerCase())) && (!query.get('role') || rolesOf(row).includes(query.get('role')!))).map(row => ({ id: row.id, name: row.name, code: row.code, company_id: COMPANY }))));
@@ -182,7 +182,8 @@ export function installFakeServices(options: { typeRevision?: string; approvalRe
       if ([...query.keys()].some(name => !BALANCE_KEYS.includes(name)) || !asOf || !/^\d{4}-\d{2}-\d{2}$/.test(asOf) || !/^[A-Z]{3}$/.test(currency ?? '') || !['BASE', 'ORIGINAL', null].includes(query.get('basis'))) return refuse(422, 'request validation failed');
       if ((query.get('basis') ?? 'BASE') === 'BASE' && currency !== 'INR') return refuse(422, 'base balance requires the company base currency');
       const account = partyAccounts.get(query.get('account_id') ?? '');
-      if (query.has('party_id') && !supplier || query.has('account_id') && !account) return refuse(404, 'not found');
+      const expense = EXPENSES.find(row => row.id === query.get('account_id'));
+      if (query.has('party_id') && !supplier || query.has('account_id') && !account && !expense) return refuse(404, 'not found');
       // `balances` seeds what a supplier's first payable has posted; any other account of the company has posted nothing.
       const posted = (account && account.id === payableOf(account.party_id) && options.balances?.[account.party_id]) || { debit: '0.0000', credit: '0.0000' };
       const cents = (text: string) => Math.round(Number(text) * 10000);

@@ -65,6 +65,9 @@ export function VoucherTypeRulesEditor({ company, id }: { company: string; id: s
   const savedInvoice = (type?.policy?.invoice ?? null) as Record<string, unknown> | null;
   const invoice = editedInvoice === undefined ? savedInvoice : editedInvoice;
   const invoiceChanged = purchase && editedInvoice !== undefined && JSON.stringify(invoice) !== JSON.stringify(savedInvoice);
+  const itemMode = draft.allowedModes.some(mode => mode === 'ITEMS' || mode === 'MIXED');
+  const accountMode = draft.allowedModes.some(mode => mode === 'ACCOUNTS' || mode === 'MIXED');
+  const newInvoiceKinds = [...(accountMode ? ['ACCOUNT'] : []), ...(itemMode ? ['GOODS'] : []), 'SERVICE'];
   const changed = !!type && (rulesChanged(type.policy ?? null, draft) || invoiceChanged||calculationChanged);
   const locked = writes.pending || writes.uncertain || leaving;
   const detailHref = typeHref(id);
@@ -144,8 +147,16 @@ export function VoucherTypeRulesEditor({ company, id }: { company: string; id: s
               <VoucherTypeRules draft={draft} errors={errors} disabled={locked} kindSections={kindSections} onChange={change} />
               {purchase && <fieldset className="janso-flow"><legend>Purchase invoice entry</legend>
                 <Checkbox checked={!!invoice} disabled={locked} onChange={event => {
-                  writes.clear(); setEditedInvoice(event.target.checked ? savedInvoice ?? {} : null);
+                  writes.clear(); setEditedInvoice(event.target.checked ? savedInvoice ?? { allowed_supply_kinds: newInvoiceKinds } : null);
                 }}>Enable purchase invoice entry</Checkbox>
+                <Checkbox checked={!!invoice && (!Array.isArray(invoice.allowed_supply_kinds) || invoice.allowed_supply_kinds.includes('GOODS'))}
+                  disabled={locked || !invoice} hint="Product and Mixed bills need Goods enabled and an Items or Mixed entry mode. Goods bills receive stock when posted."
+                  onChange={event => {
+                    if (!invoice) return;
+                    const kinds = Array.isArray(invoice.allowed_supply_kinds) ? invoice.allowed_supply_kinds as string[] : ['ACCOUNT', 'GOODS', 'SERVICE'];
+                    writes.clear(); setEditedInvoice({ ...invoice, allowed_supply_kinds: event.target.checked
+                      ? [...new Set([...kinds, 'GOODS'])] : kinds.filter(kind => kind !== 'GOODS') });
+                  }}>Allow goods purchase lines</Checkbox>
                 <Checkbox checked={!!invoice && (!Array.isArray(invoice.allowed_supply_kinds) || invoice.allowed_supply_kinds.includes('ACCOUNT'))}
                   disabled={locked || !invoice} onChange={event => {
                     if (!invoice) return;
@@ -154,7 +165,7 @@ export function VoucherTypeRulesEditor({ company, id }: { company: string; id: s
                       ? [...new Set([...kinds, 'ACCOUNT'])] : kinds.filter(kind => kind !== 'ACCOUNT') });
                   }}>Allow account purchase lines</Checkbox>
                 <Checkbox checked={!!invoice && (!Array.isArray(invoice.allowed_supply_kinds) || invoice.allowed_supply_kinds.includes('SERVICE'))}
-                  disabled={locked || !invoice} hint="GST on a supplier bill is recorded on service lines, so a bill with GST needs this."
+                  disabled={locked || !invoice} hint="Taxed account and service lines need Service enabled. Product GST uses the Goods supply kind."
                   onChange={event => {
                     if (!invoice) return;
                     const kinds = Array.isArray(invoice.allowed_supply_kinds) ? invoice.allowed_supply_kinds as string[] : ['ACCOUNT', 'GOODS', 'SERVICE'];
@@ -163,6 +174,7 @@ export function VoucherTypeRulesEditor({ company, id }: { company: string; id: s
                   }}>Allow service purchase lines</Checkbox>
                 <Checkbox checked={!!invoice?.manual_discounts_allowed} disabled={locked||!invoice} onChange={event=>{if(invoice){writes.clear();setEditedInvoice({...invoice,manual_discounts_allowed:event.target.checked});}}}>Allow Purchase discounts</Checkbox>
                 <Checkbox checked={!!invoice?.charges_allowed} disabled={locked||!invoice} onChange={event=>{if(invoice){writes.clear();setEditedInvoice({...invoice,charges_allowed:event.target.checked});}}}>Allow Purchase charges</Checkbox>
+                {invoice && itemMode && !(Array.isArray(invoice.allowed_supply_kinds) ? invoice.allowed_supply_kinds.includes('GOODS') : true) ? <Notice tone="warning">Items and Mixed modes cannot enter purchased products while Goods is off. Enable Goods or remove those entry modes before using this type for product bills.</Notice> : null}
               </fieldset>}
               {purchase&&(invoice||calculation.presets.length>0)&&<PurchaseCalculationPresetsEditor value={calculation} invoice={invoice} disabled={locked} onChange={value=>{writes.clear();setEditedCalculation(value);}}/>}
               {purchase&&!invoice&&!!calculation.presets.length&&<Notice tone="danger">Remove the calculation formulas before disabling purchase invoice entry.</Notice>}

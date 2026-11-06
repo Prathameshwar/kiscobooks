@@ -10,7 +10,7 @@ from billing_platform.service_auth import CompanyServiceScope
 from pydantic import SecretStr
 from reporting_contract.contract import FactPage, Manifest
 from reporting_contract.transport import Owner, request
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from accounting.models.masters import Account, AccountingSetup
 from accounting.models.reporting import (
@@ -58,6 +58,42 @@ async def test_source_changes_keep_the_sealed_report_lineage(client, app):
             assert changed.generation == frozen.generation
 
 
+async def test_incomplete_head_is_rebased_to_a_new_full_snapshot_generation(client, app):
+    from accounting.tasks import reporting_feed as feed
+
+    await fiscal_setup(client)
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db, db.begin():
+            prior = await db.run_sync(lambda sync: head(sync, COMPANY))
+            assert prior is not None
+            original = Manifest.model_validate(prior.manifest)
+            drifted = original.model_dump(mode="json")
+            drifted["control"]["counts"]["account"] -= 1
+            # Simulate a committed source row omitted from an earlier feed capture.
+            connection = await db.connection()
+            await connection.execute(
+                update(ReportChange.__table__)
+                .where(ReportChange.company_id == COMPANY, ReportChange.id == prior.id)
+                .values(manifest=drifted)
+            )
+        async with app.state.session_factory() as db, db.begin():
+            repaired = await db.run_sync(lambda sync: feed.reconcile_head(sync, COMPANY))
+            assert repaired is not None
+            proof = Manifest.model_validate(repaired.manifest)
+            assert proof.sequence == original.sequence + 1
+            assert proof.generation == original.generation + 1
+            assert proof.control == await db.run_sync(lambda sync: feed.controls(sync, COMPANY))
+            assert proof.fact_count == 0
+            assert await db.scalar(
+                select(func.count(ReportChangeFact.id)).where(
+                    ReportChangeFact.change_id == repaired.id
+                )
+            ) == 0
+        async with app.state.session_factory() as db, db.begin():
+            again = await db.run_sync(lambda sync: feed.reconcile_head(sync, COMPANY))
+            assert again.id == repaired.id
+
+
 async def test_frozen_signed_snapshot_and_complete_commit_capture(client, app):
     await fiscal_setup(client)
     secret = SecretStr(secrets.token_hex(32))
@@ -89,6 +125,8 @@ async def test_frozen_signed_snapshot_and_complete_commit_capture(client, app):
             account.row_version += 1
     latest = await request(client, owner, "GET", base + "/head")
     assert latest["sequence"] == frozen.sequence + 1
+    reconciled = await request(client, owner, "POST", base + "/reconcile-head")
+    assert reconciled == latest
     changed = Manifest.model_validate(
         await request(client, owner, "GET", base + f'/changes/{latest["sequence"]}')
     )
@@ -102,6 +140,7 @@ async def test_frozen_signed_snapshot_and_complete_commit_capture(client, app):
     unchanged = await request(client, owner, "GET", base + f"/snapshots/{identity}/facts")
     assert unchanged == pages.model_dump(mode="json")
     assert (await client.get(base + "/head")).status_code == 401
+    assert (await client.post(base + "/reconcile-head")).status_code == 401
     with pytest.raises(httpx.HTTPStatusError):
         await request(client, owner, "GET", base.replace(str(COMPANY), str(uuid.uuid4())) + "/head")
 

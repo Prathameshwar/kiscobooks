@@ -74,7 +74,7 @@ class AttachmentInput(Contract):
 
 
 class LinkInput(Contract):
-    purpose: Literal["REFERENCE"] = "REFERENCE"
+    purpose: Literal["REFERENCE", "CORRECTION"] = "REFERENCE"
     source_voucher_id: uuid.UUID
     source_revision_id: uuid.UUID
 

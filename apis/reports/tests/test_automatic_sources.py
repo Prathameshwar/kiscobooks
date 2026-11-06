@@ -69,13 +69,14 @@ class AutomaticSource(Source):
         super().__init__()
         self.waiting = False
         self.offline = False
+        self.reconcile_calls = 0
         identity = uuid.uuid4()
         self.snapshots[identity] = manifest(10, tenant=TENANT, company=COMPANY, snapshot=identity)
 
     def response(self, incoming):
         if self.offline:
             return httpx.Response(503)
-        if not incoming.url.path.endswith("/refresh-stock"):
+        if not incoming.url.path.endswith(("/refresh-stock", "/reconcile-head")):
             return super().response(incoming)
         credential, framed, key = authorize_snapshot(
             {self.owner.key_id: self.credential},
@@ -89,6 +90,8 @@ class AutomaticSource(Source):
             query="",
             body=b"",
         )
+        if incoming.url.path.endswith("/reconcile-head"):
+            self.reconcile_calls += 1
         body = canonical_json({"status": "READY"})
         return httpx.Response(
             200,
@@ -169,3 +172,65 @@ async def test_automatic_first_build_coalescing_freshness_and_outage(app, client
         assert disabled.json()["state"] == "NEEDS_ACTION"
         assert disabled.json()["failure_code"] == "AUTOMATIC_PREPARATION_DISABLED"
         assert disabled.json()["generation_id"] == delayed.json()["generation_id"]
+
+
+async def test_new_owner_generation_uses_fresh_epoch_after_feed_reconciliation(app):
+    source = AutomaticSource()
+    source.waiting = False
+    settings = app.state.settings
+    settings.owners = (source.owner,)
+    settings.source_versions_enabled = settings.automatic_sources_enabled = True
+    factory = app.state.session_factory
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(source.response)) as wire:
+        await reconcile(factory, wire, source.owner, TENANT, COMPANY)
+        await cycle(settings, factory, wire)
+        source.advance()
+        source.change = source.change.model_copy(update={"generation": 2})
+        with tenant_scope(TENANT):
+            async with factory.begin() as db:
+                health = await db.scalar(select(ReportReadiness))
+                health.next_attempt_at = utcnow() - dt.timedelta(seconds=1)
+        await reconcile(factory, wire, source.owner, TENANT, COMPANY)
+        with tenant_scope(TENANT):
+            async with factory() as db:
+                requests = list(await db.scalars(select(ReportGenerationRequest)))
+                assert len(requests) == 2
+                assert [row.strategy for row in requests] == ["FRESH", "FRESH"]
+
+
+async def test_quarantined_generation_requests_owner_reconciliation_before_retry(app):
+    source = AutomaticSource()
+    settings = app.state.settings
+    settings.owners = (source.owner,)
+    settings.source_versions_enabled = settings.automatic_sources_enabled = True
+    factory = app.state.session_factory
+    async with httpx.AsyncClient(transport=httpx.MockTransport(source.response)) as wire:
+        await reconcile(factory, wire, source.owner, TENANT, COMPANY)
+        with tenant_scope(TENANT):
+            async with factory.begin() as db:
+                generation = await db.scalar(
+                    select(ReportGeneration).order_by(ReportGeneration.id.desc()).limit(1)
+                )
+                assert generation is not None
+                generation.status = "QUARANTINED"
+                requested = await db.scalar(
+                    select(ReportGenerationRequest).where(
+                        ReportGenerationRequest.generation_id == generation.id
+                    )
+                )
+                assert requested is not None
+                requested.target_manifest = next(iter(source.snapshots.values())).model_dump(
+                    mode="json"
+                )
+                health = await db.scalar(select(ReportReadiness))
+                assert health is not None
+                health.next_attempt_at = utcnow() - dt.timedelta(seconds=1)
+        source.advance()
+        source.change = source.change.model_copy(update={"generation": 2})
+        await reconcile(factory, wire, source.owner, TENANT, COMPANY)
+        assert source.reconcile_calls == 1
+        with tenant_scope(TENANT):
+            async with factory() as db:
+                requests = list(await db.scalars(select(ReportGenerationRequest)))
+                assert [row.strategy for row in requests] == ["FRESH", "FRESH"]

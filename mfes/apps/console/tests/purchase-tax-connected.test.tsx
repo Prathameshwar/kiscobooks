@@ -77,10 +77,10 @@ async function fill() {
   await screen.findByRole('heading', { name: 'New purchase' });
   fireEvent.click(await screen.findByRole('button', { name: 'Choose supplier' }));
   await waitFor(() => expect(supplierPayables).toHaveBeenCalledWith(company, sources.party!.id));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save draft' })).not.toBeDisabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).not.toBeDisabled());
   fireEvent.click(screen.getByRole('button', { name: 'Choose expense' }));
   await waitFor(() => expect(purchaseSource).toHaveBeenCalledWith(company, 'expenses', sources.supplies[0]!.account!.id));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save draft' })).not.toBeDisabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).not.toBeDisabled());
   fireEvent.change(screen.getByLabelText('Invoice'), { target: { value: 'SUP-NEW' } });
   fireEvent.change(screen.getByLabelText('Amount'), { target: { value: '1000' } });
 }
@@ -88,7 +88,7 @@ const section = () => screen.findByRole('group', { name: 'GST on this bill' });
 const box = () => screen.getByRole('checkbox', { name: 'This bill carries no tax' });
 /** Everything the section reads has arrived: the supplier's registration and the account's tax default. */
 const ready = async () => { await section(); await screen.findByText('SAC 998399 · Taxable'); await screen.findByText(/24BBBBB1111B1Z6/); };
-const save = () => fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+const save = () => fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
 
 describe('a Purchase bill that carries GST', () => {
   it('starts as one, once the company’s registration is known, and is not made "unsaved" by it', async () => {
@@ -129,7 +129,7 @@ describe('a Purchase bill that carries GST', () => {
     expect(box()).not.toBeChecked();
     expect(screen.getByRole('textbox', { name: /Place of supply/ })).toHaveValue('IN-KA');
     // Opened again, nothing is pending: saving again needs a change.
-    expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).toBeDisabled();
   });
 
   it('calls the footer figure "Lines before GST" while the bill carries GST, and plain again when it carries none', async () => {
@@ -288,7 +288,7 @@ describe('a saved bill that carries GST', () => {
     const before = (saved.invoice as { tax: unknown }).tax;
     await waitFor(() => expect(screen.getByLabelText('Amount')).toBeVisible());
     fireEvent.change(screen.getByLabelText('Amount'), { target: { value: '1200' } });
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Save draft' })).not.toBeDisabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).not.toBeDisabled());
     save(); await waitFor(() => expect(writes).toHaveLength(1));
     expect(writes[0]!.request).toMatchObject({ method: 'PUT', body: { content: { invoice: { tax: before, supplies: [{ amount: '1200', supply_kind: 'SERVICE' }] } } } });
   });
@@ -302,7 +302,7 @@ describe('a saved bill that carries GST', () => {
     expect(screen.queryByRole('group', { name: 'GST on this bill' })).toBeNull();
     await waitFor(() => expect(screen.getByLabelText('Amount')).toBeVisible());
     fireEvent.change(screen.getByLabelText('Amount'), { target: { value: '1200' } });
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Save draft' })).not.toBeDisabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).not.toBeDisabled());
     save();
     expect(await screen.findByText(/changing it needs access to tax masters/)).toBeVisible();
     expect(writes).toHaveLength(0);

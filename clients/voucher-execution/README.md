@@ -8,8 +8,10 @@ Authority expires within five minutes for a new attempt; committed reconciliatio
 COMMITTED requires a source receipt, aware commit time and owner committed generation.
 
 Configure matching, distinct execution credentials using `ACCOUNTING_VOUCHER_EXECUTION_CREDENTIALS`
-and Vouchers' `VOUCHERS_EXECUTION_OWNER`; each grant explicitly names tenant/company. Use HTTPS
-outside literal loopback development. No credentials are seeded or committed. Requests and
+and Vouchers' `VOUCHERS_EXECUTION_OWNER`. A grant may name tenant/company scopes or use
+`allow_enrolled_companies=true`: Vouchers discovers native company guards and Accounting
+checks its own setup record for each signed request. Use HTTPS outside literal loopback
+development. No credentials are seeded or committed. Requests and
 responses include signed method/path/body evidence; the client follows no redirects.
 
 Protocol v2 adds typed money capture/policy, fiscal evidence, reversal identity and delegated

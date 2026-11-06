@@ -11,7 +11,17 @@
 
 /** Where sign-in lives. The default is `pnpm dev:auth`. */
 export function signInUrl(): string {
-  return process.env.NEXT_PUBLIC_AUTH_URL ?? 'http://localhost:4310/login';
+  const configured = process.env.NEXT_PUBLIC_AUTH_URL;
+  if (typeof window === 'undefined') {
+    const publicAuth = process.env.AUTH_URL;
+    return configured ?? (publicAuth ? new URL('/login', publicAuth).href : 'http://localhost:4310/login');
+  }
+  // NEXT_PUBLIC values are frozen at build time. A production build without that value must
+  // still use the auth app on the browser's public origin, never a developer's localhost.
+  if (!['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+    if (!configured || /^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?(?:\/|$)/i.test(configured)) return window.location.origin + '/login';
+  }
+  return configured ?? 'http://localhost:4310/login';
 }
 
 export function authActionUrl(path: '/logout' | '/api/session/refresh' | '/change-password'): string {

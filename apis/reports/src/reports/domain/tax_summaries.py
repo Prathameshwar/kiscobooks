@@ -13,7 +13,7 @@ def summarize(code: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
     if code not in CODES:
         raise ValueError("unsupported tax summary")
     amounts: dict[str, dict[str, Decimal]] = defaultdict(lambda: defaultdict(Decimal))
-    supplies: set[tuple[str, str]] = set()
+    supplies: set[tuple[str, str, str]] = set()
     invoices: set[str] = set()
     event_amounts: dict[str, dict[str, Decimal]] = defaultdict(lambda: defaultdict(Decimal))
     positions = events = ledger_entries = 0
@@ -58,13 +58,13 @@ def summarize(code: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
             count += 1
             invoices.add(str(row["invoice_id"]))
             currency = row["currency"]
-            sign = Decimal(-1 if row["invoice_kind"] in {"CREDIT_NOTE", "DEBIT_NOTE"} else 1)
+            sign = Decimal(-1 if row.get("direction") == "REDUCTION" else 1)
             amounts[currency]["tax_amount"] += sign * money(row["tax_amount"])
             direction = (
                 "outward_tax" if row["invoice_kind"] in {"SALES", "CREDIT_NOTE"} else "inward_tax"
             )
             amounts[currency][direction] += sign * money(row["tax_amount"])
-            supply = (currency, str(row["supply_id"]))
+            supply = (currency, str(row["supply_id"]), str(row["journal_id"]))
             if supply not in supplies:
                 supplies.add(supply)
                 amounts[currency]["taxable_value"] += sign * money(row["taxable_value"])

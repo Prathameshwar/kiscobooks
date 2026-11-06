@@ -300,6 +300,44 @@ def manifest(
     )
 
 
+def reconcile_head(db: Session, company: uuid.UUID) -> ReportChange | None:
+    """Fence and seal a new snapshot lineage if the physical source outgrew its feed.
+
+    A missing historical change cannot be safely inserted into an already consumed
+    sequence. The empty marker changes the owner generation, forcing Reports to
+    create a fresh epoch from the complete source snapshot instead of applying an
+    incomplete delta to an old cut.
+    """
+    setup = lock(db, company)
+    previous = head(db, company)
+    actual = controls(db, company)
+    if previous is not None and Manifest.model_validate(previous.manifest).control == actual:
+        return previous
+    if previous is None and not any(actual.counts.values()):
+        return None
+    identity = uuid7()
+    row = ReportChange(
+        id=identity,
+        tenant_id=setup.tenant_id,
+        company_id=company,
+        sequence=previous.sequence + 1 if previous else 1,
+        manifest=manifest(
+            db,
+            setup,
+            identity,
+            "CHANGE",
+            previous.sequence + 1 if previous else 1,
+            0,
+            hashlib.sha256(b"").hexdigest(),
+            control=actual,
+            generation=source_generation(previous) + 1 if previous else 1,
+        ).model_dump(mode="json"),
+    )
+    db.add(row)
+    evidence_audit(db, setup, identity, "reconciled")
+    return row
+
+
 def evidence_audit(
     db: Session, setup: masters.AccountingSetup, identity: uuid.UUID, action: str
 ) -> None:
@@ -448,6 +486,7 @@ def snapshot(db: Session, company: uuid.UUID, identity: uuid.UUID) -> Manifest:
     )
     if prior:
         return Manifest.model_validate(prior.manifest)
+    reconcile_head(db, company)
     latest = head(db, company)
     # Defer parent insert until its immutable manifest has been calculated.
     checksum, count, pages = hashlib.sha256(), 0, []

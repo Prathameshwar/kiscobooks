@@ -333,6 +333,23 @@ it('waits for the new product to reach Vouchers before finishing its opening', a
   expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
 });
 
+it('waits through a stock definition fence and resumes the same saved product automatically', { timeout: 10000 }, async () => {
+  const original = replies(); let advances = 0;
+  api.mockImplementation((endpoint, request) => {
+    if (request.path.endsWith('/advance') && ++advances === 1) {
+      return Promise.reject({ status: 409, message: 'stock posting is using these definitions; retry after it completes' });
+    }
+    return original(endpoint, request);
+  });
+  renderSimpleProduct(); const user = await fillProduct();
+  await user.click(screen.getByRole('button', { name: 'Save product' }));
+  expect(await screen.findByText(/Waiting for the current stock posting to finish/)).toBeVisible();
+  expect(await screen.findByText(/active and ready/, {}, { timeout: 6000 })).toBeVisible();
+  expect(advances).toBe(2);
+  expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
+  expect(screen.queryByText('stock posting is using these definitions; retry after it completes')).toBeNull();
+});
+
 it('requires purchase price for positive opening quantity before any write', async () => {
   renderSimpleProduct(); const user = await fillProduct();
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));

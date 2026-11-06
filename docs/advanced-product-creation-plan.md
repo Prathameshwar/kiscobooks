@@ -330,3 +330,12 @@ scope, tax, money and stock correctness.
   either commit together or leave no new definition or receipt. Setup,
   activation and opening are subsequent native stages, not part of this
   definition transaction. See [the Phase 2 review](advanced-product-creation-phase2.md).
+- 2026-11-05, Phase 6 continuation: Every Advanced SKU needs a dated BASE unit
+  binding before native price setup or activation. An opening uses the signed
+  company's books-begin date, so that binding starts by that date when opening
+  is requested. The native initial setup allows eight bindings in total:
+  BASE plus up to seven alternates. Batch named prices belong to the existing
+  Catalog/Accounting opening owner path recorded in Phase 4. Current native
+  Product Type readiness has no mandatory manufacturing/BOM rule; show it as a
+  follow-up until a native requirement and owner contract exist. See the
+  [Phase 6 continuation review](advanced-product-creation-phase6-review.md).

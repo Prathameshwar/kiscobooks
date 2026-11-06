@@ -86,6 +86,20 @@ async def test_a_calculation_change_is_still_refused(monkeypatch):
     assert "calculation changed" in str(refused.value)
 
 
+async def test_receiving_details_now_denied_or_changed_invalidate_the_pdf(monkeypatch):
+    value, line = frozen()
+    reference = {"line_key": line, "warehouse_id": str(uuid7()), "bin_id": None, "lot_id": None, "unit_ids": []}
+    value["document"]["stock_receipt"] = [reference]
+    for newest in (None, [reference | {"warehouse_id": str(uuid7())}]):
+        latest = copy.deepcopy(value)
+        if newest is None:
+            latest["document"].pop("stock_receipt")
+        else:
+            latest["document"]["stock_receipt"] = newest
+        with pytest.raises(ConflictError, match="receiving details"):
+            await reauthorize_against(monkeypatch, latest, value)
+
+
 async def test_labels_restricted_at_creation_stay_allowed_while_still_restricted(monkeypatch):
     value, line = frozen()
     value["calculation_source"] = "PREVIEW"

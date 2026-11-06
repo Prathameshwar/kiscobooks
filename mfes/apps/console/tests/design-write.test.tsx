@@ -28,7 +28,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /** What Vouchers publishes as its printers' capabilities: its contract file, verbatim. */
-const PRINT_CAPABILITIES = JSON.parse(readFileSync(resolve(__dirname, '../../../../apis/vouchers/contracts/print-capabilities-v1.json'), 'utf8'));
+const PRINT_CAPABILITIES = JSON.parse(readFileSync(resolve(__dirname, '../../../../apis/vouchers/contracts/print-capabilities-v2.json'), 'utf8'));
 
 const COMPANY = '01990000-0000-7000-8000-00000000000c';
 const TEMPLATE = '01990000-0000-7000-8000-000000000001';

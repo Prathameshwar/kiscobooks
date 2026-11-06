@@ -18,6 +18,40 @@ from identity.config import CatalogSourceCredential, CatalogSourceScope
 from tests.factories import build_user, seed_two_companies
 
 
+async def test_enrolled_accounting_posting_grant_requires_an_active_native_company(
+    app: FastAPI, session: AsyncSession, tenant_a: uuid.UUID, tenant_b: uuid.UUID
+) -> None:
+    company, other = await seed_two_companies(session, tenant_a, tenant_b)
+    secret, response_secret = secrets.token_hex(32), secrets.token_hex(32)
+    app.state.settings.accounting_reservation_credentials = {
+        "enrolled": CatalogSourceCredential(
+            secret=SecretStr(secret), scopes=(), allow_enrolled_companies=True
+        )
+    }
+    app.state.settings.accounting_reservation_response_secret = SecretStr(response_secret)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="https://identity.test"
+    ) as http:
+        posting = PostingClient(
+            http, key_id="enrolled", request_secret=secret.encode(),
+            response_keys={"current": response_secret.encode()}, issuer="accounting",
+        )
+        assert (await posting.configuration(tenant_a, company)).company_id == company
+        with pytest.raises(ReservationRejectedError) as refused:
+            await posting.configuration(tenant_a, other)
+        assert refused.value.status_code == 403
+        from identity.models import Company
+
+        with tenant_scope(tenant_a):
+            row = await session.get(Company, company)
+            assert row is not None
+            row.status = "suspended"
+            await session.commit()
+        with pytest.raises(ReservationRejectedError) as suspended:
+            await posting.configuration(tenant_a, company)
+        assert suspended.value.status_code == 403
+
+
 async def test_accounting_reservations_are_bound_to_the_service(
     app: FastAPI,
     session: AsyncSession,

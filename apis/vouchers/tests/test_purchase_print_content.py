@@ -74,8 +74,8 @@ def tender(amount="20000.5000", mode="CASH", reference=None, instrument_date=Non
 
 def test_renderer_and_layout_versions_change_with_the_printed_output():
     # @3 (2026-11-03): a designed layout prints as drawn (canvas_print.py).
-    assert RENDERER_VERSION == "purchase-pdf@4"
-    assert LAYOUT_VERSION == "purchase-a4@3"
+    assert RENDERER_VERSION == "purchase-pdf@8"
+    assert LAYOUT_VERSION == "purchase-a4@7"
     value = snapshot()
     assert value["renderer_version"] == RENDERER_VERSION
     assert value["layout"]["version"] == LAYOUT_VERSION
@@ -89,6 +89,28 @@ def test_the_previous_layout_version_is_refused_not_rendered():
     value["layout"]["version"] = "purchase-a4@1"
     with pytest.raises(ValidationFailedError, match="layout"):
         render_html(value)
+
+
+def test_standard_summary_names_each_authoritative_tax_component():
+    value = snapshot()
+    value["calculation"]["lines"][0]["taxes"] = [
+        {"key": "gst:cgst", "code": "CGST", "basis": "100.0000", "amount": "9.0000", "supplier_charged": True},
+        {"key": "gst:sgst", "code": "SGST", "basis": "100.0000", "amount": "9.0000", "supplier_charged": False},
+    ]
+    html = render_html(value)
+    summary = html.split('aria-label="Purchase totals"')[1].split("</section>")[0]
+    assert "CGST" in summary and "SGST" in summary and "9.00" in summary
+    detail = html.split('aria-label="Tax components"')[1].split("</table>")[0]
+    assert '<th scope="row">CGST</th><td class="amount">100.00</td>' in detail
+    assert '<th scope="row">SGST</th><td class="amount">100.00</td>' in detail
+    assert '<td class="amount">9.00</td><td class="amount">0.00</td>' in detail
+
+
+def test_untaxed_purchase_states_that_no_tax_was_calculated():
+    html = render_html(snapshot())
+    assert 'aria-label="Tax breakdown"' in html
+    assert 'No tax amount recorded on this voucher.' in html
+    assert 'aria-label="Tax components"' not in html
 
 
 async def test_a_job_frozen_under_the_previous_renderer_fails_as_source_integrity(

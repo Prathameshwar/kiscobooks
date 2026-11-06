@@ -5,6 +5,7 @@ single-user company can post. When it does, separation of duties is unchanged an
 for the whole voucher, not only for the revision that happens to be current (D1b).
 """
 
+import datetime as dt
 import uuid
 
 import pytest
@@ -14,6 +15,7 @@ from billing_platform.errors import ConflictError
 from billing_platform.ids import uuid7
 from conftest import COMPANY, TENANT, headers
 from sqlalchemy import func, select
+from voucher_execution import ExecutionResult
 from test_foundation import create_type
 from test_invoice_capture import invoice_body
 from test_money_posting import authority_headers
@@ -30,6 +32,7 @@ from vouchers.domain.documents import transition
 from vouchers.models import core as m
 from vouchers.schemas.sources import SourceBundle
 from vouchers.tasks.sources import apply_bundle
+from vouchers.tasks.operations import apply_result
 
 NO_APPROVAL = {"invoice": {}, "approval_required": False}
 REQUIRED = {"invoice": {}}
@@ -240,6 +243,149 @@ async def test_an_auto_approved_purchase_still_posts_without_approval_rows(
             assert operation.status == "PENDING"
             assert operation.command["approval_ids"] == []
             assert await db.scalar(select(func.count(m.VoucherApproval.id))) == 0
+
+
+async def test_posted_account_purchase_can_request_guarded_reversal(
+    client, prefix, app, monkeypatch
+):
+    owner(app, monkeypatch)
+    user = uuid7()
+    document, request = await bill(client, prefix, app, NO_APPROVAL, user=user)
+    approved = (
+        await act(client, prefix, await accept_as(client, prefix, document, user), "submit", user)
+    ).json()
+    await apply_bundle(
+        app.state.session_factory,
+        SourceBundle.model_validate(
+            {
+                "message_id": str(uuid7()),
+                "tenant_id": str(TENANT),
+                "company_id": str(COMPANY),
+                "masters": [
+                    {
+                        "source_id": str(uuid7()),
+                        "entity_type": "fiscal_period",
+                        "source_version": 1,
+                        "status": "ACTIVE",
+                        "facts": {"start_date": TODAY, "end_date": TODAY},
+                    }
+                ],
+            }
+        ),
+        "accounting",
+    )
+    app.state.settings.invoice_execution_enabled = True
+    app.state.settings.money_execution_enabled = True
+    posted = await client.post(
+        path(prefix, approved, "/post"),
+        json={"expected_version": approved["row_version"]},
+        headers=authority_headers(user=user),
+    )
+    assert posted.status_code == 202, posted.text
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db, db.begin():
+            operation = await db.get(m.VoucherOperation, uuid.UUID(posted.json()["operation_id"]))
+            await apply_result(
+                db,
+                ExecutionResult(
+                    protocol_version=2,
+                    tenant_id=TENANT,
+                    company_id=COMPANY,
+                    operation_id=operation.id,
+                    execution_id=operation.execution_id,
+                    content_hash=operation.content_hash,
+                    configuration_hash=operation.configuration_hash,
+                    request_hash=operation.request_hash,
+                    outcome="COMMITTED",
+                    committed_at=dt.datetime.now(dt.UTC),
+                    committed_generation=1,
+                    effects=[
+                        {"owner": "accounting", "effect_kind": "SOURCE_RECEIPT", "effect_id": uuid7()}
+                    ],
+                ),
+            )
+    current = await client.get(path(prefix, approved), headers=headers(user=user))
+    assert current.json()["status"] == "POSTED"
+    reversed_response = await client.post(
+        path(prefix, approved, "/reverse"),
+        json={
+            "expected_version": current.json()["row_version"],
+            "posting_date": TODAY,
+            "reason": "Correct the supplier bill",
+        },
+        headers=authority_headers(user=user),
+    )
+    assert reversed_response.status_code == 202, reversed_response.text
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db, db.begin():
+            operation = await db.get(
+                m.VoucherOperation, uuid.UUID(reversed_response.json()["operation_id"])
+            )
+            await apply_result(
+                db,
+                ExecutionResult(
+                    protocol_version=2,
+                    tenant_id=TENANT,
+                    company_id=COMPANY,
+                    operation_id=operation.id,
+                    execution_id=operation.execution_id,
+                    content_hash=operation.content_hash,
+                    configuration_hash=operation.configuration_hash,
+                    request_hash=operation.request_hash,
+                    outcome="COMMITTED",
+                    committed_at=dt.datetime.now(dt.UTC),
+                    committed_generation=2,
+                    effects=[
+                        {"owner": "accounting", "effect_kind": "SOURCE_RECEIPT", "effect_id": uuid7()}
+                    ],
+                ),
+            )
+    original = (await client.get(path(prefix, approved), headers=headers(user=user))).json()
+    assert original["status"] == "REVERSED"
+    replacement_request = request | {
+        "links": [
+            {
+                "purpose": "CORRECTION",
+                "source_voucher_id": original["id"],
+                "source_revision_id": original["revision_id"],
+            }
+        ]
+    }
+    replacement = await client.post(
+        prefix + "/vouchers", json=replacement_request, headers=headers(user=user)
+    )
+    assert replacement.status_code == 201, replacement.text
+    accepted = await accept_as(client, prefix, replacement.json(), user)
+    resubmitted = await act(client, prefix, accepted, "submit", user)
+    assert resubmitted.status_code == 200, resubmitted.text
+    replacement_post = await client.post(
+        path(prefix, resubmitted.json(), "/post"),
+        json={"expected_version": resubmitted.json()["row_version"]},
+        headers=authority_headers(user=user),
+    )
+    assert replacement_post.status_code == 202, replacement_post.text
+    assert replacement_post.json()["operation_id"] != posted.json()["operation_id"]
+    duplicate = await client.post(
+        prefix + "/vouchers", json=replacement_request, headers=headers(user=user)
+    )
+    assert duplicate.status_code == 201, duplicate.text
+    duplicate_accepted = await accept_as(client, prefix, duplicate.json(), user)
+    duplicate_submitted = await act(
+        client,
+        prefix,
+        duplicate_accepted,
+        "submit",
+        user,
+        acknowledge_duplicate_bill=True,
+    )
+    assert duplicate_submitted.status_code == 200, duplicate_submitted.text
+    second_post = await client.post(
+        path(prefix, duplicate_submitted.json(), "/post"),
+        json={"expected_version": duplicate_submitted.json()["row_version"]},
+        headers=authority_headers(user=user),
+    )
+    assert second_post.status_code == 409
+    assert "already has a posting replacement" in second_post.json()["error"]["message"]
 
 
 async def test_a_legacy_submitted_voucher_under_no_approval_policy_needs_no_second_person(

@@ -50,10 +50,10 @@ async function enter() {
   // The heading is there before the configuration has loaded; the workspace follows.
   fireEvent.click(await screen.findByRole('button', { name: 'Choose supplier' }));
   await waitFor(() => expect(supplierPayables).toHaveBeenCalledWith(company, sources.party!.id));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save draft' })).not.toBeDisabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).not.toBeDisabled());
   fireEvent.click(screen.getByRole('button', { name: 'Choose expense' }));
   await waitFor(() => expect(purchaseSource).toHaveBeenCalledWith(company, 'expenses', sources.supplies[0]!.account!.id));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save draft' })).not.toBeDisabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).not.toBeDisabled());
   fireEvent.change(screen.getByLabelText('Invoice'), { target: { value: 'SUP-NEW' } });
   fireEvent.change(screen.getByLabelText('Amount'), { target: { value: '42.1234' } });
   fireEvent.click(screen.getByRole('checkbox', { name: 'This bill carries no tax' }));
@@ -64,7 +64,7 @@ it('locks writes when a retained execution cannot be verified after reload', asy
   const original = vi.mocked(serviceCall).getMockImplementation()!;
   vi.mocked(serviceCall).mockImplementation(async (...args) => { if (args[1].path.includes('/voucher-operations/')) throw { status: 403, message: 'Execution access denied' }; return original(...args); });
   render(<PurchaseEntryConnected {...props} />); await screen.findByText('Execution access denied');
-  expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).toBeDisabled();
 });
 it('opens the exact purchase type without a bounded type-list selection', async () => {
   const original = vi.mocked(serviceCall).getMockImplementation()!;
@@ -87,7 +87,7 @@ it.each([['foreign', id(40), 'ACTIVE'], ['retired', company, 'RETIRED'], ['wrong
 });
 it('creates a real draft, previews saved version, accepts a new revision, then submits that returned version', async () => {
   render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   expect(writes[0]!.request).toMatchObject({ path: base + '/vouchers', method: 'POST', body: { invoice: { supplies: [{ amount: '42.1234', account_version: 4 }] } } });
   fireEvent.click(screen.getByRole('button', { name: 'Calculate saved bill' })); await screen.findByRole('button', { name: 'Accept Accounting calculation' });
@@ -95,16 +95,16 @@ it('creates a real draft, previews saved version, accepts a new revision, then s
   expect(writes[1]!.request.body).toEqual({ expected_version: 7, calculation_hash: 'a'.repeat(64) });
   fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
   await waitFor(() => expect(writes[2]?.request.body).toEqual({ expected_version: 8 }));
-  await screen.findByText(/Purchase saved. Current status: SUBMITTED/);
+  await screen.findByText(/Purchase submitted for approval. It has not been posted/);
 });
 it('requires explicit untaxed confirmation before sending a draft', async () => {
   render(<PurchaseEntryConnected {...props} />); await enter(); fireEvent.click(screen.getByRole('checkbox', { name: 'This bill carries no tax' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByText(/Confirm that this is an untaxed/); expect(writes).toHaveLength(0);
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByText(/Confirm that this is an untaxed/); expect(writes).toHaveLength(0);
 });
 it('offers Print for the last saved revision, and blocks it while there are unsaved edits', async () => {
   render(<PurchaseEntryConnected {...props} permissions={[...props.permissions, 'vouchers.artifact.create', 'vouchers.artifact.read', 'accounting.account.read']} />); await enter();
   expect(screen.queryByText('Print')).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   expect(screen.getByRole('link', { name: 'Print' })).toHaveAttribute('href', `/vouchers/${id(90)}/print?revision=${id(91)}&version=7`);
   fireEvent.change(screen.getByLabelText('Invoice'), { target: { value: 'SUP-EDITED' } });
   expect(screen.queryByRole('link', { name: 'Print' })).toBeNull();
@@ -114,7 +114,7 @@ it('offers Print for the last saved revision, and blocks it while there are unsa
 it.each([['vouchers.artifact.read'], ['accounting.account.read']])('does not offer Print without %s, even for a saved bill', async missing => {
   const permissions = [...props.permissions, 'vouchers.artifact.create', 'vouchers.artifact.read', 'accounting.account.read'].filter(permission => permission !== missing);
   render(<PurchaseEntryConnected {...props} permissions={permissions} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   expect(screen.queryByText('Print')).toBeNull();
 });
 it('says what the service said for a conflict, and keeps the stale-version wording for a stale version', { timeout: 20000 }, async () => {
@@ -125,11 +125,11 @@ it('says what the service said for a conflict, and keeps the stale-version wordi
     return original(...args);
   });
   render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   expect(await screen.findByText('refresh fiscal evidence and open the posting period')).toBeVisible();
   expect(screen.queryByText(/changed elsewhere/)).toBeNull();
   message = 'voucher version changed; reload before retrying';
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   expect(await screen.findByText(/This Purchase changed elsewhere/)).toBeVisible();
 });
 it('keeps the invoice number and supplier in the action bar note, so they stay in view on a long bill', async () => {
@@ -144,7 +144,7 @@ it('does not carry a spent action reason into a later save', { timeout: 20000 },
     return original(...args);
   });
   render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   fireEvent.click(screen.getByRole('button', { name: 'Calculate saved bill' })); await screen.findByRole('button', { name: 'Accept Accounting calculation' });
   fireEvent.click(screen.getByRole('button', { name: 'Accept Accounting calculation' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 4' });
   fireEvent.click(screen.getByRole('button', { name: 'Submit' })); await screen.findByRole('button', { name: 'Reject' });
@@ -154,9 +154,33 @@ it('does not carry a spent action reason into a later save', { timeout: 20000 },
   // A rejected bill can still be cancelled, so the field stays, but what was typed for the rejection is spent: it is empty, and is not sent.
   await waitFor(() => expect(screen.getByLabelText('Action reason')).toHaveValue(''));
   fireEvent.change(screen.getByLabelText('Invoice'), { target: { value: 'SUP-FIXED' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   await waitFor(() => expect(writes.at(-1)?.request.method).toBe('PUT'));
   expect(writes.at(-1)!.request.body).not.toHaveProperty('reason');
+});
+it('does not send Purchase cancellation until the confirmation is accepted', async () => {
+  const original = vi.mocked(serviceCall).getMockImplementation()!;
+  vi.mocked(serviceCall).mockImplementation(async (...args) => {
+    if (args[1].path.endsWith('/cancel')) {
+      writes.push({ request: structuredClone(args[1]) });
+      saved = { ...saved, status: 'CANCELLED', row_version: Number(saved.row_version) + 1 };
+      return saved;
+    }
+    return original(...args);
+  });
+  render(<PurchaseEntryConnected {...props} />); await enter();
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
+  await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.change(screen.getByLabelText('Action reason'), { target: { value: 'Entered twice by mistake' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+  expect(screen.getByRole('dialog', { name: 'Cancel this Purchase bill?' })).toBeVisible();
+  expect(screen.getByRole('dialog', { name: 'Cancel this Purchase bill?' })).toHaveTextContent('Supplier invoice: SUP-NEW');
+  expect(writes.some(row => row.request.path.endsWith('/cancel'))).toBe(false);
+  fireEvent.click(screen.getByRole('button', { name: 'Keep bill' }));
+  expect(writes.some(row => row.request.path.endsWith('/cancel'))).toBe(false);
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel Purchase' }));
+  await waitFor(() => expect(writes.find(row => row.request.path.endsWith('/cancel'))?.request.body).toMatchObject({ reason: 'Entered twice by mistake' }));
 });
 it('keeps accepted posting pending, recovers the same operation and waits for reconciled POSTED', { timeout: 20000 }, async () => {
   const original = vi.mocked(serviceCall).getMockImplementation()!;
@@ -170,19 +194,19 @@ it('keeps accepted posting pending, recovers the same operation and waits for re
     return original(...args);
   });
   render(<PurchaseEntryConnected {...props} permissions={[...props.permissions, 'vouchers.post', 'vouchers.operation.read', 'vouchers.operation.recover']} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   fireEvent.click(screen.getByRole('button', { name: 'Calculate saved bill' })); await screen.findByRole('button', { name: 'Accept Accounting calculation' });
   fireEvent.click(screen.getByRole('button', { name: 'Accept Accounting calculation' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 4' });
   fireEvent.click(screen.getByRole('button', { name: 'Submit' })); await screen.findByRole('button', { name: 'Approve' });
   fireEvent.click(screen.getByRole('button', { name: 'Approve' })); await screen.findByRole('button', { name: 'Post approved Purchase' });
   fireEvent.click(screen.getByRole('button', { name: 'Post approved Purchase' })); await screen.findByText('PENDING');
-  expect(screen.queryByText(/Posted Purchase is immutable/)).toBeNull();
+  expect(screen.queryByText(/Posted Purchase is retained/)).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Retry execution delivery' }));
   await waitFor(() => expect(writes.find(row => row.request.path.endsWith('/recover'))?.request.body).toEqual({ expected_version: 1 }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Refresh Purchase execution' })).not.toBeDisabled());
   status = 'COMMITTED'; saved = { ...saved, status: 'POSTED', row_version: Number(saved.row_version) + 1 };
   fireEvent.click(screen.getByRole('button', { name: 'Refresh Purchase execution' })); await screen.findByText('COMMITTED');
-  expect(screen.getByText(/Posted Purchase is immutable/)).toBeVisible();
+  expect(screen.getByText(/Posted Purchase is retained/)).toBeVisible();
   // A finished execution is forgotten: a later visit must not be pinned to this bill.
   expect(sessionStorage.getItem('purchase-api-operation:' + JSON.stringify([props.actor, company, props.year]))).toBeNull();
 });
@@ -192,7 +216,7 @@ it.each([
   const original = vi.mocked(serviceCall).getMockImplementation()!;
   const scope = JSON.stringify([props.actor, company, props.year]);
   const view = render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   view.unmount();
   saved = { ...saved, status: voucherStatus };
   sessionStorage.setItem('purchase-api-operation:' + scope, JSON.stringify({ id: id(80), voucherId: id(90), revisionId: id(91) }));
@@ -210,26 +234,26 @@ it.each([
 it('retains and retries the identical body and key after an uncertain outcome', async () => {
   const original = vi.mocked(serviceCall).getMockImplementation()!; let calls = 0;
   vi.mocked(serviceCall).mockImplementation(async (...args) => { if (args[1].method === 'POST' && args[1].path === base + '/vouchers' && calls++ === 0) { writes.push({ request: structuredClone(args[1]) }); throw { status: 503, message: 'Owner unavailable' }; } return original(...args); });
-  render(<PurchaseEntryConnected {...props} />); await enter(); fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  render(<PurchaseEntryConnected {...props} />); await enter(); fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   await screen.findByRole('button', { name: 'Retry previous request' }); fireEvent.click(screen.getByRole('button', { name: 'Retry previous request' }));
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   expect(writes[0]!.request).toEqual(writes[1]!.request); expect(sessionStorage.length).toBe(0);
 });
 it('refuses wrong-company voucher types before rendering the workspace', async () => {
   vi.mocked(serviceCall).mockResolvedValue({ items: [{ id: id(2), company_id: id(99), kind: 'PURCHASE' }], page: { next_cursor: null } });
-  render(<PurchaseEntryConnected {...props} />); await screen.findByText(/configuration could not be verified/); expect(screen.queryByRole('button', { name: 'Save draft' })).toBeNull();
+  render(<PurchaseEntryConnected {...props} />); await screen.findByText(/configuration could not be verified/); expect(screen.queryByRole('button', { name: /^(Create|Update)$/ })).toBeNull();
 });
 it('withholds creation controls for a role without creation access', async () => {
-  render(<PurchaseEntryConnected {...props} canCreate={false} />); await screen.findByRole('heading', { name: 'New purchase' }); expect(screen.queryByRole('button', { name: 'Save draft' })).toBeNull();
+  render(<PurchaseEntryConnected {...props} canCreate={false} />); await screen.findByRole('heading', { name: 'New purchase' }); expect(screen.queryByRole('button', { name: /^(Create|Update)$/ })).toBeNull();
 });
 it('hides New purchase when creation access is revoked while reviewing a saved bill', async () => {
   const view = render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   expect(screen.getByRole('link', { name: 'New purchase' })).toBeVisible();
   view.rerender(<PurchaseEntryConnected {...props} canCreate={false} permissions={['vouchers.read']} />);
   expect(screen.queryByRole('link', { name: 'New purchase' })).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'Save draft' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /^(Create|Update)$/ })).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Saved drafts' })).toBeVisible();
   expect(writes).toHaveLength(1);
 });
@@ -243,7 +267,7 @@ it('explains a misconfigured account type and links to the selected type rules',
   await screen.findByText(/Supplier parties are disabled/);
   expect(screen.getByRole('link', { name: 'Edit Purchase entry rules' })).toHaveAttribute('href', '/masters/voucher-types/' + id(2) + '/edit');
   expect(screen.getByRole('combobox', { name: 'Purchase voucher type' })).toBeVisible();
-  expect(screen.queryByRole('button', { name: 'Save draft' })).toBeNull();
+  expect(screen.queryByRole('button', { name: /^(Create|Update)$/ })).toBeNull();
 });
 it.each([
   ['an items-only product type', { allowed_modes: ['ITEMS'], default_mode: 'ITEMS', required_sections: ['ITEMS'] }],
@@ -259,7 +283,7 @@ it.each([
   expect(screen.queryByRole('link', { name: 'Edit Purchase entry rules' })).toBeNull();
   expect(screen.getByRole('link', { name: 'Review Purchase voucher type' })).toBeVisible();
   expect(screen.getByRole('combobox', { name: 'Purchase voucher type' })).toBeVisible();
-  expect(screen.queryByRole('button', { name: 'Save draft' })).toBeNull();
+  expect(screen.queryByRole('button', { name: /^(Create|Update)$/ })).toBeNull();
 });
 it('stages credit terms until Apply and discards cancelled detail edits', async () => {
   render(<PurchaseEntryConnected {...props} />); await enter();
@@ -272,7 +296,7 @@ it('stages credit terms until Apply and discards cancelled detail edits', async 
   expect(screen.getByLabelText('Credit days')).toHaveValue('30');
   fireEvent.change(screen.getByLabelText('Credit days'), { target: { value: '45' } });
   fireEvent.click(screen.getByRole('button', { name: 'Apply bill details' }));
-  expect(writes).toHaveLength(0); fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  expect(writes).toHaveLength(0); fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   const body = writes[0]!.request.body as { document_date: string; invoice: { due_date: string } };
   expect((Date.parse(body.invoice.due_date) - Date.parse(body.document_date)) / 86400000).toBe(45);
@@ -280,13 +304,13 @@ it('stages credit terms until Apply and discards cancelled detail edits', async 
 it('restores an uncertain command after reload and retries its retained key', async () => {
   const original = vi.mocked(serviceCall).getMockImplementation()!; let first;
   vi.mocked(serviceCall).mockImplementation(async (...args) => { if (args[1].method === 'POST' && args[1].path === base + '/vouchers') { first = structuredClone(args[1]); throw { status: 503, message: 'Owner unavailable' }; } return original(...args); });
-  const view = render(<PurchaseEntryConnected {...props} />); await enter(); fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('button', { name: 'Retry previous request' }); view.unmount();
+  const view = render(<PurchaseEntryConnected {...props} />); await enter(); fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('button', { name: 'Retry previous request' }); view.unmount();
   vi.mocked(serviceCall).mockImplementation(original); render(<PurchaseEntryConnected {...props} />);
   await screen.findByRole('button', { name: 'Retry previous request' }); fireEvent.click(screen.getByRole('button', { name: 'Retry previous request' }));
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' }); expect(writes[0]!.request).toEqual(first);
 });
 it('does not send a second create on a rapid repeated save', async () => {
-  render(<PurchaseEntryConnected {...props} />); await enter(); const save = screen.getByRole('button', { name: 'Save draft' }); fireEvent.click(save); fireEvent.click(save);
+  render(<PurchaseEntryConnected {...props} />); await enter(); const save = screen.getByRole('button', { name: /^(Create|Update)$/ }); fireEvent.click(save); fireEvent.click(save);
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' }); expect(writes).toHaveLength(1);
 });
 it('locks further writes after a confirmed save whose readback fails, then reloads without replaying create', async () => {
@@ -296,9 +320,9 @@ it('locks further writes after a confirmed save whose readback fails, then reloa
     return original(...args);
   });
   render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
   await screen.findByText(/request succeeded, but its saved details could not be refreshed/);
-  expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).toBeDisabled();
   expect(screen.queryByRole('button', { name: 'Retry previous request' })).toBeNull();
   unavailable = false; fireEvent.click(screen.getByRole('button', { name: 'Load latest saved revision' }));
   await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
@@ -313,7 +337,7 @@ it('reviews an immutable historical revision without replacing unsaved bill entr
     return original(...args);
   });
   render(<PurchaseEntryConnected {...props} permissions={[...props.permissions, 'vouchers.history.read']} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   fireEvent.change(screen.getByLabelText('Invoice'), { target: { value: 'UNSAVED-REFERENCE' } });
   fireEvent.click(screen.getByRole('button', { name: 'View revision history' }));
   fireEvent.click(await screen.findByRole('button', { name: 'Review saved revision' }));
@@ -327,7 +351,7 @@ const posting = [...props.permissions, 'vouchers.post', 'vouchers.operation.read
 async function withFinishedExecutionOfAnotherBill(operationStatus: string) {
   const original = vi.mocked(serviceCall).getMockImplementation()!;
   const view = render(<PurchaseEntryConnected {...props} />); await enter();
-  fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+  fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
   view.unmount();
   saved = { ...saved, status: 'POSTED' };
   const other = () => ({ ...saved, id: id(95), status: 'DRAFT', revision_id: id(96), row_version: 2 });
@@ -342,14 +366,14 @@ async function withFinishedExecutionOfAnotherBill(operationStatus: string) {
   });
   render(<PurchaseEntryConnected {...props} permissions={posting} />);
   await screen.findByText(operationStatus);
-  await screen.findByText(/Posted Purchase is immutable/);
+  await screen.findByText(/Posted Purchase is retained/);
 }
 it('does not lock the next bill that is opened because another bill’s execution finished', { timeout: 20000 }, async () => {
   await withFinishedExecutionOfAnotherBill('COMMITTED');
   fireEvent.click(screen.getByRole('button', { name: 'Saved drafts' }));
   fireEvent.click(await screen.findByRole('button', { name: /^Open draft/ }));
   await waitFor(() => expect(screen.getByLabelText('Invoice')).toHaveValue('SUP-NEW'));
-  expect(await screen.findByRole('button', { name: 'Save draft' })).toBeVisible();
+  expect(await screen.findByRole('button', { name: /^(Create|Update)$/ })).toBeVisible();
   expect(screen.queryByText(/posting is in progress/i)).toBeNull();
   expect(screen.queryByText('Purchase execution:')).toBeNull();
   // The finished execution belongs to the other bill; this one shows none.
@@ -368,7 +392,7 @@ describe('what the saved bill says about Accounting’s calculation', () => {
   });
   async function accepted() {
     render(<PurchaseEntryConnected {...props} />); await enter();
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+    fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
     fireEvent.click(screen.getByRole('button', { name: 'Calculate saved bill' })); await screen.findByRole('button', { name: 'Accept Accounting calculation' });
     fireEvent.click(screen.getByRole('button', { name: 'Accept Accounting calculation' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 4' });
   }
@@ -408,7 +432,7 @@ describe('what the saved bill says about Accounting’s calculation', () => {
 describe('why a saved bill cannot be changed', () => {
   it('says the person lacks edit access, not that they cannot create vouchers', async () => {
     const view = render(<PurchaseEntryConnected {...props} />); await enter();
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+    fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
     view.unmount();
     render(<PurchaseEntryConnected {...props} permissions={['vouchers.read', 'vouchers.create']} initialVoucherId={id(90)} />);
     await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
@@ -420,20 +444,20 @@ describe('why a saved bill cannot be changed', () => {
 describe('a saved product bill opened on this screen', () => {
   it('is not edited here and links to voucher review, where its item lines are shown', async () => {
     const view = render(<PurchaseEntryConnected {...props} />); await enter();
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+    fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
     view.unmount();
     saved = { ...saved, mode: 'ITEMS', lines: [{ line_key: id(70), description: 'Steel rod', item: { item_id: id(71) } }] };
     render(<PurchaseEntryConnected {...props} initialVoucherId={id(90)} />);
     expect(await screen.findByText(/requires a broader Purchase profile/)).toBeVisible();
     expect(screen.getByRole('link', { name: 'Open it in voucher review' })).toHaveAttribute('href', '/vouchers/' + id(90));
-    expect(screen.queryByRole('button', { name: 'Save draft' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^(Create|Update)$/ })).toBeNull();
   });
 });
 describe('a retained execution reference and the bill in the address', () => {
   it('shows how to retry recovery, and then opens the bill the address names, not the one the reference was for', { timeout: 20000 }, async () => {
     const original = vi.mocked(serviceCall).getMockImplementation()!;
     const view = render(<PurchaseEntryConnected {...props} />); await enter();
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
+    fireEvent.click(screen.getByRole('button', { name: /^(Create|Update)$/ })); await screen.findByRole('heading', { name: 'Purchase bill · revision 3' });
     view.unmount();
     let readable = false;
     const other = () => ({ ...saved, id: id(95), status: 'DRAFT', revision_id: id(96), row_version: 2, invoice: { ...(saved.invoice as object), bill_reference: 'OTHER-BILL' }, references: [{ purpose: 'SUPPLIER_INVOICE', reference: 'OTHER-BILL', reference_date: (saved.document_date as string) }] });

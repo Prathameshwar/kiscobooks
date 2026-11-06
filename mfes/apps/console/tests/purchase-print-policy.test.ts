@@ -41,3 +41,8 @@ it.each([[401, /session has expired/], [403, /access.*changed/], [409, /changed/
   vi.mocked(sessionFetch).mockResolvedValueOnce(new Response('{}', { status: status as number }));
   await expect(purchasePrintRequest(job, 'GET', new AbortController().signal)).rejects.toThrow(message as RegExp);
 });
+
+it('shows a specific safe print refusal from the service', async () => {
+  vi.mocked(sessionFetch).mockResolvedValueOnce(new Response(JSON.stringify({ error: { message: 'Purchase PDF printing is not configured for this company' } }), { status: 409 }));
+  await expect(purchasePrintRequest(job, 'GET', new AbortController().signal)).rejects.toThrow(/not configured for this company/);
+});

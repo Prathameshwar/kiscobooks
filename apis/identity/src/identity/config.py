@@ -284,13 +284,13 @@ class Settings(BaseSettings):
     catalog_source_response_secret: SecretStr | None = Field(default=None, min_length=32)
     catalog_source_ttl_seconds: int = Field(default=60, ge=15, le=300, strict=True)
 
-    @field_validator("billing_reservation_credentials", "accounting_reservation_credentials")
+    @field_validator("billing_reservation_credentials")
     @classmethod
     def reservation_scopes_are_static(
         cls, value: dict[str, CatalogSourceCredential]
     ) -> dict[str, CatalogSourceCredential]:
         if any(entry.allow_enrolled_companies for entry in value.values()):
-            raise ValueError("automatic company enrollment is only supported for Catalog sources")
+            raise ValueError("billing posting requires explicit company scopes")
         return value
 
     @model_validator(mode="after")

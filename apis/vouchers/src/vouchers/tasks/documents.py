@@ -425,6 +425,13 @@ async def validate_masters(
         source_revision = await get(db, current, m.VoucherRevision, link.source_revision_id)
         if source_revision.voucher_id != source_voucher.id:
             raise ValidationFailedError("source link revision belongs to another voucher")
+        if link.purpose == "CORRECTION" and (
+            (kind is not None and kind != "PURCHASE")
+            or source_voucher.status != "REVERSED"
+            or source_revision.revision_number != source_voucher.current_revision
+            or source_revision.configuration_evidence.get("kind") != "PURCHASE"
+        ):
+            raise ConflictError("a replacement Purchase requires its exact reversed source")
     # Foundation attachment references are scoped metadata. Object existence/download
     # authority requires the future storage adapter; a key is never download authority.
     for attachment in body.attachments:

@@ -77,7 +77,7 @@ it('persists cumulative native dependencies and preserves them when reloading a 
  const voucher={...wire,id:'10000000-0000-7000-8000-000000000090',company_id:company,kind:'PURCHASE',profile:'STANDARD',status:'DRAFT',revision_id:'10000000-0000-7000-8000-000000000091',row_version:1,revision_number:1,lines:[],attachments:[],links:[],custom_fields:{}} as Parameters<typeof purchaseFromVoucher>[0];
  const loaded=purchaseFromVoucher(voucher,company,metadata);
  const rebound=loaded.binding;
- expect(purchaseInput(loaded.draft,rebound).invoice!.components!.map(step=>({purpose:step.purpose,value:step.value,dependencies:step.dependencies,scope:step.scope,amount_basis:step.amount_basis}))).toEqual(steps.map(step=>({purpose:step.purpose,value:step.value,dependencies:step.dependencies,scope:step.scope,amount_basis:step.amount_basis})));
+ expect(purchaseInput(loaded.draft,rebound).invoice!.components!.map(step=>({purpose:step.purpose,value:Number(step.value),dependencies:step.dependencies,scope:step.scope,amount_basis:step.amount_basis}))).toEqual(steps.map(step=>({purpose:step.purpose,value:Number(step.value),dependencies:step.dependencies,scope:step.scope,amount_basis:step.amount_basis})));
 });
 
 it('includes prior charges in an explicitly selected discount basis and protects both balances',()=>{

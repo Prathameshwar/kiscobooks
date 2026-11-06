@@ -12,14 +12,14 @@ from decimal import Decimal
 import pytest
 from billing_platform.company_context import sign_company_context, verify_company_context
 from billing_platform.db import tenant_scope
-from billing_platform.display import DisplayConfiguration
+from billing_platform.display import DisplayConfiguration, number
 from billing_platform.errors import ConflictError, ValidationFailedError
 from billing_platform.ids import uuid7
 from billing_platform.service_auth import CompanyServiceScope
 from conftest import COMPANY, SECRET, TENANT
 from pydantic import SecretStr
 from sqlalchemy import select
-from test_canvas_print import designed, element, printed
+from test_canvas_print import designed, element, printed, zone
 from test_purchase_goods_capture import goods_bill, stocked
 from test_purchase_print import snapshot
 from voucher_execution.invoice import InvoiceCalculationDetail, InvoiceInput
@@ -106,11 +106,75 @@ def test_a_goods_bill_prints_hsn_quantity_with_unit_and_rate_on_the_standard_lay
     html = render_html(with_goods(snapshot()))
     table = html.split('aria-label="Purchase lines"')[1].split("</table>")[0]
     assert "HSN/SAC" in table and "Qty" in table and "Rate" in table
-    assert "Base amount" not in table
+    assert "Base amount" not in table.split("</thead>")[0]
     assert "0402" in table and "998313" in table
     assert "12.500 kg" in table  # the company's quantity places, then the unit
     assert "80.125" in table  # a rate with more places than amounts keeps them
     assert "Rupees One Lakh" in html
+
+
+def test_standard_mixed_bill_keeps_the_account_lines_entered_amount():
+    value = with_goods(snapshot())
+    html = render_html(value)
+    account_row = next(row for row in html.split("<tr") if "Consulting" in row)
+    account = value["calculation"]["lines"][0]
+    assert "Base amount" in html
+    assert number(account["entered"], DISPLAY) in account_row
+
+
+def test_standard_goods_prints_its_saved_receiving_references():
+    value = with_goods(snapshot())
+    key = next(row["line_key"] for row in value["document"]["invoice"]["supplies"] if row["supply_kind"] == "GOODS")
+    warehouse, batch, serial = (str(uuid7()) for _ in range(3))
+    value["document"]["stock_receipt"] = [{
+        "line_key": key, "warehouse_id": warehouse, "bin_id": None,
+        "lot_id": batch, "unit_ids": [serial],
+    }]
+    html = render_html(value)
+    assert "Receiving details" in html
+    assert warehouse in html and batch in html and serial in html
+
+
+def test_designed_purchase_can_bind_receiving_details():
+    layout = designed()
+    layout["layout_definition"]["sections"].append(
+        zone("receiving", "CUSTOM", 10, 170, 190, 20,
+             element("FIELD_BINDING", 0, 0, 190, 10, binding_path="voucher.receiving_summary"))
+    )
+    warehouse = str(uuid7())
+
+    def with_receipt(value):
+        with_goods(value)
+        key = next(row["line_key"] for row in value["document"]["invoice"]["supplies"] if row["supply_kind"] == "GOODS")
+        value["document"]["stock_receipt"] = [{"line_key": key, "warehouse_id": warehouse, "bin_id": None, "lot_id": None, "unit_ids": []}]
+        return value
+
+    html = printed(layout, with_receipt)
+    assert warehouse in html
+    assert 'canvas-band canvas-band--grows' in html
+    assert 'canvas-zone canvas-zone--grows' in html
+    assert 'height:10mm' not in html.split(warehouse)[0].split('canvas-zone canvas-zone--grows')[-1]
+
+
+def test_receiving_summary_refuses_a_shared_zone():
+    layout = designed()
+    layout["layout_definition"]["sections"][2]["elements"].append(
+        element("FIELD_BINDING", 0, 0, 120, 20, binding_path="voucher.receiving_summary")
+    )
+    with pytest.raises(ValidationFailedError, match="receiving summary.*own zone"):
+        printed(layout)
+
+
+def test_receiving_summary_refuses_an_overlapping_zone():
+    layout = designed()
+    layout["layout_definition"]["sections"].extend([
+        zone("receiving", "CUSTOM", 10, 170, 190, 20,
+             element("FIELD_BINDING", 0, 0, 190, 10, binding_path="voucher.receiving_summary")),
+        zone("overlap", "CUSTOM", 10, 175, 190, 10,
+             element("TEXT", 0, 0, 100, 5, content="Overlapping note")),
+    ])
+    with pytest.raises(ValidationFailedError, match="receiving summary.*vertical band"):
+        printed(layout)
 
 
 def test_an_account_bill_keeps_its_base_amount_column():
@@ -273,20 +337,28 @@ def configure(app, tmp_path):
     )
 
 
-def displayed():
+def displayed(*, deny_stock=False):
     result = stocked()
     company = verify_company_context(
         result["X-Company-Context"], result["X-Company-Signature"], SECRET.encode()
     )
+    policies = list(company.policies)
+    if deny_stock:
+        policies.append({
+            "entity_type": "vouchers.voucher_item", "field_key": "warehouse_id",
+            "access": "read", "effect": "deny", "scope_type": "company",
+            "scope_id": str(COMPANY),
+        })
     result["X-Company-Context"], result["X-Company-Signature"] = sign_company_context(
-        company.model_copy(update={"report_display": DISPLAY}), SECRET.encode()
+        company.model_copy(update={"report_display": DISPLAY, "policies": policies}), SECRET.encode()
     )
     return result
 
 
 @pytest.mark.parametrize("mixed", [False, True], ids=["product", "mixed"])
+@pytest.mark.parametrize("deny_stock", [False, True], ids=["stock-readable", "stock-denied"])
 async def test_a_goods_bill_prints_with_its_stock_lines_sent_to_the_owner(
-    client, prefix, app, tmp_path, monkeypatch, mixed
+    client, prefix, app, tmp_path, monkeypatch, mixed, deny_stock
 ):
     created, request = await goods_bill(client, prefix, app, mixed=mixed)
     assert created.status_code == 201, created.text
@@ -314,7 +386,7 @@ async def test_a_goods_bill_prints_with_its_stock_lines_sent_to_the_owner(
     monkeypatch.setattr(purchase_print, "resolve", layout)
     url = prefix + "/vouchers/" + saved["id"] + "/print-jobs"
     body = {"expected_version": saved["row_version"], "revision_id": saved["revision_id"]}
-    result = await client.post(url, headers=displayed(), json=body)
+    result = await client.post(url, headers=displayed(deny_stock=deny_stock), json=body)
     assert result.status_code == 202, result.text
     sent = observed[0].preview
     assert sent.stock is not None and sent.stock.action == "PURCHASE_INVOICE"
@@ -326,6 +398,12 @@ async def test_a_goods_bill_prints_with_its_stock_lines_sent_to_the_owner(
     assert supplies[goods_key]["rate"] == "100.0000"
     assert supplies[goods_key]["hsn_sac"] == "0402"
     assert job.snapshot["labels"]["units"] == {goods_key: "kg"}
+    if deny_stock:
+        assert "stock_receipt" not in job.snapshot["document"]
+    else:
+        receipt = job.snapshot["document"]["stock_receipt"]
+        assert len(receipt) == 1 and receipt[0]["line_key"] == goods_key
+        assert receipt[0]["warehouse_id"] == request["stock"]["lines"][0]["warehouse_id"]
     if mixed:
         service = next(row for key, row in supplies.items() if key != goods_key)
         assert "quantity" not in service and service["hsn_sac"] == "996719"

@@ -36,6 +36,9 @@ it.runIf(process.env.QA_PRODUCT_CONFIG_BROWSER === '1')('keeps Profile creation 
         if (box) { expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(width + 1); }
       }
       expect(await page.getByRole('heading', { name: 'Product Profile', level: 2 }).count()).toBe(1);
+      for (const label of ['Product Profile', 'SKUs and units', 'Business setup', 'Opening and review']) {
+        expect(await page.getByRole('navigation', { name: 'Product creation steps' }).getByText(label).isVisible()).toBe(true);
+      }
     }
   } finally { await browser.close(); }
 }, 30000);

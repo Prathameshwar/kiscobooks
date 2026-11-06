@@ -22,8 +22,9 @@ const owed = { [SHARMA.id]: { debit: '25000.0000', credit: '150000.0000' }, [BRI
 beforeEach(() => { sessionStorage.clear(); services = installFakeServices({ balances: owed }); });
 afterEach(() => vi.unstubAllGlobals());
 
-const reads = () => services.requests.filter(row => row.path.split('?')[0]!.endsWith('/ledger/balance'));
+const reads = () => services.requests.filter(row => row.path.split('?')[0]!.endsWith('/ledger/balance') && new URLSearchParams(row.path.split('?')[1]).has('party_id'));
 const strip = () => document.querySelector<HTMLElement>('[data-purchase-balance]');
+const lineBalance = () => document.querySelector<HTMLElement>('[data-purchase-line-balance]');
 async function open() {
   render(<PurchaseEntryConnected {...props} />);
   await screen.findByRole('heading', { level: 1, name: 'New purchase' });
@@ -37,6 +38,21 @@ async function choose(user: ReturnType<typeof userEvent.setup>, query: string, n
 }
 
 describe('the supplier balance on the Purchase page', () => {
+  it('shows the selected expense account balance without repeating the read while entering the amount', async () => {
+    const user = userEvent.setup();
+    await open();
+    const lookup = screen.getByPlaceholderText('Find an expense account');
+    await user.click(lookup);
+    await user.type(lookup, 'Office');
+    await user.click(await screen.findByRole('option', { name: /Office expenses/ }));
+    await waitFor(() => expect(lineBalance()).toHaveAttribute('data-purchase-line-balance', 'ready'));
+    expect(lineBalance()).toHaveTextContent('Account balance');
+    expect(lineBalance()).toHaveTextContent('settled');
+    const accountReads = () => services.requests.filter(row => row.path.split('?')[0]!.endsWith('/ledger/balance') && new URLSearchParams(row.path.split('?')[1]).get('account_id') === id(20));
+    expect(accountReads()).toHaveLength(1);
+    await user.type(await screen.findByRole('textbox', { name: 'Amount, line 1' }), '100');
+    expect(accountReads()).toHaveLength(1);
+  });
   it('shows one figure, marked Cr and To pay, when a supplier is chosen', async () => {
     const user = userEvent.setup();
     await open();
@@ -62,7 +78,7 @@ describe('the supplier balance on the Purchase page', () => {
     });
   });
 
-  it('is not read again when the bill is edited afterwards', async () => {
+  it('refreshes for a changed posting date without rereading for unrelated edits', async () => {
     const user = userEvent.setup();
     await open();
     await choose(user, 'Sharma', /Sharma Office Supplies/);
@@ -71,8 +87,9 @@ describe('the supplier balance on the Purchase page', () => {
     const posting = screen.getByLabelText(/Posting date/);
     await user.clear(posting); await user.type(posting, '2026-10-15');
     await user.click(screen.getByRole('checkbox', { name: 'This bill carries no tax' }));
-    expect(reads()).toHaveLength(1);
-    expect(strip()).toHaveAttribute('data-purchase-balance', 'ready');
+    await waitFor(() => expect(reads().at(-1)?.path).toContain('as_of=2026-10-15'));
+    await waitFor(() => expect(strip()).toHaveAttribute('data-purchase-balance', 'ready'));
+    expect(reads()).toHaveLength(2);
   });
 
   it('shows an amount the supplier holds for the company as Dr and To receive', async () => {
@@ -98,7 +115,7 @@ describe('the supplier balance on the Purchase page', () => {
     await user.type(invoice, 'SOS/26-27/0418');
     expect(invoice).toHaveValue('SOS/26-27/0418');
     expect(screen.getByPlaceholderText(SEARCH)).toBeEnabled();
-    expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^(Create|Update)$/ })).toBeEnabled();
     release();
     await waitFor(() => expect(strip()).toHaveAttribute('data-purchase-balance', 'ready'));
     expect(invoice).toHaveValue('SOS/26-27/0418');
@@ -182,7 +199,7 @@ describe('the supplier balance on the Purchase page', () => {
     await waitFor(() => expect(services.requests.some(row => row.path.includes('/account-heads/'))).toBe(true));
     await user.type(await screen.findByRole('textbox', { name: 'Amount, line 1' }), '18450');
     await user.click(screen.getByRole('checkbox', { name: 'This bill carries no tax' }));
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     expect(strip()).toHaveAttribute('data-purchase-balance', 'ready');
 
@@ -197,7 +214,7 @@ describe('the supplier balance on the Purchase page', () => {
     expect(strip()).toBeNull();
     services.completeExecution();
     await user.click(screen.getByRole('button', { name: 'Refresh Purchase execution' }));
-    await screen.findByText(/Posted Purchase is immutable/);
+    await screen.findByText(/Posted Purchase is retained/);
     expect(strip()).toBeNull();
     // Saving, accepting, submitting and posting never asked for the balance again.
     expect(reads()).toHaveLength(1);

@@ -49,6 +49,11 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
             continue
         invoices[identity] = row
         journals[identity] = intent["journal_id"]
+    reversals = {
+        str(journal["reversal_of_id"]): (identity, journal)
+        for identity, journal in data.journals.items()
+        if journal.get("reversal_of_id") and journal["status"] == "POSTED"
+    }
 
     def identity_fields(invoice_id: str) -> dict[str, Any]:
         row = invoices[invoice_id]
@@ -78,7 +83,7 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
             if query.code == "SALES_REGISTER"
             else {"PURCHASE", "DEBIT_NOTE"}
         )
-        return [
+        invoice_rows = [
             identity_fields(key)
             | {
                 "row_kind": "INVOICE",
@@ -98,6 +103,36 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
             for key, row in sorted(invoices.items())
             if row["kind"] in kinds and in_range(row[query.date_basis.lower() + "_date"], query)
         ]
+        for key, row in sorted(invoices.items()):
+            if row["kind"] not in {"SALES", "PURCHASE"} or row["kind"] not in kinds:
+                continue
+            reversed_fact = reversals.get(journals[key])
+            if reversed_fact is None:
+                continue
+            reversal_id, reversal = reversed_fact
+            date = reversal["posting_date"]
+            if not in_range(date, query):
+                continue
+            invoice_rows.append(identity_fields(key) | {
+                **lineage.get(reversal_id, {}),
+                "row_kind": "INVOICE",
+                "effect": "REVERSAL",
+                "source_invoice_id": key,
+                "journal_id": reversal_id,
+                "journal_posting_date": date,
+                "document_date": date,
+                "posting_date": date,
+                "original_document_date": row["document_date"],
+                "due_date": row["due_date"],
+                "commercial_total": row["commercial_total"],
+                "tax_total": row["tax_total"],
+                "charged_tax_total": row["charged_tax_total"],
+                "rounding": row["rounding"],
+                "payable": row["payable"],
+                "supplier_difference": row["supplier_difference"],
+                "direction": "REDUCTION",
+            })
+        return sorted(invoice_rows, key=lambda item: (item["posting_date"], item["journal_id"]))
 
     rows: list[dict[str, Any]] = []
     if query.code == "INVOICE_COMPONENT_REGISTER":
@@ -141,11 +176,7 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
                 if query.date_basis == "TAX_POINT"
                 else invoice[query.date_basis.lower() + "_date"]
             )
-            if not in_range(selected_date, query):
-                continue
-            rows.append(
-                identity_fields(row["invoice_id"])
-                | {
+            detail = identity_fields(row["invoice_id"]) | {
                     "row_kind": "TAX_COMPONENT",
                     "component_id": key,
                     "supply_id": row["supply_id"],
@@ -174,7 +205,24 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
                         )
                     },
                 }
-            )
+            if in_range(selected_date, query):
+                rows.append(detail)
+            reversed_fact = reversals.get(journals[row["invoice_id"]])
+            if reversed_fact and invoice["kind"] in {"SALES", "PURCHASE"}:
+                reversal_id, reversal = reversed_fact
+                date = reversal["posting_date"]
+                if in_range(date, query):
+                    rows.append(detail | {
+                        **lineage.get(reversal_id, {}),
+                        "journal_id": reversal_id,
+                        "journal_posting_date": date,
+                        "document_date": date,
+                        "posting_date": date,
+                        "tax_point_date": date,
+                        "tax_point_basis": "REVERSAL",
+                        "direction": "REDUCTION",
+                        "effect": "REVERSAL",
+                    })
     if query.code == "INVOICE_TAX_REGISTER":
         from reports.domain.tax_summaries import selected
 
@@ -215,6 +263,9 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
         for key, tax in taxes.items():
             invoice = invoices[tax["invoice_id"]]
             if invoice["kind"] != "PURCHASE" or invoice["posting_date"] > as_of:
+                continue
+            reversed_fact = reversals.get(journals[tax["invoice_id"]])
+            if reversed_fact and reversed_fact[1]["posting_date"] <= as_of:
                 continue
             supply = data.rows["invoice_supply_fact"][tax["supply_id"]]
             amounts = totals[key]
@@ -339,6 +390,28 @@ def register(data: "Facts", query: RunRequest) -> list[dict[str, Any]]:
             link["tax_purpose"] or "COMMERCIAL",
             point,
         )
+        reversed_fact = reversals.get(journals[link["invoice_id"]])
+        if reversed_fact and invoices[link["invoice_id"]]["kind"] in {"SALES", "PURCHASE"}:
+            reversal_id, reversal = reversed_fact
+            source_line = data.rows["journal_line"][link["journal_line_id"]]
+            matching = [
+                identity
+                for identity, line in data.rows["journal_line"].items()
+                if line["journal_id"] == reversal_id
+                and line["sequence"] == source_line["sequence"]
+                and line["account_id"] == source_line["account_id"]
+                and line["amount"] == source_line["amount"]
+                and line["side"] != source_line["side"]
+            ]
+            if len(matching) != 1:
+                raise ConflictError("Purchase correction GL does not match its retained invoice")
+            gl_row(
+                link["invoice_id"],
+                matching[0],
+                link["tax_component_id"],
+                "REVERSAL",
+                reversal["posting_date"] if link["tax_component_id"] else None,
+            )
     for _, action in actions:
         for line_id, line in data.rows["journal_line"].items():
             if line["journal_id"] == action["journal_id"]:

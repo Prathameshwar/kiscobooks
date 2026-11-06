@@ -142,6 +142,57 @@ async def test_one_sku_definition_replay_receipt_and_scope(client, factory, tena
     assert other_actor.status_code == 403
 
 
+async def test_options_expose_pinned_required_attributes(client, factory, tenant_a):
+    company, user, _, base, body = await prepared(client, factory, tenant_a)
+    records = await seed_attributes(factory, tenant_a, company)
+    with tenant_scope(tenant_a):
+        async with factory.begin() as db:
+            revision = await db.get(
+                ProductTypeRevision, uuid.UUID(body["profile"]["product_type_revision_id"])
+            )
+            assert revision is not None
+            revision.attribute_set_revision_id = records["attribute_set_revision"]
+    auth = headers(
+        company,
+        tenant=tenant_a,
+        user=user,
+        permission=[*PERMISSIONS, "attribute_set.read", "attribute_definition.read"],
+    )
+    response = await client.get(
+        base + "/options?product_type_revision_id=" + body["profile"]["product_type_revision_id"],
+        headers=auth,
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["attribute_members"] == [
+        {
+            "definition_id": str(records["attribute_definition"]),
+            "name": "Colour",
+            "value_type": "TEXT",
+            "measurement_dimension": None,
+            "position": 0,
+            "is_required": True,
+            "allow_variant_axis": True,
+            "is_variant_capable": True,
+        }
+    ]
+
+
+async def test_options_accept_published_type_shared_by_goods_and_services(client, factory, tenant_a):
+    company, _, auth, base, body = await prepared(client, factory, tenant_a)
+    revision_id = uuid.UUID(body["profile"]["product_type_revision_id"])
+    with tenant_scope(tenant_a):
+        async with factory.begin() as db:
+            revision = await db.get(ProductTypeRevision, revision_id)
+            assert revision is not None
+            revision.kind = "BOTH"
+    response = await client.get(
+        base + "/options?kind=GOODS&product_type_revision_id=" + str(revision_id),
+        headers=auth,
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["selected_type"]["kind"] == "BOTH"
+
+
 async def test_variant_definitions_and_duplicate_rollback(client, factory, tenant_a):
     company, _, auth, base, body = await prepared(client, factory, tenant_a)
     records = await seed_attributes(factory, tenant_a, company)

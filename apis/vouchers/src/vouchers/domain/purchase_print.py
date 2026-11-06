@@ -11,6 +11,7 @@ import hashlib
 import html
 import json
 import re
+import uuid
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,7 @@ from billing_platform.display import DisplayConfiguration, date, number
 from billing_platform.errors import ConflictError, ValidationFailedError
 from voucher_execution.invoice import InvoiceCalculationDetail, InvoiceInput, InvoiceSupply
 from voucher_execution.printing import PurchasePrintFacts
+from voucher_execution.stock import StockInput
 
 from vouchers.domain.amount_words import amount_in_words
 from vouchers.domain.canvas_print import (
@@ -32,8 +34,8 @@ from vouchers.domain.canvas_print import (
 # Bump the renderer version whenever the PDF's content or its rendering changes, and the layout
 # version whenever the printed presentation (blocks, labels, order) changes. Both are frozen into
 # every job; a job under another version fails as SOURCE_INTEGRITY instead of printing differently.
-RENDERER_VERSION = "purchase-pdf@4"
-LAYOUT_VERSION = "purchase-a4@3"
+RENDERER_VERSION = "purchase-pdf@8"
+LAYOUT_VERSION = "purchase-a4@7"
 # Exit status of a renderer process that ended itself on its own deadline.
 RENDER_DEADLINE_EXIT_CODE = 75
 
@@ -71,6 +73,14 @@ def labels_unchanged(frozen: dict[str, Any], latest: dict[str, Any]) -> bool:
 
 #: HSN (goods) or SAC (services): digits only, as Accounting's tax evidence records them.
 CODE = re.compile(r"[0-9]{4,8}")
+
+
+def uuid_reference(value: str) -> bool:
+    try:
+        reference = uuid.UUID(value)
+        return str(reference) == value and reference.int != 0
+    except ValueError:
+        return False
 
 
 def escaped(value: object) -> str:
@@ -154,6 +164,35 @@ def validate_snapshot(value: dict[str, Any]) -> None:
     ):
         raise ValidationFailedError("print ledger names do not match the bill's lines")
     goods = {str(row["line_key"]) for row in supplies if row.get("supply_kind") == "GOODS"}
+    receipt = document.get("stock_receipt", [])
+    if (
+        not isinstance(receipt, list)
+        or len(receipt) > 100
+        or any(not isinstance(row, dict) for row in receipt)
+    ):
+        raise ValidationFailedError("print receiving lines are invalid")
+    for row in receipt:
+        if set(row) != {"line_key", "warehouse_id", "bin_id", "lot_id", "unit_ids"}:
+            raise ValidationFailedError("print receiving line has invalid fields")
+        if not isinstance(row["line_key"], str):
+            raise ValidationFailedError("print receiving line identity is invalid")
+        for key in ("warehouse_id", "bin_id", "lot_id"):
+            reference = row[key]
+            if reference is not None and (not isinstance(reference, str) or not uuid_reference(reference)):
+                raise ValidationFailedError("print receiving reference is invalid")
+        units = row["unit_ids"]
+        if (
+            row["warehouse_id"] is None
+            or not isinstance(units, list)
+            or len(units) > 200
+            or any(not isinstance(ref, str) or not uuid_reference(ref) for ref in units)
+        ):
+            raise ValidationFailedError("print receiving serial references are invalid")
+        if len(set(units)) != len(units):
+            raise ValidationFailedError("print receiving serial references are repeated")
+    receipt_keys = {row["line_key"] for row in receipt}
+    if receipt and (len(receipt_keys) != len(receipt) or receipt_keys != goods):
+        raise ValidationFailedError("print receiving lines do not match the bill's goods")
     for row in supplies:
         code = row.get("hsn_sac")
         if code is not None and not (isinstance(code, str) and CODE.fullmatch(code)):
@@ -229,6 +268,7 @@ def assemble_snapshot(
     facts: PurchasePrintFacts,
     display: dict[str, Any],
     layout: dict[str, Any],
+    stock: StockInput | None = None,
 ) -> dict[str, Any]:
     """Freeze everything a print shows: saved bill, owner facts, names and display formats.
 
@@ -300,6 +340,21 @@ def assemble_snapshot(
             for row in invoice.allocations
         ],
     }
+    if stock is not None:
+        if {str(line.line_id) for line in stock.lines} != {
+            str(line.line_key) for line in invoice.supplies if line.supply_kind == "GOODS"
+        }:
+            raise ConflictError("print receiving lines do not match the bill's goods")
+        printable["stock_receipt"] = [
+            {
+                "line_key": str(line.line_id),
+                "warehouse_id": str(line.warehouse_id),
+                "bin_id": str(line.bin_id) if line.bin_id else None,
+                "lot_id": str(line.lot_id) if line.lot_id else None,
+                "unit_ids": [str(unit) for unit in line.unit_ids],
+            }
+            for line in stock.lines
+        ]
     snapshot = {
         "renderer_version": RENDERER_VERSION,
         "document": printable,
@@ -361,6 +416,7 @@ def render_html(value: dict[str, Any]) -> str:
     # A bill with goods prints what was bought: HSN/SAC, quantity with its unit, and rate, in
     # place of the base amount that quantity times rate already shows.
     goods = any(row.get("supply_kind") == "GOODS" for row in invoice["supplies"])
+    mixed = goods and any(row.get("supply_kind") != "GOODS" for row in invoice["supplies"])
     for index, supply in enumerate(invoice["supplies"], 1):
         row = amounts[str(supply["line_key"])]
         ledger = ""
@@ -371,6 +427,8 @@ def render_html(value: dict[str, Any]) -> str:
                 if name
                 else '<div class="ledger">Ledger restricted</div>'
             )
+        if mixed and supply.get("supply_kind") != "GOODS":
+            ledger += f'<div class="ledger">Base amount: {money(row["entered"])}</div>'
         charged = sum(
             (Decimal(tax["amount"]) for tax in row["taxes"] if tax["supplier_charged"]), Decimal(0)
         )
@@ -414,7 +472,7 @@ def render_html(value: dict[str, Any]) -> str:
     )
     kind = " ".join(name for name, on in (("goods", goods), ("wide-amounts", wide_amounts)) if on)
     table = (
-        f'<table class="{kind}" aria-label="Purchase lines">'
+        f'<table class="line-table {kind}" aria-label="Purchase lines">'
         '<thead><tr><th scope="col">#</th><th scope="col">Particulars</th>'
         + heading
         + '<th scope="col" class="amount">Net amount</th>'
@@ -469,11 +527,50 @@ def render_html(value: dict[str, Any]) -> str:
             + '<div class="balance"><dt>Balance payable after settlement</dt>'
             f"<dd>{money(balance)}</dd></div></dl>"
         )
+    tax_components: dict[str, dict[str, Decimal]] = {}
+    for line in calculation["lines"]:
+        for tax in line["taxes"]:
+            code = str(tax["code"])
+            component = tax_components.setdefault(
+                code, {"basis": Decimal(0), "amount": Decimal(0), "charged": Decimal(0)}
+            )
+            component["basis"] += Decimal(tax["basis"])
+            component["amount"] += Decimal(tax["amount"])
+            if tax["supplier_charged"]:
+                component["charged"] += Decimal(tax["amount"])
+    tax_breakup = "".join(
+        f'<div><dt>{escaped(code)}</dt><dd>{money(amounts["amount"])}</dd></div>'
+        for code, amounts in sorted(tax_components.items())
+        if amounts["amount"]
+    )
+    tax_rows = "".join(
+        '<tr>'
+        f'<th scope="row">{escaped(code)}</th>'
+        f'<td class="amount">{money(amounts["basis"])}</td>'
+        f'<td class="amount">{money(amounts["amount"])}</td>'
+        f'<td class="amount">{money(amounts["charged"])}</td>'
+        '</tr>'
+        for code, amounts in sorted(tax_components.items())
+        if amounts["amount"]
+    )
+    tax_detail = (
+        '<section class="tax-detail" aria-label="Tax breakdown"><h2>Tax breakdown</h2>'
+        '<table class="tax-table" aria-label="Tax components"><thead><tr>'
+        '<th scope="col">Component</th><th scope="col" class="amount">Taxable basis</th>'
+        '<th scope="col" class="amount">Tax amount</th>'
+        '<th scope="col" class="amount">Charged by supplier</th>'
+        '</tr></thead><tbody>' + tax_rows + '</tbody></table>'
+        '<p>Tax not charged by the supplier is shown separately from supplier payable.</p></section>'
+        if tax_rows else
+        '<section class="tax-detail tax-empty" aria-label="Tax breakdown">'
+        '<h2>Tax breakdown</h2><p>No tax amount recorded on this voucher.</p></section>'
+    )
     totals = (
         '<section class="totals" aria-label="Purchase totals"><h2>Bill summary</h2><dl>'
         f'<div><dt>Commercial total</dt><dd>{money(calculation["commercial_total"])}</dd></div>'
         f'<div><dt>Total tax</dt><dd>{money(calculation["tax_total"])}</dd></div>'
-        '<div><dt>Supplier-charged tax</dt>'
+        + tax_breakup
+        + '<div><dt>Supplier-charged tax</dt>'
         f'<dd>{money(calculation["charged_tax_total"])}</dd></div>'
         f'<div><dt>Rounding</dt><dd>{money(calculation["rounding"])}</dd></div>'
         f'<div class="grand-total"><dt>Supplier payable · {currency}</dt>'
@@ -519,6 +616,33 @@ def render_html(value: dict[str, Any]) -> str:
         if document.get("narration")
         else ""
     )
+    receipt_rows = []
+    descriptions = {
+        str(line["line_key"]): line.get("description") or "Purchase line"
+        for line in invoice["supplies"]
+    }
+    for row in document.get("stock_receipt", []):
+        parts = [f'Warehouse reference: {row["warehouse_id"]}']
+        if row["bin_id"]:
+            parts.append(f'Bin reference: {row["bin_id"]}')
+        if row["lot_id"]:
+            parts.append(f'Batch reference: {row["lot_id"]}')
+        if row["unit_ids"]:
+            parts.append("Serial references: " + ", ".join(row["unit_ids"]))
+        receipt_rows.append(
+            f'<li><strong>{escaped(descriptions[row["line_key"]])}</strong><br>'
+            + escaped(" · ".join(parts)) + "</li>"
+        )
+    receiving = (
+        '<section class="receiving"><h2>Receiving details</h2><p>Saved stock references</p><ul>'
+        + "".join(receipt_rows) + "</ul></section>"
+        if receipt_rows else ""
+    )
+    compact_receiving = (
+        bool(receiving)
+        and len(receipt_rows) == 1
+        and not document["stock_receipt"][0]["unit_ids"]
+    )
     source = (
         f'<footer class="evidence"><p>Saved revision {int(document["revision_number"])} · '
         f'{escaped(value["layout"]["name"])} · {escaped(value["layout"]["version"])}</p>'
@@ -528,11 +652,16 @@ def render_html(value: dict[str, Any]) -> str:
         header
         + identity
         + table
-        + '<div class="closing">'
+        + tax_detail
+        + '<div class="closing"><div class="closing-details">'
         + adjustments
+        + (receiving if compact_receiving else "")
+        + source
+        + '</div>'
         + totals
         + "</div>"
         + narration
+        + ("" if compact_receiving else receiving)
     )
     css = Path(__file__).with_name("purchase_print.css").read_text(encoding="utf-8")
     # Pictures are embedded only by a designed layout, only as checked data: URIs.
@@ -552,7 +681,8 @@ def render_html(value: dict[str, Any]) -> str:
         '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; '
         f"style-src 'unsafe-inline'; img-src {images}\">"
         "<title>Purchase voucher</title><style>" + css + "</style></head><body>"
-        "<main>" + body + source + "</main></body></html>"
+        "<main>" + body + (source if value["layout"]["source"] == "CUSTOM" else "")
+        + "</main></body></html>"
     )
 
 

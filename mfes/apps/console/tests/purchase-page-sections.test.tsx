@@ -16,7 +16,7 @@ describe('PurchasePageHeader', () => {
   it('is the page heading, with the scope in plain words and the facts as chips', () => {
     render(<PurchasePageHeader {...props} />);
     expect(screen.getByRole('heading', { level: 1, name: 'New purchase' })).toBeVisible();
-    expect(screen.getByText(/with or without GST\. Purchases of stock cannot be recorded on this screen yet/)).toBeVisible();
+    expect(screen.getByText(/expenses, services, products, or a mix, with or without GST/)).toBeVisible();
     for (const chip of ['Not saved', 'Account purchases', 'Amounts in INR']) expect(screen.getByText(chip)).toBeVisible();
     expect(screen.getByRole('link', { name: 'Purchases' })).toHaveAttribute('href', '/vouchers');
   });
@@ -50,6 +50,7 @@ describe('PurchasePageHeader', () => {
     const button = screen.getByRole('button', { name: 'Print' });
     expect(button).toBeDisabled();
     expect(button).toHaveAccessibleDescription('Save your changes before printing.');
+    expect(screen.getByText('Save your changes before printing.')).toBeVisible();
     expect(screen.queryByRole('link', { name: 'Print' })).toBeNull();
   });
 
@@ -220,6 +221,7 @@ describe('PurchaseLifecycle', () => {
     reason: '', onReason: vi.fn(), transitions: ['submit', 'cancel'], onTransition: vi.fn(),
     executionReady: true, executing: false, onPost: vi.fn(), history: [], historyCursor: null, onHistory: vi.fn(), onRevision: vi.fn(),
     operation: null as PurchaseOperation | null, onRefresh: vi.fn(), onRecover: vi.fn(),
+    today: '2026-11-06', onReverse: vi.fn(), onReplacement: vi.fn(),
   };
 
   it('says there are no steps yet, rather than showing nothing, once the history has been read and is empty', () => {
@@ -288,6 +290,57 @@ describe('PurchaseLifecycle', () => {
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
     rerender(<PurchaseLifecycle {...base} accepted reason="abc" />);
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled();
+  });
+
+  it('requires an explicit confirmation before cancelling, and dismissing it sends nothing', () => {
+    const onTransition = vi.fn();
+    render(<PurchaseLifecycle {...base} accepted reason="Duplicate supplier bill" onTransition={onTransition} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    const dialog = screen.getByRole('dialog', { name: 'Cancel this Purchase bill?' });
+    expect(onTransition).not.toHaveBeenCalled();
+    expect(within(dialog).getByText('Reason: Duplicate supplier bill')).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Keep bill' })).toHaveFocus();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Keep bill' }));
+    expect(screen.queryByRole('dialog', { name: 'Cancel this Purchase bill?' })).not.toBeInTheDocument();
+    expect(onTransition).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Cancel this Purchase bill?' })).getByRole('button', { name: 'Cancel Purchase' }));
+    expect(onTransition).toHaveBeenCalledTimes(1);
+    expect(onTransition).toHaveBeenCalledWith('cancel');
+  });
+
+  it('invalidates a cancellation confirmation when the saved version changes', () => {
+    const onTransition = vi.fn();
+    const { rerender } = render(<PurchaseLifecycle {...base} reason="Duplicate supplier bill" onTransition={onTransition} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('dialog', { name: 'Cancel this Purchase bill?' })).toBeVisible();
+    rerender(<PurchaseLifecycle {...base} record={{ ...voucher('DRAFT'), row_version: 6 }} reason="Duplicate supplier bill" onTransition={onTransition} />);
+    expect(screen.queryByRole('dialog', { name: 'Cancel this Purchase bill?' })).not.toBeInTheDocument();
+    expect(onTransition).not.toHaveBeenCalled();
+  });
+
+  it('requires authority, reason and confirmation before reversing a posted Purchase', () => {
+    const onReverse = vi.fn();
+    const posted = voucher('POSTED');
+    const { rerender } = render(<PurchaseLifecycle {...base} record={posted} transitions={[]} onReverse={onReverse} />);
+    expect(screen.getByRole('button', { name: 'Full edit posted Purchase' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Cancel posted Purchase' })).toBeDisabled();
+    rerender(<PurchaseLifecycle {...base} record={posted} transitions={[]} reason="Supplier corrected invoice" onReverse={onReverse} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel posted Purchase' }));
+    const dialog = screen.getByRole('dialog', { name: 'Cancel this posted Purchase?' });
+    expect(onReverse).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Keep posted bill' }));
+    expect(onReverse).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Full edit posted Purchase' }));
+    const correction = screen.getByRole('dialog', { name: 'Correct this posted Purchase?' });
+    expect(within(correction).getByLabelText('Correction posting date')).toHaveValue('2026-11-06');
+    fireEvent.click(within(correction).getByRole('button', { name: 'Reverse and edit' }));
+    expect(onReverse).toHaveBeenCalledWith('EDIT', '2026-11-06');
+    rerender(<PurchaseLifecycle {...base} record={posted} transitions={[]} reason="Supplier corrected invoice" allowed={action => action !== 'reverse'} onReverse={onReverse} />);
+    expect(screen.queryByRole('button', { name: 'Full edit posted Purchase' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Cancel posted Purchase' })).toBeNull();
+    rerender(<PurchaseLifecycle {...base} record={voucher('REVERSED')} transitions={[]} onReverse={onReverse} />);
+    expect(screen.getByRole('button', { name: 'Create linked replacement draft' })).toBeEnabled();
   });
 
   it('offers no action while a posting is running, and says why', () => {
@@ -394,7 +447,7 @@ describe('PurchaseLifecycle', () => {
     expect(screen.getByText('Reconciliation pending')).toBeVisible();
     rerender(<PurchaseLifecycle {...base} record={voucher('POSTED')} accepted operation={operation('COMMITTED')} transitions={[]} />);
     expect(screen.queryByText('Reconciliation pending')).toBeNull();
-    expect(screen.getByText('Posted Purchase is immutable')).toBeVisible();
+    expect(screen.getByText('Posted Purchase is retained')).toBeVisible();
   });
 
   it('ignores an execution that belongs to another voucher, and links to the saved voucher', () => {

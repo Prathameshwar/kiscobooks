@@ -16,6 +16,7 @@ export function financeSourceStale(verifiedAt:string|null|undefined,now=Date.now
 /** Resume an admitted build after a transient read failure; rebuild a failed chain once. */
 export async function prepareFinanceSource(base:string,previous:string,signal:AbortSignal,command:Command,candidate:Pending,onWait:()=>void):Promise<Source>{
   const strategies=previous&&candidate.current?.strategy!=='FRESH'?['REFRESH','FRESH']:['FRESH'];
+  let lastFailure:string|null=null;
   for(const strategy of strategies){
     let source:Source;
     try{
@@ -49,9 +50,11 @@ export async function prepareFinanceSource(base:string,previous:string,signal:Ab
     }
     candidate.current=null;
     if(source.status==='READY')return source;
+    lastFailure=source.failure_code??null;
     if(source.strategy==='FRESH')break;
   }
-  throw new FinanceSourceError('Accounting data could not be verified after rebuilding. Retry when the accounting source is available.');
+  if(lastFailure==='SOURCE_VERIFICATION_FAILED')throw new FinanceSourceError('The Accounting source rebuild failed verification and was quarantined. No new report was published. Ask an administrator to review its source generation.');
+  throw new FinanceSourceError('The Accounting source rebuild did not complete. No new report was published. Review the source generation before retrying.');
 }
 
 export function financeRunFailure(code:string|null|undefined,title:string):string{

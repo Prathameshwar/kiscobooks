@@ -65,6 +65,11 @@ describe('sending a taxed bill', () => {
     expect(() => purchaseInput(draft(), binding, facts())).toThrow(/does not allow them/);
     expect(purchaseInput(draft('NONE'), binding).invoice!.tax).toEqual({ profile: 'UNTAXED_ACCOUNT' });
   });
+  it('requires a compatible supply kind for an untaxed account bill', () => {
+    metadata.configuration.policy.invoice = { allowed_supply_kinds: ['SERVICE'] };
+    expect(() => purchaseInput(draft('NONE'), binding)).toThrow(/does not allow untaxed account lines/);
+    expect(purchaseInput(draft(), binding, facts()).invoice!.supplies[0]!.supply_kind).toBe('SERVICE');
+  });
   it('replaces a saved bill’s tax block, not merges into it', () => {
     binding.previous = { ...purchaseInput(draft('NONE'), binding) };
     const wire = purchaseInput(draft(), binding, facts());

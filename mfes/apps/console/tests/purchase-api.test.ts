@@ -113,7 +113,7 @@ describe('Purchase wire boundary', () => {
     const value = draft(); (value.details[key] as unknown[]).push({ id: 'unsupported' });
     expect(() => purchaseInput(value, binding)).toThrow(/cannot save/);
   });
-  it('refuses goods in the account profile', () => { const value = draft(); value.mode = 'ITEMS'; expect(() => purchaseInput(value, binding)).toThrow(/Product or Mixed Purchase type/); });
+  it('refuses goods in the account profile', () => { const value = draft(); value.mode = 'ITEMS'; expect(() => purchaseInput(value, binding)).toThrow(/not allowed by the selected voucher type/); });
   it('refuses a wrong-company source', () => { binding.sources.set(native.party!.id, { ...native.party!, company: id(99) }); expect(() => purchaseInput(draft(), binding)).toThrow(/supplier/); });
   it('refuses a payable belonging to another supplier', () => { binding.sources.set(native.payable!.id, { ...native.payable!, partyId: id(99) }); expect(() => purchaseInput(draft(), binding)).toThrow(/payable/); });
   it('requires field access for every added header', () => { delete metadata.native.properties!.document_date; expect(() => purchaseInput(draft(), binding)).toThrow(/document_date/); });
@@ -160,6 +160,20 @@ describe('supplier advance owner facts', () => {
   });
 });
 describe('saved revisions and authoritative evidence', () => {
+  it('rehydrates saved line discounts with zero-padded service decimals', () => {
+    metadata.configuration.policy.invoice!.manual_discounts_allowed = true;
+    const entry = draft(); entry.lines[0]!.discount = '2.5';
+    const wire = purchaseInput(entry, binding);
+    const saved = voucher(); saved.invoice = wire.invoice;
+    const savedComponents = saved.invoice!.components as { value: string }[];
+    savedComponents[0]!.value = '2.50000000';
+    const reopened = purchaseFromVoucher(saved, company, metadata);
+    expect(reopened.draft.lines[0]!.discount).toBe('2.5000');
+    expect(reopened.draft.details.components).toEqual([]);
+    expect(purchaseInput(reopened.draft, reopened.binding).invoice!.components![0]!.value).toBe('2.5000');
+    savedComponents[0]!.value = '2.50000001';
+    expect(() => purchaseFromVoucher(saved, company, metadata)).toThrow(/broader Purchase profile/);
+  });
   it('keeps row version, revision number and revision ID distinct', () => {
     const value = voucher(); const result = purchaseFromVoucher(value, company, metadata);
     expect(result.draft.lines[0]!.key).toBe((value.invoice!.supplies as { line_key: string }[])[0]!.line_key);

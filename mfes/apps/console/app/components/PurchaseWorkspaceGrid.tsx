@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, EntryGrid, SearchSelect, Select, useDisplayConfig, useFormatters, type EntryColumn } from '@janso/ui';
-import { PurchaseQuickCreateButton } from './PurchaseQuickCreateButton';
+import { PurchaseProductCreateLink, PurchaseQuickCreateButton } from './PurchaseQuickCreateButton';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { PurchaseMobileLines } from './PurchaseMobileLines';
 import { isBlankPurchaseLine, purchaseLineAmounts, purchaseSubjectLookup, type PurchaseLine, type PurchaseLineKind } from '../lib/purchase-workspace';
@@ -9,9 +9,12 @@ import * as D from '../lib/fixed-decimal';
 import type { QuickCreateTarget } from '../lib/purchase-quick-create';
 import { isTaxed } from '../lib/purchase-tax';
 import type { PurchaseWorkspaceSectionProps } from './PurchaseWorkspaceHeader';
+import { PurchaseSelectionBalance } from './PurchaseSelectionBalance';
+import { PurchaseProductHistory } from './PurchaseProductHistory';
+import { PurchaseBatchSummary } from './PurchaseBatchSummary';
 
-export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disabled, onDetails, onEdit, onUnstorable, keepGrid, onCreateAccount }: PurchaseWorkspaceSectionProps & {
-  onEdit: (key: string) => void; keepGrid: boolean; onCreateAccount?: (target: QuickCreateTarget) => void;
+export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disabled, onDetails, onEdit, onUnstorable, keepGrid, onCreateAccount, canCreateProduct }: PurchaseWorkspaceSectionProps & {
+  onEdit: (key: string) => void; keepGrid: boolean; onCreateAccount?: (target: QuickCreateTarget) => void; canCreateProduct?: boolean;
   onDetails: (key: string) => void; onUnstorable: (key: string, field: string, problem: string | null) => void;
 }) {
   const config = useDisplayConfig();
@@ -20,6 +23,7 @@ export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disab
   const lastFocusedLine = useRef<string | undefined>(undefined);
   const [compact, setCompact] = useState(false);
   const [retainGrid, setRetainGrid] = useState(false);
+  const [activeLine, setActiveLine] = useState<string | null>(null);
   useLayoutEffect(() => { if (compact && keepGrid) setRetainGrid(true); else if (!compact) setRetainGrid(false); }, [compact, keepGrid]);
   useLayoutEffect(() => {
     const measure = () => {
@@ -48,13 +52,14 @@ export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disab
   const problem = (line: PurchaseLine, field: string) => problems.find(entry => entry.lineKey === line.key && entry.field === field)?.message;
   const hasItems = draft.mode !== 'ACCOUNTS' || draft.lines.some(line => line.kind === 'ITEM' && !isBlankPurchaseLine(line));
   const hasKinds = draft.mode === 'MIXED' || draft.lines.some(line => !isBlankPurchaseLine(line) && line.kind !== (draft.mode === 'ACCOUNTS' ? 'ACCOUNT' : 'ITEM'));
+  const selectedSupplierName = policy.suppliers.find(row => row.id === draft.supplier)?.label;
   const columns: EntryColumn<PurchaseLine>[] = [];
   if (hasKinds) columns.push({ key: 'kind', label: 'Line type', kind: 'custom', value: line => line.kind,
     render: (line, cell) => <span className="janso-entry-workspace__kind" {...cell.cellProps} aria-label={undefined} ref={cell.registerRef}><Select label={cell.cellProps['aria-label']} hideLabel value={line.kind} disabled={cell.disabled}
       options={[{ value: 'ITEM', label: 'Item' }, { value: 'ACCOUNT', label: 'Account' }]}
       onChange={kind => dispatch({ type: 'kind', key: line.key, kind: kind as PurchaseLineKind })} /></span> });
   columns.push({ key: 'subject', label: hasKinds ? 'Item or account' : draft.mode === 'ACCOUNTS' ? 'Expense / service account' : 'Item', kind: 'custom', pin: 'start', required: true,
-    value: line => line.subject, renderKey: line => `${line.kind}:${line.label}:${line.unit}:${onCreateAccount ? 'create' : ''}`, problem: line => problem(line, 'subject'),
+    value: line => line.subject, renderKey: line => `${line.kind}:${line.label}:${line.unit}:${onCreateAccount ? 'account' : ''}:${canCreateProduct ? 'product' : ''}:${policy.stockCompany ?? ''}:${policy.supplierHistoryAccess ? 'history' : ''}:${draft.supplier}:${selectedSupplierName ?? ''}:${activeLine === line.key ? 'active' : ''}:${draft.postingDate}:${policy.currency}:${line.stock?.warehouseId ?? ''}:${policy.balanceAccess?.stock ? 'stock' : ''}:${policy.balanceAccess?.ledger ? 'ledger' : ''}`, problem: line => problem(line, 'subject'),
     render: (line, cell) => {
       const lookup = <span className="janso-entry-cell__lookup" {...cell.cellProps} aria-label={undefined} ref={cell.registerRef}>
         <SearchSelect label={cell.cellProps['aria-label']} hideLabel clearable={false} openOnFocus={false} scopeKey={line.kind}
@@ -62,17 +67,27 @@ export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disab
           selected={line.subject ? { id: line.subject, label: line.label } : null} disabled={cell.disabled}
           required
           placeholder={line.kind === 'ITEM' ? 'Find an item' : 'Find an expense account'} error={problem(line, 'subject')}
-          onChange={(id, option) => dispatch({ type: 'subject', key: line.key, subject: policy.subjects.find(subject => subject.id === id && subject.kind === line.kind) ?? (id && option ? { id, label: option.label, meta: option.meta ?? '', kind: line.kind, unit: '' } : null) })} />
+          onChange={(id, option) => { setActiveLine(line.key); dispatch({ type: 'subject', key: line.key, subject: policy.subjects.find(subject => subject.id === id && subject.kind === line.kind) ?? (id && option ? { id, label: option.label, meta: option.meta ?? '', kind: line.kind, unit: '' } : null) }); }} />
       </span>;
+      const showBalance = activeLine === line.key && !!policy.stockCompany && !!line.subject;
+      const showHistory = line.kind === 'ITEM' && !!line.subject && !!policy.stockCompany && !!policy.supplierHistoryAccess;
+      const choice = <span className="janso-purchase-subject-choice">{lookup}{showBalance ? <PurchaseSelectionBalance company={policy.stockCompany!} kind={line.kind} subject={line.subject} postingDate={draft.postingDate} currency={policy.currency} warehouse={line.kind === 'ITEM' ? line.stock?.warehouseId : undefined} unit={line.unit} permitted={line.kind === 'ITEM' ? !!policy.balanceAccess?.stock : !!policy.balanceAccess?.ledger} /> : null}</span>;
+      const history = showHistory ? <span className="janso-entry-cell__action"><PurchaseProductHistory key={`${policy.stockCompany}:${draft.supplier}:${line.subject}`} company={policy.stockCompany!} supplier={draft.supplier} supplierName={selectedSupplierName} product={line.subject} name={line.label || 'Product'} /></span> : null;
       // Outside the cell's own element: the grid reads Enter inside a cell as "next row", which would swallow the button's.
-      return onCreateAccount && line.kind === 'ACCOUNT'
-        ? <span className="janso-entry-cell__with-action">{lookup}<span className="janso-entry-cell__action"><PurchaseQuickCreateButton label={`Create a new expense account for line ${draft.lines.indexOf(line) + 1}`} disabled={cell.disabled} onClick={() => onCreateAccount({ lineKey: line.key })} data-quick-create="account" /></span></span>
-        : lookup;
+      const create = canCreateProduct && line.kind === 'ITEM'
+        ? <span className="janso-entry-cell__action"><PurchaseProductCreateLink line={draft.lines.indexOf(line) + 1} disabled={cell.disabled} /></span>
+        : onCreateAccount && line.kind === 'ACCOUNT'
+          ? <span className="janso-entry-cell__action"><PurchaseQuickCreateButton label={`Create a new expense account for line ${draft.lines.indexOf(line) + 1}`} disabled={cell.disabled} onClick={() => onCreateAccount({ lineKey: line.key })} data-quick-create="account" /></span>
+          : null;
+      return history || create ? <span className="janso-entry-cell__with-action">{choice}{history}{create}</span> : choice;
     } });
   // A live account bill carries its own narration per line, so it is typed here rather than hidden behind line details.
   if (policy.live && !hasItems) columns.push({ key: 'description', label: 'Description', kind: 'text', placeholder: 'Defaults to the account name', value: line => line.description, problem: line => problem(line, 'description') });
   if (hasItems) {
     columns.push({ key: 'unit', label: 'Unit', kind: 'derived', value: line => line.kind === 'ITEM' ? line.unit || '—' : '—' });
+    if (policy.stockCompany && draft.lines.some(line => line.kind === 'ITEM' && !!line.stock?.lotId)) columns.push({ key: 'batch', label: 'Batch', kind: 'custom', value: line => line.stock?.lotId ?? '',
+      render: (line, cell) => <span {...cell.cellProps} ref={cell.registerRef}>{line.kind === 'ITEM' && line.stock?.lotId && policy.stockCompany
+        ? <PurchaseBatchSummary company={policy.stockCompany} item={line.subject} batchId={line.stock.lotId} permitted={!!policy.canReadBatch} /> : '—'}</span> });
     for (const [key, label] of [['received', 'Receipt qty'], ['billed', 'Billed qty'], ['rate', 'Rate']] as const) {
       columns.push({ key, label, kind: key === 'rate' ? 'amount' : 'quantity', align: 'end', required: true,
         precision: key === 'rate' ? 4 : undefined,
@@ -99,9 +114,9 @@ export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disab
   return <section ref={panel} className="janso-entry-workspace__panel janso-entry-workspace__line-panel" aria-label="Purchase line entry" onFocusCapture={event => {
     const target = event.target as HTMLElement;
     const key = target.closest<HTMLElement>('[data-entry-row]')?.dataset.entryRow ?? target.closest<HTMLElement>('[data-purchase-mobile-line]')?.dataset.purchaseMobileLine;
-    if (key) lastFocusedLine.current = key;
+    if (key) { lastFocusedLine.current = key; if (target.closest('[data-entry-col="subject"]')) setActiveLine(key); }
   }}>
-    <div className="janso-entry-workspace__section-head"><div><h2>Bill lines</h2><p className="janso-entry-workspace__caption">{hasItems ? draft.details.receiptIntent === 'REFERENCE' ? 'Match billed quantities to existing receipts. Matched goods will not be received again.' : draft.details.receiptIntent === 'DEFERRED' ? 'Receipt quantities are planned for later. Billed quantities determine this bill.' : 'Receipt and billed quantities stay separate. Rates are entered manually.' : 'Enter expenses and services directly, without quantities.'}</p></div>
+    <div className="janso-entry-workspace__section-head"><div><h2>Bill lines</h2><p className="janso-entry-workspace__caption">{hasItems ? policy.live ? 'Enter the item and quantity, then open Line details to choose its warehouse, bin, batch and serials as needed.' : draft.details.receiptIntent === 'REFERENCE' ? 'Match billed quantities to existing receipts. Matched goods will not be received again.' : draft.details.receiptIntent === 'DEFERRED' ? 'Receipt quantities are planned for later. Billed quantities determine this bill.' : 'Receipt and billed quantities stay separate. Rates are entered manually.' : 'Enter expenses and services directly, without quantities.'}</p></div>
       <span className="janso-entry-workspace__caption">{draft.lines.filter(line => !isBlankPurchaseLine(line)).length} entered</span></div>
     {compact && (keepGrid || retainGrid) ? <div className="janso-entry-workspace__scroll-hint"><p>Finish editing in the grid, then switch to line cards. Scroll across to reach the field; your typed value is retained.</p><Button type="button" variant="ghost" disabled={keepGrid} onClick={() => { focusLine.current = draft.lines.find(line => line.key === lastFocusedLine.current)?.key ?? draft.lines[0]?.key; setRetainGrid(false); }}>Use line cards</Button></div> : null}
     {compact && !keepGrid && !retainGrid ? <PurchaseMobileLines draft={draft} policy={policy} dispatch={dispatch} problems={problems} disabled={disabled} onEdit={onEdit} /> : <>
@@ -111,7 +126,7 @@ export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disab
       onAddRow={() => dispatch({ type: 'add' })} onInsertRow={after => dispatch({ type: 'add', after })}
       onRemoveRow={key => dispatch({ type: 'remove', key })} onDuplicateRow={key => dispatch({ type: 'duplicate', key })}
       onMoveRow={(key, by) => dispatch({ type: 'move', key, by })} isRowBlank={isBlankPurchaseLine}
-      onExpandRow={onDetails} expandLabel="Line details" onCellUnstorable={onUnstorable}
+      onExpandRow={onDetails} expandLabel="Line and stock details" onCellUnstorable={onUnstorable}
       rowState={line => problems.some(entry => entry.lineKey === line.key) ? 'invalid' : undefined}
       rowNote={line => { const note = problems.find(entry => entry.lineKey === line.key); return note ? { message: note.message, tone: 'error' } : undefined; }} />
     <div className="janso-entry-workspace__grid-help"><span><kbd>Enter</kbd> next row · <kbd>Ctrl Enter</kbd> add line · <kbd>Alt Enter</kbd> details</span><span>{isTaxed(draft.tax) ? `Amounts in ${config.currency} · before GST, which Accounting calculates` : plainBill ? `Amounts in ${config.currency} · no tax on this bill` : `Net amounts in ${config.currency} · after line discount, before bill adjustments and tax`}</span></div>

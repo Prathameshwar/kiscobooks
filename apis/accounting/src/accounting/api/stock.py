@@ -1,18 +1,19 @@
 """Native stock reads and dated account configuration; effects use voucher execution."""
 
 import uuid
+from decimal import Decimal
 from typing import Annotated, Literal
 
 from billing_platform.authz import ScopePath
 from billing_platform.db import tenant_scope
 from billing_platform.db.access import company_object
-from billing_platform.errors import ConflictError
+from billing_platform.errors import ConflictError, PermissionDeniedError
 from billing_platform.idempotency import has_retained_command
 from billing_platform.listing import Page
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from voucher_execution.contracts import DelegatedAuthority
 
@@ -210,6 +211,36 @@ async def configuration(
             "accounting.stock.configure", target=ScopePath(company_id=company_id)
         )
         else None,
+    )
+
+
+@router.get("/positions/balance", response_model=s.StockPositionBalance)
+async def position_balance(
+    company_id: uuid.UUID,
+    query: Annotated[s.StockPositionBalanceQuery, Query()],
+    current: Access = Depends(access),
+    db: AsyncSession = Depends(session),
+) -> s.StockPositionBalance:
+    """Current company-owned stock physically in warehouses, summed in one indexed read."""
+    statement, columns, allowed = view(current, STOCK_POSITION)
+    required = {"item_id", "warehouse_id", "custody_kind", "quantity"}
+    if not required.issubset(allowed):
+        raise PermissionDeniedError("stock balance fields are not readable")
+    statement = statement.where(
+        columns["item_id"] == query.item_id,
+        columns["custody_kind"] == "WAREHOUSE",
+    )
+    if query.warehouse_id is not None:
+        statement = statement.where(columns["warehouse_id"] == query.warehouse_id)
+    quantity = await db.scalar(
+        statement.with_only_columns(
+            func.coalesce(func.sum(columns["quantity"]), 0), maintain_column_froms=True
+        )
+    )
+    return s.StockPositionBalance(
+        item_id=query.item_id,
+        warehouse_id=query.warehouse_id,
+        quantity=quantity or Decimal("0.0000"),
     )
 
 

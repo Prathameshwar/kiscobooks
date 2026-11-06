@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import datetime as dt
+import logging
+import time
 import uuid
 from typing import Literal
 
@@ -12,8 +14,9 @@ import httpx
 from billing_platform.db import create_engine, create_session_factory, tenant_scope
 from billing_platform.delivery import OutgoingMessage, PublishResult, publish_batch
 from billing_platform.messages import MessageEnvelope
-from identity_posting import PostingClient
-from identity_posting.stock import StockPostingClient, StockTerminalRequest
+from billing_platform.outbox_ops import inventory
+from identity_posting import PostingClient, ReservationRejectedError
+from identity_posting.stock import StockPostingClient, StockReservationIntent, StockTerminalRequest
 from pydantic import Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -25,6 +28,7 @@ EVENT_TYPES = frozenset({"accounting.company_posting.confirm", "accounting.compa
 STOCK_EVENT_TYPES = frozenset(
     {"accounting.stock_posting.confirm", "accounting.stock_posting.abort"}
 )
+LOG = logging.getLogger("accounting.posting_delivery")
 
 
 def check_configuration(settings: Settings) -> None:
@@ -44,6 +48,40 @@ class IntentPayload(Input):
 
 class StockIntentPayload(IntentPayload):
     stock_execution_id: uuid.UUID
+
+
+async def deliver_stock_terminal(
+    client: StockPostingClient,
+    tenant_id: uuid.UUID,
+    payload: StockIntentPayload,
+    outcome: Literal["confirmed", "aborted"],
+    intent: StockReservationIntent,
+) -> None:
+    """Terminate a retained reservation before offering an abort fallback.
+
+    An older reservation can have a narrower feature set than the now-correct
+    accepted command. Identity already knows its immutable reservation; passing
+    a newly reconstructed intent would make its request hash differ. Only a
+    missing reservation needs the retained intent to seal an abort.
+    """
+    reference = (
+        "accounting-stock:" if payload.reference_kind == "STOCK" else "accounting-journal:"
+    ) + str(payload.operation_id)
+    terminal = StockTerminalRequest(terminal_reference=reference, posted_at=payload.posted_at)
+    try:
+        await client.terminal(
+            tenant_id, payload.company_id, payload.operation_id, outcome, terminal
+        )
+    except ReservationRejectedError as error:
+        if outcome != "aborted" or error.status_code != 404:
+            raise
+        await client.terminal(
+            tenant_id,
+            payload.company_id,
+            payload.operation_id,
+            outcome,
+            StockTerminalRequest(terminal_reference=reference, intent=intent),
+        )
 
 
 def connection(settings: Settings) -> tuple[httpx.AsyncClient, PostingClient] | None:
@@ -125,21 +163,8 @@ async def deliver(
                         configuration_hash=payload.configuration_hash,
                         features=payload.features,
                     )
-            await stock_client.terminal(
-                envelope.tenant_id,
-                payload.company_id,
-                payload.operation_id,
-                outcome,
-                StockTerminalRequest(
-                    terminal_reference=(
-                        "accounting-stock:"
-                        if payload.reference_kind == "STOCK"
-                        else "accounting-journal:"
-                    )
-                    + str(payload.operation_id),
-                    posted_at=payload.posted_at,
-                    intent=body if outcome == "aborted" else None,
-                ),
+            await deliver_stock_terminal(
+                stock_client, envelope.tenant_id, payload, outcome, body
             )
             return True
         assert client is not None
@@ -170,7 +195,10 @@ async def deliver(
         limit=limit,
         timeout_seconds=15,
         event_types=selected_events,
-        maximum_attempts=12,
+        # Financial confirmations must not become permanently silent after a
+        # schema or network fault. Keep retrying at a bounded five-minute rate.
+        maximum_attempts=None,
+        retry_cap_seconds=300,
     )
 
 
@@ -185,9 +213,26 @@ async def run(settings: Settings, *, once: bool) -> None:
     stock_client = configured_stock[1].client if configured_stock else None
     engine = create_engine(settings.database_url)
     factory = create_session_factory(engine, guarded=True)
+    last_backlog_check = 0.0
     try:
         while True:
             result = await deliver(factory, client, stock_client=stock_client)
+            now = time.monotonic()
+            if now - last_backlog_check >= 60:
+                last_backlog_check = now
+                routes = (EVENT_TYPES if client is not None else frozenset()) | (
+                    STOCK_EVENT_TYPES if stock_client is not None else frozenset()
+                )
+                status = await inventory(factory, routes, maximum_attempts=12, sample_limit=5)
+                if status["pending"] and status["oldest_age_seconds"] >= 60:
+                    LOG.error(
+                        "posting confirmation backlog pending=%s aged_seconds=%s "
+                        "attempts_12_or_more=%s sample=%s",
+                        status["pending"],
+                        status["oldest_age_seconds"],
+                        status["exhausted"],
+                        status["sample"],
+                    )
             if once:
                 return
             await asyncio.sleep(1 if result.confirmed else 5)

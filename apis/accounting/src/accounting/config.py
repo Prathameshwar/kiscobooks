@@ -123,7 +123,10 @@ class Settings(BaseSettings):
         if self.identity_posting_url is not None:
             url = httpx.URL(self.identity_posting_url)
             if (
-                url.scheme != "https"
+                (
+                    url.scheme != "https"
+                    and not (url.scheme == "http" and url.host in {"127.0.0.1", "::1"})
+                )
                 or not url.host
                 or url.path not in {"", "/"}
                 or url.query

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { AmountField, Button, Checkbox, CustomFields, Drawer, Modal, Notice, PageHeader, SearchSelect, Select, Skeleton, TextField, businessToday, customPatch, useDisplayConfig, useFormatters, type SearchSelectLoader } from '@janso/ui';
+import { AmountField, Button, Checkbox, CustomFields, Drawer, Modal, Notice, PageHeader, SearchSelect, Select, Skeleton, SplitButton, TextField, businessToday, customPatch, useDisplayConfig, useFormatters, type SearchSelectLoader } from '@janso/ui';
 import { PurchaseWorkspace } from './PurchaseWorkspace';
 import { ExpenseAccountQuickCreate, SupplierQuickCreate } from './PurchaseQuickCreate';
 import { PurchaseSupportingFiles } from './PurchaseSupportingFiles';
@@ -29,6 +29,7 @@ import { purchaseDueDate } from '../lib/purchase-workspace-details';
 import { DUPLICATE_BILL_CODE, PURCHASE_BROADER_CAPTURE, duplicateBillQuery, duplicateBillsFromFields, verifyDuplicateBills, type DuplicateBill, verifyPurchaseFieldSet, livePurchasePolicy, purchaseAdvancePage, purchaseBase, purchaseFromVoucher, purchaseInput, purchasePaymentAccount, purchasePendingKey, purchaseWireKey, readPurchasePending, verifyPurchaseCalculation, verifyPurchaseOperation, verifyPurchaseVoucher, type PurchaseAdvance, type PurchaseBinding, type PurchaseCalculation, type PurchaseCapabilities, type PurchaseOperation, type PurchaseOperationTarget, type PurchasePending, type PurchaseVoucher } from '../lib/purchase-api';
 import { SUPPLIER_BALANCE_PERMISSION, SUPPLIER_BALANCE_TIMEOUT_MS, balanceDate, readSupplierBalance, type SupplierBalance } from '../lib/purchase-supplier-balance';
 import { trackingId } from '../lib/stock-tracking-resources';
+import { purchaseTracking, type PurchaseTracking } from '../lib/purchase-stock';
 import { typeHref, TYPES_ROOT } from '../lib/voucher-type-routes';
 import { offeredPurchaseTypes } from '../lib/voucher-types';
 import * as D from '../lib/fixed-decimal';
@@ -38,6 +39,7 @@ type Props = { company: string; currency: string; actor: string; year: string; c
   /** The company's country: the default for a supplier created from the bill. */ companyCountry?: string };
 type PurchaseType = { id: string; company_id: string; kind: string; profile: string; status?: string; name?: string; code?: string };
 type Ready = { metadata: FieldSet; type: PurchaseType; capabilities: PurchaseCapabilities };
+type PurchaseMutation = { kind: 'voucher'; value: PurchaseVoucher } | { kind: 'operation'; value: PurchaseOperation };
 
 /** Production boundary. The synthetic review adapter is never used by this screen. */
 export function PurchaseEntryConnected(props: Props) {
@@ -113,9 +115,9 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
   });
   const [baseline, setBaseline] = useState(() => JSON.stringify(draft));
   const [duplicate, setDuplicate] = useState<{ request: ServiceRequest; matches: DuplicateBill[]; incomplete: boolean } | null>(null), [similar, setSimilar] = useState<DuplicateBill[]>([]);
-  const [record, setRecord] = useState<PurchaseVoucher | null>(null), [policy, setPolicy] = useState<PurchaseWorkspacePolicy>(() => livePurchasePolicy(currency, ready.metadata));
+  const [record, setRecord] = useState<PurchaseVoucher | null>(null), [policy, setPolicy] = useState<PurchaseWorkspacePolicy>(() => livePurchasePolicy(currency, ready.metadata, company));
   const [calculation, setCalculation] = useState<{ value: PurchaseCalculation; revision: string } | null>(null);
-  const [pending, setPending] = useState(false), [retained, setRetained] = useState<PurchasePending | null>(null), [failure, setFailure] = useState(''), [notice, setNotice] = useState('');
+  const [pending, setPending] = useState(false), [completing, setCompleting] = useState(false), [retained, setRetained] = useState<PurchasePending | null>(null), [failure, setFailure] = useState(''), [notice, setNotice] = useState('');
   /** A saved bill (for example a product bill) that only voucher review can show. */
   const [elsewhere, setElsewhere] = useState<string | null>(null);
   const [recoveryBlocked, setRecoveryBlocked] = useState(false);
@@ -133,9 +135,11 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
   const [historyCursor, setHistoryCursor] = useState<string | null>(null), [historyLoaded, setHistoryLoaded] = useState(false), [snapshot, setSnapshot] = useState<PurchaseVoucher | null>(null), [snapshotFiles, setSnapshotFiles] = useState<PurchaseStoredFile[]>([]);
   const [transient, setTransient] = useState(false), [confirmation, setConfirmation] = useState<(() => void) | null>(null);
   const [loaded, setLoaded] = useState(!initialVoucherId);
+  const [replacementSource, setReplacementSource] = useState<string | null>(null);
   const [creating, setCreating] = useState<{ kind: 'supplier' } | { kind: 'account'; target: QuickCreateTarget } | null>(null), [focusAfter, setFocusAfter] = useState<readonly string[] | null>(null);
   const [balance, setBalance] = useState<SupplierBalance | null>(null);
-  const busy = useRef(false), alive = useRef(true), balanceRun = useRef<AbortController | null>(null);
+  const [batchPrompt, setBatchPrompt] = useState<{ lineKey: string; itemId: string; profile: PurchaseTracking } | null>(null);
+  const busy = useRef(false), completeRun = useRef(false), alive = useRef(true), balanceRun = useRef<AbortController | null>(null);
   useEffect(() => { alive.current = true; return () => { alive.current = false; balanceRun.current?.abort(); }; }, []);
   useEffect(() => {
     try { setRetained(readPurchasePending(sessionStorage, scope, company)); }
@@ -156,10 +160,10 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
     } catch { setRecoveryBlocked(true); setFailure('The retained Purchase execution reference could not be verified. Review the saved voucher before continuing.'); }
   }, [operationKey, operationAttempt]);
   const dirty = JSON.stringify(draft) !== baseline;
-  const locked = pending || !!retained || recoveryBlocked || operationBlocked || readbackBlocked;
+  const locked = pending || completing || !!retained || recoveryBlocked || operationBlocked || readbackBlocked;
   // An execution belongs to the bill it was requested for: one that finished for another bill must not lock this one.
   const running = operation && record && operation.voucher_id === record.id ? operation : null;
-  const executing = running?.status === 'PENDING' || running?.status === 'COMMITTED' && record?.status !== 'POSTED';
+  const executing = running?.status === 'PENDING' || running?.status === 'COMMITTED' && !['POSTED', 'REVERSED'].includes(record?.status ?? '');
   const editable = !executing && (!record ? canCreate : ['DRAFT', 'REJECTED', 'SUBMITTED', 'APPROVED'].includes(record.status) && allowed('edit'));
   const currentCalculation = !dirty && calculation && calculation.revision === record?.revision_id ? calculation.value : null;
   const acceptedHash = (record?.invoice as { accepted_calculation_hash?: string | null } | null | undefined)?.accepted_calculation_hash ?? null;
@@ -195,6 +199,15 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
       .catch(() => { if (current()) setBalance({ supplier, status: 'unavailable' }); })
       .finally(() => clearTimeout(timer));
   };
+  const balanceSupplier = policy.suppliers.find(row => row.id === draft.supplier);
+  const balanceActive = !record || ['DRAFT', 'REJECTED', 'SUBMITTED', 'APPROVED'].includes(record.status);
+  const balanceKey = balanceActive && balanceSupplier ? [draft.supplier, draft.postingDate, ...balanceSupplier.payables.map(row => row.value)].join('|') : '';
+  useEffect(() => {
+    if (!balanceKey || !balanceSupplier) { balanceRun.current?.abort(); balanceRun.current = null; setBalance(null); return; }
+    balanceRun.current?.abort(); balanceRun.current = null; setBalance(null);
+    const timer = setTimeout(() => loadBalance(balanceSupplier.id, balanceSupplier.payables.map(row => row.value), draft.postingDate), 150);
+    return () => clearTimeout(timer);
+  }, [balanceKey]);
   /** Returns whether the change was taken; `announce` is said once a supplier or account has been verified and chosen. */
   const dispatch = (action: PurchaseWorkspaceAction, announce?: string): boolean => {
     if (locked || !editable || busy.current) return false;
@@ -208,7 +221,6 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
         binding.current.sources.set(supplier.id, supplier); verified.forEach(row => binding.current.sources.set(row.id, row));
         const next = { ...policy, live: true, suppliers: [{ id: supplier.id, label: supplier.label, meta: 'Active supplier', payables: verified.map(row => ({ value: row.id, label: row.label })) }] };
         setPolicy(next); setDraft(current => purchaseWorkspaceReducer(current, { ...action, policy: next }));
-        loadBalance(supplier.id, verified.map(row => row.id), draft.postingDate);
         if (announce) setNotice(announce);
       }); return true;
     }
@@ -225,9 +237,18 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
         const subject = { id: item.id, label: item.label, meta: item.sku ?? 'Verified product', kind: 'ITEM' as const, unit: item.unit };
         setPolicy(current => ({ ...current, subjects: [...current.subjects.filter(row => row.id !== item.id || row.kind !== 'ITEM'), subject] }));
         setDraft(current => purchaseWorkspaceReducer(current, action.type === 'subject' ? { ...action, subject } : action.type === 'line' ? { ...action, patch: { ...action.patch, label: item.label, unit: item.unit } } : action));
+        if (action.type === 'subject') {
+          setBatchPrompt(null);
+          const tracking = await purchaseTracking(company, item.id);
+          if (!alive.current) return;
+          const retainedBatch = draft.lines.find(line => line.key === action.key && line.subject === item.id)?.stock?.lotId;
+          if (tracking.lotTracking && !retainedBatch && policy.stockAccess?.batch && permissions.includes('accounting.batch.read')) setBatchPrompt({ lineKey: action.key, itemId: item.id, profile: tracking });
+          else if (tracking.lotTracking) setNotice('This product requires a batch. Batch read and Purchase stock-line access are needed to choose one.');
+        }
         if (announce) setNotice(announce);
       }); return true;
     }
+    if (action.type === 'subject') setBatchPrompt(null);
     if (subjectId) {
       void readAction(async () => {
         const account = await purchaseSource(company, 'expenses', subjectId);
@@ -286,16 +307,22 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
     return { items: page.items.map(row => ({ id: row.id, label: row.name ?? row.code ?? row.id })), nextCursor: page.page.next_cursor };
   }, [base, company, detailEdit.payment.method]);
   // The balance is "before this bill", so it is shown only while the bill can still be changed, and only for the supplier it was read for.
-  const supplierBalance = balance && balance.supplier === draft.supplier && (!record || !executing && ['DRAFT', 'REJECTED', 'SUBMITTED', 'APPROVED'].includes(record.status)) ? balance : undefined;
-  const livePolicy = useMemo(() => ({ ...policy, live: true, subjectLookup, itemLookup, supplierBalance }), [policy, subjectLookup, itemLookup, supplierBalance]);
+  const supplierBalance = balance && balance.supplier === draft.supplier && (balance.status !== 'ready' || balance.asOf === balanceDate(draft.postingDate, today)) && (!record || !executing && ['DRAFT', 'REJECTED', 'SUBMITTED', 'APPROVED'].includes(record.status)) ? balance : undefined;
+  const balanceAccess = useMemo(() => ({ ledger: permissions.includes(SUPPLIER_BALANCE_PERMISSION), stock: permissions.includes('accounting.stock.read') }), [permissions]);
+  const livePolicy = useMemo(() => ({ ...policy, live: true, subjectLookup, itemLookup, supplierBalance, balanceAccess,
+    canReadBatch: permissions.includes('accounting.batch.read'),
+    canPrepareBatch: permissions.includes('accounting.batch.read') && permissions.includes('accounting.batch.manage'),
+    supplierHistoryAccess: permissions.includes('vouchers.read') }), [policy, subjectLookup, itemLookup, supplierBalance, balanceAccess, permissions]);
   // Presentation only: Accounting authorizes each create. A supplier needs its payable account too; an expense account needs the groups to choose from.
   const canQuickSupplier = permissions.includes('accounting.party.manage') && permissions.includes('accounting.account.manage');
   const canQuickTax = permissions.includes('accounting.tax.manage') && permissions.includes('accounting.tax.read');
   const canQuickAccount = permissions.includes('accounting.account.manage') && permissions.includes('accounting.group.read') && permissions.includes('accounting.head.read');
-  const quickCreate = useMemo<PurchaseQuickCreate | undefined>(() => editable && (canQuickSupplier || canQuickAccount) ? {
+  const canQuickProduct = goodsAllowed && permissions.includes('item.create');
+  const quickCreate = useMemo<PurchaseQuickCreate | undefined>(() => editable && (canQuickSupplier || canQuickAccount || canQuickProduct) ? {
     ...(canQuickSupplier ? { supplier: () => setCreating({ kind: 'supplier' }) } : {}),
     ...(canQuickAccount ? { account: (target: QuickCreateTarget) => setCreating({ kind: 'account', target }) } : {}),
-  } : undefined, [editable, canQuickSupplier, canQuickAccount]);
+    ...(canQuickProduct ? { product: true } : {}),
+  } : undefined, [editable, canQuickSupplier, canQuickAccount, canQuickProduct]);
   // What was created is chosen through the bill's own paths, so Accounting re-reads and verifies it exactly as for a pick from the list.
   function createdSupplier(created: QuickCreated) {
     setCreating(null);
@@ -363,8 +390,8 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
       return item ? { ...line, label: item.label, unit: item.unit } : { ...line, label: result.binding.sources.get(line.subject)?.label ?? line.label };
     });
     binding.current = result.binding;
-    setPolicy(sourcePolicy(result.draft, livePurchasePolicy(currency, metadata)));
-    setDraft(result.draft); setBaseline(JSON.stringify(result.draft)); setRecord(value); setOperation(current => current && current.voucher_id === value.id ? current : null); setCalculation(null); setTaxError(false); setReason(''); setHistory([]); setHistoryLoaded(false); setLoaded(true);
+    setPolicy(sourcePolicy(result.draft, livePurchasePolicy(currency, metadata, company)));
+    setDraft(result.draft); setBaseline(JSON.stringify(result.draft)); setRecord(value); setReplacementSource(null); setOperation(current => current && current.voucher_id === value.id ? current : null); setCalculation(null); setTaxError(false); setReason(''); setHistory([]); setHistoryLoaded(false); setLoaded(true);
     setAdvances([]); setAdvanceCursor(null); setHistoryCursor(null);
     setReadbackBlocked(false);
     setNotice('Loaded saved Purchase revision ' + value.revision_number + '. Captured source versions are preserved.' + (result.typeRevised ? ' The voucher type has been revised since this bill was saved; saving it uses the current rules.' : ''));
@@ -377,13 +404,13 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
   }
   // A finished execution is not a reference to keep: left in the tab it would pin every later visit to that bill.
   const settleOperation = (current: PurchaseOperation, voucher: PurchaseVoucher | undefined) => {
-    const finished = current.status === 'REJECTED' || current.status === 'CANCELLED' || current.status === 'COMMITTED' && voucher?.status === 'POSTED';
+    const finished = current.status === 'REJECTED' || current.status === 'CANCELLED' || current.status === 'COMMITTED' && ['POSTED', 'REVERSED'].includes(voucher?.status ?? '');
     if (!finished) return;
     try { sessionStorage.removeItem(operationKey); } catch { /* The page still works; the reference simply stays. */ }
   };
   // The bill in the address is opened once any retained execution has been followed: that first read takes the busy guard, and a
   // reference for another bill must not leave the one the address names unopened.
-  useEffect(() => { if (initialVoucherId && !operationBlocked && record?.id !== initialVoucherId) void readAction(() => reopen(initialVoucherId)); }, [initialVoucherId, operationBlocked]);
+  useEffect(() => { if (initialVoucherId && !replacementSource && !operationBlocked && record?.id !== initialVoucherId) void readAction(() => reopen(initialVoucherId)); }, [initialVoucherId, replacementSource, operationBlocked]);
   // Advice only: the service refuses a repeat at submit. A lookup that fails shows nothing rather than an error.
   useEffect(() => {
     setSimilar([]);
@@ -403,15 +430,15 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
     void send({ ...pending.request, body: { ...(pending.request.body as object), acknowledge_duplicate_bill: true } });
   };
 
-  async function send(request: ServiceRequest, operationTarget?: PurchaseOperationTarget) {
-    if (busy.current || retained || recoveryBlocked || operationBlocked || readbackBlocked) return;
+  async function send(request: ServiceRequest, operationTarget?: PurchaseOperationTarget): Promise<PurchaseMutation | null> {
+    if (busy.current || retained || recoveryBlocked || operationBlocked || readbackBlocked) return null;
     const command: PurchasePending = { schema: 1, scope, request: { ...request, service: 'vouchers', key: crypto.randomUUID() }, createdAt: new Date().toISOString(), ...(operationTarget ? { operation: operationTarget } : {}) };
     try { sessionStorage.setItem(purchasePendingKey(scope), JSON.stringify(command)); }
-    catch { setFailure('Recovery storage is unavailable. Enable session storage before saving this bill.'); return; }
-    await perform(command);
+    catch { setFailure('Recovery storage is unavailable. Enable session storage before saving this bill.'); return null; }
+    return perform(command);
   }
-  async function perform(command: PurchasePending) {
-    if (busy.current) return;
+  async function perform(command: PurchasePending): Promise<PurchaseMutation | null> {
+    if (busy.current) return null;
     busy.current = true; setPending(true); setFailure(''); setNotice(''); setRetained(command);
     let confirmed = false;
     try {
@@ -428,57 +455,174 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
         sessionStorage.setItem(operationKey, JSON.stringify({ id: value.id, ...command.operation }));
         sessionStorage.removeItem(purchasePendingKey(scope));
         confirmed = true;
-        if (!alive.current) return;
+        if (!alive.current) return null;
         setReason(''); setRetained(null); setOperation(value); setNotice('Execution request received. Financial effects are not confirmed until the owner operation commits and the voucher reconciles.');
         await reopen(command.operation.voucherId);
         setNotice('Execution request received. Refresh execution to confirm its owner result and reconciliation.');
-        return;
+        return { kind: 'operation', value };
       }
       const value = await call<PurchaseVoucher>(command.request);
       const body = command.request.body as { expected_version?: number; calculation_hash?: string; content?: { type_revision_id: string }; type_revision_id?: string };
       const pathId = command.request.path.match(/\/vouchers\/([a-f0-9-]{36})(?:\/|$)/i)?.[1];
       verifyPurchaseVoucher(value, company, { id: pathId, type: body.type_revision_id ?? body.content?.type_revision_id, version: body.expected_version });
       if (body.calculation_hash && (value.invoice as { accepted_calculation_hash?: string } | null)?.accepted_calculation_hash !== body.calculation_hash) throw Error('The accepted calculation does not match the requested evidence.');
-      if (!alive.current) return;
+      if (!alive.current) return null;
       sessionStorage.removeItem(purchasePendingKey(scope)); setRetained(null); setRecord(value); setReason('');
       confirmed = true;
       // Re-read the actual returned capture, including the new acceptance revision/version.
-      await reopen(value.id);
-      setNotice(body.calculation_hash ? 'Accounting calculation accepted in revision ' + value.revision_number + '.' : 'Purchase saved. Current status: ' + value.status + '.');
+      const refreshed = await reopen(value.id);
+      setNotice(body.calculation_hash ? 'Accounting calculation accepted in revision ' + value.revision_number + '.' : value.status === 'DRAFT'
+        ? 'Purchase saved as a draft. It has not been submitted or posted.' : value.status === 'SUBMITTED'
+          ? 'Purchase submitted for approval. It has not been posted.' : value.status === 'APPROVED'
+            ? command.request.path.endsWith('/submit') ? 'Purchase submitted and approved automatically. It is ready to post.' : 'Purchase approved. It is ready to post.'
+            : 'Purchase saved. Status: ' + value.status + '.');
+      return refreshed ? { kind: 'voucher', value: refreshed } : null;
     } catch (error) {
-      if (!alive.current) return;
+      if (!alive.current) return null;
       const problem = requestFailure(error, 'Purchase');
-      if (confirmed) { setReadbackBlocked(true); setFailure('The request succeeded, but its saved details could not be refreshed. Load the saved revision before continuing.'); return; }
+      if (confirmed) { setReadbackBlocked(true); setFailure('The request succeeded, but its saved details could not be refreshed. Load the saved revision before continuing.'); return null; }
       const uncertain = problem.status >= 500 || problem.status === 409 && problem.message === 'request is busy; retry with the same idempotency key';
       if (!uncertain) { sessionStorage.removeItem(purchasePendingKey(scope)); setRetained(null); }
-      if (problem.status === 409 && problem.code === DUPLICATE_BILL_CODE && !command.operation && command.request.path.endsWith('/submit')) { setDuplicate({ request: command.request, matches: duplicateBillsFromFields(problem.fields), incomplete: /incomplete/i.test(problem.message) }); return; }
+      if (problem.status === 409 && problem.code === DUPLICATE_BILL_CODE && !command.operation && command.request.path.endsWith('/submit')) { setDuplicate({ request: command.request, matches: duplicateBillsFromFields(problem.fields), incomplete: /incomplete/i.test(problem.message) }); return null; }
       setFailure(error instanceof Error ? error.message : problem.status === 409 && /version changed/i.test(problem.message) ? 'This Purchase changed elsewhere. Your entries are retained. Load its latest revision before continuing.' : problem.message);
+      return null;
     } finally { busy.current = false; if (alive.current) setPending(false); }
   }
-  async function save() {
-    if (locked || !editable) return;
+  async function save(): Promise<PurchaseVoucher | null> {
+    if (locked && !completeRun.current || !editable) return null;
     try {
-      if (draft.tax.choice === '') { setTaxError(true); document.querySelector<HTMLInputElement>('[name="' + TAX_CONFIRMATION_NAME + '"]')?.focus(); return; }
+      if (draft.tax.choice === '') { setTaxError(true); document.querySelector<HTMLInputElement>('[name="' + TAX_CONFIRMATION_NAME + '"]')?.focus(); return null; }
       if (taxedBill) {
-        if (!taxEnabled) { setFailure('This bill carries GST, and changing it needs access to tax masters. Ask an administrator for tax read access.'); return; }
+        if (!taxEnabled) { setFailure('This bill carries GST, and changing it needs access to tax masters. Ask an administrator for tax read access.'); return null; }
         const found = taxResolution.problems[0];
-        if (found) { setTaxError(true); focusTax(found.field); return; }
+        if (found) { setTaxError(true); focusTax(found.field); return null; }
       }
       const fields = customFields(binding.current.metadata, 'vouchers.voucher');
       const proposal = { ...draft, details: { ...draft.details, custom: customPatch(fields, draft.details.custom, binding.current.previous?.custom_fields ?? {}) } };
       if (draft.lines.some(line => line.kind === 'ITEM' && !isBlankPurchaseLine(line))) {
-        // Goods post to the inventory account in force on the posting date; a saved bill keeps the warehouse it named.
-        if (busy.current) return;
+        // Verify current tracking requirements before preparing the draft; posting checks them again.
+        if (busy.current) return null;
         busy.current = true; setPending(true);
         try {
           const context = await purchaseGoodsContext(company, draft.postingDate);
-          binding.current.goods = { ...context, warehouse: binding.current.goods?.warehouse ?? context.warehouse };
+          binding.current.goods = context;
           binding.current.rounding = { places: display.amountPrecision, mode: display.roundingMode };
+          const products = [...new Set(draft.lines.filter(line => line.kind === 'ITEM' && !isBlankPurchaseLine(line)).map(line => line.subject))];
+          const tracking = new Map();
+          for (let offset = 0; offset < products.length; offset += 5) {
+            const verified = await Promise.all(products.slice(offset, offset + 5).map(item => purchaseTracking(company, item)));
+            verified.forEach(profile => tracking.set(profile.itemId, profile));
+          }
+          binding.current.tracking = tracking;
         } finally { busy.current = false; if (alive.current) setPending(false); }
       }
       const content = purchaseInput(proposal, binding.current, taxFacts.facts);
-      await send(record ? { path: base + '/vouchers/' + record.id, method: 'PUT', body: { expected_version: record.row_version, content, ...(reason.trim() ? { reason: reason.trim() } : {}) } } : { path: base + '/vouchers', method: 'POST', body: content });
-    } catch (error) { setFailure((error as Error).message); }
+      const result = await send(record ? { path: base + '/vouchers/' + record.id, method: 'PUT', body: { expected_version: record.row_version, content, ...(reason.trim() ? { reason: reason.trim() } : {}) } } : { path: base + '/vouchers', method: 'POST', body: content });
+      return result?.kind === 'voucher' ? result.value : null;
+    } catch (error) { setFailure((error as Error).message); return null; }
+  }
+  async function completePurchase() {
+    if (completeRun.current || locked || !editable) return;
+    const approvalRequired = binding.current.metadata.configuration.policy.approval_required !== false;
+    const executionReady = ready.capabilities.invoice_execution && ready.capabilities.kinds.some(row => row.kind === 'PURCHASE' && row.execution_ready);
+    if (!approvalRequired && (!executionReady || !allowed('post') || !allowed('operation.read'))) {
+      setFailure('Purchase posting is not ready for this company. Your bill has not been submitted or posted.');
+      return;
+    }
+    completeRun.current = true; setCompleting(true);
+    try {
+      // Saving a rejected or approved revision reopens it as a draft. Every later command
+      // uses the confirmed version returned by the owner, never a pending React render.
+      const saved = !record || dirty || record.status !== 'DRAFT' ? await save() : record;
+      if (!saved) return;
+      if (saved.status !== 'DRAFT') throw Error('The saved Purchase is not a draft. Load its latest revision before submitting.');
+      const calculated = await call<PurchaseCalculation>({ path: base + '/vouchers/' + saved.id + '/invoice-preview', method: 'POST', body: { expected_version: saved.row_version } });
+      verifyPurchaseCalculation(calculated, currency);
+      const allocated = draft.details.advances.reduce((sum, row) => sum + (D.parse(row.amount) ?? 0n), 0n) + (D.parse(draft.details.payment.amount) ?? 0n);
+      if (allocated > D.parse(calculated.payable)!) throw Error('The proposed settlements exceed Accounting’s calculated supplier payable. Reduce them and save again.');
+      if (!alive.current) return;
+      setCalculation({ value: calculated, revision: saved.revision_id });
+      const acceptance = await send({ path: base + '/vouchers/' + saved.id + '/invoice-acceptance', method: 'POST', body: { expected_version: saved.row_version, calculation_hash: calculated.calculation_hash } });
+      if (acceptance?.kind !== 'voucher') return;
+      const acceptedVoucher = acceptance.value;
+      if ((acceptedVoucher.invoice as { accepted_calculation_hash?: string } | null)?.accepted_calculation_hash !== calculated.calculation_hash) throw Error('The saved Purchase did not retain the accepted calculation.');
+      const submission = await send({ path: base + '/vouchers/' + saved.id + '/submit', method: 'POST', body: { expected_version: acceptedVoucher.row_version } });
+      if (submission?.kind !== 'voucher') return;
+      if (approvalRequired) {
+        if (submission.value.status !== 'SUBMITTED') throw Error('The Purchase did not enter the required approval workflow.');
+        setNotice('Purchase submitted for approval. It has not been posted.');
+        return;
+      }
+      if (submission.value.status !== 'APPROVED') throw Error('The Purchase was not approved by its no-approval configuration. It has not been posted.');
+      const target = { voucherId: saved.id, revisionId: submission.value.revision_id };
+      const posted = await send({ path: base + '/vouchers/' + saved.id + '/post', method: 'POST', body: { expected_version: submission.value.row_version } }, target);
+      if (posted?.kind !== 'operation') return;
+      for (let attempt = 0; attempt < 20 && alive.current; attempt++) {
+        const value = await call<PurchaseOperation>({ path: base + '/voucher-operations/' + posted.value.id });
+        verifyPurchaseOperation(value, target);
+        if (value.id !== posted.value.id) throw Error('The posting operation identity changed.');
+        setOperation(value);
+        if (value.status === 'REJECTED' || value.status === 'CANCELLED') {
+          settleOperation(value, submission.value);
+          throw Error('Accounting refused this Purchase posting: ' + (value.rejection_code ?? 'review the operation and saved bill.'));
+        }
+        if (value.status === 'COMMITTED') {
+          const voucher = await reopen(saved.id);
+          settleOperation(value, voucher);
+          if (voucher?.status === 'POSTED') { setNotice('Purchase posted and confirmed.'); return; }
+        }
+        await new Promise<void>(resolve => setTimeout(resolve, 1500));
+      }
+      if (alive.current) setNotice('Posting is still in progress. Refresh the execution before treating this Purchase as posted.');
+    } catch (error) {
+      if (alive.current) setFailure(error instanceof Error ? error.message : 'Purchase completion could not be confirmed. Review its saved status before trying again.');
+    } finally { completeRun.current = false; if (alive.current) setCompleting(false); }
+  }
+  function startReplacement(source: PurchaseVoucher) {
+    if (source.status !== 'REVERSED' || !canCreate || !allowed('create')) { setFailure('A reversed Purchase and create access are required for a replacement draft.'); return; }
+    try {
+      const result = purchaseFromVoucher(source, company, binding.current.metadata);
+      const clean = newPurchaseWorkspace(today);
+      const next = { ...result.draft, postingDate: today, details: { ...result.draft.details, supportingFiles: [], advances: [], payment: clean.details.payment } };
+      result.binding.previous = { ...result.binding.previous!, attachments: [], links: [...(result.binding.previous?.links ?? []), { purpose: 'CORRECTION', source_voucher_id: source.id, source_revision_id: source.revision_id }] };
+      binding.current = result.binding;
+      setPolicy(sourcePolicy(next, livePurchasePolicy(currency, result.binding.metadata, company)));
+      setDraft(next); setBaseline(JSON.stringify(next)); setRecord(null); setReplacementSource(source.id);
+      setOperation(null); setCalculation(null); setReason(''); setHistory([]); setHistoryLoaded(false);
+      setNotice('The original Purchase is reversed. Review this linked replacement draft, its current posting date, and any payment or supporting files before creating it.');
+      const url = new URL(window.location.href); url.searchParams.delete('voucher_id'); window.history.replaceState(window.history.state, '', url);
+    } catch (error) { setFailure(error instanceof Error ? error.message : 'The replacement could not be prepared.'); }
+  }
+  async function reversePurchase(mode: 'EDIT' | 'CANCEL', postingDate: string) {
+    const source = record;
+    if (!source || source.status !== 'POSTED' || !allowed('reverse') || reason.trim().length < 3) return;
+    if (mode === 'EDIT' && !canCreate) { setFailure('Purchase create access is required to prepare a replacement bill.'); return; }
+    try {
+      // A reversal must not strand the user with a replacement this editor cannot faithfully load.
+      if (mode === 'EDIT') purchaseFromVoucher(source, company, binding.current.metadata);
+      const target = { voucherId: source.id, revisionId: source.revision_id };
+      const requested = await send({ path: base + '/vouchers/' + source.id + '/reverse', method: 'POST', body: { expected_version: source.row_version, posting_date: postingDate, reason: reason.trim() } }, target);
+      if (requested?.kind !== 'operation') return;
+      for (let attempt = 0; attempt < 20 && alive.current; attempt++) {
+        const operation = await call<PurchaseOperation>({ path: base + '/voucher-operations/' + requested.value.id });
+        verifyPurchaseOperation(operation, target);
+        setOperation(operation);
+        if (operation.status === 'REJECTED' || operation.status === 'CANCELLED') { setFailure('Accounting refused this correction: ' + (operation.rejection_code ?? 'review settlements, stock and statutory dependencies.')); return; }
+        if (operation.status === 'COMMITTED') {
+          const original = await reopen(source.id);
+          settleOperation(operation, original);
+          if (original?.status === 'REVERSED') {
+            if (mode === 'EDIT') startReplacement(original);
+            else setNotice('Posted Purchase reversed and confirmed. The original bill and print remain in history.');
+            return;
+          }
+        }
+        await new Promise<void>(resolve => setTimeout(resolve, 1500));
+      }
+      setNotice('Correction is still in progress. Refresh its operation before preparing a replacement.');
+    } catch (error) {
+      if (alive.current) setFailure(error instanceof Error ? error.message : 'Purchase correction could not be verified. Refresh the saved operation before continuing.');
+    }
   }
   async function preview() {
     if (!record || dirty || locked) return;
@@ -568,6 +712,8 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
     });
   }
   const statusView = purchaseStatusView(record?.status);
+  const approvalRequired = binding.current.metadata.configuration.policy.approval_required !== false;
+  const executionReady = ready.capabilities.invoice_execution && ready.capabilities.kinds.some(row => row.kind === 'PURCHASE' && row.execution_ready);
   useEffect(() => {
     if (!restoreFocus || pending) return;
     document.querySelector<HTMLElement>('[data-purchase-drafts-trigger]')?.focus();
@@ -585,11 +731,13 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
   return <section className="janso-page" aria-label="Purchase voucher">
     {navigation}
     {!loaded ? <>{header}<p role="status">Opening saved Purchase…</p></> : <PurchaseWorkspace today={today} canCreate={editable} policy={livePolicy} supplierLookup={supplierLookup} controller={{ live: true, draft, dispatch, readOnly: !editable || locked, pending, dirty, title: record ? 'Purchase bill · revision ' + record.revision_number : 'New purchase', note: identity ? identity + ' · ' + state : state, onTransientChange: transientChanged,
+      batchPrompt, closeBatchPrompt: () => setBatchPrompt(null),
       reviewNotice: finished ? <Notice tone="info" title="Review only">This purchase is {statusView.label.toLowerCase()} and can no longer be edited here.</Notice>
         : executing ? <Notice tone="info" title="Posting in progress">This purchase is being posted, so it cannot be changed until that finishes.</Notice>
         : record && !allowed('edit') ? <Notice tone="info" title="Review only">You can review this purchase, but changing it needs edit access to vouchers.</Notice> : undefined,
       total: currentCalculation?.payable, linesLabel: taxedBill ? 'Lines before GST' : undefined, header, quickCreate,
       banner: () => <>
+        {record && editable && ['SUBMITTED', 'APPROVED'].includes(record.status) ? <Notice tone="info" title="Editing a submitted bill">Saving changes opens a new draft revision. Submit the revised bill again to post it.</Notice> : null}
         {failure ? <Notice tone="danger" title="Purchase needs attention"><p>{failure}</p>{elsewhere && failure === PURCHASE_BROADER_CAPTURE ? <a className="janso-link" href={'/vouchers/' + elsewhere}>Open it in voucher review</a> : null}{record && !retained ? <Button variant="ghost" disabled={pending} onClick={() => readbackBlocked ? void readAction(() => reopen(record.id)) : askReopen(record.id)}>Load latest saved revision</Button> : null}</Notice> : null}
         {operationBlocked ? <Notice title="Execution recovery needs verification">Writes stay locked until the retained execution is verified.<Button variant="ghost" disabled={pending} onClick={() => setOperationAttempt(value => value + 1)}>Retry execution recovery</Button></Notice> : null}
         {notice ? <div role="status"><Notice title="Purchase status">{notice}</Notice></div> : null}
@@ -606,16 +754,22 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
         </PurchaseTermsCard>
         {record && currentCalculation ? <PurchaseCalculationCard calculation={currentCalculation} accepted={accepted} differs={differs} revision={record.revision_number}
           lines={draft.lines.filter(line => !isBlankPurchaseLine(line)).map(line => ({ key: purchaseWireKey(binding.current, line.key), label: line.label || line.description }))} /> : null}
-        {record && !retained ? <PurchaseLifecycle duplicates={similar} record={record} accepted={accepted} locked={locked} dirty={dirty} editable={editable} approvalRequired={binding.current.metadata.configuration.policy.approval_required !== false} allowed={allowed} reason={reason} onReason={setReason} transitions={transitions}
+        {record && !retained ? <PurchaseLifecycle duplicates={similar} record={record} accepted={accepted} locked={locked} dirty={dirty} editable={editable} approvalRequired={approvalRequired} allowed={allowed} reason={reason} onReason={setReason} transitions={transitions}
+          today={today} onReverse={(mode, postingDate) => void reversePurchase(mode, postingDate)} onReplacement={() => startReplacement(record)}
           onTransition={action => void send({ path: base + '/vouchers/' + record.id + '/' + action, method: 'POST', body: { expected_version: record.row_version, ...(reason.trim() ? { reason: reason.trim() } : {}) } })}
-          executionReady={ready.capabilities.invoice_execution && ready.capabilities.kinds.some(row => row.kind === 'PURCHASE' && row.execution_ready)} executing={!!executing}
+          executionReady={executionReady} executing={!!executing}
           onPost={() => void send({ path: base + '/vouchers/' + record.id + '/post', method: 'POST', body: { expected_version: record.row_version } }, { voucherId: record.id, revisionId: record.revision_id })}
           history={history} historyLoaded={historyLoaded} historyCursor={historyCursor} onHistory={next => void loadHistory(next)} onRevision={revision => void viewRevision(revision)} operation={operation}
           onRefresh={() => void refreshExecution()} onRecover={() => { if (operation) void send({ path: base + '/voucher-operations/' + operation.id + '/recover', method: 'POST', body: { expected_version: operation.row_version } }, { voucherId: record.id, revisionId: record.revision_id }); }} /> : null}
       </>,
       actions: ({ validate, review }) => <>
         <Button variant="ghost" disabled={locked} onClick={review}>Review bill</Button>
-        {editable ? <Button disabled={locked || !dirty && !!record} loading={pending} onClick={() => { if (validate()) void save(); }}>Save draft</Button> : null}
+        {editable ? <SplitButton label="Purchase actions" variant="primary"
+          primary={{ id: 'save', label: record ? 'Update' : 'Create', disabledReason: !dirty && record ? 'No changes to save.' : undefined }}
+          items={[{ id: 'complete', label: record ? 'Update and Submit' : 'Create and Submit', disabledReason: !allowed('edit') || !allowed('submit') || !allowed('read') ? 'Purchase edit, read and submit access is required.' : !approvalRequired && !executionReady ? 'Purchase invoice posting is not active.' : !approvalRequired && (!allowed('operation.read') || !allowed('post')) ? 'Purchase posting and operation read access is required.' : undefined }]}
+          disabledReason={locked ? 'Wait for the current Purchase action to finish.' : undefined}
+          loading={pending || completing} loadingLabel="Completing Purchase…"
+          onSelect={action => { if (!validate()) return; if (action === 'complete') void completePurchase(); else if (action === 'save') void save(); }} /> : null}
         {record && ['DRAFT', 'REJECTED', 'SUBMITTED', 'APPROVED'].includes(record.status) && allowed('read') ? <Button variant="ghost" disabled={locked || dirty} onClick={() => void preview()}>Calculate saved bill</Button> : null}
         {currentCalculation && allowed('edit') && record?.status === 'DRAFT' ? <Button disabled={locked} onClick={() => void send({ path: base + '/vouchers/' + record.id + '/invoice-acceptance', method: 'POST', body: { expected_version: record.row_version, calculation_hash: currentCalculation.calculation_hash } })}>Accept Accounting calculation</Button> : null}
       </> }} />}

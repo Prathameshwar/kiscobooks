@@ -129,7 +129,7 @@ describe('the connected Purchase page against the services’ rules', () => {
     await open();
     await choose(user, 'Mehta', both.name);
     await fillRest(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     const create = services.requests.find(row => row.method === 'POST' && row.path.endsWith('/vouchers'))!;
     expect(create.body.parties).toEqual([expect.objectContaining({ role: 'SUPPLIER', party_id: both.id })]);
@@ -152,7 +152,7 @@ describe('the connected Purchase page against the services’ rules', () => {
     expect(within(supplierField(supplierRegion())).getByText(payableCountIssue(0)!)).toBeVisible();
     expectNoAccountChoice(supplierRegion());
     await fillRest(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     expect(wrote()).toEqual([]);
     expect(screen.getByPlaceholderText(SEARCH)).toHaveFocus();
     expect(within(supplierField(supplierRegion())).getByText(payableCountIssue(0)!)).toBeVisible();
@@ -169,7 +169,7 @@ describe('the connected Purchase page against the services’ rules', () => {
     // Both accounts were verified as this supplier's; neither was chosen.
     for (const account of two.payables) expect(services.requests.some(row => row.method === 'GET' && row.path === `/v1/companies/${COMPANY}/accounts/${account}`)).toBe(true);
     await fillRest(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     expect(wrote()).toEqual([]);
     expect(screen.getByPlaceholderText(SEARCH)).toHaveFocus();
     expect(two.payables).toContain(secondPayableOf(two.id));
@@ -187,7 +187,7 @@ describe('the connected Purchase page against the services’ rules', () => {
     expect(screen.queryByText(payableCountIssue(0)!)).toBeNull();
     expect(screen.getByRole('combobox', { name: /Supplier$/ })).not.toHaveAttribute('aria-invalid', 'true');
     await fillRest(user);
-    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
     await screen.findByRole('heading', { name: 'Purchase bill · revision 1' });
     expect(wrote().find(row => row.path.endsWith('/vouchers'))!.body.invoice.party_account_id).toBe(payableOf(SUPPLIERS[0]!.id));
   });

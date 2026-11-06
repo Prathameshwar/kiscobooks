@@ -1,5 +1,8 @@
 # Purchase with Product: review 2026-11-02
 
+The first sections record the 2026-11-02 findings. Later delivery and final-review sections below supersede their
+then-current status statements.
+
 Reviewed at the user's request: the Purchase bill for products (types `PUR_PRD` "Purchase - Product Bill" and
 `PUR_MIX` "Purchase - Mixed Bill") end to end, Console, Vouchers and Accounting, including how purchased goods reach
 stock. Scope agreed with the user: **review and fix within today's limits**; posting a bill that also brings goods
@@ -161,12 +164,51 @@ reads the inventory account in force on the posting date and the purchase wareho
 and sends common item lines, goods supplies (inventory account, base-unit ACTUAL and BILLED quantities, unit price,
 amount = quantity x rate rounded once in the company's rounding) and the `PURCHASE_INVOICE` stock section. A taxed
 goods bill carries the goods GST profile in its header and the service context on any service line; reverse charge on
-goods is refused. A saved goods bill reopens exactly and keeps its warehouse; anything this screen cannot round-trip
-(bins, lots, a second warehouse, a shortfall, captured values) is sent to voucher review. A Product type whose rules
+goods is refused. A saved goods bill reopens exactly and keeps its warehouse; this phase sent bins, lots, a second
+warehouse, a shortfall, and captured values to voucher review. A Product type whose rules
 do not allow goods supplies says so instead of opening.
 
 Tests: Console `purchase-goods.test.ts`, `purchase-goods-connected.test.tsx`; updated `purchase-api`,
 `purchase-connected` for the new behaviour.
+
+## Direct bill tracking extension, 2026-11-05
+
+The direct Product and Mixed Purchase draft now captures one stock destination per item row. A row can name a
+warehouse, optional bin, a prepared batch when its current profile requires one, and prepared serial identities.
+Repeated product rows are used to divide a purchase across warehouses or batches. The compact line editor and
+desktop line-details drawer use searchable master references and show only the controls required by the product's
+tracking profile. Save reloads each distinct product's tracking profile and the dated stock-account context; the
+native posting path remains authoritative for held/expired tracking, warehouse policy, changed profiles and
+concurrent claims. Reopening retains each row's IDs, including different warehouses.
+
+This extension does **not** add a Receipt Note matching path. The native `PURCHASE_INVOICE` contract still rejects
+`source_movement_id`, so a bill against previously received goods cannot yet clear GRNI without adding stock again.
+That requires a separate contract, Accounting claim and valuation rules, Vouchers linkage, client generation, and
+an end-to-end posting test before the UI can offer it. The direct bill's posting controls remain under the existing
+stock and invoice execution gates.
+
+Verification for this extension: the contract's purchase goods tests pass (8 tests), including two warehouses,
+bin/batch/serial capture and duplicate serial refusal. Console tests were updated for tracked round trips and
+multiple warehouses but could not run locally because the frontend dependency installation is absent. Release
+activation and a live tracked posting are not evidenced by this entry.
+
+### Final entry and configuration review, 2026-11-05
+
+The provisioned types remain `PUR_ACC` (Accounts, Account/Service supplies), `PUR_PRD` (Items, Goods/Service
+supplies), and `PUR_MIX` (Mixed, Account/Goods/Service supplies). The Purchase type editor now offers a Goods
+supply switch beside Account and Service, and enabling a missing invoice policy starts with supply kinds that fit
+the type's allowed entry modes. It warns when Items or Mixed is enabled but Goods is off. The live entry follows
+the effective type's allowed modes and supply kinds, keeps Mixed mode on a goods-only Mixed bill, and checks the
+required stock header and line field access before offering goods entry. Optional bin/batch/serial controls respect
+their separate field access. Warehouse defaults still come from Catalog; product tracking requirements and stock
+eligibility still come from Accounting, rather than a new voucher-type switch.
+
+Two review findings were fixed: the saved draft had inferred `ITEMS` for a goods-only `MIXED` bill even when its
+type allowed only Mixed, and the type editor had no way to restore Goods after disabling it. The review also found
+missing stock-line access checks and a connected test that did not mock the newly required tracking profile read;
+both are fixed. The native stock contract tests pass (20 targeted tests). Console typecheck and UI tests remain
+unverified here because `mfes/node_modules` is absent and TypeScript is not available in the offline npm cache.
+Receipt Note matching and GRNI clearing remain a separate unfinished phase, as described above.
 
 ## Company setup defaults, 2026-11-03
 

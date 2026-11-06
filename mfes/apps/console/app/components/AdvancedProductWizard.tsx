@@ -14,7 +14,7 @@ import { AdvancedOpeningReviewStep } from './AdvancedOpeningReviewStep';
 import { AdvancedCreationProgress } from './AdvancedCreationProgress';
 import { businessErrors } from '../lib/advanced-product-business';
 import { openingErrors, openingSku } from '../lib/advanced-product-opening';
-import { definitionBody, keepIntent, readIntent, type AdvancedIntent } from '../lib/advanced-product-api';
+import { checkRecoveryIntent, definitionBody, keepIntent, readIntent, reviseIntent, type AdvancedIntent } from '../lib/advanced-product-api';
 import { useProductMode } from './ProductModeProvider';
 
 const labels = ['Product Profile', 'SKUs and units', 'Business setup', 'Opening and review'];
@@ -30,6 +30,8 @@ export function AdvancedProductWizard({ company, returnTo, mode }: { company: st
   const [failure, setFailure] = useState<RequestFailure | null>(null);
   const [saveFailure, setSaveFailure] = useState<RequestFailure | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [focusPath, setFocusPath] = useState('');
+  const focusSequence = useRef(0);
   const [drafts, setDrafts] = useState<AdvancedDraftList[]>([]);
   const [draft, setDraft] = useState<AdvancedDraft | null>(null);
   const [savedAt, setSavedAt] = useState('');
@@ -41,8 +43,10 @@ export function AdvancedProductWizard({ company, returnTo, mode }: { company: st
   const [restoreFailure, setRestoreFailure] = useState('');
   const [impact, setImpact] = useState('');
   const [intent, setIntent] = useState<AdvancedIntent | null>(null);
+  const [editingStatus, setEditingStatus] = useState<components['schemas']['AdvancedDefinitionStatus'] | null>(null);
   const summary = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
+  const main = useRef<HTMLElement>(null);
   const back = catalogBack(returnTo, '/masters/items');
   const changedMode = !!currentMode && (currentMode.company !== company || !!currentMode.failure || !currentMode.data || currentMode.data.product_family_sku_enabled !== true || currentMode.data.row_version !== mode.row_version || currentMode.data.policy_generation !== mode.policy_generation);
   useUnsavedChanges(() => dirty || busy || !!retry);
@@ -69,6 +73,11 @@ export function AdvancedProductWizard({ company, returnTo, mode }: { company: st
   }, [root, company]);
   const update = (next: AdvancedWork) => { if (retry) return; setWork(next); setDirty(true); setSavedAt(''); setErrors({}); setSaveFailure(null); };
   const navigate = (next: number) => { setStep(next); setErrors({}); requestAnimationFrame(() => heading.current?.focus()); };
+  const errorStep = (path: string) => path.startsWith('business.') ? 3 : path.startsWith('opening.') ? 4 : path.startsWith('skus.') ? 2 : 1;
+  const focusError = (path: string) => {
+    setStep(errorStep(path)); setFocusPath(path + '#' + ++focusSequence.current);
+    requestAnimationFrame(() => requestAnimationFrame(() => ((main.current?.querySelector('[aria-invalid="true"]') as HTMLElement | null) ?? summary.current)?.focus()));
+  };
   const continueStep = () => {
     if (!options || loading || changedMode || failure) return;
     const validation = step === 1 ? profileErrors(work, options) : step === 2 ? skuErrors(work, options) : step === 3 ? businessErrors(work, options) : {};
@@ -120,9 +129,8 @@ export function AdvancedProductWizard({ company, returnTo, mode }: { company: st
     setErrors(validation);
     if (Object.keys(validation).length) {
       const first = Object.keys(validation)[0]!;
-      navigate(first.startsWith('business.') ? 3 : first.startsWith('opening.') ? 4 : first.startsWith('skus.') ? 2 : 1);
+      focusError(first);
       setErrors(validation);
-      requestAnimationFrame(() => summary.current?.focus());
       return;
     }
     setBusy(true); setFailure(null);
@@ -131,17 +139,20 @@ export function AdvancedProductWizard({ company, returnTo, mode }: { company: st
       const fresh = await masterRequest<AdvancedOptions>({ path: root + '/options?' + params });
       if (fresh.company_id !== company || fresh.mode.row_version !== mode.row_version || fresh.mode.policy_generation !== options.mode.policy_generation || fresh.defaults.configuration.source_version !== options.defaults.configuration.source_version || fresh.family_fields.source_version !== options.family_fields.source_version || fresh.sku_fields.source_version !== options.sku_fields.source_version || fresh.selected_type?.id !== work.profile.product_type_revision_id) throw { status: 409, message: 'Product settings changed. Review the four steps before submitting.' };
       const pending = readIntent(company);
-      const next: AdvancedIntent = pending?.creation_id ? { ...pending, work: structuredClone(work), commands: {} } : { company, key: crypto.randomUUID(), definition: definitionBody(work, fresh), work: structuredClone(work), commands: {} };
+      checkRecoveryIntent(pending, editingStatus?.id ?? null);
+      const current = editingStatus ? await masterRequest<components['schemas']['AdvancedDefinitionStatus']>({ path: `${root}/definitions/${editingStatus.id}` }) : null;
+      const next: AdvancedIntent = current && pending ? reviseIntent(pending, work, fresh, current) : { company, key: crypto.randomUUID(), definition: definitionBody(work, fresh), work: structuredClone(work), commands: {}, reviewed_source_version: fresh.defaults.configuration.source_version, reviewed_policy_generation: fresh.mode.policy_generation, reviewed_mode_version: fresh.mode.row_version };
       keepIntent(next);
-      setDirty(false); setIntent(next);
+      setDirty(false); setEditingStatus(null); setIntent(next);
     } catch (error) { setFailure(requestFailure(error)); setNeedsReview(true); } finally { setBusy(false); }
   };
   const blocked = loading || !!failure || changedMode || busy || needsReview || !!retry;
-  const saveBlocked = loading || !!failure || changedMode || busy || needsReview;
-  if (intent) return <div className="janso-page product-wizard"><PageNavigation back={{ href: back, label: 'products' }} /><PageHeader title="Product creation" lede="Your Product Profile and SKUs are being checked against native owner receipts." /><AdvancedCreationProgress initial={intent} onEdit={pending => { setWork(pending.work); setIntent(null); setStep(3); setMaxStep(4); setNeedsReview(false); setErrors({}); }} /></div>;
+  const saveBlocked = loading || !!failure || changedMode || busy || needsReview || !!editingStatus;
+  if (intent) return <div className="janso-page product-wizard"><PageNavigation back={{ href: back, label: 'products' }} /><PageHeader title="Product creation" lede="Your Product Profile and SKUs are being checked against native owner receipts." /><AdvancedCreationProgress initial={intent} onEdit={(pending, status, nextStep) => { setWork(pending.work); setEditingStatus(status); setIntent(null); setStep(nextStep); setMaxStep(4); setNeedsReview(false); setErrors({}); }} /></div>;
   return <div className="janso-page product-wizard"><PageNavigation back={{ href: back, label: 'products' }} /><PageHeader title="New Product Profile + SKUs" lede="Create a Product Profile and its SKUs for this company." />
     <div className="product-wizard__header"><span className="product-wizard__eyebrow">GUIDED CREATION</span><h2 ref={heading} tabIndex={-1}>{labels[step - 1]}</h2><p>{step === 1 ? 'Details shared by every SKU.' : step === 2 ? 'Add only the SKUs you intend to use.' : step === 3 ? 'Set tax, policies and prices for each SKU.' : 'Review the product before creating it.'}</p></div>
     <nav className="product-wizard__steps" aria-label="Product creation steps">{labels.map((label, index) => <button key={label} type="button" className="product-wizard__step" aria-current={index + 1 === step ? 'step' : undefined} disabled={index + 1 > maxStep || blocked} onClick={() => navigate(index + 1)}><span>{index + 1}</span><strong>{label}</strong></button>)}</nav>
+    {editingStatus && <Notice tone="warning">This product has already been created. Its submitted identity, completed setup, and saved opening decisions are locked. Only remaining setup can be changed. Review and submit those changes to continue this creation.</Notice>}
     {changedMode && <Notice tone="warning">Product setup changed. Your work is retained; reload settings and review before continuing. <button className="janso-link" type="button" onClick={currentMode?.refresh}>Check setup again</button></Notice>}
     {failure && <Notice tone="danger">{failure.message} <button type="button" className="janso-link" onClick={() => { setFailure(null); setReload(value => value + 1); }}>Retry loading</button></Notice>}
     {saveFailure && <Notice tone="danger">{saveFailure.message} {retry ? 'The result is uncertain. Retry the same save before editing.' : 'Your unsaved changes are still here.'}</Notice>}
@@ -150,13 +161,13 @@ export function AdvancedProductWizard({ company, returnTo, mode }: { company: st
     {impact && <Notice tone="warning">{impact}</Notice>}
     {loading && <p role="status">Loading available product options…</p>}
     {!draft && drafts.length > 0 && <aside className="product-wizard__resume"><div><strong>Continue a saved draft</strong><p>Your recent work is private to your account and this company.</p></div><button className="janso-btn janso-btn--secondary" type="button" disabled={busy || !!retry} onClick={() => void restore(drafts[0]!.id)}>Open latest draft</button></aside>}
-    <div ref={summary} tabIndex={-1}>{Object.keys(errors).length > 0 && <Notice tone="danger"><strong>Check these fields before continuing</strong><ul>{Object.entries(errors).map(([key, message]) => <li key={key}>{message}</li>)}</ul></Notice>}</div>
-    <div className="product-wizard__layout"><main className="product-wizard__main">
-      {options && !loading && step === 1 && <AdvancedProfileStep company={company} value={work.profile} options={options} onChange={profile => { if ((profile.kind !== work.profile.kind || profile.product_type_revision_id !== work.profile.product_type_revision_id && !!work.profile.product_type_revision_id) && (work.axes.length > 0 || work.skus.some(row => row.sku || row.attributes.length))) { if (!window.confirm('Changing the kind or Type can affect SKU setup. Keep your entered SKUs and review them before continuing?')) return; setImpact('Product structure changed. Review every SKU and its business setup before creating.'); } update({ ...work, profile }); }} errors={errors} disabled={blocked} />}
-      {options && !loading && step === 2 && <AdvancedSkuStep company={company} work={work} options={options} onChange={update} errors={errors} disabled={blocked} />}
-      {options && !loading && step === 3 && <AdvancedSetupStep company={company} work={work} options={options} onChange={update} errors={errors} disabled={blocked} />}
-      {options && !loading && step === 4 && <AdvancedOpeningReviewStep company={company} work={work} options={options} onChange={update} onEdit={navigate} errors={errors} disabled={blocked} />}
+    <div ref={summary} tabIndex={-1}>{Object.keys(errors).length > 0 && <Notice tone="danger"><strong>Check these fields before continuing</strong><ul>{Object.entries(errors).map(([key, message]) => <li key={key}><button type="button" className="janso-link" onClick={() => focusError(key)}>{labels[errorStep(key) - 1]}{key.match(/(?:skus)\.(\d+)/)?.[1] !== undefined ? ` · SKU ${Number(key.match(/(?:skus)\.(\d+)/)![1]) + 1}` : ''}: {message}</button></li>)}</ul></Notice>}</div>
+    <div className="product-wizard__layout"><main ref={main} className="product-wizard__main">
+      {options && !loading && step === 1 && <AdvancedProfileStep company={company} value={work.profile} options={options} definitionLocked={!!editingStatus} setupLocked={!!editingStatus?.sku_progress?.[0]?.setup_done} onChange={profile => { if ((profile.kind !== work.profile.kind || profile.product_type_revision_id !== work.profile.product_type_revision_id && !!work.profile.product_type_revision_id) && (work.axes.length > 0 || work.skus.some(row => row.sku || row.attributes.length))) { if (!window.confirm('Changing the kind or Type can affect SKU setup. Keep your entered SKUs and review them before continuing?')) return; setImpact('Product structure changed. Review every SKU and its business setup before creating.'); } update({ ...work, profile }); }} errors={errors} disabled={blocked} />}
+      {options && !loading && step === 2 && <AdvancedSkuStep company={company} work={work} options={options} onChange={update} errors={errors} disabled={blocked} definitionLocked={!!editingStatus} locked={editingStatus?.sku_progress?.map(row => !!row.setup_done)} focusPath={focusPath} />}
+      {options && !loading && step === 3 && <AdvancedSetupStep company={company} work={work} options={options} onChange={update} errors={errors} disabled={blocked} locked={editingStatus?.sku_progress?.map(row => !!row.setup_done)} focusPath={focusPath} />}
+      {options && !loading && step === 4 && <AdvancedOpeningReviewStep company={company} work={work} options={options} onChange={update} onEdit={navigate} errors={errors} disabled={blocked} definitionLocked={!!editingStatus} dateLocked={editingStatus?.sku_progress?.map(row => !!row.setup_done)} locked={editingStatus?.sku_progress?.map(row => (row.opening_state ?? 'NOT_REQUESTED') !== 'NOT_REQUESTED')} focusPath={focusPath} />}
     </main><aside className="product-wizard__aside"><span>YOUR PRODUCT</span><strong>{work.profile.name || 'Untitled Profile'}</strong><p>{work.profile.kind === 'GOODS' ? 'Goods' : 'Service'} · {work.skus.length} SKU{work.skus.length === 1 ? '' : 's'}</p><hr /><span>DRAFT STATUS</span><p>{busy ? 'Saving draft…' : dirty ? 'Unsaved changes' : savedAt ? `Saved ${new Date(savedAt).toLocaleString()}` : 'Not saved yet'}</p>{draft && <small>Draft version {draft.row_version}</small>}</aside></div>
-    <div className="product-wizard__actions"><button type="button" className="janso-btn janso-btn--secondary" disabled={step === 1 || busy} onClick={() => navigate(step - 1)}>Back</button><span className="product-wizard__actions-spacer" /><button type="button" className="janso-btn janso-btn--secondary" disabled={saveBlocked || (!dirty && !!draft && !retry)} onClick={() => void save()}>{retry ? 'Retry same save' : busy ? 'Saving…' : 'Save draft'}</button>{step < 4 ? <button type="button" className="janso-btn janso-btn--primary" disabled={blocked} onClick={continueStep}>{step === 1 ? 'Continue to SKUs' : step === 2 ? 'Continue to business setup' : 'Continue to opening and review'}</button> : <button type="button" className="janso-btn janso-btn--primary" disabled={blocked} onClick={() => void submit()}>{work.skus.some(row => openingSku(work, row).decision === 'OPEN') ? 'Create, activate and post openings' : 'Create and activate'}</button>}</div>
+    <div className="product-wizard__actions"><button type="button" className="janso-btn janso-btn--secondary" disabled={step === 1 || busy} onClick={() => navigate(step - 1)}>Back</button><span className="product-wizard__actions-spacer" />{!editingStatus && <button type="button" className="janso-btn janso-btn--secondary" disabled={saveBlocked || (!dirty && !!draft && !retry)} onClick={() => void save()}>{retry ? 'Retry same save' : busy ? 'Saving…' : 'Save draft'}</button>}{step < 4 ? <button type="button" className="janso-btn janso-btn--primary" disabled={blocked} onClick={continueStep}>{step === 1 ? 'Continue to SKUs' : step === 2 ? 'Continue to business setup' : 'Continue to opening and review'}</button> : <button type="button" className="janso-btn janso-btn--primary" disabled={blocked} onClick={() => void submit()}>{work.skus.some(row => openingSku(work, row).decision === 'OPEN') ? 'Create, activate and post openings' : 'Create and activate'}</button>}</div>
   </div>;
 }

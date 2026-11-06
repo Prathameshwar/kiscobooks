@@ -394,7 +394,8 @@ async def test_dispatch_repair_and_worker_scope_are_bounded(
         broker.close()
 
 
-async def test_real_chromium_pdf_pagination(tmp_path):
+@pytest.mark.parametrize("line_kind", ["ACCOUNT", "GOODS"])
+async def test_real_chromium_pdf_pagination(tmp_path, line_kind):
     import io
 
     from pypdf import PdfReader
@@ -409,23 +410,31 @@ async def test_real_chromium_pdf_pagination(tmp_path):
     if not executable.is_file():
         executable = None
     value = snapshot()
+    if line_kind == "GOODS":
+        from test_purchase_goods_print import with_goods
+
+        value = with_goods(value)
+        value["labels"]["units"] = {}
     value["document"]["issue_number"] = "PUR/26-27/00042"
-    supply = value["document"]["invoice"]["supplies"][0]
-    amount = value["calculation"]["lines"][0]
+    source = 1 if line_kind == "GOODS" else 0
+    supply = value["document"]["invoice"]["supplies"][source]
+    amount = value["calculation"]["lines"][source]
     value["document"]["invoice"]["supplies"] = []
     value["calculation"]["lines"] = []
-    for index in range(80):
+    for index in range(100):
         identity = str(uuid7())
         value["document"]["invoice"]["supplies"].append(
             supply
             | {
                 "line_key": identity,
-                "description": f"Service line {index + 1} / " + "Long detail " * 8,
+                "description": f"{line_kind} line {index + 1} / " + "Long detail " * 5,
             }
         )
         value["calculation"]["lines"].append(amount | {"key": identity})
+        if line_kind == "GOODS":
+            value["labels"]["units"][identity] = "kg"
     data = await render(value, executable, sandbox=settings.print_chromium_sandbox)
-    (tmp_path / "purchase-multipage.pdf").write_bytes(data)
+    (tmp_path / f"purchase-{line_kind.lower()}-100-lines.pdf").write_bytes(data)
     reader = PdfReader(io.BytesIO(data))
     texts = [page.extract_text() for page in reader.pages]
     assert len(texts) >= 3
@@ -436,8 +445,10 @@ async def test_real_chromium_pdf_pagination(tmp_path):
         for fact in ("PUR/26-27/00042", "Example Supplier", "BILL-123", "31/10/2026"):
             assert fact in text, f"page {page} is missing {fact!r}"
         assert f"Page {page} of {len(texts)}" in text
-    assert "Service line 80" in " ".join(texts)
-    assert all("Particulars" in text for text in texts if "Service line" in text)
+    for index in range(1, 101):
+        marker = f"{line_kind} line {index} /"
+        assert sum(text.count(marker) for text in texts) == 1, marker
+    assert all("Particulars" in text for text in texts if f"{line_kind} line" in text)
 
 
 async def test_preparation_reads_the_saved_invoice_and_live_owner_facts(

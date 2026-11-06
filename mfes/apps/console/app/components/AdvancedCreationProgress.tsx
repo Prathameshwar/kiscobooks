@@ -16,7 +16,7 @@ const valid = (status: Status, intent: AdvancedIntent) => {
   if (!status || status.company_id !== intent.company || status.id !== intent.creation_id || status.sku_ids.length !== intent.work.skus.length) throw { status: 502, message: 'Product progress did not match the reviewed request.' };
   return status;
 };
-export function AdvancedCreationProgress({ initial, onEdit }: { initial: AdvancedIntent; onEdit: (intent: AdvancedIntent) => void }) {
+export function AdvancedCreationProgress({ initial, onEdit }: { initial: AdvancedIntent; onEdit: (intent: AdvancedIntent, status: Status, step: number) => void }) {
   const intent = useRef(initial);
   const running = useRef(false);
   const mounted = useRef(true);
@@ -51,8 +51,16 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
     const work = intent.current.work;
     const params = new URLSearchParams({ kind: work.profile.kind, group_id: work.profile.group_id, product_type_revision_id: work.profile.product_type_revision_id });
     const value = await masterRequest<AdvancedOptions>({ path: base + '/options?' + params });
-    if (value.company_id !== intent.current.company || value.selected_type?.id !== work.profile.product_type_revision_id || !value.mode.product_family_sku_enabled) throw { status: 409, message: 'Product setup changed. Review the current Product Type and company settings.' };
+    if (value.company_id !== intent.current.company || value.selected_type?.id !== work.profile.product_type_revision_id || !value.mode.product_family_sku_enabled || value.mode.row_version !== (intent.current.reviewed_mode_version ?? intent.current.definition.mode_version) || value.mode.policy_generation !== (intent.current.reviewed_policy_generation ?? intent.current.definition.policy_generation) || value.defaults.configuration.source_version !== (intent.current.reviewed_source_version ?? intent.current.definition.source_version)) throw { status: 409, message: 'Product setup changed. Review the current Product Type and company settings.' };
     return value;
+  }
+  async function skuOptions(options: AdvancedOptions, index: number): Promise<AdvancedOptions> {
+    const sku = intent.current.work.skus[index]!;
+    const profile = intent.current.work.profile;
+    const params = new URLSearchParams({ as_of: options.today, kind: profile.kind, group_id: profile.group_id, product_type_revision_id: profile.product_type_revision_id, unit_id: sku.base_unit_id, currency: options.currency, include_price: 'true' });
+    const defaults = await masterRequest<AdvancedOptions['defaults']>({ path: `/v1/companies/${intent.current.company}/product-configuration/authoring-defaults?${params}` });
+    if (defaults.quantity?.unit_id !== sku.base_unit_id || defaults.configuration.source_version !== options.defaults.configuration.source_version || defaults.configuration.policy_generation !== options.mode.policy_generation) throw { status: 409, message: `The unit or pricing setup for ${sku.sku || `SKU ${index + 1}`} changed. Review it before continuing.` };
+    return { ...options, defaults };
   }
   async function run() {
     if (running.current) return;
@@ -72,7 +80,7 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
         const itemId = state.sku_ids[index]!;
         if (state.sku_progress?.[index]?.setup_done) continue;
         note(`Setting up SKU ${index + 1} of ${current.work.skus.length}…`);
-        const options = await currentOptions();
+        const options = await skuOptions(await currentOptions(), index);
         const [family, item] = await Promise.all([
           masterRequest<Family>({ path: `/v1/companies/${current.company}/product-families/${state.family_id}` }),
           masterRequest<Item>({ path: `/v1/companies/${current.company}/items/${itemId}` }),
@@ -139,6 +147,6 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
   return <section className="product-wizard__progress" aria-label="Product creation progress"><h2 tabIndex={-1}>Product creation progress</h2><p role="status">{message}</p>{status && <><p>Profile ID: <code>{status.family_id}</code></p><ul>{status.sku_ids.map((itemId, index) => { const progress = status.sku_progress?.[index]; return <li key={itemId}><strong>{intent.current.work.skus[index]?.sku || `SKU ${index + 1}`}</strong> · {progress?.activated ? 'Active' : progress?.setup_done ? 'Setup saved' : 'Definition saved'} · Opening {progress?.opening_state?.toLowerCase().replaceAll('_', ' ') ?? 'not requested'}</li>; })}</ul></>}
     {blockers.length > 0 && <Notice tone="warning"><strong>Native readiness needs attention</strong><ul>{blockers.map((blocker, index) => <li key={index}>{blocker.path}: {blocker.code.replaceAll('_', ' ')}</li>)}</ul></Notice>}
     {failure && <Notice tone="warning">{failure.message} {status && <span>Completed steps remain saved.</span>}</Notice>}
-    <div className="product-wizard__actions">{!complete && !busy && <button type="button" className="janso-btn janso-btn--primary" onClick={() => void run()}>Continue this creation</button>}{failure && !busy && failure.status < 500 && <button type="button" className="janso-btn janso-btn--secondary" onClick={() => onEdit(intent.current)}>Edit remaining setup</button>}{complete && <a className="janso-btn janso-btn--primary" href="/masters/items">Return to products</a>}</div>
+    <div className="product-wizard__actions">{!complete && !busy && <button type="button" className="janso-btn janso-btn--primary" onClick={() => void run()}>Continue this creation</button>}{failure && [409, 422].includes(failure.status) && status && !complete && status.sku_progress?.some(row => !row.setup_done || (row.opening_state ?? 'NOT_REQUESTED') === 'NOT_REQUESTED') && !busy && <button type="button" className="janso-btn janso-btn--secondary" onClick={() => onEdit(intent.current, status, blockers[0]?.step === 'profile' ? 1 : blockers[0]?.step === 'skus' ? 2 : blockers[0]?.step === 'business' ? 3 : status.sku_progress?.every(row => row.setup_done) ? 4 : 3)}>Review remaining setup</button>}{complete && <a className="janso-btn janso-btn--primary" href="/masters/items">Return to products</a>}</div>
   </section>;
 }

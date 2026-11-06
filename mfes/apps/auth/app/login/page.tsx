@@ -83,8 +83,9 @@ export default function LoginPage() {
       </Button>
       <div className="auth__foot auth__foot--band">
         <p className="auth__foot--links">
-          <span>New to KiscoBooks? <a className="janso-link" href="/signup">Create account</a></span>
-          <a className="janso-link" href={'/recover?returnTo=' + encodeURIComponent(returnTo)}>Forgot password?</a>
+          <span className="auth__account-question">New to KiscoBooks?</span>
+          <a className="janso-link" href="/signup">Create account</a>
+          <a className="janso-link auth__forgot-password" href={'/recover?returnTo=' + encodeURIComponent(returnTo)}>Forgot password?</a>
         </p>
         {setupAvailable ? <p><a className="janso-link" href="/setup">Set up this platform</a></p> : null}
       </div>

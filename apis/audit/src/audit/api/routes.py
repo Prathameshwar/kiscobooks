@@ -423,8 +423,11 @@ async def export_audit_events(
 
 
 # Deferred until its migrations and ingestion contract ship (docs/audit.md §7).
-# Keep these routes out of the published OpenAPI/client contract meanwhile.
-@router.post(
+# These handlers must not be mounted: include_in_schema=False alone still serves HTTP.
+integration_router = APIRouter(prefix="/v1", dependencies=[Depends(validate_query)])
+
+
+@integration_router.post(
     "/integration-logs", response_model=IntegrationLogItem, status_code=201, include_in_schema=False
 )
 async def create_integration_log(
@@ -457,7 +460,7 @@ async def create_integration_log(
     return row
 
 
-@router.get("/integration-logs", response_model=IntegrationLogPage, include_in_schema=False)
+@integration_router.get("/integration-logs", response_model=IntegrationLogPage, include_in_schema=False)
 async def list_integration_logs(
     request: Request,
     current: Actor = Depends(actor),
@@ -494,7 +497,7 @@ async def list_integration_logs(
     )
 
 
-@router.get(
+@integration_router.get(
     "/integration-logs/{log_id}", response_model=IntegrationLogItem, include_in_schema=False
 )
 async def get_integration_log(

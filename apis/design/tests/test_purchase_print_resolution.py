@@ -86,8 +86,8 @@ async def test_renderer_resolution_signed_scope_standard_and_matching_rule(
     # The standard layout's version is frozen into every print job; Vouchers refuses any other.
     import hashlib
 
-    assert standard.json()["version"] == "purchase-a4@3"
-    assert standard.json()["layout_digest"] == hashlib.sha256(b"purchase-a4@3").hexdigest()
+    assert standard.json()["version"] == "purchase-a4@7"
+    assert standard.json()["layout_digest"] == hashlib.sha256(b"purchase-a4@7").hexdigest()
     # Publishing a layout alone does not make it a Purchase fallback.
     template = await make_template(client, company_id, auth_headers)
     await publish_template(client, company_id, auth_headers, template)

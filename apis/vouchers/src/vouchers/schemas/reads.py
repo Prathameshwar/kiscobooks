@@ -18,6 +18,7 @@ class ResourceItem(Contract):
     id: uuid.UUID
     company_id: uuid.UUID
     row_version: int
+    revision_id: uuid.UUID | None = None
     type_id: uuid.UUID | None = None
     type_code: str | None = None
     document_date: dt.date | None = None

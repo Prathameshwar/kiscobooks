@@ -31,6 +31,7 @@ from vouchers.tasks.documents import content, detail, revision_for
 from vouchers.tasks.master_lookup import owner_for
 from vouchers.tasks.print_authority import fingerprint
 from vouchers.tasks.print_layout import resolve
+from vouchers.tasks.stock_details import restricted as stock_restricted
 
 
 async def prepare(
@@ -191,6 +192,11 @@ async def prepare(
         facts=facts,
         display=current.context.report_display.model_dump(mode="json"),
         layout=layout,
+        stock=(
+            parsed.stock
+            if goods_bill(parsed, kind="PURCHASE") and not stock_restricted(current, payload)
+            else None
+        ),
     )
 
 
@@ -216,6 +222,11 @@ async def reauthorize(
     )
     if latest["calculation"]["calculation_hash"] != snapshot["calculation"]["calculation_hash"]:
         raise ConflictError("Purchase calculation changed; generate a fresh copy before printing")
+    if latest["document"].get("stock_receipt") != snapshot["document"].get("stock_receipt"):
+        raise ConflictError(
+            "Purchase receiving details changed or are no longer readable; "
+            "generate a fresh copy before printing"
+        )
     # Names and the voucher number are read under the actor's rights at this moment. A value now
     # denied, or changed, must not be delivered from the old copy; the message carries no value.
     if not labels_unchanged(snapshot.get("labels") or {}, latest.get("labels") or {}):

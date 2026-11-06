@@ -280,7 +280,7 @@ describe('a preview’s refusals', () => {
     vi.mocked(sessionFetch).mockResolvedValue(failing(403));
     await expect(purchasePrintRequest('/x', 'POST', signal)).rejects.toThrow('Your access to this Purchase print has changed.');
     vi.mocked(sessionFetch).mockResolvedValue(failing(500));
-    await expect(purchasePrintRequest('/x', 'POST', signal, {}, 'key', 'layout-preview')).rejects.toThrow('service words');
+    await expect(purchasePrintRequest('/x', 'POST', signal, {}, 'key', 'layout-preview')).rejects.toThrow('Purchase printing is unavailable. Retry shortly.');
   });
 
   it('builds the preview link from identities only', () => {

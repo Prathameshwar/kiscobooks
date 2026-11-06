@@ -10,6 +10,14 @@ vi.mock('../app/lib/service-call', async original => ({ ...(await original<typeo
 vi.mock('../app/components/StockTrackingCommon', () => ({ TrackingReference: ({ label, value, onChange }: { label: string; value: string | null; onChange: (value: string | null) => void }) => <input aria-label={label} value={value ?? ''} onChange={event => onChange(event.target.value || null)} /> }));
 vi.mock('../app/components/AccountingConfigurationCommon', async original => ({ ...(await original<typeof import('../app/components/AccountingConfigurationCommon')>()), AccountingReference: ({ label, value, onChange, disabled, error }: { label: string; value: string | null; onChange: (value: string | null) => void; disabled?: boolean; error?: string }) => <label>{label}<input aria-label={label} disabled={disabled} aria-invalid={!!error} value={value ?? ''} onChange={event => onChange(event.target.value || null)} />{error && <span>{error}</span>}</label> }));
 const company = '10000000-0000-7000-8000-000000000001', item = '10000000-0000-7000-8000-000000000002', id = '10000000-0000-7000-8000-000000000003';
+it('allows one scoped stock balance read and rejects extra filters or writes', () => {
+  const path = '/v1/companies/' + company + '/stock/positions/balance';
+  expect(allowedStockRequest('GET', path + '?item_id=' + item)).toBe(true);
+  expect(allowedStockRequest('GET', path + '?item_id=' + item + '&warehouse_id=' + id)).toBe(true);
+  expect(allowedStockRequest('GET', path)).toBe(false);
+  expect(allowedStockRequest('GET', path + '?item_id=' + item + '&limit=200')).toBe(false);
+  expect(allowedStockRequest('POST', path + '?item_id=' + item)).toBe(false);
+});
 it('allows only bounded opening line reads with an explicit stock date', () => {
   const path = '/v1/companies/' + company + '/stock/opening-lines';
   expect(allowedStockRequest('GET', path + '?stock_date=2026-04-01&limit=50')).toBe(true);

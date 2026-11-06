@@ -70,7 +70,7 @@ it('moves from a published Type and group to the explicit default SKU editor', a
   await user.click(await screen.findByRole('option', { name: 'Beverages' }));
   await user.click(screen.getByRole('button', { name: 'Continue to SKUs' }));
   expect(await screen.findByRole('heading', { name: 'SKUs and units', level: 2 })).toBeVisible();
-  expect(screen.getByRole('tab', { name: /Default SKU/ })).toBeVisible();
+  expect(screen.getByRole('button', { name: /Default SKU/ })).toBeVisible();
   expect(screen.getByRole('textbox', { name: 'SKU code' })).toBeVisible();
   expect(screen.getByRole('button', { name: 'Add SKU' })).toBeDisabled();
 });

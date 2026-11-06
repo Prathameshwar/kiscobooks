@@ -49,7 +49,11 @@ export async function purchasePrintRequest(path: string, method: 'GET' | 'POST',
   if (!response.ok) {
     const value = await response.json().catch(() => null);
     const messages = purpose === 'layout-preview' ? PREVIEW_MESSAGES : MESSAGES;
-    throw new Error(messages[response.status] ?? value?.error?.message ?? 'Purchase printing is unavailable. Retry shortly.');
+    const specific = value?.error?.message;
+    if ((response.status === 409 || response.status === 422) && typeof specific === 'string' && specific.length <= 300 && specific.trim()) {
+      throw new Error(purpose === 'layout-preview' ? `${messages[response.status]} ${specific.trim()}` : specific.trim());
+    }
+    throw new Error(messages[response.status] ?? 'Purchase printing is unavailable. Retry shortly.');
   }
   return response;
 }

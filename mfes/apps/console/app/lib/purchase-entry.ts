@@ -13,6 +13,14 @@ export type PurchaseDraft = {
   supplies: { key: string; account: PurchaseSource | null; description: string; amount: string }[];
 };
 export const nativeProperties = (field?: Native): Record<string, Native> => field?.properties ?? field?.anyOf?.find(branch => branch.properties)?.properties ?? {};
+export function purchaseStockAccess(metadata: FieldSet) {
+  const stock = metadata.native.properties?.stock;
+  const lines = nativeProperties(stock).lines;
+  const fields = nativeProperties(lines?.items);
+  const available = !!stock && !stock.readOnly && !!lines && !lines.readOnly;
+  const can = (name: string) => available && !!fields[name] && !fields[name].readOnly;
+  return { warehouse: can('warehouse_id'), bin: can('bin_id'), batch: can('lot_id'), serial: can('unit_ids'), item: can('item_id'), quantity: can('quantity') };
+}
 export const initialPurchase = (date: string): PurchaseDraft => ({ party: null, payable: null, partyLineKey: crypto.randomUUID(), reference: '', dueDate: date, declaredTotal: '', supplies: [] });
 const decimal = /^(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/;
 const version = (value: number) => Number.isSafeInteger(value) && value >= 1;
@@ -25,17 +33,20 @@ const sourceValid = (source: PurchaseSource | null, company: string) => !!source
 
 /** Why a product or mixed Purchase type cannot be used here: its rules do not allow goods lines. */
 export const PURCHASE_GOODS_UNAVAILABLE = 'This Purchase type takes item lines but its rules do not allow goods supplies. An administrator can allow Goods in the type’s purchase rules; an Account Bill type records expense and service bills.';
+const supplyKinds = (policy: FieldSet['configuration']['policy']) => policy.invoice?.allowed_supply_kinds ?? ['ACCOUNT', 'GOODS', 'SERVICE'];
 /** A Product or Mixed Purchase type whose bill brings its goods into stock (B24). */
 export function purchaseGoodsAllowed(metadata: FieldSet): boolean {
   const { kind, profile, policy } = metadata.configuration;
-  return kind === 'PURCHASE' && profile === 'STANDARD' && !!policy.invoice?.allowed_supply_kinds?.includes('GOODS')
+  return kind === 'PURCHASE' && profile === 'STANDARD' && !!policy.invoice && supplyKinds(policy).includes('GOODS')
     && !!policy.allowed_modes?.some(mode => mode === 'ITEMS' || mode === 'MIXED');
 }
 /** The entry modes this screen offers for the type, in its own order: products, accounts, both. */
 export function purchaseModes(metadata: FieldSet): ('ITEMS' | 'ACCOUNTS' | 'MIXED')[] {
   const allowed = metadata.configuration.policy.allowed_modes ?? ['ACCOUNTS'];
   const goods = purchaseGoodsAllowed(metadata);
-  return (['ITEMS', 'ACCOUNTS', 'MIXED'] as const).filter(mode => allowed.includes(mode) && (mode === 'ACCOUNTS' || goods));
+  const invoice = metadata.configuration.policy.invoice;
+  const accounts = !!invoice && supplyKinds(metadata.configuration.policy).some(kind => kind === 'ACCOUNT' || kind === 'SERVICE');
+  return (['ITEMS', 'ACCOUNTS', 'MIXED'] as const).filter(mode => allowed.includes(mode) && (mode === 'ACCOUNTS' ? accounts : goods));
 }
 export function purchaseGoodsType(metadata: FieldSet): boolean {
   const { kind, policy } = metadata.configuration;
@@ -48,7 +59,7 @@ export function purchaseAvailability(metadata: FieldSet): string | null {
   if (profile !== 'STANDARD') issues.push(`This form requires Standard Purchase; the selected profile is ${profile}.`);
   const goods = purchaseGoodsAllowed(metadata);
   if (!policy.invoice) issues.push('Invoice rules are missing. Enable invoice entry for this Purchase voucher type.');
-  else if (!goods && !policy.invoice.allowed_supply_kinds?.includes('ACCOUNT')) issues.push('Account purchase lines are disabled. Allow Account in the invoice supply kinds.');
+  else if (!goods && !supplyKinds(policy).some(kind => kind === 'ACCOUNT' || kind === 'SERVICE')) issues.push('Account and service purchase lines are disabled. Allow one of them in the invoice supply kinds.');
   if (!goods && !policy.allowed_modes?.includes('ACCOUNTS')) issues.push('Accounts mode is disabled. Allow Accounts in the voucher type entry modes.');
   if (!policy.allowed_party_roles?.includes('SUPPLIER')) issues.push('Supplier parties are disabled. Allow the Supplier party role.');
   if (policy.max_parties === 0) issues.push('The party limit is zero. Set maximum parties to at least 1.');
@@ -67,6 +78,12 @@ export function purchaseAvailability(metadata: FieldSet): string | null {
   const supplies = nativeProperties(invoice.supplies?.items);
   const missingLines = ['line_key', 'account_id', 'account_version', 'description', 'amount', 'supply_kind'].filter(key => !supplies[key] || supplies[key].readOnly);
   if (missingLines.length) return `Missing purchase-line write access: ${missingLines.map(key => key.replaceAll('_', ' ')).join(', ')}. Ask a company administrator to review field access.`;
+  if (goods) {
+    const missingStock = ['mode', 'lines', 'stock_date', 'stock'].filter(key => !fields[key] || fields[key].readOnly);
+    if (missingStock.length) return `Missing goods Purchase write access: ${missingStock.map(key => key.replaceAll('_', ' ')).join(', ')}. Ask a company administrator to review field access.`;
+    const stockAccess = purchaseStockAccess(metadata);
+    if (!stockAccess.item || !stockAccess.quantity || !stockAccess.warehouse) return 'Missing goods Purchase stock-line write access. Ask a company administrator to review item, quantity and warehouse field access.';
+  }
   return null;
 }
 

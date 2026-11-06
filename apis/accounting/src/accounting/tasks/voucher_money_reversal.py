@@ -9,6 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from voucher_execution import ExecutionCommand
 
 from accounting.api.auth import Access
+from accounting.models.gst_return import GstReturnRecord
+from accounting.models.invoice import InvoiceRecord, InvoiceSupplyFact, InvoiceTaxComponent
+from accounting.models.invoice_credit import InvoiceCreditEvent
 from accounting.models.ledger import Journal
 from accounting.models.subledger import Allocation
 from accounting.models.voucher_money import (
@@ -17,6 +20,7 @@ from accounting.models.voucher_money import (
     VoucherMoneyAllocation,
     VoucherMoneyIntent,
 )
+from accounting.models.voucher_tax import JournalTax
 from accounting.schemas.ledger import JournalReverse
 from accounting.schemas.subledger import AllocationReverse
 from accounting.tasks.allocations import reverse_in_transaction
@@ -79,11 +83,75 @@ async def bank_guard(db: AsyncSession, intent: VoucherMoneyIntent) -> list[BankI
     return instruments
 
 
+async def invoice_guard(db: AsyncSession, intent: VoucherMoneyIntent) -> None:
+    """An issued Purchase can reverse only before a dependent statutory or note action."""
+    invoice = await db.scalar(
+        select(InvoiceRecord).where(
+            InvoiceRecord.company_id == intent.company_id,
+            InvoiceRecord.intent_id == intent.id,
+        )
+    )
+    if invoice is None or invoice.kind != "PURCHASE":
+        raise ConflictError("only a retained Purchase invoice can use posted correction")
+    note = await db.scalar(
+        select(InvoiceRecord.id).where(
+            InvoiceRecord.company_id == intent.company_id,
+            InvoiceRecord.source_invoice_id == invoice.id,
+        ).limit(1)
+    )
+    if note is not None:
+        raise ConflictError("reverse dependent debit notes before correcting this Purchase")
+    credit = await db.scalar(
+        select(InvoiceCreditEvent.id).where(
+            InvoiceCreditEvent.company_id == intent.company_id,
+            InvoiceCreditEvent.invoice_id == invoice.id,
+        ).limit(1)
+    )
+    if credit is not None:
+        raise ConflictError("committed input-credit history requires a statutory correction")
+    source_ids = {invoice.id}
+    source_ids.update(
+        await db.scalars(
+            select(InvoiceSupplyFact.id).where(
+                InvoiceSupplyFact.company_id == intent.company_id,
+                InvoiceSupplyFact.invoice_id == invoice.id,
+            )
+        )
+    )
+    source_ids.update(
+        await db.scalars(
+            select(InvoiceTaxComponent.id).where(
+                InvoiceTaxComponent.company_id == intent.company_id,
+                InvoiceTaxComponent.invoice_id == invoice.id,
+            )
+        )
+    )
+    if intent.journal_id is not None:
+        source_ids.update(
+            await db.scalars(
+                select(JournalTax.id).where(
+                    JournalTax.company_id == intent.company_id,
+                    JournalTax.journal_id == intent.journal_id,
+                )
+            )
+        )
+    filed = await db.scalar(
+        select(GstReturnRecord.id).where(
+            GstReturnRecord.company_id == intent.company_id,
+            GstReturnRecord.source_id.in_(source_ids),
+        ).limit(1)
+    )
+    if filed is not None:
+        raise ConflictError("filed GST evidence requires a linked statutory correction")
+
+
 async def prepare(db: AsyncSession, current: Access, command: ExecutionCommand) -> Journal | None:
     intent = await original(db, command)
     assert command.posting_date is not None and command.correction_reason is not None
     await posting_period(db, current, command.posting_date)
     await bank_guard(db, intent)
+    if command.source_payload.get("invoice") is not None:
+        await invoice_guard(db, intent)
     if intent.journal_id is None:
         return None
     effect = await reversal_in_transaction(

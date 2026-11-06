@@ -9,11 +9,13 @@ from __future__ import annotations
 
 import asyncio
 import datetime as dt
+import logging
 import uuid
 from typing import Any
 
 from billing_platform.db import tenant_scope
 from billing_platform.db.types import utcnow
+from billing_platform.diagnostics import log_failure
 from billing_platform.errors import (
     AuthenticationRequiredError,
     ConflictError,
@@ -128,14 +130,21 @@ async def plan_for(db: AsyncSession, intent: VoucherMoneyIntent) -> StockExecuti
     return row
 
 
-def reservation(intent: VoucherMoneyIntent, plan: StockExecutionPlan) -> dict[str, Any]:
+def reservation(
+    intent: VoucherMoneyIntent,
+    plan: StockExecutionPlan,
+    journal: Journal | None = None,
+) -> dict[str, Any]:
     command = ExecutionCommand.model_validate(intent.command)
+    features = set(plan.effects["features"])
+    if journal is not None:
+        features.update(journal.features)
     return {
         "company_id": str(intent.company_id),
         "operation_id": str(intent.journal_id or intent.id),
         "actor_user_id": str(command.actor_user_id),
         "configuration_hash": command.company_configuration_hash,
-        "features": plan.effects["features"],
+        "features": sorted(features),
         "posted_at": None,
         "stock_execution_id": str(intent.execution_id),
         **({"reference_kind": "STOCK"} if intent.journal_id is None else {}),
@@ -407,7 +416,8 @@ async def _dispatch(
         async with asyncio.timeout(10), factory.begin() as db:
             intent = await prepare(db, current, command, facts)
             plan = await plan_for(db, intent)
-            payload = reservation(intent, plan)
+            journal = await db.get(Journal, intent.journal_id) if intent.journal_id else None
+            payload = reservation(intent, plan, journal)
             intent_id, journal_id = intent.id, intent.journal_id
         try:
             receipt = await client.reserve(
@@ -511,7 +521,13 @@ async def dispatch(
             source_client=source_client,
             enabled=enabled,
         )
-    except (ConflictError, ValidationFailedError, PermissionDeniedError):
+    except (ConflictError, ValidationFailedError, PermissionDeniedError) as error:
+        log_failure(
+            logging.getLogger("accounting.stock_execution"),
+            service="accounting",
+            event="stock.execution.content_rejected",
+            error=error,
+        )
         with tenant_scope(command.tenant_id):
             async with factory.begin() as db:
                 result = await execute(db, command, content_rejected=True)

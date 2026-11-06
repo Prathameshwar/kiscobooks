@@ -4,8 +4,10 @@ import { Button, Menu, useFormatters } from '@janso/ui';
 import { purchaseLineAmounts } from '../lib/purchase-workspace';
 import * as D from '../lib/fixed-decimal';
 import type { PurchaseWorkspaceSectionProps } from './PurchaseWorkspaceHeader';
+import { PurchaseProductHistory } from './PurchaseProductHistory';
+import { PurchaseBatchSummary } from './PurchaseBatchSummary';
 
-export function PurchaseMobileLines({ draft, dispatch, problems, disabled, onEdit }: PurchaseWorkspaceSectionProps & { onEdit: (key: string) => void }) {
+export function PurchaseMobileLines({ draft, policy, dispatch, problems, disabled, onEdit }: PurchaseWorkspaceSectionProps & { onEdit: (key: string) => void }) {
   const { money, quantity } = useFormatters();
   return <div className="janso-entry-line-cards"><ul className="janso-entry-line-list" aria-label="Purchase line cards">
     {draft.lines.map((line, index) => {
@@ -18,8 +20,10 @@ export function PurchaseMobileLines({ draft, dispatch, problems, disabled, onEdi
             { id: 'down', label: 'Move down', disabledReason: index === draft.lines.length - 1 ? 'Already the last line' : undefined },
             { id: 'remove', label: 'Remove line', destructive: true },
           ]} onSelect={action => action === 'up' || action === 'down' ? dispatch({ type: 'move', key: line.key, by: action === 'up' ? -1 : 1 }) : action === 'insert' ? dispatch({ type: 'add', after: line.key }) : dispatch({ type: action as 'duplicate' | 'remove', key: line.key })} /> : null}</div>
-        <strong className="janso-entry-line-card__name">{line.label || 'Choose an item or expense account'}</strong>
+        <div className="janso-purchase-mobile-product"><strong className="janso-entry-line-card__name">{line.label || 'Choose an item or expense account'}</strong>
+          {line.kind === 'ITEM' && line.subject && policy.stockCompany && policy.supplierHistoryAccess ? <PurchaseProductHistory key={`${policy.stockCompany}:${draft.supplier}:${line.subject}`} company={policy.stockCompany} supplier={draft.supplier} supplierName={policy.suppliers.find(row => row.id === draft.supplier)?.label} product={line.subject} name={line.label || 'Product'} /> : null}</div>
         {line.kind === 'ITEM' ? <dl className="janso-entry-line-card__figures"><dt>Receipt qty</dt><dd>{quantity(line.received)} {line.unit}</dd><dt>Billed qty</dt><dd>{quantity(line.billed)} {line.unit}</dd><dt>Rate</dt><dd>{money(line.rate, { precision: 4 })}</dd></dl> : null}
+        {line.kind === 'ITEM' && policy.stockCompany ? <p className="janso-entry-workspace__caption">Stock: {line.stock?.warehouseId ? `warehouse ${line.stock.warehouseId.slice(-8)}` : 'default warehouse'}{line.stock?.lotId ? <> · <PurchaseBatchSummary company={policy.stockCompany} item={line.subject} batchId={line.stock.lotId} permitted={!!policy.canReadBatch} /></> : ''}{line.stock?.unitIds.length ? ` · ${line.stock.unitIds.length} serials` : ''}</p> : null}
         {amounts && amounts.discount > 0n ? <p className="janso-entry-workspace__caption">Line discount {money(D.format(amounts.discount))}</p> : null}
         <div className="janso-entry-line-card__total"><span>Line total before tax</span><strong>{amounts ? money(D.format(amounts.net)) : '—'}</strong></div>
         {issue ? <p className="janso-error">{issue.message}</p> : null}

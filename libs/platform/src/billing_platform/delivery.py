@@ -49,6 +49,7 @@ async def publish_batch(
     timeout_seconds: int = 5,
     event_types: frozenset[str] | None = None,
     maximum_attempts: int | None = None,
+    retry_cap_seconds: int = 3600,
     occurred_after: dt.datetime | None = None,
 ) -> PublishResult:
     """Lock a bounded batch; mark published only after positive confirmation.
@@ -66,6 +67,8 @@ async def publish_batch(
         type(maximum_attempts) is not int or not 1 <= maximum_attempts <= 32767
     ):
         raise ValueError("invalid maximum publish attempts")
+    if type(retry_cap_seconds) is not int or not 1 <= retry_cap_seconds <= 3600:
+        raise ValueError("invalid retry cap")
     if occurred_after is not None and occurred_after.tzinfo is None:
         raise ValueError("publication cutoff must include a timezone")
     if event_types is not None and (
@@ -119,7 +122,7 @@ async def publish_batch(
                 # Class only; broker exception messages may contain credentials.
                 row.last_error = type(exc).__name__
                 row.available_at = utcnow() + dt.timedelta(
-                    seconds=min(3600, 2 ** min(row.attempt_count, 12))
+                    seconds=min(retry_cap_seconds, 2 ** min(row.attempt_count, 12))
                 )
                 deferred += 1
             else:

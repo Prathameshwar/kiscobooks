@@ -86,6 +86,24 @@ async def test_signed_command_cancel_before_delivery_reconcile_and_scope(client,
     assert conflict.value.response.status_code == 409
 
 
+async def test_enrolled_execution_grant_requires_native_accounting_setup(client, app):
+    import httpx
+
+    secret, key = secrets.token_hex(32), "vouchers.execution.enrolled"
+    app.state.settings.voucher_execution_credentials[key] = SnapshotCredential(
+        secret=SecretStr(secret), allow_enrolled_companies=True
+    )
+    transport = ExecutionClient(client, "http://127.0.0.1", key, secret.encode())
+    with pytest.raises(httpx.HTTPStatusError) as absent:
+        await transport.send(command())
+    assert absent.value.response.status_code == 401
+    await prepare(client)
+    assert (await transport.send(command())).outcome == "REJECTED"
+    with pytest.raises(httpx.HTTPStatusError) as foreign:
+        await transport.send(command(company_id=uuid7()))
+    assert foreign.value.response.status_code == 401
+
+
 async def test_committed_receipt_survives_lost_ack_close_expiry_and_different_attempt(
     client, app, monkeypatch
 ):

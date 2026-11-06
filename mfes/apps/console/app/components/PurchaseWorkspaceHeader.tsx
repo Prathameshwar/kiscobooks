@@ -4,6 +4,7 @@ import { Notice, SearchSelect, TextField, useFormatters, type SearchSelectLoader
 import type { Dispatch } from 'react';
 import { InlineCreate, PurchaseQuickCreateButton } from './PurchaseQuickCreateButton';
 import { PurchaseSupplierBalance } from './PurchaseSupplierBalance';
+import { PurchaseSupplierHistory } from './PurchaseSupplierHistory';
 import { purchaseDueDate } from '../lib/purchase-workspace-details';
 import { MODE_LABELS, supplierAccountIssue, type PurchaseProblem, type PurchaseWorkspaceAction, type PurchaseWorkspaceDraft, type PurchaseWorkspacePolicy } from '../lib/purchase-workspace';
 
@@ -38,7 +39,8 @@ function LiveSupplierBill({ draft, policy, dispatch, problems, disabled, supplie
             selected={supplier ?? null} disabled={disabled} error={error('supplier') ?? error('payable') ?? supplierAccountIssue(supplier)} placeholder="Search a supplier by name or code"
             onChange={id => dispatch({ type: 'supplier', value: id ?? '', policy })} />
         </InlineCreate>
-        {draft.supplier ? <PurchaseSupplierBalance balance={policy.supplierBalance?.supplier === draft.supplier ? policy.supplierBalance : undefined} /> : null}
+        {draft.supplier ? <div className="janso-purchase-supplier-tools"><PurchaseSupplierBalance balance={policy.supplierBalance?.supplier === draft.supplier ? policy.supplierBalance : undefined} />
+          {policy.supplierHistoryAccess && policy.stockCompany ? <PurchaseSupplierHistory key={draft.supplier} company={policy.stockCompany} supplier={draft.supplier} name={supplier?.label ?? 'supplier'} /> : null}</div> : null}
       </div>
       <div data-purchase-field="invoice"><TextField label="Supplier invoice number" required value={draft.invoice} disabled={disabled} maxLength={100}
         placeholder="e.g. PC-261034" error={error('invoice')} onChange={event => header('invoice', event.target.value)} /></div>

@@ -116,6 +116,12 @@ async def opening_preflight(
     root = f"/v1/companies/{company}"
     ready = await owners.call("accounting", "GET", root + "/stock/openings/readiness")
     if ready.get("blockers"):
+        if "EXECUTION_UNCONFIRMED" in ready["blockers"]:
+            raise ConflictError(
+                "An earlier stock posting is still being confirmed. "
+                "Save the product without opening stock, or retry the opening shortly. "
+                "Contact support if confirmation remains pending."
+            )
         raise ConflictError("Company opening setup is not ready: " + ", ".join(ready["blockers"]))
     capabilities = await owners.call("vouchers", "GET", root + "/voucher-capabilities")
     if not capabilities.get("stock_execution"):

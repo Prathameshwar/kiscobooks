@@ -42,6 +42,23 @@ def worker_settings() -> Settings:
     )
 
 
+@pytest.mark.asyncio
+async def test_identity_posting_accepts_only_local_loopback_http() -> None:
+    local = worker_settings().model_copy(update={"identity_posting_url": "http://127.0.0.1:8001"})
+    connection = posting_delivery.connection(local)
+    assert connection is not None
+    await connection[0].aclose()
+    with pytest.raises(ValueError, match="HTTPS"):
+        Settings(
+            database_url="sqlite+aiosqlite:///:memory:",
+            actor_signing_secret=SecretStr(secrets.token_hex(32)),
+            identity_posting_url="http://example.com",
+            identity_posting_key_id="accounting.test",
+            identity_posting_secret=SecretStr(secrets.token_hex(32)),
+            identity_posting_response_keys={"current": SecretStr(secrets.token_hex(32))},
+        )
+
+
 async def test_worker_connection_cleanup_and_loop(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = worker_settings()
     configured = posting_delivery.connection(settings)

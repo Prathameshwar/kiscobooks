@@ -42,10 +42,11 @@ from tests.test_voucher_tax import MH
 POLICY = {"manual_discounts_allowed": True, "charges_allowed": True}
 
 
-def poster():
+def poster(*, reverse=False):
     headers = ledger_headers(
         permissions=LEDGER_PERMISSIONS
-        | {"vouchers.post", "vouchers.read", "accounting.stock.post", "accounting.stock.read"},
+        | {"vouchers.post", "vouchers.read", "accounting.stock.post", "accounting.stock.read"}
+        | ({"vouchers.reverse", "accounting.stock.reverse"} if reverse else set()),
         features={"inventory"},
         registrations=[MH],
     )
@@ -203,6 +204,60 @@ async def test_a_goods_bill_posts_landed_stock_input_gst_and_the_supplier_bill_o
             assert item is not None and item.amount == Decimal("1947")
             assert await db.scalar(select(func.count(InvoiceRecord.id))) == 1
             assert await db.scalar(select(func.count(StockPosting.id))) == 1
+
+
+async def test_unconsumed_goods_purchase_reverses_stock_and_supplier_bill(client, app, monkeypatch):
+    from accounting.tasks.stock_execution import _dispatch
+
+    w, request, remote, *_ = await accepted_bill(client, app, monkeypatch)
+    owner = w["data"]["authority"]
+    posted, _ = await _dispatch(
+        app.state.session_factory,
+        request,
+        secret=SECRET.encode(),
+        client=owner,
+        source_client=remote,
+        enabled=True,
+    )
+    assert posted.outcome == "COMMITTED", posted
+    reverse = request.model_copy(
+        update={
+            "purpose": "REVERSE",
+            "reversal_of_execution_id": request.execution_id,
+            "correction_reason": "Correct supplier goods bill",
+            "posting_date": dt.date(2026, 4, 11),
+            "stock_date": dt.date(2026, 4, 11),
+            "operation_id": uuid7(),
+            "execution_id": uuid7(),
+            "authority": poster(reverse=True),
+        }
+    )
+    reverse = reverse.model_copy(update={"request_hash": command_digest(reverse)})
+    now = utcnow()
+    proof = remote.facts.model_copy(
+        update={
+            "action": "REVERSE",
+            "execution_id": reverse.execution_id,
+            "fence_id": uuid7(),
+            "stock_date": reverse.stock_date,
+            "issued_at": now,
+            "expires_at": now + dt.timedelta(seconds=60),
+        }
+    )
+    reversed_result, _ = await _dispatch(
+        app.state.session_factory,
+        reverse,
+        secret=SECRET.encode(),
+        client=owner,
+        source_client=Source(proof),
+        enabled=True,
+    )
+    assert reversed_result.outcome == "COMMITTED", reversed_result
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db:
+            assert sorted(await db.scalars(select(StockBalance.quantity))) == [Decimal(0), Decimal(0)]
+            assert await db.scalar(select(func.count(StockPosting.id))) == 2
+            assert await db.scalar(select(func.count(InvoiceRecord.id))) == 1
 
 
 async def test_a_goods_bill_is_refused_while_the_invoice_release_is_off_and_leaves_nothing(

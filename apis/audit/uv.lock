@@ -100,6 +100,7 @@ dependencies = [
     { name = "aio-pika" },
     { name = "alembic" },
     { name = "billing-platform", extra = ["mariadb"] },
+    { name = "cryptography" },
     { name = "fastapi" },
     { name = "python-dotenv" },
     { name = "uvicorn", extra = ["standard"] },
@@ -124,6 +125,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.14.0,<1.15" },
     { name = "billing-platform", editable = "../../libs/platform" },
     { name = "billing-platform", extras = ["mariadb"], editable = "../../libs/platform" },
+    { name = "cryptography", specifier = ">=44.0.0,<51" },
     { name = "fastapi", specifier = ">=0.115.0,<0.116" },
     { name = "python-dotenv", specifier = ">=1.0,<2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0,<0.35" },
@@ -144,7 +146,7 @@ dev = [
 
 [[package]]
 name = "billing-platform"
-version = "0.44.5"
+version = "0.44.6"
 source = { editable = "../../libs/platform" }
 dependencies = [
     { name = "alembic" },

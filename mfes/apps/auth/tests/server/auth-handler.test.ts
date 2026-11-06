@@ -122,6 +122,13 @@ it('a real refresh failure is retryable and preserves the Console return URL', a
   expect(response.headers.get('location')).toBe('https://auth.test/login?error=SessionUnavailable&returnTo=https%3A%2F%2Fconsole.test%2Fvouchers');
   expect(response.headers.getSetCookie()).not.toHaveLength(0);
 });
+it('an expired session redirects to the configured public Auth host behind a proxy', async () => {
+  vi.stubEnv('AUTH_REDIS_URL', '');
+  const request = new NextRequest('https://localhost:4310/refresh?returnTo=https%3A%2F%2Fconsole.test%2Fvouchers',
+    { headers: { cookie: await cookie(true) } });
+  const response = await run(request, refreshGet);
+  expect(response.headers.get('location')).toBe('https://auth.test/login?error=SessionUnavailable&returnTo=https%3A%2F%2Fconsole.test%2Fvouchers');
+});
 
 // Opt-in native Redis evidence: no production keys/DB flushing; keys expire automatically.
 it.skipIf(!process.env.TEST_AUTH_REDIS_URL)('rotates one grant across actual Redis-backed concurrent handler requests', async () => {

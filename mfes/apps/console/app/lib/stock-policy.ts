@@ -9,6 +9,7 @@ export function allowedStockRequest(method: string, path: string): boolean | und
   const base = `/v1/companies/${id}/stock`, params = url.searchParams;
   if (new Set(params.keys()).size !== [...params].length) return false;
   if (new RegExp(`^${base}/configuration$`, 'i').test(url.pathname)) return method === 'GET' && !url.search;
+  if (new RegExp(`^${base}/positions/balance$`, 'i').test(url.pathname)) return method === 'GET' && params.has('item_id') && [...params].every(([key, value]) => ['item_id', 'warehouse_id'].includes(key) && trackingId.test(value));
   if (new RegExp(`^${base}/selection$`, 'i').test(url.pathname)) return method === 'POST' && !url.search;
   if (new RegExp(`^${base}/counts$`, 'i').test(url.pathname)) return method === 'POST' && !url.search;
   if (new RegExp(`^${base}/counts/${id}$`, 'i').test(url.pathname)) return method === 'GET' && !url.search;

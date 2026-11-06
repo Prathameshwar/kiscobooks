@@ -1,6 +1,6 @@
 [project]
 name = "billing-platform"
-version = "0.44.5"
+version = "0.44.6"
 description = "Shared mechanism for the billing platform services: base model, tenant isolation, money, outbox, cache, errors."
 requires-python = "==3.12.*"
 dependencies = [

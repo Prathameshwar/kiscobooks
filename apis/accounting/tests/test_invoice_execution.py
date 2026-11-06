@@ -110,6 +110,34 @@ async def run(app, body, *, enabled=True):
     )
 
 
+async def test_unsettled_purchase_invoice_reverses_with_original_facts_retained(client, app):
+    original = await invoice_command(client, app, kind="PURCHASE")
+    posted = await run(app, original)
+    assert posted.outcome == "COMMITTED", posted
+    reverse = original.model_copy(
+        update={
+            "purpose": "REVERSE",
+            "reversal_of_execution_id": original.execution_id,
+            "correction_reason": "Correct supplier bill",
+            "posting_date": dt.date(2026, 4, 3),
+            "operation_id": uuid7(),
+            "execution_id": uuid7(),
+            "authority": delegated(),
+        }
+    )
+    reverse = reverse.model_copy(update={"request_hash": command_digest(reverse)})
+    result = await run(app, reverse)
+    assert result.outcome == "COMMITTED", result
+    assert await run(app, reverse) == result
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db:
+            assert await db.scalar(select(func.count(InvoiceRecord.id))) == 1
+            journals = list(await db.scalars(select(Journal)))
+            assert len(journals) == 2
+            assert {row.status for row in journals} == {"POSTED"}
+            assert len([row for row in journals if row.reversal_of_id is not None]) == 1
+
+
 async def fresh_invoice(app, body, transport, *, kind, invoice):
     invoice = dict(invoice)
     invoice["supplies"] = [dict(line) for line in invoice["supplies"]]

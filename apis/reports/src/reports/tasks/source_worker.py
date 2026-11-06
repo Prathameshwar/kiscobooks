@@ -9,6 +9,7 @@ import httpx
 from billing_platform.db import create_engine, create_session_factory, tenant_scope
 from billing_platform.errors import ConflictError, PlatformError
 from billing_platform.idempotency import canonical_json
+from billing_platform.ids import uuid7
 from reporting_contract.contract import FACT_MODELS, FactPage, HeadBarrier, Manifest
 from reporting_contract.snapshots import SnapshotStatus
 from reporting_contract.transport import Owner, request
@@ -432,7 +433,7 @@ async def cycle(
                             scope.company_id,
                             identity,
                         )
-                    except (PlatformError, ValueError):
+                    except (PlatformError, ValueError) as error:
                         async with factory() as db, db.begin():
                             generation = await get(
                                 db,
@@ -468,6 +469,34 @@ async def cycle(
                                 identity,
                                 "quarantined",
                             )
+                            if (
+                                source.strategy == "REFRESH"
+                                and isinstance(error, ConflictError)
+                                and str(error)
+                                == "completed source receipt differs from its pinned barrier"
+                            ):
+                                replacement = ReportGeneration(
+                                    tenant_id=scope.tenant_id,
+                                    company_id=scope.company_id,
+                                    snapshot_id=uuid7(),
+                                )
+                                db.add(replacement)
+                                await db.flush()
+                                db.add(
+                                    ReportGenerationRequest(
+                                        tenant_id=scope.tenant_id,
+                                        company_id=scope.company_id,
+                                        generation_id=replacement.id,
+                                        strategy="FRESH",
+                                    )
+                                )
+                                audit(
+                                    db,
+                                    scope.tenant_id,
+                                    scope.company_id,
+                                    replacement.id,
+                                    "requested",
+                                )
                     except Exception as exc:
                         logging.getLogger(__name__).warning(
                             "Source worker retry: %s", type(exc).__name__

@@ -12,7 +12,17 @@ it('enables missing invoice rules through a versioned save and retains the other
   fireEvent.click(await screen.findByRole('checkbox',{name:'Enable purchase invoice entry'}));
   fireEvent.click(screen.getByRole('button',{name:'Save as revision 3'}));
   await waitFor(()=>expect(writes()).toHaveLength(1));
-  expect(writes()[0]![1].body).toMatchObject({expected_version:3,policy:{...fullPolicy,invoice:{}}});
+  expect(writes()[0]![1].body).toMatchObject({expected_version:3,policy:{...fullPolicy,invoice:{allowed_supply_kinds:['ACCOUNT','GOODS','SERVICE']}}});
+});
+it('restores Goods on a Product Purchase type without resetting invoice limits', async () => {
+  vi.mocked(serviceCall).mockImplementation(service({one:detail({kind:'PURCHASE',policy:{...fullPolicy,allowed_modes:['ITEMS'],default_mode:'ITEMS',invoice:{allowed_supply_kinds:['SERVICE'],max_components:7}}})}));
+  render(<VoucherTypeRulesEditor company={COMPANY} id={RETAIL} />);
+  const box = await screen.findByRole('checkbox',{name:'Allow goods purchase lines'});
+  expect(box).not.toBeChecked();
+  fireEvent.click(box);
+  fireEvent.click(screen.getByRole('button',{name:'Save as revision 3'}));
+  await waitFor(()=>expect(writes()).toHaveLength(1));
+  expect(writes()[0]![1].body).toMatchObject({policy:{invoice:{allowed_supply_kinds:['SERVICE','GOODS'],max_components:7}}});
 });
 it('allows account supplies without losing authored invoice limits', async () => {
   vi.mocked(serviceCall).mockImplementation(service({one:detail({kind:'PURCHASE',policy:{...fullPolicy,invoice:{allowed_supply_kinds:['SERVICE'],max_components:7}}})}));
@@ -27,7 +37,7 @@ it('allows service supplies, which a bill with GST is recorded on, without losin
   render(<VoucherTypeRulesEditor company={COMPANY} id={RETAIL} />);
   const box = await screen.findByRole('checkbox',{name:'Allow service purchase lines'});
   expect(box).not.toBeChecked();
-  expect(box).toHaveAccessibleDescription(/GST on a supplier bill is recorded on service lines/);
+  expect(box).toHaveAccessibleDescription(/Taxed account and service lines need Service enabled/);
   fireEvent.click(box);
   fireEvent.click(screen.getByRole('button',{name:'Save as revision 3'}));
   await waitFor(()=>expect(writes()).toHaveLength(1));

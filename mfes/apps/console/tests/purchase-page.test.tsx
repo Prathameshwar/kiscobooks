@@ -45,7 +45,7 @@ describe('the connected Purchase page', () => {
     expect(screen.getByRole('region', { name: 'Supplier and invoice details' })).toBeVisible();
     expect(screen.getByRole('region', { name: 'Purchase line entry' })).toBeVisible();
     expect(screen.getByRole('region', { name: 'Terms and tax' })).toBeVisible();
-    expect(screen.getByRole('group', { name: 'Purchase actions' })).toBeVisible();
+    expect(container.querySelector('footer[aria-label="Purchase actions"]')).toBeVisible();
   });
 
   it('names the type and currency as chips, and the scope in plain words', async () => {
@@ -54,7 +54,7 @@ describe('the connected Purchase page', () => {
     expect(screen.getByText('Account purchases')).toBeVisible();
     expect(screen.getByText('Amounts in INR')).toBeVisible();
     expect(screen.getByText('Not saved')).toBeVisible();
-    expect(screen.getByText(/with or without GST\. Purchases of stock cannot be recorded on this screen yet/)).toBeVisible();
+    expect(screen.getByText(/expenses, services, products, or a mix, with or without GST/)).toBeVisible();
   });
 
   it('does not show a calculation card or a lifecycle card before there is a saved bill', async () => {
@@ -68,7 +68,7 @@ describe('the connected Purchase page', () => {
   it('shows the total as lines entered until Accounting has calculated', async () => {
     render(<PurchaseEntryConnected {...props} />);
     await screen.findByRole('heading', { name: 'New purchase' });
-    expect(within(screen.getByRole('group', { name: 'Purchase actions' })).getByText('Lines total')).toBeVisible();
+    expect(within(screen.getByRole('button', { name: 'Review bill' }).closest('footer')!).getByText('Lines total')).toBeVisible();
     expect(screen.getByText('Not saved yet')).toBeVisible();
   });
 

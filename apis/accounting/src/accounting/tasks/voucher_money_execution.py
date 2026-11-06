@@ -131,8 +131,6 @@ async def prepare(
     if pending or (command.purpose == "POST" and guard and guard.committed_execution_id):
         raise ConflictError("voucher has a pending or committed source execution")
     if command.purpose == "REVERSE":
-        if command.source_payload.get("invoice") is not None:
-            raise ConflictError("invoice reversal requires statutory and original-component guards")
         from accounting.tasks.voucher_money_reversal import prepare as prepare_reversal
 
         journal = await prepare_reversal(db, current, command)

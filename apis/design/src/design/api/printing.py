@@ -203,8 +203,8 @@ async def resolve_print_layout(body: PrintResolve, request: Request) -> Response
     result = PrintLayout(
         source="BUILTIN",
         name="Standard Purchase · A4",
-        version="purchase-a4@3",
-        layout_digest=hashlib.sha256(b"purchase-a4@3").hexdigest(),
+        version="purchase-a4@7",
+        layout_digest=hashlib.sha256(b"purchase-a4@7").hexdigest(),
     )
     criteria = ResolveTemplateRequest(
         voucher_kind=body.voucher_kind,

@@ -146,8 +146,23 @@ async def verified(
         body=framed,
         now=int(time.time()),
     )
-    scopes = credentials[principal.key_id].scopes
-    if not any(scope.tenant_id == tenant_id and scope.company_id == company_id for scope in scopes):
+    grant = credentials[principal.key_id]
+    scoped = any(
+        scope.tenant_id == tenant_id and scope.company_id == company_id
+        for scope in grant.scopes
+    )
+    if not scoped and grant.allow_enrolled_companies:
+        with tenant_scope(tenant_id):
+            async with request.app.state.session_factory() as db:
+                scoped = (
+                    await db.scalar(
+                        select(Company.id).where(
+                            Company.id == company_id, Company.status == "active"
+                        )
+                    )
+                    is not None
+                )
+    if not scoped:
         raise PermissionDeniedError("posting principal does not hold this company")
     request.state.posting_issuer = issuer
     request.state.posting_response_secret = response_secret

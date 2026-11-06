@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { goTo, signInUrl } from '../app/lib/navigate';
+import { authActionUrl, goTo, signInUrl } from '../app/lib/navigate';
 
 /**
  * Tested directly, without the mock the shell tests install. `goTo` is the one place this app
@@ -31,6 +31,14 @@ describe('navigate', () => {
     // Behind nginx both MFEs share an origin, so this becomes a same-origin path.
     vi.stubEnv('NEXT_PUBLIC_AUTH_URL', '/login');
     expect(signInUrl()).toBe('/login');
+  });
+
+  it('uses the public origin for logout when a production bundle lacks its build-time auth URL', () => {
+    Object.defineProperty(window, 'location', { value: { ...realLocation, hostname: 'kisco.cloud', href: 'https://kisco.cloud/vouchers', origin: 'https://kisco.cloud' }, writable: true });
+    expect(signInUrl()).toBe('https://kisco.cloud/login');
+    expect(authActionUrl('/logout')).toBe('https://kisco.cloud/logout');
+    vi.stubEnv('NEXT_PUBLIC_AUTH_URL', 'http://localhost:4310/login');
+    expect(authActionUrl('/logout')).toBe('https://kisco.cloud/logout');
   });
 
   it('hands the URL to the browser', () => {

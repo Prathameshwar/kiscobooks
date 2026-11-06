@@ -1,6 +1,6 @@
 /**
  * Plan R4 (2026-11-04): *Customize layout* for Purchase starts from a canvas of the standard
- * Purchase layout (`purchase-a4@3`) instead of an empty page.
+ * Purchase layout (`purchase-a4@7`) instead of an empty page.
  *
  * The starter is judged by the designer's own checks and by the manifest the Purchase printer
  * publishes (read from Vouchers' contract file, the exact document its service returns), for each
@@ -36,7 +36,7 @@ vi.mock('../app/lib/navigate', () => ({ goTo: vi.fn(), signInUrl: () => '/sign-i
 
 import { VoucherPrintKind } from '../app/components/VoucherPrintKind';
 
-const CONTRACT = JSON.parse(readFileSync(resolve(__dirname, '../../../../apis/vouchers/contracts/print-capabilities-v1.json'), 'utf8')) as PrintCapabilities;
+const CONTRACT = JSON.parse(readFileSync(resolve(__dirname, '../../../../apis/vouchers/contracts/print-capabilities-v2.json'), 'utf8')) as PrintCapabilities;
 const PURCHASE = manifestFor(verifyPrintCapabilities(CONTRACT), 'PURCHASE')!;
 const PROFILES: LineProfile[] = ['ITEMS', 'ACCOUNTS', 'MIXED'];
 const A4 = { paper_size: 'A4', page_orientation: 'PORTRAIT' };
@@ -181,7 +181,7 @@ describe('Customize layout for Purchase', () => {
     mountKind();
     const dialog = await openCustomize(user);
     expect(within(dialog).getByText(/It opens in the designer on a copy of the standard layout/)).toBeInTheDocument();
-    expect(within(dialog).getByTestId('template-starter')).toHaveTextContent('It starts from a copy of the standard Purchase layout, saved as a draft.');
+    expect(within(dialog).getByTestId('template-starter')).toHaveTextContent('settlements and adjustments that this design cannot yet reproduce');
 
     await user.click(within(dialog).getByRole('button', { name: /Create and open/ }));
     await waitFor(() => expect(goTo).toHaveBeenCalledWith('/invoice-designer/' + FRESH));

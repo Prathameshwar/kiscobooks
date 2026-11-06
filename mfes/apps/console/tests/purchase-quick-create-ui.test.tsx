@@ -138,13 +138,46 @@ describe('the expense account create icon on a bill line', () => {
   });
 });
 
+describe('the product create icon on an item line', () => {
+  const itemDraft = () => ({ ...newPurchaseWorkspace(TODAY), mode: 'ITEMS' as const, lines: [blankPurchaseLine('p1', 'ITEM')] });
+
+  it('opens the company product form in a new tab and keeps the bill on this page', () => {
+    mount({ draft: itemDraft(), quickCreate: { product: true }, policy: { modes: ['ITEMS'] } });
+    const link = screen.getByRole('link', { name: 'Create a new product for line 1 (opens in a new tab)' });
+    expect(link).toHaveAttribute('href', '/masters/items/new');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(link.closest('.janso-entry-cell__with-action')).not.toBeNull();
+  });
+
+  it('is absent without product creation access', () => {
+    mount({ draft: itemDraft(), policy: { modes: ['ITEMS'] } });
+    expect(screen.queryByRole('link', { name: /Create a new product/ })).toBeNull();
+  });
+
+  it('appears only on item rows of a mixed bill', () => {
+    mount({ draft: { ...newPurchaseWorkspace(TODAY), mode: 'MIXED', lines: [blankPurchaseLine('p1', 'ITEM'), blankPurchaseLine('p2', 'ACCOUNT')] },
+      quickCreate: { product: true, account: vi.fn() }, policy: { modes: ['MIXED'] } });
+    expect(screen.getByRole('link', { name: /Create a new product for line 1/ })).toBeVisible();
+    expect(screen.queryByRole('link', { name: /Create a new product for line 2/ })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Create a new expense account for line 2' })).toBeVisible();
+  });
+
+  it('is disabled while the bill is busy', () => {
+    mount({ draft: itemDraft(), quickCreate: { product: true }, pending: true, policy: { modes: ['ITEMS'] } });
+    const link = screen.getByRole('link', { name: /Create a new product/ });
+    expect(link).toHaveAttribute('aria-disabled', 'true');
+    expect(link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))).toBe(false);
+  });
+});
+
 describe('the mobile line editor’s create icon', () => {
   const accountLine = { ...blankPurchaseLine('p1', 'ACCOUNT'), amount: '10' };
-  function editor(options: { canEdit?: boolean; line?: ReturnType<typeof blankPurchaseLine>; create?: (target: { lineKey: string; apply?: (created: { id: string; label: string }) => void }) => void } = {}) {
+  function editor(options: { canEdit?: boolean; line?: ReturnType<typeof blankPurchaseLine>; create?: (target: { lineKey: string; apply?: (created: { id: string; label: string }) => void }) => void; product?: boolean } = {}) {
     const onApply = vi.fn(), onClose = vi.fn(), line = options.line ?? accountLine;
     // the connected bill has verified the created account by the time it fills the editor, so the editor knows it
     const known = { id: 'acc-9', label: 'Office rent', meta: '', kind: 'ACCOUNT' as const, unit: '' };
-    render(<PurchaseLineEditor draft={accountDraft({ lines: [line] })} line={line} ordinal={1} policy={policyFor({ subjects: [known] })} canEdit={options.canEdit ?? true} onCreateAccount={options.create} onApply={onApply} onClose={onClose} />);
+    render(<PurchaseLineEditor draft={accountDraft({ lines: [line] })} line={line} ordinal={1} policy={policyFor({ subjects: [known] })} canEdit={options.canEdit ?? true} onCreateAccount={options.create} canCreateProduct={options.product} onApply={onApply} onClose={onClose} />);
     return { onApply, user: userEvent.setup() };
   }
 
@@ -154,6 +187,14 @@ describe('the mobile line editor’s create icon', () => {
     const button = within(field).getByRole('button', { name: 'Create a new expense account' });
     expect(field.querySelector('.console-reference-create')).toContainElement(button);
     expect(field.querySelector('.janso-field__row')).not.toContainElement(button);
+  });
+
+  it('offers the product form beside an editable item line', () => {
+    editor({ line: blankPurchaseLine('p1', 'ITEM'), product: true });
+    const field = document.querySelector('[data-purchase-line-field="subject"]') as HTMLElement;
+    const link = within(field).getByRole('link', { name: /Create a new product/ });
+    expect(field.querySelector('.console-reference-create')).toContainElement(link);
+    expect(link).toHaveAttribute('target', '_blank');
   });
 
   it.each([

@@ -1,0 +1,117 @@
+{
+  "version": "print-capabilities@2",
+  "kinds": [
+    {
+      "kind": "PURCHASE",
+      "version": "print-capabilities@2",
+      "paper_sizes": [
+        "A4",
+        "A5",
+        "LETTER",
+        "CUSTOM",
+        "THERMAL_80MM",
+        "THERMAL_58MM"
+      ],
+      "orientations": [
+        "PORTRAIT",
+        "LANDSCAPE"
+      ],
+      "element_types": [
+        "TEXT",
+        "FIELD_BINDING",
+        "IMAGE",
+        "ITEM_TABLE",
+        "ACCOUNT_TABLE",
+        "TOTALS_BLOCK",
+        "TAX_SUMMARY",
+        "DIVIDER",
+        "SHAPE",
+        "SIGNATURE"
+      ],
+      "bindings": [
+        "company.name",
+        "company.display_name",
+        "party.name",
+        "voucher.title",
+        "voucher.document_number",
+        "voucher.issue_number",
+        "voucher.document_date",
+        "voucher.posting_date",
+        "voucher.due_date",
+        "voucher.bill_reference",
+        "voucher.currency",
+        "voucher.status",
+        "voucher.narration",
+        "voucher.receiving_summary",
+        "totals.subtotal",
+        "totals.discount",
+        "totals.taxable_value",
+        "totals.tax_total",
+        "totals.cgst",
+        "totals.sgst",
+        "totals.igst",
+        "totals.cess",
+        "totals.round_off",
+        "totals.grand_total",
+        "totals.amount_in_words"
+      ],
+      "item_columns": [
+        "serial_no",
+        "description",
+        "hsn_sac",
+        "quantity",
+        "unit",
+        "rate",
+        "discount",
+        "taxable_value",
+        "cgst_rate",
+        "cgst_amount",
+        "sgst_rate",
+        "sgst_amount",
+        "igst_rate",
+        "igst_amount",
+        "cess",
+        "amount",
+        "account"
+      ],
+      "totals_rows": [
+        "subtotal",
+        "discount",
+        "taxable_value",
+        "cgst",
+        "sgst",
+        "igst",
+        "cess",
+        "round_off",
+        "grand_total",
+        "amount_in_words"
+      ],
+      "tax_groupings": [
+        "by_rate",
+        "none"
+      ],
+      "line_tables": {
+        "min": 1,
+        "max_each": 1
+      },
+      "options": {
+        "copies": true,
+        "copy_marks": true,
+        "pre_printed_stationery": true,
+        "free_placement": true,
+        "styles": true,
+        "images": true,
+        "components": false
+      },
+      "images": {
+        "max_bytes": 524288,
+        "total_max_bytes": 655360,
+        "media_types": [
+          "image/png",
+          "image/jpeg",
+          "image/webp"
+        ]
+      }
+    }
+  ]
+}

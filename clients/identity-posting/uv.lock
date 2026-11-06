@@ -40,7 +40,7 @@ wheels = [
 
 [[package]]
 name = "billing-platform"
-version = "0.44.5"
+version = "0.44.6"
 source = { editable = "../../libs/platform" }
 dependencies = [
     { name = "alembic" },
@@ -156,7 +156,7 @@ wheels = [
 
 [[package]]
 name = "identity-posting-client"
-version = "0.3.0"
+version = "0.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "billing-platform" },

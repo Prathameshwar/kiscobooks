@@ -90,6 +90,17 @@ class StockPositionListItem(Input):
     quantity: DecimalInput | None = None
 
 
+class StockPositionBalanceQuery(Input):
+    item_id: uuid.UUID
+    warehouse_id: uuid.UUID | None = None
+
+
+class StockPositionBalance(Input):
+    item_id: uuid.UUID
+    warehouse_id: uuid.UUID | None = None
+    quantity: DecimalInput
+
+
 class StockMovementListItem(StockPositionListItem):
     posting_id: uuid.UUID | None = None
     line_id: uuid.UUID | None = None

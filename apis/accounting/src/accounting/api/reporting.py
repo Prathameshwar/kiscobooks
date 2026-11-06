@@ -21,7 +21,7 @@ from accounting.models.reporting import (
     ReportSnapshot,
     ReportSnapshotFact,
 )
-from accounting.tasks.reporting_feed import head, snapshot
+from accounting.tasks.reporting_feed import head, reconcile_head, snapshot
 
 router = APIRouter(prefix="/internal/v1/reporting/{tenant_id}/{company_id}")
 
@@ -82,6 +82,20 @@ async def refresh_stock(tenant_id: uuid.UUID, company_id: uuid.UUID, request: Re
             request.app.state.session_factory, request.app.state.settings, tenant_id, company_id
         )
     return reply(auth, {"status": "READY"})
+
+
+@router.post("/reconcile-head", include_in_schema=False)
+async def reconcile_reporting_head(
+    tenant_id: uuid.UUID, company_id: uuid.UUID, request: Request
+) -> Response:
+    """A quarantined Reports generation may ask the owner to reseal physical drift."""
+    auth = await authorize(request, tenant_id, company_id)
+    with tenant_scope(tenant_id):
+        async with request.app.state.session_factory() as db, db.begin():
+            changed = await db.run_sync(lambda sync: reconcile_head(sync, company_id))
+            latest = changed or await db.run_sync(lambda sync: head(sync, company_id))
+    return reply(auth, {"sequence": latest.sequence if latest else 0,
+                        "manifest": latest.manifest if latest else None})
 
 
 @router.post("/snapshots/{snapshot_id}", include_in_schema=False)

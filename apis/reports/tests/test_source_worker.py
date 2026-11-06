@@ -272,6 +272,31 @@ async def test_source_barrier_controls_must_match_the_published_cut(app, client)
             )
 
 
+async def test_failed_refresh_queues_one_fresh_rebuild(app, client):
+    from reports.models.source_versions import ReportGenerationRequest
+    from reports.tasks.source_worker import cycle
+
+    source = Source()
+    source.waiting = False
+    settings = app.state.settings
+    settings.source_versions_enabled = True
+    settings.owners = (source.owner,)
+    first = await submit(app, client, {})
+    async with httpx.AsyncClient(transport=httpx.MockTransport(source.response)) as wire:
+        await cycle(settings, app.state.session_factory, wire)
+        source.advance()
+        source.bad_head = True
+        refresh = await submit(
+            app, client, {"strategy": "REFRESH", "base_generation_id": str(first)}
+        )
+        await cycle(settings, app.state.session_factory, wire)
+    with tenant_scope(TENANT):
+        async with app.state.session_factory() as db:
+            assert (await db.get(ReportGeneration, refresh)).status == "QUARANTINED"
+            requests = list(await db.scalars(select(ReportGenerationRequest)))
+            assert [row.strategy for row in requests] == ["FRESH", "REFRESH", "FRESH"]
+
+
 async def test_source_copy_yields_after_ten_pages_and_resumes_its_ordinal(app, client):
     source = Source()
     source.waiting, source.page_size = False, 1

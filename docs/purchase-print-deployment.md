@@ -51,6 +51,28 @@ dispatcher. The Console audit entity catalogue is generated with the existing he
 
 ## Start and deploy
 
+On Ubuntu, `deploy/ubuntu/install-runtime.sh` invokes
+`deploy/ubuntu/install-print-runtime.sh` on every install and update. It creates
+the dedicated RabbitMQ vhost/user, database user, restricted environment and
+PDF directory, installs Playwright Chromium and its dependencies, loads a
+path-scoped AppArmor allowance for Chromium's user namespace sandbox, and
+enables the dispatcher, worker and company-enrollment timer. The browser cache
+is root-owned; the worker can write only the private PDF directory. The timer
+adds new companies to the explicit print scopes after enrollment. Re-running
+the installer is supported. Both services must be active before accepting
+print jobs:
+
+```text
+systemctl is-active kiscobooks-vouchers-print-dispatcher kiscobooks-vouchers-print-worker
+systemctl is-enabled kiscobooks-vouchers-print-dispatcher kiscobooks-vouchers-print-worker kiscobooks-vouchers-print-enrollment.timer
+```
+
+The PDF tree uses `kisco-print` ownership and inherited ACLs for the `kiscobooks`
+API group. The worker writes and the Vouchers API reads without sharing the
+API's environment or database identity. The installer also repairs the permissions
+of PDFs created before this installation. A newly created voucher directory must
+retain its default ACL; a plain group bit on the top-level directory is insufficient.
+
 Install the locked Vouchers dependencies. On the VM, install Chromium and its OS
 dependencies using the Vouchers interpreter:
 
@@ -74,12 +96,14 @@ its parent first and only then tears the browser and driver down: the deadline w
 disarmed before the write, and a teardown that hangs ends with exit 0 after ten seconds, so
 a finished PDF is never lost to a slow browser exit.
 
-The renderer version (`purchase-pdf@4` since 2026-11-04) and the standard layout version (`purchase-a4@3`)
+The renderer version (`purchase-pdf@8` since 2026-11-06) and the standard layout version (`purchase-a4@7`)
 are frozen into every snapshot, and a job whose snapshot carries another version fails as
 `SOURCE_INTEGRITY` (the renderer version, checked by the worker) or is refused when frozen
 (the layout version, checked by `validate_snapshot`). Both moved from `@1` on 2026-11-01
 because the printed output changed under the old strings: the per-page footer, the voucher
 number, a ledger line under each particular, the credit period and the settlement rows. The
+2026-11-06 revision adds a full table grid, bordered bill sections and a component-level tax
+breakdown. The
 layout digest is `sha256` of the version string, not of the CSS or the HTML, so it does **not**
 change by itself when the body changes: the version is the only guard, and the stylesheet's
 header comment states the rule (change the version whenever the printed presentation
@@ -90,9 +114,9 @@ before Accounting: `voucher-execution-client` 0.3.9 added optional `voucher_numb
 to the print facts, an older Accounting reply still validates, but an older Vouchers refuses a
 newer reply because the wire models forbid unknown fields.
 
-Any job created under `@1` fails as `SOURCE_INTEGRITY` by design. Printing has not been
-activated on any stack, so there are no `PENDING`, `RUNNING` or retained `READY` jobs to
-migrate; if one exists on a stack that was activated by hand, recreate it after the bump.
+Any job created under `@1` fails as `SOURCE_INTEGRITY` by design. Printing had not been
+activated before the version bump; recreate any older job from an independently
+activated stack after the bump.
 
 ### Local-only sandbox switch
 
@@ -127,9 +151,8 @@ before starting updated API code. It is a single CREATE TABLE DDL with scoped fo
 keys and queue/deduplication indexes. A downgrade refuses to discard retained jobs.
 It was rehearsed against a disposable loopback MySQL schema. During the subsequent
 company-defaults review on 2026-10-31, the local company database was backed up and only
-`0111` was applied; original document/type row counts were retained. The Vouchers API was
-restarted and is ready. VM migration, private print configuration and renderer/worker
-activation still require their own deployment checks.
+`0111` was applied; original document/type row counts were retained. The VM migration,
+private print configuration and renderer/worker activation were completed on 2026-11-06.
 
 Start the processes with separate service environment files:
 
@@ -160,7 +183,7 @@ the content-addressed PDF. Permission changes invalidate the disclosure fingerpr
 Changed saved revision/status produces a conflict and requires a new copy. The browser
 also verifies the SHA-256/size before exposing its ephemeral PDF URL.
 
-Standard `purchase-a4@3` is an internal Purchase voucher, not a replacement for the
+Standard `purchase-a4@7` is an internal Purchase voucher, not a replacement for the
 supplier's tax invoice. It carries supplier/bill references, document/posting/due dates,
 exact owner-produced amounts, components, totals, status, revision and page numbers.
 Every page footer repeats the voucher number (or "Not allocated"), supplier, supplier
@@ -169,7 +192,7 @@ Company number/date formatting is signed by Identity. Posted invoices reuse immu
 Accounting records rather than calculate against changed masters. Printing does not
 allocate a number, approve, post, reverse or settle a document.
 
-Content of `purchase-a4@3` (everything below is read from the frozen job snapshot, escaped,
+Content of `purchase-a4@7` (everything below is read from the frozen job snapshot, escaped,
 covered by its integrity hash and unchanged by a retry or re-render):
 
 - **Voucher no.** A posted bill shows Accounting's journal number (`PURCHASE/<FY>/<seq>`),
@@ -180,6 +203,21 @@ covered by its integrity hash and unchanged by a retry or re-render):
 - **Particulars.** Each line shows its description and, under it, "Ledger: <expense account
   name>" (Accounting reads each name under the account's own field policy; a name the actor
   may not read prints "Ledger restricted" and never another ledger's name).
+- **Goods and receiving.** Goods show HSN/SAC, billed quantity and unit, and rate. A Mixed
+  Bill also labels the account line's entered base amount beneath its description. When the
+  actor can read all contributing stock fields, the standard layout adds a receiving section
+  with the saved warehouse, bin, batch and serial **references**. These are owner IDs, not
+  human-readable master names or batch/serial codes. A custom layout may bind
+  `voucher.receiving_summary` from the same frozen data in a dedicated zone and vertical
+  band. That zone grows with its content; the renderer refuses layouts that could overlap
+  another zone. A denied stock field removes the
+  entire receiving section; a later denial invalidates an earlier PDF download.
+- **Tax summary.** The built-in grid lists each nonzero component code with its taxable basis,
+  tax amount and portion charged by the supplier, using Accounting's frozen line calculation.
+  The bill summary separately shows total tax, supplier-charged tax and payable. It does not
+  infer rates or recompute tax. The current calculation contract allows CGST, SGST, UTGST,
+  IGST and CESS; VAT and other schemes need Accounting contract/calculation support before
+  their components can appear on a Purchase print.
 - **Terms.** Supplier invoice no., supplier invoice date, posting date, payment due, and a
   credit period in days (due date minus invoice date) when the due date is not before the
   invoice date. The bill does not store credit days, so this is derived and labelled as such.
@@ -218,10 +256,10 @@ with typed styles, copies and marks, pre-printed stationery, text, fields, lines
 pictures, signatures (with or without a picture), a product table and/or an accounts table,
 totals rows (amount in words included) and a tax summary by rate. One manifest per kind
 (`domain/print_capabilities.py`, published at `GET /print-capabilities` and frozen in
-`contracts/print-capabilities-v1.json`) lists what prints; anything else is refused before a
+`contracts/print-capabilities-v2.json`) lists what prints; anything else is refused before a
 browser starts, with the same sentence the designer shows when it blocks publishing. Still
 refused and named: QR codes and barcodes (no encoder), custom fonts (no byte store), batch,
-expiry and MRP columns (a Purchase bill records none), a tax summary grouped by HSN, the
+expiry and MRP columns (the print has references but no readable batch code, expiry or MRP), a tax summary grouped by HSN, the
 outstanding-balance total and shared components.
 
 ## Goods, pictures, rolls and previews (2026-11-04, `purchase-pdf@4`, `purchase-a4@3`)
@@ -299,12 +337,19 @@ start included), with every line, the totals and the words present and the heade
 | Unit symbols missing on goods | Older Accounting/Catalog, or the actor may not read unit symbols | Deploy the 0.5.0 contract order; check field policies on units. |
 | Non-Latin text prints as boxes | The VM lacks fonts for that script | Install the script's fonts (for Indian scripts, the Noto Sans families) on the print VM; templates are one language each (D5) and print text exactly as typed. |
 
-## Release checks still required
+## VM verification on 2026-11-06
 
-- Connect and review the entry button after the parallel UI work settles.
-- Complete the combined Console build and authenticated browser-to-broker-worker test
-  under the deployment configuration. Unit/native API tests are not that deployment test.
-- Review OS/database/RabbitMQ grants, sandbox launch and private-volume backup/recovery
-  on the VM. No VM deployment has been performed by the local implementation work.
-- Full custom-canvas parity and signed Design render-evidence synchronization remain
-  pending; browser `/renders` writes stay closed.
+- Re-ran the print installer successfully; dispatcher, worker and enrollment timer
+  are enabled and active. The timer's oneshot service completed successfully.
+- Confirmed RabbitMQ access is limited to the dedicated print exchange/queue,
+  the browser cache is root-owned, and the PDF tree is readable by the API group.
+- A saved Posted Account Bill and a newly saved Draft Account Bill each opened
+  the Console preview and downloaded a verified PDF through the live site. The
+  preview identified their respective `POSTED` and `DRAFT` statuses.
+- The revised `purchase-a4@7` layout was checked with Posted Account, Product
+  and Mixed bills. Product and Mixed copies showed the exact posted IGST
+  component, taxable basis, supplier-charged amount, discounts and receiving
+  references. A short Product bill fit on one page. A historical Product bill
+  with abandoned invoice attempts printed from its one committed intent.
+- Full custom-canvas parity and signed Design render-evidence synchronization
+  remain separate design work; browser `/renders` writes stay closed.

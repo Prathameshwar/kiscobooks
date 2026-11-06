@@ -34,8 +34,17 @@ OPERATIONS = frozenset(
         "accounting-stock.aborted",
     }
 )
+# A stock execution can prepare a financial journal as part of the same operation.
+# Reserve its financial first-use features with the stock features under one receipt.
 FEATURES = frozenset(
-    {"inventory", "batch_tracking", "serial_tracking", "expiry_tracking"}
+    {
+        "inventory",
+        "batch_tracking",
+        "serial_tracking",
+        "expiry_tracking",
+        "credit_limits",
+        "multi_currency",
+    }
 )
 
 
@@ -67,7 +76,7 @@ class StockReservationIntent(Contract):
     operation_id: uuid.UUID
     actor_user_id: uuid.UUID
     configuration_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
-    features: tuple[str, ...] = Field(min_length=1, max_length=4)
+    features: tuple[str, ...] = Field(min_length=1, max_length=6)
     source: StockReservationSource
     authority: StockAuthority = Field(repr=False)
 
@@ -81,13 +90,13 @@ class StockReservationIntent(Contract):
         return value
 
     @model_validator(mode="after")
-    def only_stock_features(self) -> Self:
+    def stock_and_journal_features(self) -> Self:
         if (
             "inventory" not in self.features
             or not set(self.features) <= FEATURES
             or len(set(self.features)) != len(self.features)
         ):
-            raise ValueError("stock first use accepts distinct stock capabilities only")
+            raise ValueError("stock first use accepts inventory and its journal capabilities only")
         return self
 
 

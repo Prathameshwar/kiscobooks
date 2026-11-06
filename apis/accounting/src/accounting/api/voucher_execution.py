@@ -47,7 +47,9 @@ async def invoice_preview(request: Request) -> Response:
     except ValueError as error:
         raise ValidationFailedError("invalid invoice preview contract") from error
     operation = "voucher.invoice.preview"
-    credential, key_id, framed = authorize(request, body.tenant_id, body.company_id, operation, raw)
+    credential, key_id, framed = await authorize(
+        request, body.tenant_id, body.company_id, operation, raw
+    )
     current = delegated_access(
         body.authority,
         request.app.state.settings.actor_signing_secret.get_secret_value().encode(),
@@ -69,14 +71,12 @@ async def invoice_preview(request: Request) -> Response:
     )
 
 
-def authorize(
+async def authorize(
     request: Request, tenant: uuid.UUID, company: uuid.UUID, operation: str, body: bytes
 ) -> tuple[SnapshotCredential, str, bytes]:
     key_id = request.headers.get("x-execution-key-id", "")
     credential = request.app.state.settings.voucher_execution_credentials.get(key_id)
-    if credential is None or not any(
-        scope.tenant_id == tenant and scope.company_id == company for scope in credential.scopes
-    ):
+    if credential is None:
         raise AuthenticationRequiredError("execution company authority unavailable")
     if request.url.query or len(body) > 1048576:
         raise ValidationFailedError("unsupported execution request")
@@ -86,6 +86,23 @@ def authorize(
     verify(
         credential.secret.get_secret_value().encode(), key_id, operation, framed, request.headers
     )
+    scoped = any(
+        scope.tenant_id == tenant and scope.company_id == company
+        for scope in credential.scopes
+    )
+    if not scoped and credential.allow_enrolled_companies:
+        from accounting.models.masters import AccountingSetup
+
+        with tenant_scope(tenant):
+            async with request.app.state.session_factory() as db:
+                scoped = (
+                    await db.scalar(
+                        select(AccountingSetup.id).where(AccountingSetup.company_id == company)
+                    )
+                    is not None
+                )
+    if not scoped:
+        raise AuthenticationRequiredError("execution company authority unavailable")
     return credential, key_id, framed
 
 
@@ -125,7 +142,9 @@ async def command(request: Request) -> Response:
     except ValueError as error:
         raise ValidationFailedError("invalid execution contract") from error
     operation = "voucher.execution.command"
-    credential, key_id, framed = authorize(request, body.tenant_id, body.company_id, operation, raw)
+    credential, key_id, framed = await authorize(
+        request, body.tenant_id, body.company_id, operation, raw
+    )
     if body.protocol_version == 2:
         from accounting.tasks.voucher_money_execution import dispatch
 
@@ -154,7 +173,7 @@ async def status(
     tenant_id: uuid.UUID, company_id: uuid.UUID, execution_id: uuid.UUID, request: Request
 ) -> Response:
     operation = "voucher.execution.status"
-    credential, key_id, framed = authorize(
+    credential, key_id, framed = await authorize(
         request, tenant_id, company_id, operation, await request.body()
     )
     with tenant_scope(tenant_id):

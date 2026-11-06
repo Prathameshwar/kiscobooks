@@ -2213,11 +2213,11 @@ Business dates stay strings end to end; money is summed with exact integer arith
 symbol comes from the display config only when its currency matches the source's. The plan, phases
 and evidence are in [business-overview-redesign-plan.md](business-overview-redesign-plan.md).
 
-### Create from the field — Purchase supplier and expense account (2026-11-01)
+### Create from the field — Purchase supplier, expense account and product (2026-11-01; updated 2026-11-05)
 
-On the Purchase account bill, the **Supplier** field and each **expense / service account** row have a small
-outline "+" icon that opens a right-hand drawer to create what is missing, so a bill is never abandoned
-halfway to set up a master. The pattern, for the next lookup that needs it:
+On a Purchase bill, the **Supplier** field and each **expense / service account** row have a small
+outline "+" icon that opens a right-hand drawer. Item lines use the same icon to open product creation.
+The pattern, for the next lookup that needs it:
 
 - **Icon, in the control's own row.** `IconButton` (`variant="outline"`, `PlusIcon`), `aria-haspopup="dialog"`,
   named for the act ("Create a new supplier", "Create a new expense account for line 2"). It sits *beside the
@@ -2228,7 +2228,12 @@ halfway to set up a master. The pattern, for the next lookup that needs it:
   lookup's cell element, not inside it — the grid reads Enter inside a cell as "next row", which would swallow
   the button's Enter. It is hidden when the actor lacks the permission or the bill is read-only (presentation
   only; the service authorizes each command), and disabled, not removed, while the bill is busy.
-- **Drawer.** `Drawer` `md`, a compact two-column form (`console-quick-create`), not the page's airy rhythm:
+- **Product item lines.** The same outline "+" opens the existing product creation page in a new tab. That page
+  follows the company's simple-product or profile/SKU mode and its required fields. The Purchase bill stays
+  in place; after creation, search the item lookup to select the active purchasable product. The link is offered
+  only with `item.create` and on an editable Product or Mixed Purchase bill.
+- **Drawer.** The supplier uses `Drawer` `lg` for readable paired fields, with one column on narrow screens;
+  the expense account uses `md`. Both use the compact `console-quick-create` form:
   fields pair up and a field that needs room spans both. A purpose line, only what the bill needs, the cursor
   in the first field. Supplier: name (it is also the legal name — the full form tells them apart), code
   (suggested from the name), country, and for an Indian supplier the GST status (regular, composition,

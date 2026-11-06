@@ -83,6 +83,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   const [failure, setFailure] = useState<RequestFailure | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const [waitingForStock, setWaitingForStock] = useState(false);
   const [job, setJob] = useState<Status | null>(null);
   const [intent, setIntent] = useState<{ key: string; body: Input; revision?: number } | null>(null);
   const [editing, setEditing] = useState(false);
@@ -146,18 +147,25 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     let current = initial;
     const started = Date.now();
     let budget = 60000;
+    let blockedOnStock = false;
     while (alive.current && current.status !== 'COMPLETE') {
       if (current.step.startsWith('BATCH') || current.step === 'SERIAL' || ['OPENING', 'VOUCHER', 'SUBMIT', 'ISSUE', 'POST', 'FINALIZE'].includes(current.step)) budget = 300000;
-      if (Date.now() - started > budget) throw { status: 503, message: 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
+      if (Date.now() - started > budget) throw { status: 503, message: blockedOnStock
+        ? 'Product setup is saved. Stock posting is still holding these definitions. Retry Save shortly, or contact support if this continues.'
+        : 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
       try {
         current = await masterRequest<Status>({ path: root + '/' + current.id + '/advance', method: 'POST' });
       } catch (error) {
         const problem = requestFailure(error);
         const sourceLag = current.step === 'VOUCHER' && problem.status === 409 && problem.message === 'voucher master evidence is unavailable or stale';
-        if (!sourceLag && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
+        const stockFence = problem.status === 409 && problem.message === 'stock posting is using these definitions; retry after it completes';
+        if (!sourceLag && !stockFence && (problem.status !== 429 || (!current.step.startsWith('BATCH') && current.step !== 'SERIAL'))) throw error;
+        if (stockFence) { budget = 300000; blockedOnStock = true; if (alive.current) setWaitingForStock(true); }
         await new Promise(resolve => setTimeout(resolve, 2000));
         continue;
       }
+      blockedOnStock = false;
+      if (alive.current) setWaitingForStock(false);
       if (current.company_id !== company || current.id !== initial.id) throw new Error('Product progress could not be verified.');
       if (!alive.current) return;
       setJob(current);
@@ -451,7 +459,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
           {(customs('custom_fields.').length > 0 || customs('shared_custom_fields.').length > 0) && <FieldGroup title="Additional information"><CustomFields fields={customs('custom_fields.')} values={custom} onChange={value => { setDirty(true); setCustom(value); }} nativeValues={{ ...values, kind }} creating disabled={locked} errors={customErrors('custom_fields.')} loadOptions={customOptions} currencies={[options.currency]} /><CustomFields fields={customs('shared_custom_fields.')} values={shared} onChange={value => { setDirty(true); setShared(value); }} nativeValues={{ ...values, kind }} creating disabled={locked} errors={customErrors('shared_custom_fields.')} loadOptions={customOptions} currencies={[options.currency]} />{validation.custom_fields && <Notice tone="danger">{validation.custom_fields}</Notice>}{validation.shared_custom_fields && <Notice tone="danger">{validation.shared_custom_fields}</Notice>}</FieldGroup>}
           </div>
         </div></CardBody></Card>
-        {busy && <p role="status">{job?.step === 'FINALIZE' ? 'Posting opening stock…' : 'Saving product and preparing it for use…'}</p>}
+        {busy && <p role="status">{waitingForStock ? 'Waiting for the current stock posting to finish; product setup will resume automatically…' : job?.step === 'FINALIZE' ? 'Posting opening stock…' : 'Saving product and preparing it for use…'}</p>}
         <div className="janso-form-actions">{stockStep && step === 1 && <Button type="button" variant="ghost" disabled={locked} onClick={() => setStep(0)}>Back to product details</Button>}<Button type="submit" disabled={busy || loading || ((!job || editing) && (!!blocked || !!openingBlocked))}>{stockStep && step === 0 && !job && !intent && !recoverKey ? 'Next: Stock and prices' : busy ? 'Saving…' : editing ? 'Save corrected product' : job || intent || recoverKey ? 'Retry Save' : 'Save product'}</Button>{job?.can_edit && !busy && !editing && !recoverKey && <Button type="button" variant="ghost" onClick={() => { setEditing(true); setIntent(null); setFailure(null); }}>Correct details</Button>}{!locked && <a className="janso-btn janso-btn--ghost" href={back}>Cancel</a>}</div>
       </form>}
   </section>;

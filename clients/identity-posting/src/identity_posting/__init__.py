@@ -72,8 +72,18 @@ class PostingClient:
         response_keys: Mapping[str, bytes],
         issuer: Literal["billing", "accounting"] = "billing",
     ) -> None:
-        if http.base_url.scheme != "https" or http.base_url.path not in {"", "/"}:
-            raise ValueError("Identity client requires an HTTPS origin")
+        if (
+            (
+                http.base_url.scheme != "https"
+                and not (
+                    http.base_url.scheme == "http"
+                    and http.base_url.host in {"127.0.0.1", "::1"}
+                )
+            )
+            or not http.base_url.host
+            or http.base_url.path not in {"", "/"}
+        ):
+            raise ValueError("Identity client requires HTTPS or a loopback HTTP origin")
         if http.base_url.query or http.base_url.fragment or http.base_url.userinfo:
             raise ValueError("Identity origin must not contain credentials or a query")
         if issuer not in {"billing", "accounting"}:

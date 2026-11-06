@@ -91,3 +91,27 @@ async def test_stock_reads_mask_contributing_fields_and_forbid_filtering_hidden_
         BASE + "/positions", params={"voucher_id": str(uuid7())}, headers=auth()
     )
     assert invalid.status_code == 422, invalid.text
+
+
+async def test_position_balance_is_scoped_aggregated_and_field_protected(client, app):
+    product, location, _ = await seed(app)
+    path = BASE + "/positions/balance"
+    params = {"item_id": str(product.item_id)}
+    result = await client.get(path, params=params, headers=auth())
+    assert result.status_code == 200, result.text
+    assert result.json() == {
+        "item_id": str(product.item_id), "warehouse_id": None, "quantity": "2.0000"
+    }
+    warehouse_result = await client.get(
+        path, params={**params, "warehouse_id": str(location.warehouse_id)}, headers=auth()
+    )
+    assert warehouse_result.status_code == 200, warehouse_result.text
+    assert warehouse_result.json()["quantity"] == "2.0000"
+    missing = await client.get(path, params={"item_id": str(uuid7())}, headers=auth())
+    assert missing.status_code == 200 and missing.json()["quantity"] == "0.0000"
+    assert (await client.get(path, params=params, headers=headers())).status_code == 403
+    denied = auth(policies=[{
+        "entity_type": "accounting.stock_position", "field_key": "quantity", "access": "read",
+        "effect": "deny", "scope_type": "company", "scope_id": str(COMPANY),
+    }])
+    assert (await client.get(path, params=params, headers=denied)).status_code == 403

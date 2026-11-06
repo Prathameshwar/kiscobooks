@@ -4690,8 +4690,11 @@
         "additionalProperties": false,
         "properties": {
           "purpose": {
-            "const": "REFERENCE",
             "default": "REFERENCE",
+            "enum": [
+              "REFERENCE",
+              "CORRECTION"
+            ],
             "title": "Purpose",
             "type": "string"
           },
@@ -7275,6 +7278,18 @@
               }
             ],
             "title": "Ref Number"
+          },
+          "revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision Id"
           },
           "revision_number": {
             "anyOf": [

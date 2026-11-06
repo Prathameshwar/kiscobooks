@@ -7,6 +7,7 @@ import { useServiceList } from '../lib/service-resource';
 import { stockRequest } from '../lib/stock';
 import { trackingId } from '../lib/stock-tracking-resources';
 import { newVoucherHref, withReturn } from '../lib/operate-navigation';
+import { purchasePrintAction } from '../lib/purchase-print-action';
 
 type Row = components['schemas']['ResourceItem'];
 
@@ -67,8 +68,21 @@ export function VoucherDirectory({ company, permissions, scope }: { company: str
   const canCreate = permissions.includes('vouchers.create'), canEdit = permissions.includes('vouchers.edit');
   const isPurchase = (row: Row) => row.kind === 'PURCHASE' && row.profile === 'STANDARD';
   const editorAvailable = (row: Row) => ['JOURNAL', 'CONTRA', 'RECEIPT', 'PAYMENT'].includes(row.kind ?? '') || isPurchase(row);
-  // A Purchase is edited on its one entry screen, where its tax, terms and approval are; a rejected one is corrected there too.
+  // Purchase editing uses its one entry screen. Saving a submitted or approved bill reopens a draft revision.
   const editLink = (row: Row) => isPurchase(row) ? '/vouchers/new/purchase?voucher_id=' + row.id + '&type_id=' + row.type_id : `/vouchers/${row.id}/edit?type_id=${row.type_id}`;
+  const rowActions = (row: Row) => {
+    const print = isPurchase(row) ? purchasePrintAction({
+      saved: row.revision_id ? { id: row.id, revisionId: row.revision_id, version: row.row_version } : null,
+      permitted: permission => permissions.includes(permission),
+      dirty: false, uncertain: false, busy: false, executing: false, editorOpen: false,
+    }) : { kind: 'hidden' } as const;
+    return [
+      { id: 'review', label: 'Review voucher', href: withReturn('/vouchers/' + row.id, scope?.href) },
+      ...(canEdit && editorAvailable(row) && (row.status === 'DRAFT' || isPurchase(row) && ['REJECTED', 'SUBMITTED', 'APPROVED'].includes(row.status ?? '')) && trackingId.test(row.type_id ?? '')
+        ? [{ id: 'edit', label: row.status === 'DRAFT' ? 'Edit draft' : `Edit ${row.status?.toLowerCase()} bill`, href: withReturn(editLink(row), scope?.href) }] : []),
+      ...(print.kind === 'ready' ? [{ id: 'print', label: 'Print / PDF', href: print.href }] : []),
+    ];
+  };
   const selection = scope ? '?' + new URLSearchParams({ kind: scope.kind, ...(scope.typeId ? { type_id: scope.typeId } : {}) }) : '';
   return <section className={scope ? 'janso-flow' : 'janso-page'}>
     <PageHeader title={scope ? scope.title + ' vouchers' : 'Voucher drafts'} lede="Find a saved voucher, review its details and continue its workflow." actions={<>
@@ -82,7 +96,7 @@ export function VoucherDirectory({ company, permissions, scope }: { company: str
     </FilterBar>
     {read.failure && <Notice tone="warning">{read.failure.message}</Notice>}
     <Card><DataTable caption="Saved company vouchers" columns={columns} rows={read.data?.items ?? []} rowId={row => row.id} loading={read.loading} error={read.failure ? read.failure.status === 401 ? 401 : read.failure.status === 403 ? 403 : 500 : null} emptyTitle="No saved vouchers match" onRetry={read.first}
-      rowActions={row => [{ id: 'review', label: 'Review voucher', href: withReturn('/vouchers/' + row.id, scope?.href) }, ...(canEdit && editorAvailable(row) && (row.status === 'DRAFT' || isPurchase(row) && row.status === 'REJECTED') && trackingId.test(row.type_id ?? '') ? [{ id: 'edit', label: row.status === 'REJECTED' ? 'Edit rejected bill' : 'Edit draft', href: withReturn(editLink(row), scope?.href) }] : [])]} />
+      rowActions={rowActions} />
       {!read.failure && <Pager noun="voucher" count={read.data?.items.length ?? 0} limit={read.limit} busy={read.loading} hasPrevious={read.hasPrevious} hasNext={!!read.data?.page.has_more} onPrevious={read.previous} onNext={read.next} onLimitChange={read.setLimit} />}
     </Card>
   </section>;

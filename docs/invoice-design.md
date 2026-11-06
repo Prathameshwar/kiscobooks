@@ -449,18 +449,30 @@ These are **not** silently answered anywhere in the code. If a task depends on o
    the final fallback for every kind rather than something a company provisions, which
    narrows this item to: author one canvas per kind, and decide whether they ship as code
    with the renderer or as `is_system` rows. **Purchase decision accepted, 2026-10-31:**
-   ship versioned `purchase-a4@N` with the renderer (currently `@2`; the version moves
+   ship versioned `purchase-a4@N` with the renderer (currently `@4`; the version moves
    whenever the printed presentation does), without company provisioning. A
    matching published custom rule takes precedence; an unsupported custom feature must
    produce an explicit refusal, never a silently substituted standard PDF.
    Packaging for other kinds remains open. **Decided 2026-11-04 for Purchase:** *Customize
-   layout* starts from a canvas copy of the standard layout (`purchase-a4@3`, with the line
+   layout* starts from a canvas copy of the standard layout (`purchase-a4@7`, with the line
    tables its line profile needs; console `standard-purchase.ts`), or from an empty page
    when the chosen paper cannot hold it. Other kinds still start empty.
 
 ---
 
 ## 10. Decision log
+
+### 2026-11-05 — Purchase receiving references on print
+
+The standard internal Purchase voucher now prints the saved warehouse, bin, batch and
+serial references when the actor may read the entire stock block. The print freezes only
+those references, not unverified display names. The same data is available to a designed
+layout through `voucher.receiving_summary` (`print-capabilities@2`). This binding needs
+its own non-header zone and vertical band so long serial lists can grow without clipping
+another element. A later field denial
+invalidates an earlier PDF download. Readable master names, batch codes, expiry and company
+legal identifiers need owner contracts and field-policy decisions before printing them;
+the default labels the current values as references.
 
 ### 2026-11-04 — Purchase is the base, made production ready; one language per template
 

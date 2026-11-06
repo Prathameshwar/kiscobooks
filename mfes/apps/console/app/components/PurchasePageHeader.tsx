@@ -19,7 +19,7 @@ export function PurchasePageHeader({ title, status, typeName, currency, canStart
   return <PageHeader
     overline={<a className="janso-link" href="/vouchers">Purchases</a>}
     title={title}
-    lede="Record an expense or service bill from a supplier, with or without GST. Purchases of stock cannot be recorded on this screen yet."
+    lede="Record a supplier bill for expenses, services, products, or a mix, with or without GST."
     meta={<>
       <Badge tone={view.tone}>{view.label}</Badge>
       {typeName ? <Badge variant="outline">{typeName}</Badge> : null}
@@ -27,7 +27,7 @@ export function PurchasePageHeader({ title, status, typeName, currency, canStart
     </>}
     actions={<>
       {print.kind === 'ready' ? <a className="janso-btn janso-btn--ghost" href={print.href}>Print</a> : null}
-      {print.kind === 'blocked' ? <><Button variant="ghost" disabled aria-describedby="purchase-print-blocked">Print</Button><span id="purchase-print-blocked" className="janso-visually-hidden">{print.reason}</span></> : null}
+      {print.kind === 'blocked' ? <span className="janso-purchase-print-blocked"><Button variant="ghost" disabled aria-describedby="purchase-print-blocked">Print</Button><span id="purchase-print-blocked" className="janso-meta">{print.reason}</span></span> : null}
       <Button variant="ghost" disabled={locked} onClick={onDrafts} data-purchase-drafts-trigger>Saved drafts</Button>
       {canStartNew ? <a className="janso-btn janso-btn--ghost" href="/vouchers/new/purchase">New purchase</a> : null}
     </>}

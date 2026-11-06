@@ -104,6 +104,12 @@ def reconcile_invoices(live: Live) -> None:
             journal["base_currency"],
         ):
             raise ConflictError("invoice source kind, date or currency differs from its GL")
+        if (intent["status"], journal["status"]) not in {
+            ("COMMITTED", "POSTED"),
+            ("CANCELLED", "VOID"),
+            ("PREPARED", "PREPARED"),
+        }:
+            raise ConflictError("invoice intent and journal states do not reconcile")
         children = grouped[identity]
         supplies = children["invoice_supply_fact"]
         taxes = children["invoice_tax_component"]
@@ -128,17 +134,20 @@ def reconcile_invoices(live: Live) -> None:
         ):
             raise ConflictError("invoice party bill differs from its native GL")
         bill_items = open_items_by_line[bill_line_ids[0]]
-        if (
-            len(bill_items) != 1
-            or bill_items[0]["account_id"] != row["party_account_id"]
-            or bill_items[0]["currency"] != row["currency"]
-            or bill_items[0]["reference"] != row["bill_reference"]
-            or bill_items[0]["due_date"] != row["due_date"]
-            or Fraction(bill_items[0]["amount"]) != Fraction(row["payable"])
-            or bill_items[0]["direction"]
-            != ("DEBT" if row["kind"] in {"SALES", "PURCHASE"} else "CREDIT")
-        ):
-            raise ConflictError("invoice party bill has no matching native open item")
+        if intent["status"] == "COMMITTED":
+            if (
+                len(bill_items) != 1
+                or bill_items[0]["account_id"] != row["party_account_id"]
+                or bill_items[0]["currency"] != row["currency"]
+                or bill_items[0]["reference"] != row["bill_reference"]
+                or bill_items[0]["due_date"] != row["due_date"]
+                or Fraction(bill_items[0]["amount"]) != Fraction(row["payable"])
+                or bill_items[0]["direction"]
+                != ("DEBT" if row["kind"] in {"SALES", "PURCHASE"} else "CREDIT")
+            ):
+                raise ConflictError("invoice party bill has no matching native open item")
+        elif bill_items:
+            raise ConflictError("uncommitted invoice cannot have a native open item")
         for _, link in links:
             native = require("journal_line", link["journal_line_id"])
             if native["journal_id"] != intent["journal_id"]:

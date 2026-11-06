@@ -353,7 +353,12 @@ async def preview(
         "company_configuration_hash": request.company_configuration_hash,
         "document_date": request.document_date.isoformat(),
         "posting_date": request.posting_date.isoformat(),
-        "invoice": body.model_dump(mode="json", exclude={"accepted_calculation_hash"}),
+        # Acceptance stores the computed payable on the next voucher revision. It is
+        # output evidence, not a new commercial input, so posting must hash the same
+        # calculation that was offered for acceptance on the draft.
+        "invoice": body.model_dump(
+            mode="json", exclude={"accepted_calculation_hash"}
+        ) | {"payable_total": None},
         "policy": policy.model_dump(mode="json"),
         "result": output.model_dump(mode="json", exclude={"calculation_hash"}),
     }

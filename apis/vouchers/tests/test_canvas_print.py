@@ -310,7 +310,7 @@ def test_the_published_contract_file_is_the_manifest():
     from vouchers.domain.print_capabilities import MANIFEST_VERSION, MANIFESTS
 
     stored = json.loads(
-        (Path(__file__).parents[1] / "contracts/print-capabilities-v1.json").read_text("utf-8")
+        (Path(__file__).parents[1] / "contracts/print-capabilities-v2.json").read_text("utf-8")
     )
     assert stored == {"version": MANIFEST_VERSION, "kinds": list(MANIFESTS.values())}
 

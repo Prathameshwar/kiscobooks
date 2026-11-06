@@ -194,7 +194,7 @@ export function NewTemplateDialog({
           {standard ? (
             <p className="janso-meta" data-testid="template-starter">
               {starter
-                ? 'It starts from a copy of the standard Purchase layout, saved as a draft. Nothing prints on it until you publish it.'
+                ? 'It starts from the standard Purchase header, lines and totals as a draft. The built-in print also includes settlements and adjustments that this design cannot yet reproduce. You can add the receiving summary field. Preview a saved bill before publishing.'
                 : 'The standard Purchase layout is drawn for A4 or Letter portrait, so on this paper the design starts on an empty page.'}
             </p>
           ) : null}

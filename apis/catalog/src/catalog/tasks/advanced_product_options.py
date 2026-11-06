@@ -11,9 +11,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from catalog.api.field_metadata import field_set
+from catalog.models.attributes import AttributeDefinition, AttributeSetMember
 from catalog.models.commercial import ProductTypeRevision
 from catalog.models.projections import CompanyFeatureProjection, CompanyProjection
 from catalog.schemas.advanced_product_creation import (
+    AdvancedAttributeMember,
     AdvancedCreationOptions,
     AdvancedDraftContent,
     AdvancedTypeOption,
@@ -100,10 +102,12 @@ async def context(
     batch = await available(access, configuration, selected.product_type_revision_id, kind)
     serial = await serial_options(access, configuration, kind)
     selected_type = None
+    attribute_members: list[AdvancedAttributeMember] = []
     if selected.product_type_revision_id is not None:
         revision = await access.reference(ProductTypeRevision, selected.product_type_revision_id)
         selected_type = AdvancedTypeOption(
             id=revision.id,
+            attribute_set_revision_id=revision.attribute_set_revision_id,
             kind=revision.kind,
             unit_dimensions=revision.unit_dimensions,
             inventory_modes=revision.inventory_modes,
@@ -113,6 +117,26 @@ async def context(
             require_manufacturer=revision.require_manufacturer,
             require_expiry=revision.require_expiry,
         )
+        if revision.attribute_set_revision_id is not None:
+            rows = list(await db.scalars(
+                select(AttributeSetMember)
+                .where(AttributeSetMember.company_id == company, AttributeSetMember.revision_id == revision.attribute_set_revision_id)
+                .order_by(AttributeSetMember.position, AttributeSetMember.id)
+                .limit(129)
+            ))
+            if len(rows) > 128:
+                raise ConflictError("Product Type has too many attribute members")
+            for row in rows:
+                await access.require(row)
+                definition = await access.reference(AttributeDefinition, row.definition_id)
+                attribute_members.append(AdvancedAttributeMember.model_validate({
+                    "definition_id": definition.id, "name": definition.name,
+                    "value_type": definition.value_type,
+                    "measurement_dimension": definition.measurement_dimension,
+                    "position": row.position, "is_required": row.is_required,
+                    "allow_variant_axis": row.allow_variant_axis,
+                    "is_variant_capable": definition.is_variant_capable,
+                }))
     inventory_enabled = (
         await db.scalar(
             select(CompanyFeatureProjection.id)
@@ -145,6 +169,7 @@ async def context(
         defaults=selected,
         default_group_id=group,
         selected_type=selected_type,
+        attribute_members=attribute_members,
         inventory_enabled=inventory_enabled,
         batch=SimpleBatchOptions.model_validate(batch),
         serial=serial,

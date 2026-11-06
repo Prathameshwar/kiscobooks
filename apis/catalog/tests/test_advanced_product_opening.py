@@ -4,10 +4,12 @@ import datetime as dt
 import time
 import uuid
 from decimal import Decimal
+from typing import cast
 
 import pytest
 from billing_platform.company_context import CompanyContext, FinancialContext, sign_company_context
 from billing_platform.db import tenant_scope
+from billing_platform.errors import ConflictError
 from billing_platform.ids import uuid7
 from billing_platform.permissions import CATALOG_PERMISSIONS
 from pydantic import ValidationError
@@ -19,7 +21,12 @@ from catalog.models.products import Item, ProductFamily
 from catalog.schemas.advanced_product_creation import AdvancedOpeningInput
 from catalog.schemas.simple_product_creation import SimpleCreationInput
 from catalog.tasks import advanced_creation_opening as opening_tasks
-from catalog.tasks.simple_creation_transport import CreationOwners, ServiceUnavailableError
+from catalog.tasks.simple_creation_steps import opening_preflight
+from catalog.tasks.simple_creation_transport import (
+    CreationOwners,
+    OwnerRejectedError,
+    ServiceUnavailableError,
+)
 from tests.attribute_factories import seed_attributes
 from tests.conftest import ACTOR_SECRET
 from tests.test_advanced_product_definition import prepared
@@ -27,6 +34,24 @@ from tests.test_advanced_product_setup import definition
 from tests.test_api import headers
 
 pytestmark = pytest.mark.usefixtures("stable_product_source_clock")
+
+
+async def test_pending_stock_confirmation_explains_product_creation_options():
+    class PendingOwner:
+        async def call(self, service, method, path, body=None, key=None):
+            assert service == "accounting" and path.endswith("/stock/openings/readiness")
+            return {"blockers": ["EXECUTION_UNCONFIRMED"]}
+
+    with pytest.raises(ConflictError, match="Save the product without opening stock"):
+        await opening_preflight(cast(CreationOwners, PendingOwner()), uuid7(), "2026-04-01")
+
+
+def test_stock_definition_fence_keeps_the_product_command_for_retry():
+    temporary = OwnerRejectedError(
+        409, {"message": "stock posting is using these definitions; retry after it completes"}
+    )
+    assert temporary.definite is False
+    assert OwnerRejectedError(409, {"message": "product configuration changed"}).definite is True
 
 
 def test_opening_serial_count_and_skip_shape_are_exact():
@@ -88,6 +113,13 @@ async def active_definition(client, factory, tenant):
     auth |= {"x-company-context": token, "x-company-signature": signature}
     path = base + "/definitions/" + str(creation_id) + "/skus/" + str(item_id)
     return auth, base, body, created, path
+
+
+async def test_options_show_verified_books_begin_date(client, factory, tenant_a):
+    auth, base, _, _, _ = await active_definition(client, factory, tenant_a)
+    response = await client.get(base + "/options", headers=auth)
+    assert response.status_code == 200, response.text
+    assert response.json()["books_begin_date"] == "2026-04-01"
 
 
 async def test_skip_opening_completes_and_replays(client, factory, tenant_a):

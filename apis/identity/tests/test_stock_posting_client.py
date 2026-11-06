@@ -19,7 +19,7 @@ from identity_posting.stock import (
     StockReservationSource,
     StockTerminalRequest,
 )
-from pydantic import SecretStr
+from pydantic import SecretStr, ValidationError
 from sqlalchemy import func, select
 
 from identity.config import CatalogSourceCredential, CatalogSourceScope
@@ -32,6 +32,27 @@ from tests.factories import (
     build_user,
     seed_two_companies,
 )
+
+
+def test_stock_reservation_accepts_its_financial_journal_features_only():
+    values = {
+        "operation_id": uuid7(),
+        "actor_user_id": uuid7(),
+        "configuration_hash": "a" * 64,
+        "features": ("inventory", "credit_limits", "multi_currency"),
+        "source": StockReservationSource(
+            execution_id=uuid7(), command_hash="b" * 64, action="POST"
+        ),
+        "authority": StockAuthority(
+            actor_context="actor",
+            actor_signature="c" * 64,
+            company_context="company",
+            company_signature="d" * 64,
+        ),
+    }
+    assert StockReservationIntent.model_validate(values).features == values["features"]
+    with pytest.raises(ValidationError):
+        StockReservationIntent.model_validate(values | {"features": ("inventory", "banking")})
 
 
 async def fixture(app, session, tenant_a, tenant_b):

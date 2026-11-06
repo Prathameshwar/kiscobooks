@@ -7,7 +7,7 @@ import httpx
 from billing_platform.db import tenant_scope
 from billing_platform.db.types import utcnow
 from billing_platform.ids import uuid7
-from reporting_contract.contract import HeadBarrier
+from reporting_contract.contract import HeadBarrier, Manifest
 from reporting_contract.transport import Owner, request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -41,6 +41,12 @@ async def reconcile(
             if health is None:
                 health = ReportReadiness(tenant_id=tenant, company_id=company, next_attempt_at=now)
                 db.add(health)
+            latest_status = await db.scalar(
+                select(ReportGeneration.status)
+                .where(ReportGeneration.company_id == company)
+                .order_by(ReportGeneration.id.desc())
+                .limit(1)
+            )
             # Reserve a bounded poll window before network work; a dead worker cannot
             # prevent later reconciliation. No owner call holds this transaction.
             health.next_attempt_at = now + dt.timedelta(seconds=10)
@@ -49,6 +55,10 @@ async def reconcile(
             # Certify current Catalog definitions and stock positions before asking
             # for the financial head. The owner coalesces unchanged stock evidence.
             await request(client, owner, "POST", base + "/refresh-stock")
+            if latest_status == "QUARANTINED":
+                # A failed owner barrier can only recover after the owner has checked its
+                # physical tables and sealed a new generation. This check is rare and explicit.
+                await request(client, owner, "POST", base + "/reconcile-head")
             head = HeadBarrier.model_validate(await request(client, owner, "GET", base + "/head"))
             if head.manifest is None or head.manifest.control.coverage_start is None:
                 return  # Books initialization has not yet published its owner facts.
@@ -101,8 +111,20 @@ async def reconcile(
                 .limit(1)
             )
             if latest is not None and latest.status == "QUARANTINED":
-                health.failure_code = "SOURCE_REVIEW_REQUIRED"
-                return  # Integrity failures need review, never endless fresh rebuilds.
+                failed = await db.scalar(
+                    select(ReportGenerationRequest).where(
+                        ReportGenerationRequest.company_id == company,
+                        ReportGenerationRequest.generation_id == latest.id,
+                    )
+                )
+                prior_manifest = (
+                    Manifest.model_validate(failed.target_manifest)
+                    if failed is not None and failed.target_manifest is not None
+                    else None
+                )
+                if prior_manifest is None or prior_manifest.generation >= head.manifest.generation:
+                    health.failure_code = "SOURCE_REVIEW_REQUIRED"
+                    return  # Only a newly sealed owner generation can recover a failed one.
             cut = await db.scalar(
                 select(ReportSourceCut)
                 .join(ReportGeneration, ReportGeneration.id == ReportSourceCut.generation_id)
@@ -114,7 +136,11 @@ async def reconcile(
                 .order_by(ReportSourceCut.id.desc())
                 .limit(1)
             )
-            if cut is not None and cut.sequence == head.sequence:
+            if (
+                cut is not None
+                and cut.sequence == head.sequence
+                and Manifest.model_validate(cut.manifest).generation == head.manifest.generation
+            ):
                 return
             if cut is not None and cut.sequence > head.sequence:
                 health.failure_code = "OWNER_SEQUENCE_REGRESSED"
@@ -126,6 +152,7 @@ async def reconcile(
                     epoch is not None
                     and epoch.status == "READY"
                     and epoch.head_sequence == cut.sequence
+                    and epoch.owner_generation == head.manifest.generation
                 ):
                     parent = cut.id
             generation = ReportGeneration(tenant_id=tenant, company_id=company, snapshot_id=uuid7())

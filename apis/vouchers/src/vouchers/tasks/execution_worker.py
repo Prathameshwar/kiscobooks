@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import uuid
+from collections.abc import AsyncIterator
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -228,6 +229,32 @@ async def stock_companies(
             ]
 
 
+async def execution_company_scopes(
+    factory: async_sessionmaker[AsyncSession], owner: Owner | None
+) -> AsyncIterator[tuple[uuid.UUID, uuid.UUID]]:
+    """Discover only native company guards; owner and Accounting recheck each command."""
+    if owner is None:
+        return
+    seen: set[tuple[uuid.UUID, uuid.UUID]] = set()
+    for scope in owner.scopes:
+        key = (scope.tenant_id, scope.company_id)
+        seen.add(key)
+        yield key
+    if not owner.allow_enrolled_companies:
+        return
+    after: uuid.UUID | None = None
+    while True:
+        page = await stock_companies(factory, after)
+        for guard_id, tenant, company in page:
+            key = (tenant, company)
+            if key not in seen:
+                seen.add(key)
+                yield key
+            after = guard_id
+        if len(page) < 100:
+            return
+
+
 async def deliver_stock_page(
     factory: async_sessionmaker[AsyncSession],
     transport: StockExecutionClient,
@@ -296,14 +323,14 @@ async def run(settings: Settings) -> None:
             while True:
                 if stock_transport is not None:
                     stock_after = await deliver_stock_page(factory, stock_transport, stock_after)
-                for scope in owner.scopes if owner is not None else ():
-                    with tenant_scope(scope.tenant_id):
+                async for tenant, company in execution_company_scopes(factory, owner):
+                    with tenant_scope(tenant):
                         async with factory() as db:
                             ids = list(
                                 await db.scalars(
                                     select(m.VoucherOperation.id)
                                     .where(
-                                        m.VoucherOperation.company_id == scope.company_id,
+                                        m.VoucherOperation.company_id == company,
                                         m.VoucherOperation.purpose.in_(["POST", "REVERSE"]),
                                         m.VoucherOperation.status == "PENDING",
                                     )
@@ -315,7 +342,7 @@ async def run(settings: Settings) -> None:
                         try:
                             assert transport is not None
                             await deliver(
-                                factory, transport, scope.tenant_id, scope.company_id, identity
+                                factory, transport, tenant, company, identity
                             )
                         except (httpx.HTTPError, PlatformError) as error:
                             log_failure(
