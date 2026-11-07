@@ -37,6 +37,7 @@ broker_password = secrets.token_hex(32)
 source_request_secret = token()
 source_response_secret = token()
 source_event_secret = token()
+catalog_voucher_source_secret = token()
 catalog_tax_event_secret = token()
 migrator_password = secrets.token_hex(32)
 database_passwords = {service: secrets.token_hex(32) for service in SERVICES}
@@ -148,6 +149,9 @@ for service in SERVICES:
         values["ACCOUNTING_CATALOG_EVENT_SECRET"] = catalog_tax_event_secret
     elif service == "catalog":
         values["CATALOG_SIMPLE_CREATION_ORIGINS"] = json.dumps({"accounting": "http://127.0.0.1:8011", "vouchers": "http://127.0.0.1:8012"}, separators=(",", ":"))
+        values["CATALOG_VOUCHER_SOURCE_DELIVERY"] = json.dumps({
+            "key_id": "catalog-creation", "secret": catalog_voucher_source_secret,
+        }, separators=(",", ":"))
         values["CATALOG_IDENTITY_SOURCE"] = json.dumps({"base_url": "http://127.0.0.1:8001", "request_key_id": "current", "request_secret": source_request_secret, "response_secrets": {"current": source_response_secret}}, separators=(",", ":"))
         values["CATALOG_SOURCE_DISCOVERY"] = "true"
         values["CATALOG_SOURCE_EVENT_SECRET"] = source_event_secret
@@ -158,8 +162,15 @@ for service in SERVICES:
         values["NOTIFICATION_DATA_ENCRYPTION_KEY"] = token()
     elif service == "reports":
         values["REPORTS_ARTIFACT_ROOT"] = "/var/lib/kiscobooks/reports"
+        values["REPORTS_JOB_BROKER_URL"] = source_broker_url
     elif service == "vouchers":
         values.update({"VOUCHERS_PRINT_FILE_ROOT": "/var/lib/kiscobooks-print/pdfs", "VOUCHERS_SUPPORTING_FILE_ROOT": "/var/lib/kiscobooks/vouchers/supporting"})
+        values["VOUCHERS_SOURCE_CREDENTIALS"] = json.dumps({
+            "catalog-creation": {
+                "issuer": "catalog", "secret": catalog_voucher_source_secret,
+                "scopes": [], "allow_enrolled_companies": True,
+            },
+        }, separators=(",", ":"))
     elif service == "design":
         values["DESIGN_ASSET_STORAGE_ROOT"] = "/var/lib/kiscobooks/design/assets"
     write(f"{service}.env", values)

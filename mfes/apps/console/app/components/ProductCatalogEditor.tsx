@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Button, Card, CardBody, ConfirmDialog, FormActions, FormLayout, Notice, PageHeader, SectionHeader } from '@janso/ui';
+import { Button, Card, CardBody, ConfirmDialog, FormActions, FormLayout, Notice, PageHeader, SectionHeader, FieldGroup } from '@janso/ui';
 import { type MasterConfig, type MasterRow } from '../lib/catalog-masters';
 import type { EmbeddedMasterEditor } from '../lib/embedded-master-editor';
 import { masterRequest } from '../lib/catalog-master-api';
@@ -12,13 +12,14 @@ import type { ServiceRequest } from '../lib/service-call';
 import { ProductCatalogCustomFields } from './ProductCatalogCustomFields';
 import { AccessFocusErrors, useAccessDraft } from './AccessCommon';
 import { ProductCatalogField, ProductCatalogFailure, ProductCatalogNavigation } from './ProductCatalogCommon';
-export function ProductCatalogEditor({ company, config, id, returnTo, access, embedded, }: {
+export function ProductCatalogEditor({ company, config, id, returnTo, access, embedded, blockedByMode = false, }: {
   company: string;
   config: MasterConfig;
   id?: string;
   returnTo?: string;
   access: ClassificationAccess;
   embedded?: EmbeddedMasterEditor;
+  blockedByMode?: boolean;
 }) {
   const resource = config.resource as ClassificationResource, definition = classificationDefinitions[resource];
   const root = '/masters/' + resource, back = catalogBack(returnTo, root), detail = catalogLink(root + '/' + id, back);
@@ -81,9 +82,10 @@ export function ProductCatalogEditor({ company, config, id, returnTo, access, em
         !field.custom.is_immutable_after_create)))
     &&
     (!id || catalogVisible(fields, 'row_version'));
-  const canSave = fieldCanSave;
+  const canSave = fieldCanSave && (!blockedByMode || command.uncertain);
   const recoverableCreate = !id && command.failure?.status === 409 && !command.uncertain;
   function beginChange() {
+    if (blockedByMode) return false;
     if (command.blocked && !recoverableCreate)
       return false;
     if (recoverableCreate || command.failure?.status === 422)
@@ -156,13 +158,15 @@ export function ProductCatalogEditor({ company, config, id, returnTo, access, em
       }
     }
   }
-  const disabled = (command.blocked && !recoverableCreate) || !!saved;
-  const renderFields = () => <div className="janso-form-grid">{fields.filter(field => keys.includes(field.key)).map(field => {
+  const disabled = blockedByMode || (command.blocked && !recoverableCreate) || !!saved;
+  const productRecord = ['items', 'product-families'].includes(resource);
+  const tradingKeys = ['sellable', 'purchasable', 'min_sale_quantity'];
+  const renderFields = (include: readonly string[] = keys) => <div className="janso-form-grid">{fields.filter(field => include.includes(field.key)).map(field => {
     const pair = field.key === 'brand_id' ? 'series_id' : field.key === 'country_code' ? 'state_code' : undefined;
     const protectedPair = pair && values[pair] != null && !catalogWritable(fields, [pair]);
     return <ProductCatalogField key={field.key} company={company} field={typeFrozen && ['code', 'kind'].includes(field.key) ? { ...field, writable: false } : field} values={values} access={access} disabled={disabled || !!protectedPair} error={errors[field.key]} onChange={next => change(field.key, next)} />;
   })}</div>;
-  return (<div className={'janso-page'}>
+  return (<div className={'janso-page' + (['items', 'product-families'].includes(resource) ? ' janso-product-management' : '')}>
     {!embedded && <><ProductCatalogNavigation resource={resource} title={id
       ? `Edit ${definition.singular}`
       :
@@ -172,6 +176,7 @@ export function ProductCatalogEditor({ company, config, id, returnTo, access, em
         :
         `New ${definition.singular}`} lede={(definition.description)} />
     </>}
+    {blockedByMode && <Notice tone="warning">Product mode changed. Reload this page and review before saving. An interrupted save can still be recovered.</Notice>}
     {recoverableCreate ? (<Notice tone="warning">
       <p>{command.failure?.message}</p>
       <p>
@@ -244,7 +249,8 @@ export function ProductCatalogEditor({ company, config, id, returnTo, access, em
             <div className="janso-flow">
               {(<section className="janso-flow" aria-label="Details">
                 <SectionHeader title="Details" />
-                {renderFields()}
+                {renderFields(productRecord ? keys.filter(key => !tradingKeys.includes(key)) : keys)}
+                {productRecord && fields.some(field => keys.includes(field.key) && tradingKeys.includes(field.key) && field.visible) && <FieldGroup title="Trading">{renderFields(tradingKeys)}</FieldGroup>}
                 <ProductCatalogCustomFields company={company} fields={fields} values={values} creating={!id} disabled={disabled} errors={errors} onChange={(next) => change('custom_fields', next)} />
               </section>)}
 

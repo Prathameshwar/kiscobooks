@@ -48,10 +48,8 @@ async def default_group(access: ConfigurationAccess) -> uuid.UUID | None:
     return identity
 
 
-def authority(actor: Actor, company: uuid.UUID, body: SimpleCreationInput) -> None:
-    target = ScopePath(company_id=company)
-    for permission in ("item.create", "item.read", "item.update", "item.activate"):
-        actor.require_scope(permission, target=target)
+def creation_permissions(body: SimpleCreationInput) -> frozenset[str]:
+    permissions = {"item.create", "item.read", "item.update", "item.activate"}
     if (
         body.sale_prices
         or body.sale_price is not None
@@ -59,22 +57,19 @@ def authority(actor: Actor, company: uuid.UUID, body: SimpleCreationInput) -> No
         or body.mrp is not None
         or body.batches
     ):
-        for permission in ("price_plan.read", "price_plan.manage", "price_plan.publish"):
-            actor.require_scope(permission, target=target)
+        permissions.update(("price_plan.read", "price_plan.manage", "price_plan.publish"))
     if body.purchase_price is not None or any(
         entry.purchase_price is not None for entry in body.batches
     ):
-        actor.require_scope("purchase_price.manage", target=target)
+        permissions.add("purchase_price.manage")
     if body.tax is not None:
-        actor.require_scope("tax_rule.publish", target=target)
+        permissions.add("tax_rule.publish")
     if body.batches:
-        for permission in ("accounting.batch.read", "accounting.batch.manage"):
-            actor.require_scope(permission, target=target)
+        permissions.update(("accounting.batch.read", "accounting.batch.manage"))
     if body.serials or any(entry.serials for entry in body.batches):
-        for permission in ("accounting.serial.read", "accounting.serial.manage"):
-            actor.require_scope(permission, target=target)
+        permissions.update(("accounting.serial.read", "accounting.serial.manage"))
     if body.has_opening:
-        for permission in (
+        permissions.update((
             "accounting.finance.manage",
             "accounting.stock.configure",
             "accounting.stock.read",
@@ -85,8 +80,14 @@ def authority(actor: Actor, company: uuid.UUID, body: SimpleCreationInput) -> No
             "vouchers.submit",
             "vouchers.issue",
             "vouchers.post",
-        ):
-            actor.require_scope(permission, target=target)
+        ))
+    return frozenset(permissions)
+
+
+def authority(actor: Actor, company: uuid.UUID, body: SimpleCreationInput) -> None:
+    target = ScopePath(company_id=company)
+    for permission in creation_permissions(body):
+        actor.require_scope(permission, target=target)
 
 
 async def prepare(

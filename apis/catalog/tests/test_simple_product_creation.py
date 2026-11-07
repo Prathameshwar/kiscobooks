@@ -444,19 +444,40 @@ async def test_gst_hsn_or_sac_applies_to_both_directions(client, factory, tenant
 
 
 async def test_opening_workflow_uses_exact_native_manifest_and_resumes_uncertain_create(
-    client, factory, tenant_a, monkeypatch, *, terminal_rejection=False
+    client, factory, tenant_a, monkeypatch, app, *, terminal_rejection=False,
+    source_delivery=False,
 ):
     from decimal import Decimal
 
+    from pydantic import SecretStr
     from voucher_execution.opening import OpeningCapture
     from voucher_execution.stock import StockInput
 
+    from catalog.config import VoucherSourceDelivery
     from catalog.tasks.simple_creation_transport import CreationOwners, ServiceUnavailableError
 
     root, auth, unit = await starter(factory, tenant_a, inventory=True)
+    if source_delivery:
+        app.state.settings = app.state.settings.model_copy(update={
+            "voucher_source_delivery": VoucherSourceDelivery(
+                key_id="catalog.test", secret=SecretStr("test-only-source-key-" + "x" * 32)
+            ),
+        })
     original = CreationOwners.call
     calls = []
     state = {"lost": False}
+
+    async def deliver(self, bundle):
+        assert bundle["tenant_id"] == str(tenant_a)
+        assert bundle["company_id"] == root.rsplit("/", 1)[1]
+        assert {"item", "item_transaction_policy", "item_unit_revision", "unit"} <= {
+            row["entity_type"] for row in bundle["masters"]
+        }
+        state["source"] = bundle
+        return {"applied": True, "replayed": False}
+
+    if source_delivery:
+        monkeypatch.setattr(CreationOwners, "deliver_source", deliver)
 
     async def owner(self, service, method, path, body=None, key=None):
         if service == "catalog":
@@ -535,6 +556,8 @@ async def test_opening_workflow_uses_exact_native_manifest_and_resumes_uncertain
             state["manifest"] = body
             return {"id": str(uuid7())}
         if path.endswith("/vouchers"):
+            if source_delivery:
+                assert state.get("source") is not None
             stock = StockInput.model_validate(body["stock"])
             assert stock.lines[0].received_value == Decimal("37.50")
             assert stock.lines[0].quantity == Decimal("3")
@@ -605,6 +628,12 @@ async def test_opening_workflow_uses_exact_native_manifest_and_resumes_uncertain
         assert state["post_attempts"] == 1 and state["operation_reads"] == 2
     result = await finish(client, root, auth, identity)
     assert result["opening_posted"]
+    if source_delivery:
+        assert state["source"]["message_id"]
+        with tenant_scope(tenant_a):
+            async with factory() as db:
+                creation = await db.get(SimpleProductCreation, uuid.UUID(identity))
+                assert creation is not None and creation.progress["source_delivered"] is True
     with tenant_scope(tenant_a):
         async with factory() as db:
             assert await db.scalar(select(func.count(Item.id))) == 1
@@ -617,10 +646,18 @@ async def test_opening_workflow_uses_exact_native_manifest_and_resumes_uncertain
 
 
 async def test_rejected_post_can_retry_same_voucher_but_pending_post_cannot_duplicate(
-    client, factory, tenant_a, monkeypatch
+    client, factory, tenant_a, monkeypatch, app
 ):
     await test_opening_workflow_uses_exact_native_manifest_and_resumes_uncertain_create(
-        client, factory, tenant_a, monkeypatch, terminal_rejection=True
+        client, factory, tenant_a, monkeypatch, app, terminal_rejection=True
+    )
+
+
+async def test_configured_source_handoff_precedes_opening_voucher(
+    client, factory, tenant_a, monkeypatch, app
+):
+    await test_opening_workflow_uses_exact_native_manifest_and_resumes_uncertain_create(
+        client, factory, tenant_a, monkeypatch, app, source_delivery=True
     )
 
 

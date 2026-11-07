@@ -12,7 +12,7 @@ from billing_platform.db.types import utcnow
 from billing_platform.errors import ConflictError, PlatformError
 from billing_platform.gateway import Actor
 from billing_platform.ids import uuid7
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from voucher_execution.retirement_transport import RetirementUnavailableError
 from voucher_execution.stock_retirement import (
@@ -135,6 +135,10 @@ async def check(
             StockSourceFence.company_id == row.company_id,
             StockSourceFence.closed_at.is_(None),
             StockSourceFence.expires_at > utcnow(),
+            or_(
+                StockSourceFence.facts["purpose"].as_string().is_(None),
+                StockSourceFence.facts["purpose"].as_string() != "REPORT",
+            ),
         )
         .limit(1)
     )

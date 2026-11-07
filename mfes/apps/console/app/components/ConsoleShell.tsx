@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useState, type ReactNode } from 'react';
+import { TrackingRecoveryProvider } from './TrackingRecoveryProvider';
 import {
   AppFooter,
   AppShell,
@@ -187,7 +188,7 @@ export function ConsoleShell({
         />
       }
     >
-      <Fragment key={session.company.id + ':' + (context.fiscalYear?.id ?? '')}>{children}</Fragment>
+      <Fragment key={[session.organisation.id, session.user.id, session.company.id, context.fiscalYear?.id ?? ''].join(':')}><TrackingRecoveryProvider scope={session.organisation.id && session.user.id ? session.organisation.id + ':' + session.user.id : undefined}>{children}</TrackingRecoveryProvider></Fragment>
       <CommandPalette
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}

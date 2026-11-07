@@ -162,7 +162,10 @@ def test_barcode_addition_preserves_older_creation_hashes():
     body = SimpleCreationInput(name="Existing command", base_unit_id=uuid7())
     old = body.model_dump(
         mode="json",
-        exclude={"barcode", "sale_prices", "categories", "manufacturer_id", "manufacturer_site_id"},
+        exclude={
+            "barcode", "sale_prices", "categories", "manufacturer_id", "manufacturer_site_id",
+            "batch_enabled", "batches", "serials",
+        },
     )
     assert creation_request(body) == old
     with_barcode = body.model_copy(update={"barcode": SimpleCreationBarcode(value="0000123")})

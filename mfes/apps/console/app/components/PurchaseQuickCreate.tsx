@@ -7,9 +7,10 @@ import {openingDirty,openingPayload,useMasterOpening} from '../lib/master-openin
 import { AccountingReference } from './AccountingConfigurationCommon';
 import { assertAccountingRecord, useAccountingCommand } from '../lib/accounting-configuration';
 import type { AccountingRecord } from '../lib/accounting-configuration-resources';
-import { cleanGstin, defaultExpenseGroup, expenseAccountRequest, GST_STATUS_OPTIONS, gstinRequired, loadExpenseGroups, QUICK_CREATE_LIMITS, suggestCode, supplierRequest,
+import { cleanGstin, defaultExpenseGroup, expenseAccountRequest, GST_STATUS_OPTIONS, gstinRequired, loadExpenseGroups, QUICK_CREATE_LIMITS, supplierRequest,
   type ExpenseAccountDraft, type ExpenseGroup, type GstStatus, type QuickCreated, type SupplierDraft } from '../lib/purchase-quick-create';
 import { requestFailure } from '../lib/service-call';
+import { limitMasterCode } from '../lib/accounting-master-code';
 
 type Command = ReturnType<typeof useAccountingCommand>;
 type Created = AccountingRecord & { name?: string | null; code?: string | null; status?: string; kind?: string; group_id?: string | null; inventory_affected?: boolean; posting_policy?: string };
@@ -37,7 +38,7 @@ function QuickCreateShell({ title, thing, intro, submit, pendingLabel, command, 
   const { failure, pending, uncertain } = command;
   // The drawer itself will not dismiss while busy, and Cancel is disabled then, so this is never reached in flight.
   const close = useCallback(() => { if (dirty || uncertain) setDiscard(true); else onClose(); }, [dirty, uncertain, onClose]);
-  const rest = Object.entries(failure?.fields ?? {}).filter(([key]) => !inline.includes(key.replace(/^(party|tax_registration)\./, '')));
+  const rest = Object.entries(failure?.fields ?? {}).filter(([key]) => !inline.includes(key === 'ledger.code' ? 'code' : key.replace(/^(party|tax_registration)\./, '')));
   // A rejected form says so beside its fields; repeating "validation failed" above them adds nothing.
   const beside = failure?.status === 422 && !rest.length && Object.keys(failure.fields ?? {}).length > 0;
   return <>
@@ -69,7 +70,7 @@ function QuickCreateShell({ title, thing, intro, submit, pendingLabel, command, 
 
 /** Field error: what this form found, else what the service said (under any of the keys it may use). */
 const fieldError = (errors: Record<string, string>, command: Command, key: string) =>
-  errors[key] ?? command.failure?.fields?.[key] ?? command.failure?.fields?.['party.' + key] ?? command.failure?.fields?.['tax_registration.' + key];
+  errors[key] ?? command.failure?.fields?.[key] ?? command.failure?.fields?.['party.' + key] ?? command.failure?.fields?.['tax_registration.' + key] ?? (key === 'code' ? command.failure?.fields?.['ledger.code'] : undefined);
 
 function focusInvalid(form: HTMLElement | null, errors: Record<string, string>) {
   const key = Object.keys(errors)[0];
@@ -109,8 +110,6 @@ export function SupplierQuickCreate({ company, companyCountry, canTax, onCreated
   const { command, draft, errors, setErrors, form, name, latest, locked, set } = useQuickCreateForm<SupplierDraft>({
     name: '', code: '', countryCode: /^[A-Z]{2}$/.test(companyCountry) ? companyCountry : 'IN', gstStatus: 'REGULAR', stateCode: '', gstin: '',
   }, onCreated);
-  // The code follows the name until someone writes their own.
-  const ownCode = useRef(false);
   const gst = canTax && draft.countryCode === 'IN';
   const [showOpening,setShowOpening]=useState(false);
   const opening=useMasterOpening(company,showOpening);
@@ -137,10 +136,11 @@ export function SupplierQuickCreate({ company, companyCountry, canTax, onCreated
     <div className="console-quick-create__wide">
       <TextField ref={name} label="Supplier name" name="name" required value={draft.name} maxLength={QUICK_CREATE_LIMITS.name} disabled={locked} autoComplete="off"
         error={fieldError(errors, command, 'name')}
-        onChange={event => { const value = event.target.value; set({ name: value, ...(ownCode.current ? {} : { code: suggestCode(value) }) }); }} />
+        onChange={event => set({ name: event.target.value })} />
     </div>
-    <TextField label="Supplier code" name="code" required value={draft.code} maxLength={QUICK_CREATE_LIMITS.code} disabled={locked} autoComplete="off"
-      error={fieldError(errors, command, 'code')} onChange={event => { ownCode.current = event.target.value !== ''; set({ code: event.target.value }); }} />
+    <TextField label="Supplier code" name="code" optionalNote="Optional" value={draft.code} maxLength={QUICK_CREATE_LIMITS.code * 2} disabled={locked} autoComplete="off"
+      hint="Leave blank to generate an eight-character code. Manual codes allow printable text up to 40 characters."
+      error={fieldError(errors, command, 'code')} onChange={event => set({ code: limitMasterCode(event.target.value) })} />
     <div data-field="country_code">
       <AccountingReference company={company} source="countries" label="Country" required value={draft.countryCode || null} disabled={locked}
         error={fieldError(errors, command, 'country_code')} onChange={value => set({ countryCode: value ?? '', stateCode: '' })} />
@@ -173,7 +173,6 @@ export function ExpenseAccountQuickCreate({ company, onCreated, onClose }: {
 }) {
   const { command, draft, errors, setErrors, form, name, latest, locked, set } = useQuickCreateForm<ExpenseAccountDraft>({ name: '', code: '', groupId: '', description: '' }, onCreated);
   const [groups, setGroups] = useState<ExpenseGroup[] | null>(null), [loadFailure, setLoadFailure] = useState(''), [attempt, setAttempt] = useState(0);
-  const ownCode = useRef(false);
   const [showOpening,setShowOpening]=useState(false);
   const opening=useMasterOpening(company,showOpening);
   const openingAccount={party:false,kind:'GENERAL',currencyMode:'BASE'};
@@ -213,10 +212,11 @@ export function ExpenseAccountQuickCreate({ company, onCreated, onClose }: {
     <div className="console-quick-create__wide">
       <TextField ref={name} label="Account name" name="name" required value={draft.name} maxLength={QUICK_CREATE_LIMITS.name} disabled={locked} autoComplete="off"
         error={fieldError(errors, command, 'name')} placeholder="e.g. Office rent"
-        onChange={event => { const value = event.target.value; set({ name: value, ...(ownCode.current ? {} : { code: suggestCode(value) }) }); }} />
+        onChange={event => set({ name: event.target.value })} />
     </div>
-    <TextField label="Account code" name="code" required value={draft.code} maxLength={QUICK_CREATE_LIMITS.code} disabled={locked} autoComplete="off"
-      error={fieldError(errors, command, 'code')} onChange={event => { ownCode.current = event.target.value !== ''; set({ code: event.target.value }); }} />
+    <TextField label="Account code" name="code" optionalNote="Optional" value={draft.code} maxLength={QUICK_CREATE_LIMITS.code * 2} disabled={locked} autoComplete="off"
+      hint="Leave blank to generate an eight-character code. Manual codes allow printable text up to 40 characters."
+      error={fieldError(errors, command, 'code')} onChange={event => set({ code: limitMasterCode(event.target.value) })} />
     <Select label="Account group" name="group_id" required value={draft.groupId} disabled={locked || !groups?.length} placeholder={groups ? 'Choose a group' : 'Loading groups…'}
       options={(groups ?? []).map(group => ({ value: group.id, label: group.name }))} error={fieldError(errors, command, 'group_id')}
       onChange={value => set({ groupId: value })} />

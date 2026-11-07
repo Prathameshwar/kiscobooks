@@ -1,6 +1,5 @@
 """Verified inventory enrollment provides usable definitions without rewriting user policy."""
 
-
 import pytest
 from billing_platform.db import tenant_scope
 from billing_platform.db.types import utcnow
@@ -107,12 +106,12 @@ async def test_inventory_enabled_after_creation_gets_defaults_and_tenant_scope_h
     await provision(factory, tenant_a, company, inventory=False)
     with tenant_scope(tenant_a):
         async with factory.begin() as db:
-            assert (await ensure_warehouse_defaults(db, company)).status == "NOT_APPLICABLE"
-            assert list(await db.scalars(select(Warehouse))) == []
+            assert (await ensure_warehouse_defaults(db, company)).status == "READY"
+            assert {row.code for row in await db.scalars(select(Warehouse))} == {"MAIN", "TRANSIT"}
     await provision(factory, tenant_a, company, inventory=True, version=3)
     with tenant_scope(tenant_a):
         async with factory.begin() as db:
-            assert (await ensure_warehouse_defaults(db, company)).created_records == 5
+            assert (await ensure_warehouse_defaults(db, company)).created_records == 0
     with tenant_scope(tenant_b):
         async with factory.begin() as db:
             assert list(await db.scalars(select(Warehouse))) == []

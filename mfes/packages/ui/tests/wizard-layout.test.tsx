@@ -56,7 +56,9 @@ describe('WizardLayout', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Business' })).toBeInTheDocument();
     expect(screen.getByText('Step 1 of 3')).toHaveClass('janso-setup__progress');
     expect(screen.getByText('Tell us who issues the documents.')).toHaveClass('janso-setup__subtitle');
-    expect(container.querySelector('.janso-setup__actions--sticky')).toHaveTextContent('Next');
+    const footer = container.querySelector('.janso-setup__footer');
+    expect(footer).toHaveTextContent('Next');
+    expect(container.querySelector('.janso-setup__scroll')).not.toContainElement(footer as HTMLElement);
   });
 
   it('owns the form, so the step submits from the keyboard as well as the button', async () => {
@@ -104,6 +106,14 @@ describe('WizardLayout', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Location and tax' })).toHaveFocus();
   });
 
+  it('brings the new activity heading into view when the current step starts creation', () => {
+    const { rerender } = renderWizard();
+    rerender(<WizardLayout brand="JANSO" steps={STEPS} current={0} title="Creating your company" actions={<button>Working…</button>} onSubmit={vi.fn()}>
+      Saving the company
+    </WizardLayout>);
+    expect(screen.getByRole('heading', { name: 'Creating your company' })).toHaveFocus();
+  });
+
   it('renders a notice above the card rather than inside it', () => {
     const { container } = renderWizard({ notice: <p role="alert">This code is already taken.</p> });
 
@@ -112,9 +122,11 @@ describe('WizardLayout', () => {
     expect(container.querySelector('.janso-card')).not.toContainElement(notice);
   });
 
-  it('pins the action bar to the paper so a long step cannot hide its own Next', () => {
-    expect(SETUP_CSS).toMatch(/\.janso-setup__actions--sticky\s*\{[^}]*position: sticky/);
-    expect(SETUP_CSS).toMatch(/\.janso-setup__actions--sticky\s*\{[^}]*background: var\(--janso-paper\)/);
+  it('keeps the scrollable fields and persistent action button in the same form', () => {
+    const { container } = renderWizard();
+    const form = container.querySelector('form');
+    expect(form).toContainElement(screen.getByRole('textbox', { name: 'Legal name' }));
+    expect(form).toContainElement(screen.getByRole('button', { name: 'Next' }));
   });
 });
 

@@ -13,6 +13,7 @@ import { ProductCreationExperience } from './ProductCreationExperience';
 import { ProductCatalogEditor } from './ProductCatalogEditor';
 import { ProductCatalogDetail } from './ProductCatalogDetail';
 import { ProductTypeRevision } from './ProductTypeRevision';
+import { ProductRecordExperience } from './ProductRecordExperience';
 export async function ProductCatalogPage({
   resource,
   record = [],
@@ -26,7 +27,7 @@ export async function ProductCatalogPage({
     creating = record.length === 1 && record[0] === 'new',
     editing = creating || (record.length === 2 && record[1] === 'edit');
   const product = resource === 'items' || resource === 'product-families';
-  if (product && record.length && !(resource === 'items' && creating)) notFound();
+  const completed = product && record.length === 2 && record[1] === 'created';
   const revision =
     resource === 'product-types' &&
     record.length === 3 &&
@@ -34,7 +35,7 @@ export async function ProductCatalogPage({
     (record[2] === 'new' || uuid.test(record[2]!));
   if (
     (record.length > 2 && !revision) ||
-    (record.length === 2 && !editing) ||
+    (record.length === 2 && !editing && !completed) ||
     (record.length && !creating && !uuid.test(record[0]!))
   )
     notFound();
@@ -78,6 +79,7 @@ export async function ProductCatalogPage({
     stock: allows('accounting.stock.read'),
     openingStock: allows('accounting.stock.read'),
     warehouses: allows('warehouse.read'),
+    warehousePolicies: allows('item_warehouse_policy.read'),
     companyConfiguration: allows('company.read'),
     attributeSets: allows('attribute_set.read'),
     manageGroups: allows('item_group.manage'),
@@ -113,7 +115,7 @@ export async function ProductCatalogPage({
             status={403}
             detail="You need the product or classification permissions for this company to use this page."
           />
-        ) : product && creating ? <ProductCreationExperience key={company} company={company} returnTo={returnTo} /> : product ? <ProductExperience company={company} access={access} initialQuery={params.toString()} canImport={allows('catalog.bulk.read')}>
+        ) : product && creating ? <ProductCreationExperience key={company} company={company} returnTo={returnTo} advancedOnly={resource === 'product-families'} /> : product && id ? <ProductRecordExperience key={company + ':' + resource + ':' + id} company={company} config={config} id={id} returnTo={returnTo} canManage={canManage} access={access} editing={editing} completed={completed} /> : product ? <ProductExperience company={company} access={access} initialQuery={params.toString()} canImport={allows('catalog.bulk.read')}>
           <ProductCatalogDirectory company={company} config={config} canManage={canManage} access={access} initialQuery={params.toString()} canImport={allows('catalog.bulk.read')} />
         </ProductExperience> : revision ? (
           <ProductTypeRevision

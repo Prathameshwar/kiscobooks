@@ -154,13 +154,39 @@ async def test_native_preflight_requires_books_begin_base_unit(client, factory, 
     assert "base unit" in result.json()["error"]["message"].lower()
 
 
+@pytest.mark.parametrize("source_delivery", [False, True])
 async def test_opening_retries_uncertain_owner_with_same_command(
-    client, factory, tenant_a, monkeypatch
+    client, factory, tenant_a, monkeypatch, app, source_delivery
 ):
+    if source_delivery:
+        from pydantic import SecretStr
+
+        from catalog.config import VoucherSourceDelivery
+
+        app.state.settings = app.state.settings.model_copy(update={
+            "voucher_source_delivery": VoucherSourceDelivery(
+                key_id="catalog.advanced.test",
+                secret=SecretStr("test-only-source-key-" + "x" * 32),
+            ),
+        })
     auth, base, body, created, path = await active_definition(client, factory, tenant_a)
     unit_id = body["skus"][0]["item"]["base_unit_id"]
     warehouse_id, type_id, revision_id, control_id, voucher_id = [str(uuid7()) for _ in range(5)]
     state = {"closed": True, "lost": False, "status": "DRAFT", "control_keys": []}
+
+    async def source_bundle(self, source_tenant, source_company, source_item, creation):
+        assert source_tenant == tenant_a
+        assert str(source_company) == created["creation"]["company_id"]
+        assert str(source_item) == created["skus"][0]["id"]
+        return {"message_id": str(creation), "masters": []}
+
+    async def deliver(self, bundle):
+        state["source"] = bundle
+        return {"applied": True}
+
+    if source_delivery:
+        monkeypatch.setattr(CreationOwners, "item_source_bundle", source_bundle)
+        monkeypatch.setattr(CreationOwners, "deliver_source", deliver)
 
     async def local(db, actor, context, creation_id, item_id, opening):
         request = SimpleCreationInput(
@@ -207,6 +233,8 @@ async def test_opening_retries_uncertain_owner_with_same_command(
                 raise ServiceUnavailableError("Simulated response loss after owner commit")
             return {"id": control_id}
         if target.endswith("/vouchers") and method == "POST":
+            if source_delivery:
+                assert state.get("source") is not None
             assert payload["stock"]["opening_control_id"] == control_id
             return {"id": voucher_id}
         if target.endswith("/submit"):
@@ -263,6 +291,16 @@ async def test_opening_retries_uncertain_owner_with_same_command(
     assert continued.json()["status"] == "COMPLETE"
     assert continued.json()["sku_progress"][0]["opening_control_id"] == control_id
     assert state["control_keys"] == [state["control_keys"][0]] * 2
+    if source_delivery:
+        with tenant_scope(tenant_a):
+            async with factory() as db:
+                receipt = await db.get(
+                    AdvancedProductCreation, uuid.UUID(created["creation"]["id"])
+                )
+                assert receipt is not None
+                assert receipt.progress["skus"][created["skus"][0]["id"]][
+                    "opening_progress"
+                ]["source_delivered"] is True
 
 
 async def test_partial_posted_variant_receipt_survives_later_skip(client, factory, tenant_a):

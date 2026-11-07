@@ -42,7 +42,7 @@ describe('supplierRequest', () => {
   it('names every missing field and builds no body', () => {
     const { body, errors } = supplierRequest({ ...supplier, name: ' ', code: '', countryCode: '' }, withTax);
     expect(body).toBeUndefined();
-    expect(Object.keys(errors).sort()).toEqual(['code', 'country_code', 'name']);
+      expect(Object.keys(errors).sort()).toEqual(['country_code', 'name']);
   });
 
   it.each([
@@ -139,7 +139,7 @@ describe('expenseAccountRequest', () => {
   });
 
   it('names each missing field', () => {
-    expect(Object.keys(expenseAccountRequest({ name: '', code: '', groupId: '', description: '' }, groups).errors).sort()).toEqual(['code', 'group_id', 'name']);
+      expect(Object.keys(expenseAccountRequest({ name: '', code: '', groupId: '', description: '' }, groups).errors).sort()).toEqual(['group_id', 'name']);
   });
 });
 

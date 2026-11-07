@@ -940,12 +940,13 @@
 .janso-preview__grid {
   display: grid;
   gap: var(--janso-space-2) var(--janso-space-5);
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
   margin: var(--janso-space-3) 0 0;
 }
 
 .janso-preview__row {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--janso-space-3);
@@ -959,6 +960,9 @@
 }
 
 .janso-preview__value {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   margin: 0;
   color: var(--janso-ink);
   font-size: var(--janso-text-sm);

@@ -204,7 +204,9 @@ def calculate(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     assert query.date_from and query.date_to
     if query.date_from < coverage and not includes_ytd(data.rows, query):
-        raise ConflictError("requested history precedes retained owner coverage")
+        from reports.domain.reporting.history_coverage import InsufficientHistoryError
+
+        raise InsufficientHistoryError("requested history precedes retained owner coverage")
     with localcontext() as arithmetic:
         arithmetic.prec = 48
         rows, summary = period_rows(data, query, "CURRENT", maximum)
@@ -220,7 +222,9 @@ def calculate(
             )
             assert comparison.date_from is not None
             if comparison.date_from < coverage and not includes_ytd(data.rows, comparison):
-                raise ConflictError(
+                from reports.domain.reporting.history_coverage import InsufficientHistoryError
+
+                raise InsufficientHistoryError(
                     "requested comparative history precedes retained owner coverage"
                 )
             extra, periods["COMPARATIVE"] = period_rows(

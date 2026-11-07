@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 from billing_platform.authz import ScopePath
 from billing_platform.db.access import company_object
+from billing_platform.db.platform_models import Outbox
 from billing_platform.db.types import utcnow
 from billing_platform.errors import ConflictError, PermissionDeniedError, ValidationFailedError
 from billing_platform.field_policy import assert_fields_writable
@@ -30,6 +31,7 @@ from billing_platform.listing import (
 )
 from billing_platform.outbox import audit_payload, emit
 from billing_platform.pagination import CursorCodec
+from identity_posting.stock import TrackingReservationIntent
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -301,6 +303,8 @@ async def command(
     action: Action,
     object_id: uuid.UUID | None = None,
     source: s.TrackingSource | None = None,
+    *,
+    tracking_intent: TrackingReservationIntent | None = None,
 ) -> CommandResult[BaseModel]:
     if access.actor.impersonation_id:
         raise PermissionDeniedError("support sessions are read only")
@@ -312,16 +316,22 @@ async def command(
         authorize(access, spec, needed)
         if action in {"prepare", "reactivate"}:
             assert_feature(access, spec)
-        policy_values = {"status": "ACTIVE", "is_held": False, **body.model_dump()}
+        submitted = body.model_dump(exclude_unset=action == "correct")
+        policy_values = {"status": "ACTIVE", "is_held": False, **submitted}
         policy_id = object_id or (uuid.UUID(receipt["id"]) if receipt else None)
         if policy_id:
             current_row = await company_object(db, spec.model, policy_id, company_id=company)
-            policy_values = {**values(current_row, spec), **body.model_dump()}
+            policy_values = {**values(current_row, spec), **submitted}
         assert_fields_writable(
-            {"reason"},
+            {"reason"} | (
+                {"replaces_unit_id", "expected_replaced_version"}
+                if isinstance(body, s.SerialPrepare) and body.replaces_unit_id else set()
+            ),
             rules=rules(access, spec, policy_values),
             target=ScopePath(company_id=company),
         )
+        if isinstance(body, s.SerialPrepare) and body.replaces_unit_id:
+            await company_object(db, StockUnit, body.replaces_unit_id, company_id=company)
         if receipt:
             row = await company_object(db, spec.model, uuid.UUID(receipt["id"]), company_id=company)
             native = values(row, spec)
@@ -339,10 +349,36 @@ async def command(
                 {k: v for k, v in native.items() if k not in receipt["changed"]},
                 native,
             )
+            if receipt.get("replaced_id"):
+                replaced = await company_object(
+                    db, StockUnit, uuid.UUID(receipt["replaced_id"]), company_id=company
+                )
+                replaced_values = values(replaced, SERIAL)
+                writable(access, SERIAL, replaced_values | {"status": "ACTIVE"}, replaced_values)
+        else:
+            native = policy_values
+        if (
+            spec is BATCH
+            and action in {"prepare", "correct"}
+            and native.get("expires_on") is not None
+            and "expiry_tracking" not in access.context.features
+        ):
+            raise ValidationFailedError(
+                "Enable expiry tracking before entering expiry dates",
+                fields={"expires_on": "Enable expiry tracking or remove the optional expiry date"},
+            )
 
     async def mutate(db: AsyncSession) -> CommandReceipt:
         await setup_lock(db, access)
+        if tracking_intent is not None and await db.scalar(
+            select(Outbox.id).where(
+                Outbox.aggregate_id == tracking_intent.operation_id,
+                Outbox.event_type == "accounting.tracking_feature.abort",
+            ).limit(1).with_for_update()
+        ):
+            raise ConflictError("Tracking registration was aborted; start a new reviewed request")
         before: dict[str, Any] = {}
+        replaced: StockUnit | None = None
         row: Any
         if action == "prepare":
             if (
@@ -356,10 +392,6 @@ async def command(
                 raise ConflictError("the product's published profile does not enable this tracking")
             if spec is BATCH and isinstance(body, s.BatchPrepare):
                 validate_dates(source, body.manufactured_on, body.expires_on)
-                if body.expires_on is not None and "expiry_tracking" not in access.context.features:
-                    raise ValidationFailedError(
-                        "Enable expiry tracking before entering expiry dates"
-                    )
                 if body.mrp_amount is not None and (
                     body.mrp_currency != access.context.base_currency
                     or body.mrp_unit_id != source.base_unit_id
@@ -410,7 +442,14 @@ async def command(
                             "batch must be a current prepared record for the same SKU"
                         )
                 prepared = validate_identifiers(source, body.identifiers)
-                authored = body.model_dump(exclude={"reason"}, exclude_none=True)
+                if body.replaces_unit_id:
+                    from accounting.tasks.serial_replacement import retire_unused
+
+                    replaced = await retire_unused(db, access, body)
+                authored = body.model_dump(
+                    exclude={"reason", "replaces_unit_id", "expected_replaced_version"},
+                    exclude_none=True,
+                )
                 writable(access, spec, {}, authored | {"status": "ACTIVE", "is_held": False})
                 row = StockUnit(
                     id=uuid7(),
@@ -532,6 +571,10 @@ async def command(
                     lot = await company_object(db, StockLot, row.lot_id, company_id=company)
                     if lot.status != "ACTIVE":
                         raise ConflictError("reactivate the associated batch first")
+                if action == "reactivate" and spec is SERIAL:
+                    from accounting.tasks.serial_replacement import assert_not_replaced
+
+                    await assert_not_replaced(db, access, row.id)
             else:
                 raise ValidationFailedError("unsupported tracking action")
             changed = writable(access, spec, before, before | update)
@@ -564,6 +607,23 @@ async def command(
             else {"changed": True}
             for field in sorted(changed)
         }
+        if replaced is not None:
+            link = {"from": str(replaced.id), "to": str(row.id)}
+            evidence["id"] = link
+            old_evidence = {"status": {"from": "ACTIVE", "to": "RETIRED"}, "id": link}
+            db.add(StockTrackingEvent(
+                id=uuid7(), tenant_id=access.actor.tenant_id, company_id=company,
+                row_version=1, created_by=access.actor.user_id, updated_by=access.actor.user_id,
+                target_id=replaced.id, resource="SERIAL", action="RETIRE",
+                reason=body.reason, evidence=old_evidence,
+            ))
+            old_event = audit_event(spec.name, "retire")
+            emit(db, tenant_id=access.actor.tenant_id, aggregate_type="accounting." + spec.name,
+                aggregate_id=replaced.id, event_type=old_event,
+                payload=audit_payload(action=old_event, category="admin",
+                    entity_type="accounting." + spec.name, entity_id=replaced.id,
+                    actor_user_id=access.actor.user_id, company_id=company,
+                    changes=old_evidence, reason=body.reason))
         db.add(
             StockTrackingEvent(
                 id=uuid7(),
@@ -597,8 +657,19 @@ async def command(
                 reason=body.reason,
             ),
         )
+        if tracking_intent is not None:
+            emit(
+                db, tenant_id=access.actor.tenant_id, aggregate_type="tracking_reservation",
+                aggregate_id=tracking_intent.operation_id,
+                event_type="accounting.tracking_feature.confirm",
+                payload={"company_id": str(company),
+                         "intent": tracking_intent.model_dump(mode="json"),
+                         "committed_at": utcnow().isoformat()},
+            )
         return CommandReceipt(
-            201 if action == "prepare" else 200, {"id": str(row.id), "changed": sorted(changed)}
+            201 if action == "prepare" else 200,
+            {"id": str(row.id), "changed": sorted(changed),
+             **({"replaced_id": str(replaced.id)} if replaced is not None else {})},
         )
 
     async def render(db: AsyncSession, receipt: dict[str, Any]) -> BaseModel:

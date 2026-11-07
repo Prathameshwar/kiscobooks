@@ -92,6 +92,32 @@ async def stocked(client, factory, tenant):
     return actor, request, ids
 
 
+async def test_stock_facts_preserve_receiving_warehouse_address_and_tax_reference(
+    client, factory, tenant_a
+):
+    from catalog.models.warehouses import Warehouse
+    from tests.commercial_factories import reference_data
+
+    await reference_data(factory)
+    actor, request, _ = await stocked(client, factory, tenant_a)
+    registration = uuid7()
+    with tenant_scope(tenant_a):
+        async with factory.begin() as db:
+            warehouse = await db.get(Warehouse, request.warehouse_ids[0])
+            warehouse.country_code = "IN"
+            warehouse.state_code = "IN-MH"
+            warehouse.tax_registration_id = registration
+            warehouse.timezone = "Asia/Kolkata"
+            warehouse.address_line1 = "Receiving warehouse address"
+        async with factory.begin() as db:
+            facts = await build(db, actor, request, 1)
+    fact = next(row for row in facts.warehouses if row.warehouse_id == request.warehouse_ids[0])
+    assert fact.tax_registration_id == registration
+    assert fact.country_code == "IN" and fact.state_code == "IN-MH"
+    assert fact.timezone == "Asia/Kolkata"
+    assert fact.address_line1 == "Receiving warehouse address"
+
+
 async def test_a_purchase_bill_request_receives_the_items_purchase_gst_bundle(
     client, factory, tenant_a
 ):

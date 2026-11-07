@@ -6664,7 +6664,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Position Balance */
+        /**
+         * Position Balance
+         * @description Current company-owned stock physically in warehouses, summed in one indexed read.
+         */
         get: operations["position_balance_v1_companies__company_id__stock_positions_balance_get"];
         put?: never;
         post?: never;
@@ -7292,8 +7295,11 @@ export interface components {
         /** AccountCreation */
         AccountCreation: {
             bank_profile?: components["schemas"]["CreationBankProfile"] | null;
-            /** Code */
-            code: string;
+            /**
+             * Code
+             * @description Leave blank to generate a unique eight-character code. Manual codes allow printable text up to 40 characters and are fixed after creation.
+             */
+            code?: string | null;
             /** Currency */
             currency?: string | null;
             /**
@@ -8283,7 +8289,7 @@ export interface components {
              */
             id: string;
             /** Purpose */
-            purpose?: ("INPUT_RECOVERABLE" | "OUTPUT_PAYABLE" | "RCM_PAYABLE" | "DEPOSIT" | "ADJUSTMENT") | null;
+            purpose?: ("INPUT_RECOVERABLE" | "INPUT_PENDING" | "OUTPUT_PAYABLE" | "RCM_PAYABLE" | "DEPOSIT" | "ADJUSTMENT") | null;
             /** Row Version */
             row_version: number;
             /** Scheme */
@@ -12597,7 +12603,7 @@ export interface components {
             permission_hash: string;
             /**
              * Schema Hash
-             * @default c3beeba41f88f5d4596d8d775e473da4e6609c25bafc0f62c2cbb9822391a0bd
+             * @default 9a362092bb4d010c2aa272805a8ef32ed05c759085a92e80da825ca294e9b930
              */
             schema_hash?: string;
             /** Scope Hash */
@@ -16216,8 +16222,11 @@ export interface components {
         /** PartyCreation */
         PartyCreation: {
             address?: components["schemas"]["PartyAddressInput"] | null;
-            /** Code */
-            code: string;
+            /**
+             * Code
+             * @description Leave blank to generate a unique eight-character code. Manual codes allow printable text up to 40 characters and are fixed after creation.
+             */
+            code?: string | null;
             contact?: components["schemas"]["PartyContactInput"] | null;
             /** Country Code */
             country_code: string;
@@ -18075,6 +18084,8 @@ export interface components {
         };
         /** SerialPrepare */
         SerialPrepare: {
+            /** Expected Replaced Version */
+            expected_replaced_version?: number | null;
             /** Identifiers */
             identifiers: components["schemas"]["IdentifierInput"][];
             /**
@@ -18086,6 +18097,8 @@ export interface components {
             lot_id?: string | null;
             /** Reason */
             reason: string;
+            /** Replaces Unit Id */
+            replaces_unit_id?: string | null;
         };
         /** SessionCreate */
         SessionCreate: {
@@ -18779,6 +18792,18 @@ export interface components {
             /** Remaining Value */
             remaining_value: string;
         };
+        /** StockPositionBalance */
+        StockPositionBalance: {
+            /**
+             * Item Id
+             * Format: uuid
+             */
+            item_id: string;
+            /** Quantity */
+            quantity: string;
+            /** Warehouse Id */
+            warehouse_id?: string | null;
+        };
         /** StockPositionDetail */
         StockPositionDetail: {
             /** Bin Id */
@@ -18814,21 +18839,6 @@ export interface components {
              */
             updated_at: string;
             /** Warehouse Id */
-            warehouse_id?: string | null;
-        };
-        /** StockPositionBalance */
-        StockPositionBalance: {
-            /**
-             * Item Id
-             * Format: uuid
-             */
-            item_id: string;
-            /** Quantity */
-            quantity: string;
-            /**
-             * Warehouse Id
-             * Format: uuid
-             */
             warehouse_id?: string | null;
         };
         /** StockPositionListItem */
@@ -58048,6 +58058,7 @@ export interface operations {
                 cursor?: string | null;
                 q?: string | null;
                 sort?: string | null;
+                id?: string | null;
                 item_id?: string | null;
                 lot_id?: string | null;
                 status?: ("ACTIVE" | "RETIRED") | null;

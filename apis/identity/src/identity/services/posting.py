@@ -13,9 +13,9 @@ from billing_platform.features import FEATURES
 from billing_platform.idempotency import canonical_json
 from billing_platform.ids import uuid7
 from billing_platform.outbox import emit
+from identity_posting.stock import StockReservationSource
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from identity_posting.stock import StockReservationSource
 
 from identity.api.auth import Actor
 from identity.domain.company_immutability import IMMUTABLE_AFTER_POSTING, changed_fields
@@ -110,8 +110,16 @@ async def reserve(
     owner_service: str = "billing",
     stock_source: StockReservationSource | None = None,
 ) -> PostingReservation:
-    if owner_service not in {"billing", "accounting"}:
+    if owner_service not in {"billing", "accounting", "accounting-tracking"}:
         raise ValidationFailedError("unsupported posting owner")
+    if owner_service == "accounting-tracking" and (
+        stock_source is not None
+        or not set(features) <= {"batch_tracking", "expiry_tracking", "serial_tracking"}
+        or not features
+    ):
+        raise ValidationFailedError(
+            "tracking registration reserves physical identity features only"
+        )
     request_hash = reservation_hash(actor_user_id, expected_hash, features, stock_source)
     existing = await db.scalar(
         select(PostingReservation).where(
@@ -215,7 +223,7 @@ async def terminate(
                 "confirmation requires the actual bounded posting timestamp"
             )
         row.confirmed_at = posted_at
-        if company.first_posted_at is None:
+        if company.first_posted_at is None and row.owner_service != "accounting-tracking":
             company.first_posted_at = posted_at
             company.updated_by = row.actor_user_id
         features = await db.scalars(
@@ -225,6 +233,8 @@ async def terminate(
             )
         )
         for feature in features:
+            if row.owner_service == "accounting-tracking" and feature.feature_key == "inventory":
+                continue  # Empty physical identities do not constitute stock movement.
             if FEATURES[feature.feature_key].locks_on is not None and feature.locked_at is None:
                 feature.locked_at = posted_at
                 feature.updated_by = row.actor_user_id

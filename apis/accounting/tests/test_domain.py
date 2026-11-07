@@ -232,7 +232,7 @@ def test_party_registration_types(values: dict[str, Any]) -> None:
         ),
         (
             GST_PARTY | {"registration_type": "REGULAR", "registration_number": "27abcde1234f1z0"},
-            "without separators",
+            "uppercase without spaces or hyphens",
         ),
     ],
 )

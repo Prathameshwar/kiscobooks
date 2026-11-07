@@ -6067,6 +6067,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/companies/{company_id}/simple-product-creations/{creation_id}/drive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Drive */
+        post: operations["drive_simple_product_creation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/companies/{company_id}/simple-product-imports/{job_id}/advance": {
         parameters: {
             query?: never;
@@ -7988,6 +8005,7 @@ export interface components {
             opening_date?: string | null;
             /** @default 0 */
             opening_quantity?: components["schemas"]["ExactDecimal-Input"];
+            opening_unit_cost?: components["schemas"]["ExactDecimal-Input"] | null;
             purchase_price?: components["schemas"]["ExactDecimal-Input"] | null;
             /** Serials */
             serials?: components["schemas"]["SimpleSerialInput"][];
@@ -8105,6 +8123,8 @@ export interface components {
             mrp_id?: string | null;
             /** Opening Control Id */
             opening_control_id?: string | null;
+            /** Opening Error */
+            opening_error?: string | null;
             /** Opening Operation Id */
             opening_operation_id?: string | null;
             /**
@@ -19695,6 +19715,8 @@ export interface components {
             mrp?: components["schemas"]["ExactDecimal-Input"] | null;
             /** @default 0 */
             opening_quantity?: components["schemas"]["ExactDecimal-Input"];
+            /** @description Opening valuation cost per base unit; separate from purchase reference prices */
+            opening_unit_cost?: components["schemas"]["ExactDecimal-Input"] | null;
             purchase_price?: components["schemas"]["ExactDecimal-Input"] | null;
             sale_price?: components["schemas"]["ExactDecimal-Input"] | null;
             /** Sale Prices */
@@ -19784,6 +19806,8 @@ export interface components {
             opening_date?: string | null;
             /** @default 0 */
             opening_quantity?: components["schemas"]["ExactDecimal-Input"];
+            /** @description Opening valuation cost per base unit; separate from purchase reference prices */
+            opening_unit_cost?: components["schemas"]["ExactDecimal-Input"] | null;
             purchase_price?: components["schemas"]["ExactDecimal-Input"] | null;
             sale_price?: components["schemas"]["ExactDecimal-Input"] | null;
             /** Sale Prices */
@@ -19828,6 +19852,8 @@ export interface components {
              * Format: date
              */
             opening_date: string;
+            /** Product Type Revision Id */
+            product_type_revision_id?: string | null;
             /** Required Category Schemes */
             required_category_schemes?: components["schemas"]["SimpleRequiredCategoryScheme"][];
             /** Sale Price Levels */
@@ -19866,6 +19892,8 @@ export interface components {
             id: string;
             /** Item Id */
             item_id: string | null;
+            /** Last Error */
+            last_error?: string | null;
             /** Opening Posted */
             opening_posted: boolean;
             /** Row Version */
@@ -22701,6 +22729,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -22793,6 +22823,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -22883,6 +22915,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -22978,6 +23012,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23072,6 +23108,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23166,6 +23204,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23257,6 +23297,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23351,6 +23393,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23446,6 +23490,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23540,6 +23586,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23629,6 +23677,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23721,6 +23771,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23810,6 +23862,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23904,6 +23958,8 @@ export interface operations {
                 "If-Match": number;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -23995,6 +24051,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24094,6 +24152,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24174,6 +24234,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24257,6 +24319,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24338,6 +24402,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24423,6 +24489,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24508,6 +24576,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24602,6 +24672,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24682,6 +24754,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24765,6 +24839,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24846,6 +24922,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -24931,6 +25009,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25016,6 +25096,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25108,6 +25190,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25188,6 +25272,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25277,6 +25363,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25358,6 +25446,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25442,6 +25532,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25531,6 +25623,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25613,6 +25707,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25699,6 +25795,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25784,6 +25882,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25865,6 +25965,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -25950,6 +26052,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26035,6 +26139,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26119,6 +26225,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26203,6 +26311,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26304,6 +26414,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26384,6 +26496,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26471,6 +26585,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26550,6 +26666,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26631,6 +26749,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26716,6 +26836,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26808,6 +26930,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26888,6 +27012,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -26971,6 +27097,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27057,6 +27185,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27127,6 +27257,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27206,6 +27338,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27282,6 +27416,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27360,6 +27496,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27436,6 +27574,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27517,6 +27657,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27601,6 +27743,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27683,6 +27827,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27773,6 +27919,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27859,6 +28007,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -27940,6 +28090,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28026,6 +28178,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28117,6 +28271,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28197,6 +28353,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28283,6 +28441,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28369,6 +28529,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28450,6 +28612,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28536,6 +28700,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28621,6 +28787,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28702,6 +28870,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28787,6 +28957,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28872,6 +29044,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -28965,6 +29139,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29045,6 +29221,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29128,6 +29306,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29209,6 +29389,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29302,6 +29484,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29382,6 +29566,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29465,6 +29651,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29546,6 +29734,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29631,6 +29821,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29716,6 +29908,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29809,6 +30003,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29889,6 +30085,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -29972,6 +30170,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30053,6 +30253,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30138,6 +30340,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30223,6 +30427,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30308,6 +30514,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30398,6 +30606,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30496,6 +30706,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30601,6 +30813,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30700,6 +30914,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30799,6 +31015,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -30902,6 +31120,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31010,6 +31230,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31108,6 +31330,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31210,6 +31434,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31311,6 +31537,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31410,6 +31638,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31513,6 +31743,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31623,6 +31855,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31702,6 +31936,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31772,6 +32008,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31852,6 +32090,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -31935,6 +32175,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32016,6 +32258,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32101,6 +32345,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32186,6 +32432,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32271,6 +32519,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32355,6 +32605,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32456,6 +32708,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32545,6 +32799,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32637,6 +32893,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32743,6 +33001,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32832,6 +33092,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -32924,6 +33186,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33030,6 +33294,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33119,6 +33385,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33211,6 +33479,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33303,6 +33573,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33390,6 +33662,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33479,6 +33753,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33571,6 +33847,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33661,6 +33939,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33745,6 +34025,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33825,6 +34107,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33912,6 +34196,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -33994,6 +34280,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34079,6 +34367,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34162,6 +34452,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34251,6 +34543,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34330,6 +34624,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34410,6 +34706,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34493,6 +34791,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34574,6 +34874,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34659,6 +34961,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34744,6 +35048,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34837,6 +35143,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -34918,6 +35226,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35002,6 +35312,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35084,6 +35396,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35170,6 +35484,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35262,6 +35578,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35342,6 +35660,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35425,6 +35745,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35506,6 +35828,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35591,6 +35915,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35676,6 +36002,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35768,6 +36096,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35848,6 +36178,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -35931,6 +36263,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36012,6 +36346,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36097,6 +36433,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36182,6 +36520,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36273,6 +36613,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36361,6 +36703,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36441,6 +36785,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36524,6 +36870,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36605,6 +36953,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36690,6 +37040,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36775,6 +37127,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36859,6 +37213,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -36959,6 +37315,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37057,6 +37415,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37158,6 +37518,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37259,6 +37621,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37359,6 +37723,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37462,6 +37828,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37564,6 +37932,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37668,6 +38038,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37773,6 +38145,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37875,6 +38249,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -37974,6 +38350,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38077,6 +38455,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38180,6 +38560,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38283,6 +38665,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38388,6 +38772,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38497,6 +38883,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38577,6 +38965,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38660,6 +39050,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38741,6 +39133,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38826,6 +39220,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -38911,6 +39307,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39008,6 +39406,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39089,6 +39489,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39173,6 +39575,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39255,6 +39659,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39341,6 +39747,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39447,6 +39855,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39535,6 +39945,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39645,6 +40057,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39733,6 +40147,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39832,6 +40248,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39912,6 +40330,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -39995,6 +40415,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40076,6 +40498,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40161,6 +40585,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40246,6 +40672,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40331,6 +40759,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40432,6 +40862,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40521,6 +40953,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40613,6 +41047,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40711,6 +41147,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40791,6 +41229,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40882,6 +41322,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -40962,6 +41404,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41043,6 +41487,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41128,6 +41574,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41222,6 +41670,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41303,6 +41753,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41393,6 +41845,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41474,6 +41928,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41579,6 +42035,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41667,6 +42125,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41762,6 +42222,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41842,6 +42304,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -41935,6 +42399,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42015,6 +42481,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42108,6 +42576,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42203,6 +42673,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42284,6 +42756,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42368,6 +42842,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42449,6 +42925,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42533,6 +43011,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42619,6 +43099,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42700,6 +43182,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42784,6 +43268,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42866,6 +43352,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -42956,6 +43444,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43037,6 +43527,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43122,6 +43614,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43206,6 +43700,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43287,6 +43783,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43368,6 +43866,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43449,6 +43949,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43535,6 +44037,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43621,6 +44125,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43701,6 +44207,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43784,6 +44292,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43864,6 +44374,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -43948,6 +44460,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44029,6 +44543,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44115,6 +44631,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44201,6 +44719,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44282,6 +44802,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44366,6 +44888,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44448,6 +44972,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44532,6 +45058,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44613,6 +45141,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44708,6 +45238,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44788,6 +45320,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44871,6 +45405,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -44952,6 +45488,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45037,6 +45575,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45122,6 +45662,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45214,6 +45756,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45294,6 +45838,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45377,6 +45923,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45458,6 +46006,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45543,6 +46093,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45628,6 +46180,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45720,6 +46274,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45800,6 +46356,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45890,6 +46448,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -45969,6 +46529,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46050,6 +46612,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46135,6 +46699,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46220,6 +46786,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46311,6 +46879,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46392,6 +46962,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46476,6 +47048,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46558,6 +47132,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46644,6 +47220,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46730,6 +47308,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46823,6 +47403,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46903,6 +47485,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -46992,6 +47576,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47071,6 +47657,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47151,6 +47739,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47232,6 +47822,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47317,6 +47909,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47402,6 +47996,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47493,6 +48089,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47574,6 +48172,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47658,6 +48258,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47740,6 +48342,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47826,6 +48430,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -47912,6 +48518,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48002,6 +48610,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48085,6 +48695,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48168,6 +48780,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48254,6 +48868,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48336,6 +48952,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48421,6 +49039,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48504,6 +49124,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48591,6 +49213,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48685,6 +49309,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48767,6 +49393,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48852,6 +49480,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -48935,6 +49565,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49022,6 +49654,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49116,6 +49750,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49188,6 +49824,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49263,10 +49901,13 @@ export interface operations {
                 sort?: string | null;
                 parent_id?: string | null;
                 as_of?: string | null;
+                product_type_revision_id?: string | null;
             };
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49336,6 +49977,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49416,6 +50059,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49499,6 +50144,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49580,6 +50227,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49665,6 +50314,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49750,6 +50401,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49834,6 +50487,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49914,6 +50569,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -49997,6 +50654,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50094,6 +50753,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50183,6 +50844,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50275,6 +50938,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50365,6 +51030,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50458,6 +51125,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50548,6 +51217,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50658,6 +51329,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50746,6 +51419,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50852,6 +51527,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -50941,6 +51618,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51033,6 +51712,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51123,6 +51804,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51233,6 +51916,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51322,6 +52007,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51414,6 +52101,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51520,6 +52209,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51609,6 +52300,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51701,6 +52394,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51791,6 +52486,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51901,6 +52598,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -51990,6 +52689,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52082,6 +52783,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52188,6 +52891,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52277,6 +52982,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52369,6 +53076,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52475,6 +53184,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52563,6 +53274,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52669,6 +53382,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52757,6 +53472,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52849,6 +53566,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -52941,6 +53660,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53031,6 +53752,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53129,6 +53852,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53209,6 +53934,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53290,6 +54017,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53376,6 +54105,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53456,6 +54187,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53539,6 +54272,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53625,6 +54360,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53711,6 +54448,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53791,6 +54530,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53871,6 +54612,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -53966,6 +54709,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54045,6 +54790,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54136,6 +54883,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54222,6 +54971,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54303,6 +55054,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54387,6 +55140,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54470,6 +55225,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54551,6 +55308,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54635,6 +55394,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54716,6 +55477,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54811,6 +55574,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54891,6 +55656,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -54974,6 +55741,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55055,6 +55824,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55145,6 +55916,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55225,6 +55998,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55312,6 +56087,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55393,6 +56170,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55477,6 +56256,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55564,6 +56345,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55645,6 +56428,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55729,6 +56514,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55810,6 +56597,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55900,6 +56689,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -55981,6 +56772,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56065,6 +56858,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56152,6 +56947,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56233,6 +57030,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56317,6 +57116,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56399,6 +57200,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56500,6 +57303,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56589,6 +57394,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56681,6 +57488,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56779,6 +57588,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56859,6 +57670,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -56942,6 +57755,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57023,6 +57838,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57108,6 +57925,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57193,6 +58012,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57283,6 +58104,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57364,6 +58187,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57448,6 +58273,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57530,6 +58357,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57616,6 +58445,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57712,6 +58543,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57792,6 +58625,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57878,6 +58713,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -57957,6 +58794,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58038,6 +58877,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58122,6 +58963,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58203,6 +59046,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58288,6 +59133,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58372,6 +59219,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58457,6 +59306,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58542,6 +59393,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58636,6 +59489,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58716,6 +59571,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58799,6 +59656,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58884,6 +59743,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -58965,6 +59826,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59049,6 +59912,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59131,6 +59996,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59217,6 +60084,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59302,6 +60171,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59383,6 +60254,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59468,6 +60341,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59553,6 +60428,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59637,6 +60514,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59723,6 +60602,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59803,6 +60684,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59886,6 +60769,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -59967,6 +60852,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60052,6 +60939,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60143,6 +61032,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60222,6 +61113,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60319,6 +61212,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60407,6 +61302,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60513,6 +61410,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60602,6 +61501,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60694,6 +61595,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60791,6 +61694,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60871,6 +61776,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -60954,6 +61861,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61035,6 +61944,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61120,6 +62031,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61205,6 +62118,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61296,6 +62211,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61377,6 +62294,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61461,6 +62380,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61543,6 +62464,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61634,6 +62557,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61716,6 +62641,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61809,6 +62736,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61889,6 +62818,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -61972,6 +62903,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62053,6 +62986,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62138,6 +63073,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62223,6 +63160,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62308,6 +63247,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62400,6 +63341,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62492,6 +63435,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62580,6 +63525,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62670,6 +63617,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62763,6 +63712,99 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
+            };
+            path: {
+                company_id: string;
+                creation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimpleCreationStatus"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    drive_simple_product_creation: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-actor-context"?: string | null;
+                "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62852,6 +63894,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -62941,6 +63985,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63033,6 +64079,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63122,6 +64170,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63231,6 +64281,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63320,6 +64372,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63412,6 +64466,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63522,6 +64578,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63611,6 +64669,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63703,6 +64763,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63793,6 +64855,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63907,6 +64971,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -63996,6 +65062,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64088,6 +65156,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64177,6 +65247,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64270,6 +65342,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64383,6 +65457,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64471,6 +65547,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64560,6 +65638,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64653,6 +65733,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64745,6 +65827,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64840,6 +65924,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -64950,6 +66036,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65038,6 +66126,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65127,6 +66217,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65240,6 +66332,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65329,6 +66423,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65421,6 +66517,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65531,6 +66629,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65620,6 +66720,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65712,6 +66814,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65809,6 +66913,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65897,6 +67003,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -65986,6 +67094,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66099,6 +67209,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66188,6 +67300,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66280,6 +67394,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66390,6 +67506,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66479,6 +67597,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66571,6 +67691,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66681,6 +67803,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66770,6 +67894,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66862,6 +67988,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -66952,6 +68080,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67066,6 +68196,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67155,6 +68287,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67247,6 +68381,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67337,6 +68473,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67436,6 +68574,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67516,6 +68656,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67599,6 +68741,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67680,6 +68824,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67771,6 +68917,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67851,6 +68999,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -67934,6 +69084,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68015,6 +69167,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68107,6 +69261,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68187,6 +69343,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68270,6 +69428,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68353,6 +69513,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68434,6 +69596,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68519,6 +69683,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68604,6 +69770,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68697,6 +69865,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68777,6 +69947,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68860,6 +70032,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -68941,6 +70115,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69026,6 +70202,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69111,6 +70289,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69195,6 +70375,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69275,6 +70457,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69359,6 +70543,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69450,6 +70636,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69530,6 +70718,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69613,6 +70803,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69694,6 +70886,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69779,6 +70973,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69872,6 +71068,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -69953,6 +71151,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70048,6 +71248,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70134,6 +71336,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70215,6 +71419,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70301,6 +71507,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70390,6 +71598,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70470,6 +71680,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70553,6 +71765,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70634,6 +71848,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70719,6 +71935,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70804,6 +72022,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70894,6 +72114,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -70974,6 +72196,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71054,6 +72278,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71139,6 +72365,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71224,6 +72452,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71316,6 +72546,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71396,6 +72628,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71479,6 +72713,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71560,6 +72796,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71645,6 +72883,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71730,6 +72970,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71822,6 +73064,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71903,6 +73147,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -71987,6 +73233,8 @@ export interface operations {
             header?: {
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -72069,6 +73317,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;
@@ -72155,6 +73405,8 @@ export interface operations {
                 "Idempotency-Key": string;
                 "x-actor-context"?: string | null;
                 "x-actor-signature"?: string | null;
+                "x-company-context"?: string | null;
+                "x-company-signature"?: string | null;
             };
             path: {
                 company_id: string;

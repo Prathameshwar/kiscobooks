@@ -10,7 +10,7 @@ import { overviewFixture, type Daily } from './overview-fixture';
 
 /*
  * The overview as a reader sees it: real component DOM and the shared stylesheets, rendered in a
- * browser at four widths in every theme. The data is a fixture that exists only under `tests/` —
+ * browser at six widths in every theme. The data is a fixture that exists only under `tests/` —
  * the application itself never carries sample figures. Opt in with QA_OVERVIEW_BROWSER=1; the
  * screenshots land in `.test_artifacts/` for review.
  */
@@ -26,10 +26,15 @@ const trading: Daily = (date, index) => {
   return { income: Math.round(wave * 4_100_000) + 1_200_000, expenses: Math.round((2 - wave) * 1_450_000) + 300_000 };
 };
 
+const longValues = overviewFixture({ company, from: '2026-04-01', to: '2026-11-01', scale: 1_000_000 });
+longValues.receivables.parties[0]!.name = 'Meridian Wholesale and Distribution Services Private Limited';
+longValues.top_expenses[0]!.name = 'Warehouse rental and distribution facility operating expenses';
+
 const scenarios = {
   populated: overviewFixture({ company, from: '2026-04-01', to: '2026-11-01', daily: trading, scale: 500, change: { coverage_start: '2026-04-01', earlier_history_unavailable: false } }),
   month: overviewFixture({ company, from: '2026-10-03', to: '2026-11-01', daily: trading, scale: 500 }),
   quiet: overviewFixture({ company, quiet: true }),
+  longValues,
 } as const;
 
 function matchMedia(narrow: boolean) {
@@ -72,14 +77,14 @@ async function markup(scenario: keyof typeof scenarios, narrow: boolean) {
   return html;
 }
 
-it.runIf(process.env.QA_OVERVIEW_BROWSER === '1').each(Object.keys(scenarios) as (keyof typeof scenarios)[])('keeps the %s overview readable at four widths in every theme', async scenario => {
+it.runIf(process.env.QA_OVERVIEW_BROWSER === '1').each(Object.keys(scenarios) as (keyof typeof scenarios)[])('keeps the %s overview readable at six widths in every theme', async scenario => {
   localStorage.clear();
   const wide = await markup(scenario, false), narrow = await markup(scenario, true);
   const { chromium } = createRequire(resolve('../../../.tools/ui-review-runner/package.json'))('playwright');
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {
     const page = await browser.newPage();
-    for (const width of [1440, 1024, 768, 390]) for (const theme of ['light', 'dark', 'ledger']) {
+    for (const width of [1440, 1152, 1024, 768, 390, 320]) for (const theme of ['light', 'dark', 'ledger']) {
       await page.setViewportSize({ width, height: 1000 });
       const html = width <= 680 ? narrow : wide;
       await page.setContent(`<!doctype html><html data-theme="${theme}"><head><meta name="viewport" content="width=device-width"><style>${css}</style></head><body class="janso-root"><main>${html}</main></body></html>`);
@@ -101,11 +106,27 @@ it.runIf(process.env.QA_OVERVIEW_BROWSER === '1').each(Object.keys(scenarios) as
       if (width > 1100) expect(Math.abs(first.y - second.y), `${scenario} ${theme} ${width} band`).toBeLessThanOrEqual(1);
       else expect(second.y, `${scenario} ${theme} ${width} stacked`).toBeGreaterThanOrEqual(first.y + first.height);
       for (const card of cards) expect((await card.boundingBox())!.x + (await card.boundingBox())!.width, `${scenario} ${theme} ${width} card edge`).toBeLessThanOrEqual(width);
+      for (const card of cards) {
+        const bounds = (await card.boundingBox())!;
+        const aside = card.locator('.janso-card__aside');
+        if (bounds.width <= 448 && await aside.count()) {
+          const heading = (await card.locator('.janso-card__heading').boundingBox())!;
+          const controls = (await aside.boundingBox())!;
+          expect(heading.width, `${width} heading uses available card width`).toBeGreaterThanOrEqual(bounds.width - 52);
+          expect(controls.y, `${width} controls sit below heading`).toBeGreaterThanOrEqual(heading.y + heading.height - 1);
+          expect(controls.x + controls.width, `${width} controls fit card`).toBeLessThanOrEqual(bounds.x + bounds.width);
+        }
+        const footer = card.locator('.janso-card__footer');
+        if (await footer.count()) {
+          const boundsFooter = (await footer.boundingBox())!;
+          expect(Math.abs(boundsFooter.y + boundsFooter.height - bounds.y - bounds.height), `${width} footer aligns to card bottom`).toBeLessThanOrEqual(2);
+        }
+      }
       if (scenario !== 'quiet') {
         expect(await page.locator('.janso-chart__legend-item').count()).toBe(2);
-        // tick text must stay readable: the drawing is no more than ~1.4x down-scaled on a phone
+        // Allow the smaller 320px content area, while keeping the usual phone scale above 0.7.
         const scale = await page.locator('.janso-chart__svg').evaluate((node: SVGSVGElement) => node.getBoundingClientRect().width / node.viewBox.baseVal.width);
-        if (width <= 680) expect(scale, `${scenario} ${theme} ${width} chart scale`).toBeGreaterThan(0.7);
+        if (width <= 680) expect(scale, `${scenario} ${theme} ${width} chart scale`).toBeGreaterThan(width === 320 ? 0.5 : 0.7);
       }
     }
   } finally { await browser.close(); }

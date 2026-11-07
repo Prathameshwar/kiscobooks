@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+﻿import { render, screen } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import InventoryPage from '../app/inventory/[[...segments]]/page';
 import { ProductExperience } from '../app/components/ProductExperience';
@@ -9,6 +9,10 @@ import { productImportProfile } from '../app/lib/master-import-profiles';
 import { COMPANY, RECORD, access } from './product-classification-fixtures';
 import { sessionFor } from './helpers';
 
+vi.mock('../app/lib/page-context', () => ({ pageContext: vi.fn(async () => ({ session: await sessionFor(), context: {} })) }));
+vi.mock('../app/components/StockTrackingRoute', () => ({ StockTrackingRoute: ({ route }: { route: {kind:string;page:string} }) => <p>Restored {route.kind} {route.page}</p> }));
+vi.mock('../app/providers', () => ({ Providers: ({ children }: {children:React.ReactNode}) => children }));
+vi.mock('../app/components/ConsoleShell', () => ({ ConsoleShell: ({ children }: {children:React.ReactNode}) => children }));
 vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('not found'); } }));
 vi.mock('../app/components/ProductModeProvider', () => ({ useProductMode: vi.fn() }));
 vi.mock('../app/components/SimpleProductDirectory', () => ({ SimpleProductDirectory: () => <p>Simple product list</p> }));
@@ -21,31 +25,32 @@ it.each([false, true])('preserves the directory in product mode %s', advanced =>
   expect(screen.queryByRole('link', { name: /New product|Edit|View product/ })).toBeNull();
 });
 
-it.each(['batches', 'serials'])('rejects retired %s pages through the inventory catch-all', async kind => {
+it.each(['batches', 'serials'])('restores %s pages through the inventory catch-all', async kind => {
   for (const tail of [[], ['new'], [RECORD], [RECORD, 'edit'], [RECORD, 'history']]) {
-    await expect(InventoryPage({ params: Promise.resolve({ segments: [kind, ...tail] }) })).rejects.toThrow('not found');
+    const view = render(await InventoryPage({ params: Promise.resolve({ segments: [kind, ...tail] }) }));
+    expect(screen.getByText(new RegExp('Restored ' + kind))).toBeVisible(); view.unmount();
   }
 });
 
-it('omits tracking pages from the company master navigation even with read access', async () => {
+it('restores tracking navigation with company read access', async () => {
   const session = await sessionFor();
   session.company = { id: COMPANY, name: 'Company' };
   session.grants = [{ scope_type: 'company', scope_id: COMPANY, valid_from: '2020-01-01', valid_to: null, permissions: ['item.read', 'accounting.batch.read', 'accounting.serial.read', 'accounting.stock.read'] }];
   const links = companyMastersFor(session).flatMap(group => group.items);
   expect(links.some(link => link.href === '/inventory/stock')).toBe(true);
-  expect(links.some(link => /^\/inventory\/(batches|serials)/.test(link.href))).toBe(false);
+  expect(links.some(link => link.href === '/inventory/batches')).toBe(true);
+  expect(links.some(link => link.href === '/inventory/serials')).toBe(true);
 });
 
-it('does not generate product record links from references, return paths or import results', () => {
+it('generates safe restored product links from references, returns and import results', () => {
   for (const source of ['items', 'product-families']) {
-    expect(masterReferencePath(source, RECORD)).toBeNull();
+    expect(masterReferencePath(source, RECORD)).toBe('/masters/' + source + '/' + RECORD);
     for (const tail of ['new', RECORD, RECORD + '/edit', RECORD + '/created']) {
       const result = masterReturnQuery(new URL('/masters/' + source + '/' + tail, 'https://console.invalid'));
-      if (source === 'items' && tail === 'new') expect(result).not.toBeNull();
-      else expect(result).toBeNull();
+      expect(result).not.toBeNull();
     }
     expect(masterReturnQuery(new URL('/masters/' + source, 'https://console.invalid'))).not.toBeNull();
   }
-  for (const resource of ['item', 'product_family', 'simple_product']) expect(productImportProfile.destination(resource, RECORD, '/masters/items')).toBeNull();
+  for (const resource of ['item', 'product_family', 'simple_product']) expect(productImportProfile.destination(resource, RECORD, '/masters/items')).not.toBeNull();
   expect(masterReferencePath('brands', RECORD)).toBe('/masters/brands/' + RECORD);
 });

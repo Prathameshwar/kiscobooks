@@ -34,6 +34,7 @@ export type PurchaseWorkspacePolicy = {
   stockAccess?: { warehouse: boolean; bin: boolean; batch: boolean; serial: boolean };
   canReadBatch?: boolean;
   canPrepareBatch?: boolean;
+  canPrepareSerial?: boolean;
   calculation?:PurchaseCalculationPolicy;
   live?: boolean;
   discountsAllowed?: boolean;
@@ -132,6 +133,7 @@ export type PurchaseWorkspaceAction =
   | { type: 'supplier'; value: string; policy: PurchaseWorkspacePolicy }
   | { type: 'mode'; mode: PurchaseMode }
   | { type: 'line'; key: string; patch: Partial<Omit<PurchaseLine, 'key'>> }
+  | { type: 'receipt_commit'; key: string; value: string }
   | { type: 'subject'; key: string; subject: PurchaseSubject | null }
   | { type: 'kind'; key: string; kind: PurchaseLineKind }
   | { type: 'add'; after?: string }
@@ -142,14 +144,10 @@ export type PurchaseWorkspaceAction =
   | { type: 'tax'; patch: Partial<PurchaseTaxDraft> }
   | { type: 'replace'; draft: PurchaseWorkspaceDraft };
 
-/**
- * A live goods bill receives what it bills (B24), so typing one quantity fills the other while they still agree.
- * Quantities the person has made differ are left alone, and are refused on save with the reason.
- */
+/** Typing billed quantity first may seed an empty received field; receipt entry commits on blur. */
 export function withPairedQuantity(line: PurchaseLine, patch: Partial<Omit<PurchaseLine, 'key'>>): Partial<Omit<PurchaseLine, 'key'>> {
   if (line.kind !== 'ITEM' || patch.kind && patch.kind !== 'ITEM' || (patch.billed === undefined) === (patch.received === undefined)) return patch;
-  if (patch.billed !== undefined && (line.received === '' || line.received === line.billed)) return { ...patch, received: patch.billed };
-  if (patch.received !== undefined && (line.billed === '' || line.billed === line.received)) return { ...patch, billed: patch.received };
+  if (patch.billed !== undefined && line.received === '') return { ...patch, received: patch.billed };
   return patch;
 }
 export function purchaseWorkspaceReducer(draft: PurchaseWorkspaceDraft, action: PurchaseWorkspaceAction): PurchaseWorkspaceDraft {
@@ -163,6 +161,10 @@ export function purchaseWorkspaceReducer(draft: PurchaseWorkspaceDraft, action: 
     }
     case 'mode': return { ...draft, mode: action.mode, lines: draft.lines.map(line => isBlankPurchaseLine(line) ? { ...line, kind: action.mode === 'ACCOUNTS' ? 'ACCOUNT' : 'ITEM' } : line) };
     case 'line': return mapLine(action.key, line => ({ ...line, ...action.patch }));
+    case 'receipt_commit': return mapLine(action.key, line =>
+      line.kind === 'ITEM' && !line.billed && action.value
+        ? { ...line, received: action.value, billed: action.value }
+        : line);
     case 'subject': return mapLine(action.key, line => ({ ...line, subject: action.subject?.id ?? '', label: action.subject?.label ?? '', unit: action.subject?.unit ?? '', stock: action.subject?.id === line.subject ? line.stock : undefined }));
     // Changing the kind is explicit. Keep numeric facts in the draft so switching back recovers them.
     case 'kind': return mapLine(action.key, line => ({ ...line, kind: action.kind, subject: '', label: '', unit: '', stock: undefined }));

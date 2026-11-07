@@ -120,7 +120,10 @@ async def context(
         if revision.attribute_set_revision_id is not None:
             rows = list(await db.scalars(
                 select(AttributeSetMember)
-                .where(AttributeSetMember.company_id == company, AttributeSetMember.revision_id == revision.attribute_set_revision_id)
+                .where(
+                    AttributeSetMember.company_id == company,
+                    AttributeSetMember.revision_id == revision.attribute_set_revision_id,
+                )
                 .order_by(AttributeSetMember.position, AttributeSetMember.id)
                 .limit(129)
             ))
@@ -153,7 +156,9 @@ async def context(
     if configuration.pricing.sale_price_mode == "REQUIRED" and not price_access:
         raise PermissionDeniedError("selling prices require price plan read access")
     levels = (
-        await sale_choices(access, configuration, business_date(company_row.timezone))
+        await sale_choices(
+            access, configuration, business_date(company_row.timezone), include_default=True
+        )
         if price_access
         else []
     )

@@ -168,7 +168,9 @@ async def engine() -> AsyncIterator[AsyncEngine]:
 
 @pytest.fixture
 def app(engine: AsyncEngine) -> FastAPI:
-    return create_app(
+    from tests.tracking_feature_support import TrackingFeatureClient
+
+    result = create_app(
         Settings(
             database_url="sqlite+aiosqlite:///:memory:",
             actor_signing_secret=SecretStr(SECRET),
@@ -176,6 +178,8 @@ def app(engine: AsyncEngine) -> FastAPI:
         ),
         engine=engine,
     )
+    result.state.tracking_feature_client = TrackingFeatureClient()
+    return result
 
 
 @pytest_asyncio.fixture

@@ -106,6 +106,21 @@ describe('what the field emits', () => {
     expect(onValue).toHaveBeenLastCalledWith('0.5');
   });
 
+  it('reports a settled numeric value only after blur and only when valid', async () => {
+    const onCommit = vi.fn();
+    const user = userEvent.setup();
+    render(<Controlled field="quantity" onCommit={onCommit} />);
+    await user.type(box('Quantity'), '123');
+    expect(onCommit).not.toHaveBeenCalled();
+    await user.tab();
+    expect(onCommit).toHaveBeenCalledWith('123');
+    await user.click(box('Quantity'));
+    await user.clear(box('Quantity'));
+    await user.type(box('Quantity'), '12..5');
+    await user.tab();
+    expect(onCommit).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps unstorable text rather than reverting it', async () => {
     const user = userEvent.setup();
     render(<Controlled initial="100" />);

@@ -20,7 +20,9 @@ case "$1" in
   *) exit 64 ;;
 esac
 cd /opt/kiscobooks/current
-exec "apis/$1/.venv/bin/uvicorn" "$module" --factory --host 127.0.0.1 --port "$port" --proxy-headers --forwarded-allow-ips 127.0.0.1
+# Copied editable environments may still point at a previous release.
+export PYTHONPATH="$(pwd -P)/apis/$1/src${PYTHONPATH:+:$PYTHONPATH}"
+exec "apis/$1/.venv/bin/python" -m uvicorn "$module" --factory --host 127.0.0.1 --port "$port" --proxy-headers --forwarded-allow-ips 127.0.0.1
 EOF
 chmod 755 /usr/local/libexec/kiscobooks-api
 
@@ -77,12 +79,15 @@ ReadWritePaths=/var/lib/kiscobooks /var/log/kiscobooks
 WantedBy=multi-user.target
 EOF
 
-for worker in identity-catalog-publisher catalog-source-worker; do
+for worker in identity-catalog-publisher catalog-source-worker catalog-creation-worker; do
   service=identity
   module=identity.tasks.catalog_publisher
   if [ "$worker" = catalog-source-worker ]; then
     service=catalog
     module=catalog.tasks.source_worker
+  elif [ "$worker" = catalog-creation-worker ]; then
+    service=catalog
+    module=catalog.tasks.simple_creation_worker
   fi
   cat >"/etc/systemd/system/kiscobooks-${worker}.service" <<EOF
 [Unit]
@@ -129,7 +134,42 @@ User=kiscobooks
 Group=kiscobooks
 WorkingDirectory=/opt/kiscobooks/current
 EnvironmentFile=/etc/kiscobooks/${service}.env
+Environment=PYTHONPATH=apis/${service}/src
 ExecStart=/opt/kiscobooks/current/apis/${service}/.venv/bin/python -m ${module}
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/kiscobooks /var/log/kiscobooks
+
+[Install]
+WantedBy=multi-user.target
+EOF
+done
+
+# Report admission requires a durable dispatcher and independent calculation lanes.
+# Keep them supervised on fresh installs and on every runtime update.
+for lane in dispatcher short bulk render; do
+  args=""
+  if [ "$lane" != dispatcher ]; then
+    args="--worker $lane --pool prefork --concurrency 1"
+  fi
+  cat >"/etc/systemd/system/kiscobooks-reports-${lane}.service" <<EOF
+[Unit]
+Description=KiscoBooks reports ${lane}
+After=network-online.target mysql.service rabbitmq-server.service kiscobooks-api@reports.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kiscobooks
+Group=kiscobooks
+WorkingDirectory=/opt/kiscobooks/current
+EnvironmentFile=/etc/kiscobooks/reports.env
+Environment=PYTHONPATH=apis/reports/src
+ExecStart=/opt/kiscobooks/current/apis/reports/.venv/bin/python -m reports.tasks.job_dispatcher ${args}
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true
@@ -221,6 +261,7 @@ EOF
   sed '/server_name  localhost;/a\    set_real_ip_from 127.0.0.1;\n    real_ip_header X-Forwarded-For;\n    real_ip_recursive on;' "$root/start/win/conf/bill.conf"
 } >/etc/nginx/conf.d/kiscobooks-gateway.conf
 
+install -d -m 700 /root/kiscobooks-backups
 cp -a /etc/nginx/sites-available/kisco.cloud "/root/kiscobooks-backups/kisco.cloud.before-runtime"
 cat >/etc/nginx/sites-available/kisco.cloud <<'EOF'
 server {
@@ -291,10 +332,10 @@ EOF
 
 systemctl daemon-reload
 systemctl enable kiscobooks-api@{identity,audit,catalog,notification,accounting,vouchers,reports,design}.service
-systemctl enable kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-catalog-accounting-publisher.service kiscobooks-accounting-catalog-tax-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service
+systemctl enable kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-catalog-creation-worker.service kiscobooks-catalog-accounting-publisher.service kiscobooks-accounting-catalog-tax-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service kiscobooks-reports-dispatcher.service kiscobooks-reports-short.service kiscobooks-reports-bulk.service kiscobooks-reports-render.service
 nginx -t
 systemctl start kiscobooks-api@{identity,audit,catalog,notification,accounting,vouchers,reports,design}.service
-systemctl start kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-catalog-accounting-publisher.service kiscobooks-accounting-catalog-tax-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service
+systemctl start kiscobooks-auth.service kiscobooks-console.service kiscobooks-company-setup.service kiscobooks-identity-catalog-publisher.service kiscobooks-catalog-source-worker.service kiscobooks-catalog-creation-worker.service kiscobooks-catalog-accounting-publisher.service kiscobooks-accounting-catalog-tax-worker.service kiscobooks-accounting-report-snapshots.service kiscobooks-reports-sources.service kiscobooks-reports-dispatcher.service kiscobooks-reports-short.service kiscobooks-reports-bulk.service kiscobooks-reports-render.service
 bash "$root/deploy/ubuntu/install-stock-runtime.sh"
 bash "$root/deploy/ubuntu/install-print-runtime.sh"
 systemctl reload nginx

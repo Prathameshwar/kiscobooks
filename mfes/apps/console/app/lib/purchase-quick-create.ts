@@ -1,6 +1,9 @@
 import { accountingRequest } from './accounting-configuration';
+import { masterCodeLength } from './accounting-master-code';
 import { trackingId } from './stock-tracking-resources';
 import type { ServicePage } from './service-resource';
+import { cleanGstin } from './gstin';
+export { cleanGstin } from './gstin';
 
 /**
  * What the purchase bill needs to create a supplier or an expense account without leaving the page.
@@ -45,6 +48,13 @@ function text(label: string, value: string, max: number, errors: Record<string, 
   return trimmed;
 }
 
+function optionalCode(value: string, errors: Record<string, string>) {
+  const code = value.trim();
+  if (masterCodeLength(code) > QUICK_CREATE_LIMITS.code || !printable(code))
+    errors.code = 'Use printable text up to 40 characters; remove control characters.';
+  return code;
+}
+
 /** The GST status a supplier can be given here; "NONE" leaves the registration for the full supplier form. */
 export type GstStatus = 'NONE' | 'REGULAR' | 'COMPOSITION' | 'UNREGISTERED';
 export const GST_STATUS_OPTIONS: readonly { value: GstStatus; label: string }[] = [
@@ -52,12 +62,10 @@ export const GST_STATUS_OPTIONS: readonly { value: GstStatus; label: string }[] 
 ];
 /** Regular and composition suppliers hold a GSTIN; an unregistered one records only the state. */
 export const gstinRequired = (status: GstStatus) => status === 'REGULAR' || status === 'COMPOSITION';
-/** A GSTIN is typed in capitals without spaces or hyphens, which is how Accounting stores it. */
-export const cleanGstin = (value: string) => value.toUpperCase().replace(/[\s-]/g, '');
 
 export type SupplierDraft = { name: string; code: string; countryCode: string; gstStatus: GstStatus; stateCode: string; gstin: string };
 export type SupplierRequestBody = {
-  code: string; name: string; legal_name: string; party_type: 'ORGANISATION'; country_code: string;
+  code?: string; name: string; legal_name: string; party_type: 'ORGANISATION'; country_code: string;
   role: 'SUPPLIER'; ledger: Record<string, never>;
   tax_registration?: { scheme: 'GST_IN'; registration_type: Exclude<GstStatus, 'NONE'>; country_code: 'IN'; state_code: string; registration_number?: string };
 };
@@ -73,7 +81,7 @@ export type SupplierRequestBody = {
 export function supplierRequest(draft: SupplierDraft, options: { tax: boolean }): { body?: SupplierRequestBody; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
   const name = text('the supplier name', draft.name, QUICK_CREATE_LIMITS.name, errors, 'name');
-  const code = text('a supplier code', draft.code, QUICK_CREATE_LIMITS.code, errors, 'code');
+  const code = optionalCode(draft.code, errors);
   if (!/^[A-Z]{2}$/.test(draft.countryCode)) errors.country_code = 'Choose the supplier’s country.';
   const registered = options.tax && draft.countryCode === 'IN' && draft.gstStatus !== 'NONE';
   const gstin = cleanGstin(draft.gstin);
@@ -85,7 +93,7 @@ export function supplierRequest(draft: SupplierDraft, options: { tax: boolean })
   return {
     errors,
     body: {
-      code, name, legal_name: name, party_type: 'ORGANISATION', country_code: draft.countryCode, role: 'SUPPLIER', ledger: {},
+      ...(code ? { code } : {}), name, legal_name: name, party_type: 'ORGANISATION', country_code: draft.countryCode, role: 'SUPPLIER', ledger: {},
       ...(registered ? { tax_registration: {
         scheme: 'GST_IN' as const, registration_type: draft.gstStatus as Exclude<GstStatus, 'NONE'>, country_code: 'IN' as const, state_code: draft.stateCode.trim(),
         ...(gstinRequired(draft.gstStatus) ? { registration_number: gstin } : {}),
@@ -96,7 +104,7 @@ export function supplierRequest(draft: SupplierDraft, options: { tax: boolean })
 
 export type ExpenseAccountDraft = { name: string; code: string; groupId: string; description: string };
 export type ExpenseAccountRequestBody = {
-  code: string; name: string; group_id: string; kind: 'GENERAL'; currency_mode: 'BASE';
+  code?: string; name: string; group_id: string; kind: 'GENERAL'; currency_mode: 'BASE';
   posting_policy: 'MANUAL_ALLOWED'; inventory_affected: false; description?: string;
 };
 
@@ -104,7 +112,7 @@ export type ExpenseAccountRequestBody = {
 export function expenseAccountRequest(draft: ExpenseAccountDraft, groups: readonly ExpenseGroup[]): { body?: ExpenseAccountRequestBody; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
   const name = text('the account name', draft.name, QUICK_CREATE_LIMITS.name, errors, 'name');
-  const code = text('an account code', draft.code, QUICK_CREATE_LIMITS.code, errors, 'code');
+  const code = optionalCode(draft.code, errors);
   const description = draft.description.trim();
   if (description.length > QUICK_CREATE_LIMITS.description) errors.description = `Use at most ${QUICK_CREATE_LIMITS.description} characters.`;
   else if (!printable(description.replace(/[\r\n\t]/g, ' '))) errors.description = 'Remove the control characters.';
@@ -113,7 +121,7 @@ export function expenseAccountRequest(draft: ExpenseAccountDraft, groups: readon
   return {
     errors,
     body: {
-      code, name, group_id: draft.groupId, kind: 'GENERAL', currency_mode: 'BASE', posting_policy: 'MANUAL_ALLOWED', inventory_affected: false,
+      ...(code ? { code } : {}), name, group_id: draft.groupId, kind: 'GENERAL', currency_mode: 'BASE', posting_policy: 'MANUAL_ALLOWED', inventory_affected: false,
       ...(description ? { description } : {}),
     },
   };

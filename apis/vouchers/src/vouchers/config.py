@@ -19,7 +19,16 @@ class SourceCredential(BaseModel):
         frozenset({"vouchers.sources.apply"})
     )
     secret: SecretStr = Field(min_length=32)
-    scopes: list[CompanyServiceScope] = Field(min_length=1, max_length=1000)
+    scopes: list[CompanyServiceScope] = Field(default_factory=list, max_length=1000)
+    allow_enrolled_companies: bool = False
+
+    @model_validator(mode="after")
+    def require_scope(self) -> Self:
+        if not self.scopes and not self.allow_enrolled_companies:
+            raise ValueError("source credential requires a company scope")
+        if self.allow_enrolled_companies and self.issuer != "catalog":
+            raise ValueError("dynamic source delivery is limited to Catalog")
+        return self
 
 
 class PrintRuntime(BaseSettings):

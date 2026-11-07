@@ -855,11 +855,28 @@ it('lets the user open explicitly while preparation continues without recreating
   await screen.findByRole('textbox', { name: /Legal name/ }); await reachReview(user);
   await user.click(screen.getByRole('button', { name: 'Create this company' }));
   expect(await screen.findByText('Books: Preparing automatically')).toBeVisible();
+  expect(screen.getByRole('progressbar', { name: 'Preparing books' })).toBeVisible();
   expect(openCompany).not.toHaveBeenCalled();
   expect(window.dispatchEvent(new Event(BEFORE_COMPANY_CHANGE, { cancelable: true }))).toBe(true);
   await user.click(screen.getByRole('button', { name: 'Open while setup continues' }));
   expect(openCompany).toHaveBeenCalledOnce();
   expect(vi.mocked(companyCall).mock.calls.filter(([, path, options]) => path === '/v1/companies' && options?.method === 'POST')).toHaveLength(1);
+});
+
+it('shows activity immediately while creation is unconfirmed and prevents a duplicate submission', async () => {
+  const original = vi.mocked(companyCall).getMockImplementation()!;
+  let save!: (value: unknown) => void;
+  vi.mocked(companyCall).mockImplementation(async (service, path, options) => path === '/v1/companies' && options?.method === 'POST'
+    ? new Promise(resolve => { save = resolve; }) as never : original(service, path, options));
+  const user = userEvent.setup({ delay: null }); mount();
+  await screen.findByRole('textbox', { name: /Legal name/ }); await reachReview(user);
+  await user.click(screen.getByRole('button', { name: 'Create this company' }));
+  expect(screen.getByRole('progressbar', { name: 'Saving your company' })).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Open while setup continues' })).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Working…' }));
+  expect(vi.mocked(companyCall).mock.calls.filter(([, path, options]) => path === '/v1/companies' && options?.method === 'POST')).toHaveLength(1);
+  await act(async () => { save({ id: COMPANY }); });
+  await waitFor(() => expect(openCompany).toHaveBeenCalledOnce());
 });
 
 it('does not reopen the company after the user leaves while preparation continues', async () => {

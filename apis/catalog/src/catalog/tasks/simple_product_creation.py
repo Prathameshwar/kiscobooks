@@ -2,6 +2,7 @@
 
 import datetime as dt
 import hashlib
+import time
 import uuid
 from typing import Any
 
@@ -70,6 +71,7 @@ def status(row: Creation) -> SimpleCreationStatus:
             "item_id": row.item_id,
             "row_version": row.row_version,
             "opening_posted": bool(row.progress.get("opening_posted")),
+            "last_error": row.progress.get("last_error"),
             "can_edit": row.step == "CREATE"
             and row.item_id is None
             and not row.progress.get("pending")
@@ -219,8 +221,11 @@ async def start(
             if context.finance is None:
                 raise ConflictError("Company financial setup is unavailable")
             opening = await opening_preflight(
-                owners, context.company_id, context.finance.books_begin_date.isoformat()
+                owners, context.company_id, context.finance.books_begin_date.isoformat(),
+                require_cost_capture=body.opening_unit_cost is not None
+                or any(row.opening_unit_cost is not None for row in body.batches),
             )
+            opening["source_delivery"] = owners.source_delivery is not None
         async with factory() as db, db.begin():
             return await enqueue(db, actor, context, body, key, opening)
 
@@ -268,8 +273,11 @@ async def revise(
             if context.finance is None:
                 raise ConflictError("Company financial setup is unavailable")
             opening = await opening_preflight(
-                owners, context.company_id, context.finance.books_begin_date.isoformat()
+                owners, context.company_id, context.finance.books_begin_date.isoformat(),
+                require_cost_capture=body.opening_unit_cost is not None
+                or any(row.opening_unit_cost is not None for row in body.batches),
             )
+            opening["source_delivery"] = owners.source_delivery is not None
         async with factory() as db, db.begin():
             await company_policy_state(db, actor.tenant_id, context.company_id, lock=True)
             row = await owned(db, actor, context.company_id, identity, lock=True)
@@ -350,7 +358,7 @@ async def advance(
                         progress["create"] = native.model_dump(mode="json", exclude_none=True)
                         progress.update(refreshed)
                 pending = await next_command(
-                    owners, company, identity, step, body, progress, item_id
+                    owners, company, identity, step, body, progress, item_id, actor.tenant_id
                 )
                 if pending is not None:
                     key_parts: tuple[Any, ...] = (
@@ -373,7 +381,9 @@ async def advance(
                         progress["pending"] = pending
                         row.progress = dict(progress)
             result = (
-                await owners.call(
+                await owners.deliver_source(pending["body"])
+                if pending and pending["service"] == "source"
+                else await owners.call(
                     pending["service"], "POST", pending["path"], pending["body"], pending["key"]
                 )
                 if pending
@@ -389,6 +399,9 @@ async def advance(
                     progress.pop("pending", None)
                 elif step == "PUBLISH":
                     row.step = "ACTIVATE"
+                progress.pop("last_error", None)
+                progress.pop("worker_retry_at", None)
+                progress.pop("worker_attempt", None)
                 row.progress, row.lease_token, row.lease_expires_at = progress, None, None
                 row.row_version += 1
                 if row.step == "COMPLETE":
@@ -432,3 +445,25 @@ async def advance(
                         row.row_version += 1
                     row.lease_token, row.lease_expires_at = None, None
             raise
+
+
+async def drive(
+    factory: Factory,
+    actor: Actor,
+    context: CompanyContext,
+    identity: uuid.UUID,
+    owners: CreationOwners,
+) -> SimpleCreationStatus:
+    """Advance bounded retained commands in one request, never across a money transaction."""
+    deadline = time.monotonic() + 8
+    current = await read(factory, actor, context.company_id, identity)
+    for _ in range(24):
+        if current.status == "COMPLETE" or time.monotonic() >= deadline:
+            break
+        newer = await advance(factory, actor, context, identity, owners)
+        if newer.row_version == current.row_version:
+            return newer
+        current = newer
+        if current.step == "FINALIZE":
+            break
+    return current

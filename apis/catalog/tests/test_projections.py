@@ -101,6 +101,22 @@ async def test_gap_closes_without_losing_changes_and_duplicates_are_safe(
                 await require_identity_context(db, company)
 
 
+async def test_unchanged_snapshot_renews_identity_context_without_advancing_source(
+    factory: async_sessionmaker[AsyncSession], tenant_a: uuid.UUID
+) -> None:
+    company = uuid7()
+    first = snapshot(tenant_a, company)
+    second = snapshot(tenant_a, company)
+    assert first.manifest.source_version == second.manifest.source_version
+    assert first.manifest.snapshot_id != second.manifest.snapshot_id
+    with tenant_scope(tenant_a):
+        async with factory.begin() as db:
+            await activate_snapshot(db, first)
+            checkpoint = await activate_snapshot(db, second)
+            assert checkpoint.source_version == first.manifest.source_version
+            assert checkpoint.snapshot_id == second.manifest.snapshot_id
+
+
 async def test_snapshot_and_pending_event_contents_cannot_mutate_after_verification(
     factory: async_sessionmaker[AsyncSession], tenant_a: uuid.UUID
 ) -> None:

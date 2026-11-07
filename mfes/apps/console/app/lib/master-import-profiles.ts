@@ -4,7 +4,7 @@ import {
   accountingLink,
   accountingResource,
 } from './accounting-configuration-resources';
-import { catalogBack } from './product-classification';
+import { catalogBack, catalogId, catalogLink } from './product-classification';
 import type { SearchSelectLoader } from '@janso/ui';
 import { downloadProductImport, productImportRequest } from './product-import';
 import {
@@ -47,8 +47,11 @@ export const productImportProfile = {
   lifecycle: 'New products keep their normal draft and activation workflow.',
   success:
     'Product import completed successfully. Review the results below or return to the product directory.',
-  destination: (_resource: string, _id: string, _back: string): string | null =>
-    null,
+  destination: (resource: string, id: string, back: string): string | null => {
+    if (!catalogId.test(id)) return null;
+    const target = resource === 'product_family' ? 'product-families' : ['item', 'simple_product', 'simple_product_create'].includes(resource) ? 'items' : null;
+    return target ? catalogLink('/masters/' + target + '/' + id, back) : null;
+  },
 };
 export type MasterImportProfile = typeof productImportProfile & {
   readyProducts?: boolean;

@@ -1,4 +1,6 @@
 import type { components } from '@janso/api-client/catalog';
+import { advancedNativeLabel } from './advanced-product-presentation';
+import { advancedCustomErrors, unavailableProfileFields } from './advanced-product-compatibility';
 
 export type AdvancedOptions = components['schemas']['AdvancedCreationOptions'];
 export type AdvancedDraft = components['schemas']['AdvancedDraftDetail'];
@@ -38,21 +40,33 @@ export function profileErrors(work: AdvancedWork, options: AdvancedOptions): Rec
   const permitted = (key: string) => fields.find(field => field.key === key);
   const required = (key: string) => { const field = permitted(key); return !field || (field.required && (!field.visible || !field.writable || field.conditional_access)); };
   const errors: Record<string, string> = {};
+  const modes = options.defaults.configuration.options;
+  if (options.selected_type?.kind && options.selected_type.kind !== 'BOTH' && options.selected_type.kind !== work.profile.kind) errors.product_type_revision_id = 'Choose a Product Type that allows this product kind.';
+  for (const key of unavailableProfileFields(work.profile, options)) errors[key] = `${advancedNativeLabel(key)} is no longer allowed. Remove the unavailable saved details before continuing.`;
   if (!work.profile.name.trim()) errors.name = 'Enter a Profile name.';
   if (!/^[A-Z0-9][A-Z0-9_.-]{0,29}$/.test(work.profile.code)) errors.code = 'Use 1–30 uppercase letters, digits, dots, dashes or underscores.';
   if (!work.profile.product_type_revision_id || options.selected_type?.id !== work.profile.product_type_revision_id) errors.product_type_revision_id = 'Choose a published Product Type revision.';
   if (!work.profile.group_id) errors.group_id = 'Choose a product group.';
   for (const key of ['name', 'code', 'product_type_revision_id', 'brand_id', 'series_id', 'model_code', 'description'] as const) {
     const field = permitted(key);
-    if (field?.required && !String(work.profile[key] ?? '').trim()) errors[key] = `${field.label} is required.`;
-    if (required(key) && field?.required) errors[key] = `${field.label} access is required to continue.`;
+    if (field?.required && !String(work.profile[key] ?? '').trim()) errors[key] = `${advancedNativeLabel(key, field)} is required.`;
+    if (required(key) && (field?.required || key === 'name' || key === 'code')) errors[key] = `${advancedNativeLabel(key, field)} access is required to continue.`;
   }
   if (options.selected_type?.require_brand && !work.profile.brand_id) errors.brand_id = 'This Product Type requires a brand.';
+  if (modes.brand_mode === 'REQUIRED' && !work.profile.brand_id) errors.brand_id = 'Choose the required brand.';
+  if (modes.model_mode === 'REQUIRED' && !work.profile.model_code.trim()) errors.model_code = 'Enter the required model code.';
+  if (modes.category_mode === 'REQUIRED' && !work.profile.categories.some(row => row.scheme_id && row.category_id)) errors.categories = 'Choose the required product category.';
+  for (const key of ['brand_id', 'model_code'] as const) {
+    const needed = key === 'brand_id' ? modes.brand_mode === 'REQUIRED' || options.selected_type?.require_brand : modes.model_mode === 'REQUIRED';
+    const access = permitted(key);
+    if (needed && (!access?.visible || !access.writable || access.conditional_access)) errors[key] = `${advancedNativeLabel(key, access)} access is required to continue.`;
+  }
   if (work.profile.series_id && !work.profile.brand_id) errors.series_id = 'Choose a brand first.';
   if (work.profile.kind === 'GOODS' && (options.selected_type?.require_manufacturer || options.defaults.configuration.options.manufacturer_mode === 'REQUIRED') && !work.profile.manufacturer_id) errors.manufacturer_id = 'Choose a manufacturer.';
   if (work.profile.manufacturer_site_id && !work.profile.manufacturer_id) errors.manufacturer_site_id = 'Choose a manufacturer first.';
   for (const scheme of options.required_category_schemes ?? []) if (!work.profile.categories.some(row => row.scheme_id === scheme.id && row.category_id)) errors['categories.' + scheme.id] = `Choose a category in ${scheme.name}.`;
   for (const row of work.profile.categories) if (row.scheme_id && !row.category_id) errors['categories.' + row.key] = 'Choose a category for the selected scheme.';
+  Object.assign(errors, advancedCustomErrors(fields, work.profile, work.profile.custom_fields));
   return errors;
 }
 export function skuErrors(work: AdvancedWork, options: AdvancedOptions): Record<string, string> {
@@ -83,13 +97,15 @@ export function skuErrors(work: AdvancedWork, options: AdvancedOptions): Record<
       if (!unit.unit_id) errors[path + 'unit_id'] = 'Choose an alternate unit.';
       if (!/^[1-9]\d{0,17}$/.test(unit.numerator) || !/^[1-9]\d{0,17}$/.test(unit.denominator)) errors[path + 'ratio'] = 'Enter positive whole-number numerator and denominator.';
       if (!/^[0-4]$/.test(unit.quantity_decimal_places) || !/^(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/.test(unit.quantity_increment) || !/[1-9]/.test(unit.quantity_increment)) errors[path + 'grid'] = 'Enter a valid quantity precision and positive increment.';
+      if ((unit.quantity_increment.split('.')[1] ?? '').replace(/0+$/, '').length > Number(unit.quantity_decimal_places)) errors[path + 'grid'] = 'Quantity increment must fit the selected decimal places.';
       if (unit.role === 'PACK' && !unit.pack_type_id) errors[path + 'pack_type_id'] = 'Choose a pack type.';
     });
     for (const key of ['sku', 'name', 'base_unit_id', 'sellable', 'purchasable'] as const) {
       const field = options.sku_fields.fields.find(row => row.key === key);
-      if (!field || !field.visible || !field.writable || field.conditional_access) errors[prefix + key] = `${field?.label ?? key} access is required to continue.`;
+      if (!field || !field.visible || !field.writable || field.conditional_access) errors[prefix + key] = `${advancedNativeLabel(key, field, true)} access is required to continue.`;
     }
     work.axes.forEach(axis => { if (!sku.attributes.some(entry => entry.definition_id === axis.definition_id && entry.option_id)) errors[prefix + axis.definition_id] = `Choose ${axis.label || 'a variant option'}.`; });
+    for (const [key, message] of Object.entries(advancedCustomErrors(options.sku_fields.fields, sku, sku.custom_fields))) errors[prefix + key] = message;
     for (const member of options.attribute_members ?? []) {
       if (!member.is_required || work.axes.some(axis => axis.definition_id === member.definition_id)) continue;
       const selected = sku.attributes.find(entry => entry.definition_id === member.definition_id);
@@ -111,6 +127,8 @@ export function skuErrors(work: AdvancedWork, options: AdvancedOptions): Record<
     }
   });
   const canVariant = options.selected_type?.allow_variants && options.defaults.configuration.options.variants_mode !== 'DISABLED';
+  if (work.axes.length && !canVariant) errors.skus = 'Variant axes are no longer allowed for this Product Type and configuration.';
+  if (options.defaults.configuration.options.variants_mode === 'REQUIRED' && !work.axes.length) errors.skus = 'Add the required variant axis.';
   if (work.skus.length > 1 && !canVariant) errors.skus = 'This Product Type allows one SKU.';
   if (work.skus.length > 1 && !work.axes.length) errors.skus = 'Add a variant axis before adding SKUs.';
   if (work.axes.some(axis => !axis.definition_id)) errors.skus = 'Choose a published definition for each variant axis.';
@@ -119,5 +137,7 @@ export function skuErrors(work: AdvancedWork, options: AdvancedOptions): Record<
   if (new Set(work.axes.map(axis => axis.definition_id)).size !== work.axes.length) errors.skus = 'Variant axes must be distinct.';
   const signatures = new Set<string>();
   work.skus.forEach((sku, index) => { const parts = work.axes.map(axis => sku.attributes.find(entry => entry.definition_id === axis.definition_id)?.option_id ?? ''); const signature = parts.join(':'); if (parts.length && parts.every(Boolean) && signatures.has(signature)) errors[`skus.${index}.variants`] = 'This variant combination already exists.'; signatures.add(signature); });
+  if (!work.skus.length || work.skus.length > (options.max_skus_per_draft ?? 64)) errors.skus = 'Create between 1 and 64 SKUs.';
+  if (work.axes.length > 8) errors.skus = 'Use at most eight variant axes.';
   return errors;
 }

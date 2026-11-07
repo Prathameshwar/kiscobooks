@@ -207,7 +207,14 @@ class AccountTaxProfileListItem(Detail):
     account_id: uuid.UUID | None = Field(None)
     scheme: Literal["GST_IN", "VAT", "OTHER"] | None = Field(None)
     purpose: (
-        Literal["INPUT_RECOVERABLE", "OUTPUT_PAYABLE", "RCM_PAYABLE", "DEPOSIT", "ADJUSTMENT"]
+        Literal[
+            "INPUT_RECOVERABLE",
+            "INPUT_PENDING",
+            "OUTPUT_PAYABLE",
+            "RCM_PAYABLE",
+            "DEPOSIT",
+            "ADJUSTMENT",
+        ]
         | None
     ) = Field(None)
     duty_type: Literal["GST", "VAT", "TDS", "TCS", "CESS", "EXCISE", "OTHER"] | None = Field(None)

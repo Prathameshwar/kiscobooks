@@ -17,6 +17,7 @@ from sqlalchemy import (
     UniqueConstraint,
     event,
     inspect,
+    or_,
     select,
 )
 from sqlalchemy.orm import Mapped, Session, SessionTransaction, mapped_column
@@ -90,6 +91,10 @@ PROTECTED = frozenset(
         "item_group",
         "item_group_parent",
         "family_group_assignment",
+        "warehouse_group",
+        "warehouse_group_parent",
+        "warehouse_group_assignment",
+        "item_replenishment_policy",
     }
 )
 
@@ -164,6 +169,10 @@ def protect_stock_sources(db: Session, _context: object, _instances: object) -> 
                 StockSourceFence.company_id == company,
                 StockSourceFence.closed_at.is_(None),
                 StockSourceFence.expires_at > utcnow(),
+                or_(
+                    StockSourceFence.facts["purpose"].as_string().is_(None),
+                    StockSourceFence.facts["purpose"].as_string() != "REPORT",
+                ),
             )
             .limit(1)
         ):

@@ -1,6 +1,6 @@
 [project]
 name = "voucher-execution-client"
-version = "0.6.1"
+version = "0.6.2"
 description = "Versioned signed Vouchers-to-Accounting execution protocol."
 requires-python = "==3.12.*"
 dependencies = ["billing-platform>=0.31.0,<0.32", "httpx==0.28.1", "pydantic>=2.12,<3"]

@@ -15,6 +15,7 @@ async def unit_revision_facts(
     company_id: uuid.UUID,
     after: uuid.UUID | None,
     limit: int,
+    item_id: uuid.UUID | None = None,
 ) -> tuple[list[dict[str, Any]], uuid.UUID | None]:
     statement = (
         select(ItemUnitRevision, ItemUnitBinding)
@@ -29,6 +30,8 @@ async def unit_revision_facts(
     )
     if after is not None:
         statement = statement.where(ItemUnitRevision.id > after)
+    if item_id is not None:
+        statement = statement.where(ItemUnitBinding.item_id == item_id)
     rows = list(await db.execute(statement.order_by(ItemUnitRevision.id).limit(limit + 1)))
     selected = rows[:limit]
     masters = [

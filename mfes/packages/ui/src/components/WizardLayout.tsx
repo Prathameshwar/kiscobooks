@@ -79,12 +79,12 @@ export function ReviewList({
 
 /**
  * The full-page layout every multi-step setup flow shares: masthead, stepper rail, one card of
- * fields, and a pinned action bar (design-system §4.1).
+ * fields, and a persistent action bar (design-system §4.4).
  *
  * It owns the `form`, so Enter submits the step the user is looking at and the caller's buttons
  * are plain `type="submit"` / `type="button"` rather than click handlers that duplicate the
- * keyboard path. It also owns where focus goes when the step changes: the heading, which is the
- * only element that tells a screen-reader user the page they are on has become a different one.
+ * keyboard path. `noValidate` leaves per-field validation to the wizard's caller. It also owns
+ * where focus goes when the step changes: the heading, which announces the new step.
  *
  * `apps/auth`'s first-run `/setup` page predates this and still composes the same classes by
  * hand; it should migrate here rather than a second copy of this layout being grown beside it.
@@ -122,52 +122,49 @@ export function WizardLayout({
   children: ReactNode;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
-  const previous = useRef(current);
+  const previous = useRef({ current, title });
 
   /*
-   * On step *changes* only. Focusing the heading on first render would scroll the page to the top
+   * On step or activity-title changes only. Focusing the heading on first render would scroll the page to the top
    * and take focus from wherever the browser restored it, which is a worse first impression than
    * no announcement at all — and on arrival there is nothing yet to announce.
    */
   useEffect(() => {
-    if (previous.current === current) return;
-    previous.current = current;
+    if (previous.current.current === current && previous.current.title === title) return;
+    previous.current = { current, title };
     heading.current?.focus();
-  }, [current]);
+    heading.current?.closest('main')?.querySelector<HTMLElement>('.janso-preparation-progress')?.scrollIntoView?.({ block: 'nearest' });
+  }, [current, title]);
 
   return (
-    <div className="janso-setup">
-      <header className="janso-setup__header">
-        {brand}
-        {headerEnd}
-      </header>
-      <div className="janso-setup__layout">
-        <Stepper steps={steps} current={current} reached={reached} onStep={onStep} />
-        <main className="janso-setup__content">
-          <div>
-            {progress ? <p className="janso-setup__progress">{progress}</p> : null}
-            <h1 ref={heading} tabIndex={-1} className="janso-setup__title">
-              {title}
-            </h1>
-            {subtitle ? <p className="janso-setup__subtitle">{subtitle}</p> : null}
-          </div>
-          {notice}
-          {/*
-            * `noValidate`: the wizard owns validation. The browser's own bubbles cannot say
-            * "2 still needed" on the step list, cannot be styled, and would mean a field left
-            * empty reads differently from a field the server rejected — so one mechanism
-            * reports both, and the caller's own per-field messages are that mechanism.
-            */}
-          <form onSubmit={onSubmit} noValidate>
+    <form className="janso-setup janso-setup--wizard" onSubmit={onSubmit} noValidate>
+      <div className="janso-setup__scroll">
+        <header className="janso-setup__header">
+          {brand}
+          {headerEnd}
+        </header>
+        <div className="janso-setup__layout">
+          <Stepper steps={steps} current={current} reached={reached} onStep={onStep} />
+          <main className="janso-setup__content">
+            <div>
+              {progress ? <p className="janso-setup__progress">{progress}</p> : null}
+              <h1 ref={heading} tabIndex={-1} className="janso-setup__title">
+                {title}
+              </h1>
+              {subtitle ? <p className="janso-setup__subtitle">{subtitle}</p> : null}
+            </div>
+            {notice}
             <Card>
               <CardBody>
                 <FieldGrid>{children}</FieldGrid>
               </CardBody>
             </Card>
-            <div className="janso-setup__actions janso-setup__actions--sticky">{actions}</div>
-          </form>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
+      <footer className="janso-setup__footer">
+        <div className="janso-setup__actions">{actions}</div>
+      </footer>
+    </form>
   );
 }

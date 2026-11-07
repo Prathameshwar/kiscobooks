@@ -55,6 +55,7 @@ from catalog.tasks import (
     product_attributes,
     product_classification,
     product_quantity,
+    product_stock_choice,
     product_units,
 )
 from catalog.tasks.product_attributes import bounded
@@ -921,16 +922,9 @@ async def effective_item_facts(
         )
         inventory = InventorySelection(
             template_revision_id=source.id,
-            valuation_method=source.valuation_method,
-            negative_stock_policy=source.negative_stock_policy,
-            issue_strategy=source.issue_strategy,
-            lot_tracking=source.lot_tracking,
-            serial_tracking=source.serial_tracking,
-            identifier_profile_id=source.identifier_profile_id,
-            expiry_required=source.expiry_required,
-            manufacture_date_required=source.manufacture_date_required,
-            shelf_life_days=source.shelf_life_days,
-            minimum_remaining_life_days=source.minimum_remaining_life_days,
+            **product_stock_choice.profile_values(
+                source, await product_stock_choice.selection(work.access, work.item.id)
+            ),
         )
     if work.family.kind == "SERVICE" or (
         inventory is None and "inventory_profile" not in complete.missing

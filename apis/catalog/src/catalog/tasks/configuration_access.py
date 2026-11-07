@@ -106,6 +106,12 @@ class ConfigurationAccess:
             await self.reference(ProductType, row.product_type_id)
         if (
             isinstance(row, InventoryProfileTemplateRevision)
+            and row.serial_tracking
+            and row.identifier_profile_id is None
+        ):
+            raise ConflictError("Serial tracking requires a complete identifier profile")
+        if (
+            isinstance(row, InventoryProfileTemplateRevision)
             and row.identifier_profile_id is not None
         ):
             await self.reference(IdentifierProfile, row.identifier_profile_id)

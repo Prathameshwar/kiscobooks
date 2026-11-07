@@ -15442,7 +15442,7 @@
                     "items": {
                       "type": "string"
                     },
-                    "maxItems": 4,
+                    "maxItems": 6,
                     "minItems": 1,
                     "title": "Features",
                     "type": "array"
@@ -15695,7 +15695,7 @@
                             "items": {
                               "type": "string"
                             },
-                            "maxItems": 4,
+                            "maxItems": 6,
                             "minItems": 1,
                             "title": "Features",
                             "type": "array"
@@ -15776,6 +15776,457 @@
                   "terminal_reference"
                 ],
                 "title": "StockTerminalRequest",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostingReceipt"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Terminal"
+      }
+    },
+    "/internal/v1/tenants/{tenant_id}/companies/{company_id}/tracking/reservations": {
+      "post": {
+        "operationId": "reserve_internal_v1_tenants__tenant_id__companies__company_id__tracking_reservations_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Tenant Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "company_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Company Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-source-key-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-source-issued-at",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-source-signature",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "actor_user_id": {
+                    "format": "uuid",
+                    "title": "Actor User Id",
+                    "type": "string"
+                  },
+                  "authority": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "actor_context": {
+                        "maxLength": 32768,
+                        "minLength": 1,
+                        "title": "Actor Context",
+                        "type": "string"
+                      },
+                      "actor_signature": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "title": "Actor Signature",
+                        "type": "string"
+                      },
+                      "company_context": {
+                        "maxLength": 32768,
+                        "minLength": 1,
+                        "title": "Company Context",
+                        "type": "string"
+                      },
+                      "company_signature": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "title": "Company Signature",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "actor_context",
+                      "actor_signature",
+                      "company_context",
+                      "company_signature"
+                    ],
+                    "title": "StockAuthority",
+                    "type": "object"
+                  },
+                  "command_hash": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Command Hash",
+                    "type": "string"
+                  },
+                  "features": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 3,
+                    "minItems": 1,
+                    "title": "Features",
+                    "type": "array"
+                  },
+                  "operation_id": {
+                    "format": "uuid",
+                    "title": "Operation Id",
+                    "type": "string"
+                  },
+                  "resource": {
+                    "enum": [
+                      "BATCH",
+                      "SERIAL"
+                    ],
+                    "title": "Resource",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "operation_id",
+                  "actor_user_id",
+                  "command_hash",
+                  "resource",
+                  "features",
+                  "authority"
+                ],
+                "title": "TrackingReservationIntent",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostingReceipt"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Reserve"
+      }
+    },
+    "/internal/v1/tenants/{tenant_id}/companies/{company_id}/tracking/reservations/{operation_id}/{outcome}": {
+      "post": {
+        "operationId": "terminal_internal_v1_tenants__tenant_id__companies__company_id__tracking_reservations__operation_id___outcome__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Tenant Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "company_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Company Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "operation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Operation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "outcome",
+            "required": true,
+            "schema": {
+              "enum": [
+                "confirmed",
+                "aborted"
+              ],
+              "title": "Outcome",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-source-key-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-source-issued-at",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-source-signature",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "committed_at": {
+                    "anyOf": [
+                      {
+                        "format": "date-time",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Committed At"
+                  },
+                  "intent": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "actor_user_id": {
+                        "format": "uuid",
+                        "title": "Actor User Id",
+                        "type": "string"
+                      },
+                      "authority": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actor_context": {
+                            "maxLength": 32768,
+                            "minLength": 1,
+                            "title": "Actor Context",
+                            "type": "string"
+                          },
+                          "actor_signature": {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "title": "Actor Signature",
+                            "type": "string"
+                          },
+                          "company_context": {
+                            "maxLength": 32768,
+                            "minLength": 1,
+                            "title": "Company Context",
+                            "type": "string"
+                          },
+                          "company_signature": {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "title": "Company Signature",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "actor_context",
+                          "actor_signature",
+                          "company_context",
+                          "company_signature"
+                        ],
+                        "title": "StockAuthority",
+                        "type": "object"
+                      },
+                      "command_hash": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "title": "Command Hash",
+                        "type": "string"
+                      },
+                      "features": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 3,
+                        "minItems": 1,
+                        "title": "Features",
+                        "type": "array"
+                      },
+                      "operation_id": {
+                        "format": "uuid",
+                        "title": "Operation Id",
+                        "type": "string"
+                      },
+                      "resource": {
+                        "enum": [
+                          "BATCH",
+                          "SERIAL"
+                        ],
+                        "title": "Resource",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "operation_id",
+                      "actor_user_id",
+                      "command_hash",
+                      "resource",
+                      "features",
+                      "authority"
+                    ],
+                    "title": "TrackingReservationIntent",
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "intent"
+                ],
+                "title": "TrackingTerminalRequest",
                 "type": "object"
               }
             }

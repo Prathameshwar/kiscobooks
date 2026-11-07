@@ -77,16 +77,17 @@ describe('SupplierQuickCreate', () => {
     expect(await within(dialog).findByRole('combobox', { name: /Country/ })).toBeVisible();
   });
 
-  it('suggests the code from the name, and the company’s country, and has no separate legal name to fill', async () => {
+  it('leaves the optional code blank, suggests the company country, and uses one name', async () => {
     serve(() => supplierRecord());
     const { user, name, code } = supplier();
     expect(screen.queryByRole('textbox', { name: /Legal name/ })).toBeNull();
     await user.type(name(), 'Sharma & Sons');
-    expect(code()).toHaveValue('SHARMA-SONS');
+    expect(code()).toHaveValue('');
+    expect(code()).not.toBeRequired();
     await waitFor(() => expect(screen.getByRole('combobox', { name: /Country/ })).toHaveValue('India'));
   });
 
-  it('stops following the name once the code is written over, and follows again if it is emptied', async () => {
+  it('preserves a manual code and keeps it blank after clearing it', async () => {
     serve(() => supplierRecord());
     const { user, name, code } = supplier();
     await user.type(name(), 'Sharma');
@@ -95,7 +96,7 @@ describe('SupplierQuickCreate', () => {
     expect(code()).toHaveValue('SH01');
     await user.clear(code());
     await user.type(name(), ' Co');
-    expect(code()).toHaveValue('SHARMA-TRADERS-CO');
+    expect(code()).toHaveValue('');
   });
 
   it('falls back to India when the company country is not a country code', async () => {
@@ -121,7 +122,7 @@ describe('SupplierQuickCreate', () => {
     expect(writes()).toHaveLength(1);
     expect(writes()[0]).toMatchObject({
       service: 'accounting', method: 'POST', path: `/v1/companies/${company}/parties/create-with-details`,
-      body: { code: 'SHARMA-TRADERS', name: 'Sharma Traders', legal_name: 'Sharma Traders', party_type: 'ORGANISATION', country_code: 'IN', role: 'SUPPLIER', ledger: {} },
+      body: { name: 'Sharma Traders', legal_name: 'Sharma Traders', party_type: 'ORGANISATION', country_code: 'IN', role: 'SUPPLIER', ledger: {} },
     });
     expect(writes()[0]!.key).toMatch(/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/);
   });
@@ -149,7 +150,9 @@ describe('SupplierQuickCreate', () => {
     await user.click(create());
     expect(writes()).toHaveLength(0);
     expect(name()).toHaveAccessibleDescription(/Enter the supplier name/);
-    expect(code()).toHaveAccessibleDescription(/Enter a supplier code/);
+    expect(code()).toHaveAccessibleDescription(/Leave blank to generate/);
+    expect(code()).not.toBeRequired();
+    expect(code()).not.toHaveAttribute('aria-invalid', 'true');
     expect(name()).toHaveFocus();
     expect(screen.queryByText('The supplier was not created')).toBeNull();
   });
@@ -171,9 +174,9 @@ describe('SupplierQuickCreate', () => {
     await waitFor(() => expect(onCreated).toHaveBeenCalledTimes(1));
   });
 
-  it('puts a service rejection beside its field, keeps the form editable, and sends a fresh request when it is fixed', async () => {
+  it.each(['code', 'party.code', 'ledger.code'])('puts a %s rejection beside Code and allows correction', async (field) => {
     let attempt = 0;
-    serve(() => { attempt += 1; if (attempt === 1) throw { status: 422, message: 'Validation failed', fields: { code: 'This code is already used by another party.' } }; return supplierRecord(); });
+    serve(() => { attempt += 1; if (attempt === 1) throw { status: 422, message: 'Validation failed', fields: { [field]: 'This code is already used by another party.' } }; return supplierRecord(); });
     const { user, name, code, create, onCreated } = supplier();
     await user.type(name(), 'Sharma Traders');
     await waitFor(() => expect(screen.getByRole('combobox', { name: /Country/ })).toHaveValue('India'));
@@ -389,7 +392,7 @@ describe('SupplierQuickCreate: state and GST registration', () => {
     await waitFor(() => expect(onCreated).toHaveBeenCalledTimes(1));
     expect(writes()).toHaveLength(1);
     expect(writes()[0]!.body).toEqual({
-      code: 'SHARMA-TRADERS', name: 'Sharma Traders', legal_name: 'Sharma Traders', party_type: 'ORGANISATION', country_code: 'IN', role: 'SUPPLIER', ledger: {},
+      name: 'Sharma Traders', legal_name: 'Sharma Traders', party_type: 'ORGANISATION', country_code: 'IN', role: 'SUPPLIER', ledger: {},
       tax_registration: { scheme: 'GST_IN', registration_type: 'REGULAR', country_code: 'IN', state_code: 'MH', registration_number: GSTIN },
     });
   });
@@ -504,12 +507,13 @@ describe('ExpenseAccountQuickCreate', () => {
     expect(group()).toHaveAccessibleDescription(/Choose the group/);
   });
 
-  it('suggests the code from the name until it is written over', async () => {
+  it('leaves account code optional and preserves manual entry', async () => {
     serve(() => accountRecord());
     const { user, name, code } = account();
     await loaded();
     await user.type(name(), 'Office rent');
-    expect(code()).toHaveValue('OFFICE-RENT');
+    expect(code()).toHaveValue('');
+    expect(code()).not.toBeRequired();
     await user.clear(code()); await user.type(code(), 'RENT01');
     await user.type(name(), ' 2');
     expect(code()).toHaveValue('RENT01');
@@ -526,7 +530,7 @@ describe('ExpenseAccountQuickCreate', () => {
     expect(writes()).toHaveLength(1);
     expect(writes()[0]).toMatchObject({
       service: 'accounting', method: 'POST', path: `/v1/companies/${company}/accounts/create-active`,
-      body: { code: 'OFFICE-RENT', name: 'Office rent', group_id: id(21), kind: 'GENERAL', currency_mode: 'BASE', posting_policy: 'MANUAL_ALLOWED', inventory_affected: false },
+      body: { name: 'Office rent', group_id: id(21), kind: 'GENERAL', currency_mode: 'BASE', posting_policy: 'MANUAL_ALLOWED', inventory_affected: false },
     });
     expect(writes()[0]!.body).not.toHaveProperty('description');
     expect(writes()[0]!.key).toMatch(/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/);
@@ -550,7 +554,9 @@ describe('ExpenseAccountQuickCreate', () => {
     await user.click(create());
     expect(writes()).toHaveLength(0);
     expect(name()).toHaveAccessibleDescription(/Enter the account name/);
-    expect(code()).toHaveAccessibleDescription(/Enter an account code/);
+    expect(code()).toHaveAccessibleDescription(/Leave blank to generate/);
+    expect(code()).not.toBeRequired();
+    expect(code()).not.toHaveAttribute('aria-invalid', 'true');
     expect(name()).toHaveFocus();
   });
 

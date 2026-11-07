@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // 16 KiB suits a catalog form and refused an ordinary Purchase of sixty lines before the service saw it.
     maximumBodyBytes: 320 * 1024,
     upstreamTimeoutMs: (input) => input.service === 'catalog' && input.method === 'POST'
-      && /^\/v1\/companies\/[^/]+\/(products|product-families|simple-product-creations(?:\/[^/]+\/advance)?)$/.test(input.path) ? 45000 : 15000,
+      && /^\/v1\/companies\/[^/]+\/(products|product-families|simple-product-creations(?:\/[^/]+\/(?:advance|drive))?)$/.test(input.path) ? 45000 : 15000,
     // The allowlist decides which services this route serves; the table decides where they are.
     base: serviceOrigin,
     // Voucher import templates, result reports and report exports are files, not JSON envelopes.

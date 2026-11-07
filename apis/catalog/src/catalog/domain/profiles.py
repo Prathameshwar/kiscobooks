@@ -111,6 +111,11 @@ class InventoryRules:
             raise ValidationFailedError(
                 "identifier and specific-cost requirements need serialized stock"
             )
+        if self.serial_tracking and not self.has_identifier_profile:
+            raise ValidationFailedError(
+                "serial tracking requires a complete identifier profile",
+                fields={"identifier_profile_id": "Choose the serial identifier profile."},
+            )
 
 
 @dataclass(frozen=True, slots=True)

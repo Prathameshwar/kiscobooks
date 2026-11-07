@@ -79,10 +79,10 @@ async def facts(
 
     version = None
     if entity == "company":
-        from identity.events.catalog_source import lock_generation
+        from identity.events.catalog_source import lock_current_generation
 
         # The same tenant fence used by company/feature writers precedes all source reads.
-        version = await db.run_sync(lambda sync: lock_generation(sync, tenant_id))
+        version = await db.run_sync(lambda sync: lock_current_generation(sync, tenant_id))
     company = await db.get(Company, company_id)
     if (
         company is None

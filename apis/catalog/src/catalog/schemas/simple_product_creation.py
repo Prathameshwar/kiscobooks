@@ -52,6 +52,12 @@ class SimpleBatchInput(StrictInput):
     manufactured_on: dt.date | None = Field(default=None, ge=dt.date(1000, 1, 1))
     expires_on: dt.date | None = Field(default=None, ge=dt.date(1000, 1, 1))
     opening_quantity: ExactDecimal = Field(default=Decimal("0"), ge=0)
+    opening_unit_cost: ExactDecimal | None = Field(
+        default=None,
+        gt=0,
+        exclude_if=lambda value: value is None,
+        description="Opening valuation cost per base unit; separate from purchase reference prices",
+    )
     purchase_price: ExactDecimal | None = Field(default=None, gt=0)
     sale_price: ExactDecimal | None = Field(default=None, ge=0)
     sale_prices: list[SimpleSalePrice] = Field(default_factory=list, max_length=64)
@@ -70,8 +76,8 @@ class SimpleBatchInput(StrictInput):
 
     @model_validator(mode="after")
     def coherent(self) -> Self:
-        if self.opening_quantity and self.purchase_price is None:
-            raise ValueError("Purchase price is required for batch opening stock")
+        if self.opening_quantity and self.valuation_cost is None:
+            raise ValueError("Opening unit cost is required for batch opening stock")
         if self.sale_prices and self.sale_price is not None:
             raise ValueError("Use either Selling price or per-level selling prices")
         if len({entry.price_level_id for entry in self.sale_prices}) != len(self.sale_prices):
@@ -79,6 +85,10 @@ class SimpleBatchInput(StrictInput):
         if self.manufactured_on and self.expires_on and self.expires_on < self.manufactured_on:
             raise ValueError("Expiry must not precede manufacture")
         return self
+
+    @property
+    def valuation_cost(self) -> Decimal | None:
+        return self.opening_unit_cost if self.opening_unit_cost is not None else self.purchase_price
 
 
 class SimpleBatchOptions(StrictInput):
@@ -101,6 +111,12 @@ class SimpleCreationInput(StrictInput):
     sale_prices: list[SimpleSalePrice] = Field(default_factory=list, max_length=64)
     mrp: ExactDecimal | None = Field(default=None, gt=0)
     opening_quantity: ExactDecimal = Field(default=Decimal("0"), ge=0)
+    opening_unit_cost: ExactDecimal | None = Field(
+        default=None,
+        gt=0,
+        exclude_if=lambda value: value is None,
+        description="Opening valuation cost per base unit; separate from purchase reference prices",
+    )
     opening_date: dt.date | None = None
     brand_id: uuid.UUID | None = None
     series_id: uuid.UUID | None = None
@@ -142,6 +158,7 @@ class SimpleCreationInput(StrictInput):
             raise ValueError("Enable batches before entering batch rows")
         if self.batch_enabled and (
             self.opening_quantity
+            or self.opening_unit_cost is not None
             or self.purchase_price is not None
             or self.sale_price is not None
             or self.sale_prices
@@ -156,11 +173,15 @@ class SimpleCreationInput(StrictInput):
             raise ValueError("use either Selling price or per-level selling prices")
         if len({price.price_level_id for price in self.sale_prices}) != len(self.sale_prices):
             raise ValueError("selling-price levels must be unique")
-        if self.kind == "SERVICE" and (self.opening_quantity or self.opening_date is not None):
+        if self.kind == "SERVICE" and (
+            self.opening_quantity
+            or self.opening_date is not None
+            or self.opening_unit_cost is not None
+        ):
             raise ValueError("services cannot have opening stock")
-        if self.opening_quantity and self.purchase_price is None:
+        if self.opening_quantity and self.valuation_cost is None:
             raise ValueError(
-                "Purchase price is required when opening quantity is greater than zero"
+                "Opening unit cost is required when opening quantity is greater than zero"
             )
         if self.series_id is not None and self.brand_id is None:
             raise ValueError("brand series requires its brand")
@@ -178,6 +199,10 @@ class SimpleCreationInput(StrictInput):
     def has_opening(self) -> bool:
         return bool(self.opening_quantity or any(row.opening_quantity for row in self.batches))
 
+    @property
+    def valuation_cost(self) -> Decimal | None:
+        return self.opening_unit_cost if self.opening_unit_cost is not None else self.purchase_price
+
 
 class SimpleCreationStatus(StrictInput):
     id: uuid.UUID
@@ -189,6 +214,7 @@ class SimpleCreationStatus(StrictInput):
     row_version: int
     opening_posted: bool
     can_edit: bool = False
+    last_error: str | None = None
 
 
 class SimpleCreationRevision(StrictInput):
@@ -211,6 +237,7 @@ class SimpleCreationOptions(StrictInput):
     field_set: SimpleProductFieldSet
     configuration: EffectiveConfiguration
     default_group_id: uuid.UUID | None
+    product_type_revision_id: uuid.UUID | None = None
     inventory_enabled: bool
     gst_enabled: bool
     fields: list[FieldMetadata] = Field(default_factory=list)

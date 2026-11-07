@@ -230,13 +230,15 @@ it('links stock-authorised active SKUs to warehouse balances', async () => {
   expect(await screen.findByRole('menuitem', { name: 'Manage stock' })).toHaveAttribute('href', '/inventory/stock?item_id=' + RECORD);
 });
 
-it.each([false, true])('keeps stock actions without retired product or tracking actions (simple %s)', async simple => {
+it.each([false, true])('keeps stock and restored tracking actions (simple %s)', async simple => {
   activeSku = true;
   const granted = { ...access, companyConfiguration: true, inventoryProfiles: true, stock: true, openingStock: true, batches: true, serials: true };
   if (simple) render(<SimpleProductDirectory company={COMPANY} access={granted} />);
   else directory(false, granted);
   await open();
   expect(await screen.findByRole('menuitem', { name: 'Record opening stock' })).toHaveAttribute('href', '/inventory/stock/opening?item_id=' + RECORD);
-  for (const name of ['Manage batches', 'Manage serials', 'View details', 'Edit details', 'View product', 'Edit product']) expect(screen.queryByRole('menuitem', { name })).toBeNull();
+  expect(screen.getByRole('menuitem', { name: 'Manage batches' })).toHaveAttribute('href', '/inventory/batches?item_id=' + RECORD);
+  if (!simple) expect(screen.getByRole('menuitem', { name: 'View details' })).toHaveAttribute('href', expect.stringContaining('/masters/items/' + RECORD));
+  for (const name of ['View product', 'Edit product']) expect(screen.queryByRole('menuitem', { name })).toBeNull();
   expect(screen.queryByRole('link', { name: 'New product' })).toBeNull();
 });

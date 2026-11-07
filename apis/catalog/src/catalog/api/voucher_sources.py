@@ -84,6 +84,8 @@ async def facts(
     entity: str,
     after: uuid.UUID | None,
     limit: int,
+    item_id: uuid.UUID | None = None,
+    unit_id: uuid.UUID | None = None,
 ) -> tuple[dict[str, Any], uuid.UUID | None]:
     from catalog.models.commercial import ProductTypeRevision
     from catalog.models.products import Item, ProductFamily
@@ -94,7 +96,7 @@ async def facts(
     if entity == "item_unit_revision":
         from catalog.tasks.voucher_unit_sources import unit_revision_facts
 
-        masters, next_after = await unit_revision_facts(db, company_id, after, limit)
+        masters, next_after = await unit_revision_facts(db, company_id, after, limit, item_id)
         return {
             "message_id": str(uuid7()),
             "tenant_id": str(tenant_id),
@@ -111,6 +113,17 @@ async def facts(
         "item_regulatory_classification": ItemRegulatoryClassification,
     }[entity]
     statement = select(model).where(model.company_id == company_id)
+    if unit_id is not None:
+        if entity != "unit" or item_id is not None:
+            raise ValidationFailedError("unit source selection requires only a unit entity")
+        statement = statement.where(model.id == unit_id)
+    if item_id is not None:
+        if entity in {"item", "item_transaction_policy"}:
+            statement = statement.where(model.id == item_id)
+        elif entity == "item_regulatory_classification":
+            statement = statement.where(model.item_id == item_id)
+        else:
+            raise ValidationFailedError("item source selection is unavailable for this entity")
     if after:
         statement = statement.where(model.id > after)
     rows = list(await db.scalars(statement.order_by(model.id).limit(limit + 1)))

@@ -57,8 +57,10 @@ describe('compact purchase line editor', () => {
     await user.type(lookup, 'Live');
     await user.click(await screen.findByRole('option', { name: /Live choice/ }));
     if (kind === 'ITEM') {
-      await user.type(screen.getByLabelText('Receipt quantity'), '2');
-      expect(screen.getByLabelText('Billed quantity')).toHaveValue('2.0000');
+      await user.type(screen.getByLabelText('Receipt quantity'), '23');
+      expect(screen.getByLabelText('Billed quantity')).toHaveValue('');
+      await user.tab();
+      expect(screen.getByLabelText('Billed quantity')).toHaveValue('23');
       await user.type(screen.getByLabelText('Unit rate'), '25');
     } else await user.type(screen.getByLabelText('Base amount'), '50');
     await user.click(screen.getByRole('button', { name: 'Apply line' }));
@@ -68,7 +70,9 @@ describe('compact purchase line editor', () => {
   it('copies the first mobile receipt quantity into an empty billed quantity and keeps later billed edits', async () => {
     const { user } = editor({ empty: true });
     await user.type(screen.getByLabelText('Receipt quantity'), '3');
-    expect(screen.getByLabelText('Billed quantity')).toHaveValue('3.0000');
+    expect(screen.getByLabelText('Billed quantity')).toHaveValue('');
+    await user.tab();
+    expect(screen.getByLabelText('Billed quantity')).toHaveValue('3');
     await user.clear(screen.getByLabelText('Billed quantity'));
     await user.type(screen.getByLabelText('Billed quantity'), '2');
     expect(screen.getByLabelText('Receipt quantity')).toHaveValue('3.0000');
@@ -82,6 +86,7 @@ describe('compact purchase line editor', () => {
     await user.click(await screen.findByRole('option', { name: /Live choice/ }));
     expect(await screen.findByText('Verified milk')).toBeVisible();
     await user.type(screen.getByLabelText('Receipt quantity'), '2');
+    await user.tab();
     await user.type(screen.getByLabelText('Unit rate'), '25');
     await user.click(screen.getByRole('button', { name: 'Apply line' }));
     expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ subject: 'live-choice', label: 'Verified milk', unit: 'L', received: '2', billed: '2' }));

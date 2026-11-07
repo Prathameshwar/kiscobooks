@@ -19,12 +19,14 @@ from tests.factories import build_department, seed_two_companies
     "route",
     [
         "simple-product-creations/options?kind=GOODS",
+        "advanced-product-creations/options?kind=GOODS",
+        "advanced-product-creations/definitions/11111111-1111-4111-8111-111111111111/skus/22222222-2222-4222-8222-222222222222/opening",
         "import-templates",
         "import-jobs",
         "simple-product-imports",
     ],
 )
-async def test_simple_creation_gets_fresh_voucher_and_accounting_context(
+async def test_product_creation_gets_fresh_voucher_and_accounting_context(
     app, session, tenant_a, tenant_b, route
 ):
     from billing_platform.company_context import verify_company_context

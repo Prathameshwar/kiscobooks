@@ -91,14 +91,13 @@ async def test_complete_master_pages_freeze_group_labels_and_reject_other_scope(
         )
         assert len(records) == lease.record_count == 205
         with tenant_scope(tenant_a):
-            with pytest.raises(ConflictError, match="stock posting"):
-                async with app.state.session_factory.begin() as db:
-                    from sqlalchemy import select
+            async with app.state.session_factory.begin() as db:
+                from sqlalchemy import select
 
-                    row = await db.scalar(
-                        select(ItemGroup).where(ItemGroup.company_id == company).limit(1)
-                    )
-                    row.name = "Changed during report copy"
+                row = await db.scalar(
+                    select(ItemGroup).where(ItemGroup.company_id == company).limit(1)
+                )
+                row.name = "Changed after immutable report copy"
         _, replay = await acquire(
             transport,
             owner,

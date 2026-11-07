@@ -280,6 +280,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     from identity.api.stock_posting import router as stock_posting_router
 
     app.include_router(stock_posting_router)
+    from identity.api.tracking_features import router as tracking_features_router
+
+    app.include_router(tracking_features_router)
     app.include_router(commercial_salespeople_router)
     app.include_router(tenants_router)
     app.include_router(reference_management_router)

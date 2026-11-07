@@ -3,6 +3,7 @@
 import datetime as dt
 import uuid
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
@@ -36,6 +37,16 @@ class LocationFacts(BaseModel):
     postal_code: str | None = Field(default=None, min_length=1, max_length=20)
     country_code: str | None = Field(default=None, pattern=r"^[A-Z]{2}$")
     state_code: str | None = Field(default=None, pattern=r"^[A-Z0-9-]{1,6}$")
+
+    @field_validator("timezone")
+    @classmethod
+    def valid_timezone(cls, value: str | None) -> str | None:
+        if value is not None:
+            try:
+                ZoneInfo(value)
+            except (ZoneInfoNotFoundError, ValueError) as exc:
+                raise ValueError("Choose a valid IANA timezone, such as Asia/Kolkata") from exc
+        return value
 
     @field_validator("address_line1", "address_line2", "city", "postal_code")
     @classmethod

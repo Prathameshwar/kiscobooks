@@ -20,6 +20,16 @@ beforeEach(() => {
   binding = { company, currency: 'INR', metadata, keys: new Map(), partyKey: native.partyLineKey, sources: new Map([native.party!, native.payable!, native.supplies[0]!.account!].map(source => [source.id, source])) };
 });
 describe('proposed payment boundary', () => {
+  it('offers optional charge entry during creation and respects field access', () => {
+    metadata.configuration.policy.invoice = { ...metadata.configuration.policy.invoice, charges_allowed: true };
+    metadata.configuration.policy.required_sections = [];
+    const policy = livePurchasePolicy('INR', metadata, company);
+    expect(policy.chargesAllowed).toBe(true);
+    expect(policy.details.panels.components).toEqual({ available: true, writable: true });
+    delete metadata.native.properties!.invoice!.anyOf![0]!.properties!.components;
+    expect(livePurchasePolicy('INR', metadata, company).details.panels.components).toEqual({ available: true, writable: false });
+    expect(metadata.configuration.policy.required_sections).toEqual([]);
+  });
   it('retains full invoice amounts and creates an exact cash tender instruction', () => {
     const value = draft(); value.details.payment = { amount: '10.1234', method: 'CASH', account: id(81), reference: '' };
     binding.paymentAccounts = new Map([[id(81), { id: id(81), company, currency: 'INR', version: 8, method: 'CASH', label: 'Cash' }]]);

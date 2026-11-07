@@ -22,8 +22,9 @@ export function PurchaseDetailSections({ draft, policy, onOpen, disabled }: {
   return <section className="janso-entry-workspace__panel" aria-labelledby="purchase-details-title">
     <div className="janso-entry-workspace__section-head"><h2 id="purchase-details-title">Purchase details</h2><span className="janso-entry-workspace__caption">Open only what this bill needs</span></div>
     <div className="janso-entry-detail-cards">{available.map(panel => <button className="janso-entry-detail-card" key={panel} type="button" disabled={disabled} onClick={() => onOpen(panel)}>
-      <span className="janso-entry-detail-card__title">{PURCHASE_PANELS[panel]}<span aria-hidden="true">↗</span></span>
+      <span className="janso-entry-detail-card__title">{panel === 'components' ? 'Charges & discounts' : PURCHASE_PANELS[panel]}<span aria-hidden="true">↗</span></span>
       <span className="janso-entry-workspace__caption">{summaries[panel]}</span>
+      {panel === 'components' ? <span className="janso-entry-workspace__caption">{policy.details.panels.components.writable ? 'Open charge inputs ? optional on each bill' : 'Charge entry is enabled. Your field access permits review only.'}</span> : null}
       {panel === 'tax' ? <Badge tone={preview.evidence ? 'neutral' : 'warn'}>{preview.evidence ? 'Example evidence' : 'Needs review'}</Badge> : null}
     </button>)}</div>
   </section>;

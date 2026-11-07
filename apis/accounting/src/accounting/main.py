@@ -146,6 +146,9 @@ def create_app(settings: Settings | None = None, *, engine: AsyncEngine | None =
     app.state.stock_posting_client = (
         stock_posting_connection[1] if stock_posting_connection is not None else None
     )
+    app.state.tracking_feature_client = (
+        stock_posting_connection[1].client if stock_posting_connection is not None else None
+    )
     app.state.engine = database
     app.state.session_factory = create_session_factory(database, guarded=True)
     app.state.write_limiter = WindowLimiter()

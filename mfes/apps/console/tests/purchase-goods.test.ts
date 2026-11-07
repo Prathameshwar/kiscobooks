@@ -232,13 +232,18 @@ describe('pricing a goods line as Accounting does', () => {
     expect(() => goodsLine({ ...item('p1', milk, '1', '0') }, milk, { places: 2, mode: 'half_up' }, 0)).toThrow(/amount must be greater than zero/);
     expect(() => goodsLine({ ...item('p1', milk, '0', '5') }, milk, { places: 2, mode: 'half_up' }, 0)).toThrow(/quantity greater than zero/);
   });
-  it('moves the receipt quantity with the billed one until the person makes them differ', () => {
+  it('waits for a completed receipt and preserves an entered billed quantity', () => {
     const line = item('p1', milk, '', '1');
     expect(withPairedQuantity(line, { billed: '4' })).toEqual({ billed: '4', received: '4' });
-    expect(withPairedQuantity({ ...line, billed: '4', received: '4' }, { received: '6' })).toEqual({ received: '6', billed: '6' });
+    expect(withPairedQuantity({ ...line, billed: '4', received: '4' }, { received: '6' })).toEqual({ received: '6' });
     expect(withPairedQuantity({ ...line, billed: '4', received: '3' }, { billed: '5' })).toEqual({ billed: '5' });
     expect(withPairedQuantity({ ...blankPurchaseLine('a', 'ACCOUNT') }, { billed: '5' })).toEqual({ billed: '5' });
     expect(withPairedQuantity(line, { billed: '2', received: '1' })).toEqual({ billed: '2', received: '1' });
+    const draft = newPurchaseWorkspace('2026-10-31');
+    draft.lines = [{ ...line, received: '123', billed: '' }];
+    expect(purchaseWorkspaceReducer(draft, { type: 'receipt_commit', key: line.key, value: '123' }).lines[0]?.billed).toBe('123');
+    draft.lines[0]!.billed = '100';
+    expect(purchaseWorkspaceReducer(draft, { type: 'receipt_commit', key: line.key, value: '123' }).lines[0]?.billed).toBe('100');
   });
 });
 

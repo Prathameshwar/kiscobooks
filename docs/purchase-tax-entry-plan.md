@@ -7,6 +7,25 @@ regimes wait for their service profiles, and a supplier that cannot be taxed is 
 **Status: delivered for India GST on service lines (2026-11-02).** The service-side limits below are the service's,
 not this screen's.
 
+## No-tax account purchase correction (2026-11-06)
+
+The user reproduced a blocked INR 500 Tea Expenses draft in Banjara after explicitly
+selecting "This bill carries no tax". Expense creation did not ask for an HSN/SAC or
+tax default. Accounting nevertheless refused an absent default solely because the
+company had a registration. This contradicted the document's no-tax entry flow.
+
+For a PURCHASE with an ACCOUNT supply and the explicit UNTAXED_ACCOUNT profile,
+an absent expense tax default is permitted. The saved bill remains the no-tax
+declaration; no default, GST rate, credit entitlement or company setting is created.
+An existing dated tax default whose treatment is not NON_GST still requires its
+statutory profile. Missing classifications on registered Sales, Service supplies and
+the separate Goods GST workflow retain their existing guards.
+
+Verification proceeds from failing preview/posting regressions to the corrected
+Accounting suite, a checked VM deployment, and a read-only preview of the original
+Banjara draft. Additional positive and negative purchase scenarios use the existing
+test company. Actual posting of Banjara's draft is a separate user action.
+
 ## What the service already did (read from the code, not assumed)
 
 - **Accounting computes the tax; the person does not type it.** `invoice_tax.resolve_line` takes each expense
@@ -112,3 +131,17 @@ not this screen's.
   own total in the bill details is the check against the invoice.
 - Composition and unregistered suppliers, and RCM for them, wait for the service's statutory profiles.
 - A supplier that has no payable account (e.g. `Supplier 1`, created before 2026-11-02) is repaired by `POST /parties/ledger-repair` (PL-D05); a "Create payable account" action on the bill is no longer wanted: no bill asks for the account.
+
+
+## No-tax expense correction - 2026-11-06
+
+Banjara's Tea Expenses draft exposed a code defect: the no-tax checkbox selected
+UNTAXED_ACCOUNT, but Accounting refused an ACCOUNT expense without a tax default solely
+because the company was GST registered. No classification field had been offered during
+that account's creation. An explicitly untaxed PURCHASE/ACCOUNT line now works without
+that default; it neither creates a tax classification nor charges GST. An existing taxable
+default still requires its statutory profile. Service/Goods and Sales guards remain intact.
+
+The original INR 500 draft previews successfully and remains unposted. A separate test
+company's no-tax purchase posted once with a balanced journal, zero tax components and no
+new account-tax default. See [purchase readiness verification](purchase-readiness-vm-2026-11-06.md).

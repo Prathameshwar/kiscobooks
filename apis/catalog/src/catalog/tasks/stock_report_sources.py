@@ -5,6 +5,7 @@ import hashlib
 import uuid
 from decimal import Decimal, localcontext
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from billing_platform.db.types import utcnow
 from billing_platform.errors import ConflictError, NotFoundError
@@ -21,11 +22,21 @@ from catalog.models.product_definitions import (
     ItemUnitRevision,
 )
 from catalog.models.products import Item, ProductFamily
+from catalog.models.projections import CompanyProjection
 from catalog.models.stock_source import StockSourceFence
 from catalog.models.tax import ItemInventoryProfile
 from catalog.models.units import UnitOfMeasure
-from catalog.models.warehouse_policies import ItemReplenishmentPolicy
-from catalog.models.warehouses import Warehouse
+from catalog.models.warehouse_groups import (
+    WarehouseGroup,
+    WarehouseGroupAssignment,
+    WarehouseGroupParent,
+)
+from catalog.models.warehouse_policies import (
+    ItemReplenishmentPolicy,
+    ItemWarehousePermission,
+    ItemWarehousePolicy,
+)
+from catalog.models.warehouses import Warehouse, WarehouseOperationPolicyRevision
 from catalog.tasks.policy_state import company_policy_state
 from catalog.tasks.stock_sources import fence_audit
 
@@ -59,6 +70,54 @@ async def bounded(db: AsyncSession, model: Any, company: uuid.UUID) -> list[Any]
 
 
 async def masters(db: AsyncSession, company: uuid.UUID, as_of: dt.date) -> list[dict[str, Any]]:
+    groups = await bounded(db, WarehouseGroup, company)
+    group_ids = {row.id for row in groups}
+    group_parents = [
+        row
+        for row in await bounded(db, WarehouseGroupParent, company)
+        if row.valid_from <= as_of and (row.valid_to is None or as_of <= row.valid_to)
+    ]
+    memberships = [
+        row
+        for row in await bounded(db, WarehouseGroupAssignment, company)
+        if row.valid_from <= as_of and (row.valid_to is None or as_of <= row.valid_to)
+    ]
+    if len({row.group_id for row in group_parents}) != len(group_parents) or len(
+        {row.warehouse_id for row in memberships}
+    ) != len(memberships):
+        raise ConflictError("Warehouse stock grouping has overlapping effective intervals")
+    if any(
+        row.group_id not in group_ids
+        or (row.parent_group_id is not None and row.parent_group_id not in group_ids)
+        for row in group_parents
+    ) or any(row.group_id not in group_ids for row in memberships):
+        raise ConflictError("Warehouse stock grouping references an unavailable group")
+    warehouse_parents = {row.warehouse_id: row.group_id for row in memberships}
+    group_parent_ids = {row.group_id: row.parent_group_id for row in group_parents}
+    timezone = await db.scalar(
+        select(CompanyProjection.timezone).where(CompanyProjection.company_id == company)
+    )
+    now, zone = utcnow(), ZoneInfo(timezone or "UTC")
+    cutoff = (
+        now
+        if as_of >= now.astimezone(zone).date()
+        else dt.datetime.combine(as_of + dt.timedelta(days=1), dt.time.min, zone).astimezone(dt.UTC)
+    )
+    operation_revisions = [
+        row
+        for row in await bounded(db, WarehouseOperationPolicyRevision, company)
+        if row.effective_from <= cutoff and (row.effective_to is None or cutoff < row.effective_to)
+    ]
+    if len({row.warehouse_id for row in operation_revisions}) != len(operation_revisions):
+        raise ConflictError("Warehouse stock operations have overlapping effective revisions")
+    sale_enabled = {row.warehouse_id: row.allow_sale_issue for row in operation_revisions}
+    item_policies = {row.item_id: row for row in await bounded(db, ItemWarehousePolicy, company)}
+    item_permissions: dict[uuid.UUID, dict[uuid.UUID, bool]] = {}
+    for permission in await bounded(db, ItemWarehousePermission, company):
+        if permission.is_active:
+            item_permissions.setdefault(permission.item_id, {})[permission.warehouse_id] = (
+                permission.allow_sale_issue
+            )
     families = {r.id: r for r in await bounded(db, ProductFamily, company)}
     units = {r.id: r for r in await bounded(db, UnitOfMeasure, company)}
     profiles = {r.item_id: r for r in await bounded(db, ItemInventoryProfile, company)}
@@ -93,8 +152,27 @@ async def masters(db: AsyncSession, company: uuid.UUID, as_of: dt.date) -> list[
         for r in await bounded(db, ItemGroup, company)
     ]
     records.extend(
-        Location(location_id=r.id, code=r.code, name=r.name).model_dump(mode="json")
+        Location(
+            location_id=r.id,
+            code=r.code,
+            name=r.name,
+            parent_id=warehouse_parents.get(r.id),
+            sale_eligible=r.is_active
+            and r.kind != "INTERNAL_TRANSIT"
+            and sale_enabled.get(r.id, False),
+        ).model_dump(mode="json")
         for r in await bounded(db, Warehouse, company)
+    )
+    records.extend(
+        Location(
+            location_id=row.id,
+            code=row.code,
+            name=row.name,
+            parent_id=group_parent_ids.get(row.id),
+            is_group=True,
+            sale_eligible=False,
+        ).model_dump(mode="json")
+        for row in groups
     )
     for row in await bounded(db, Item, company):
         family = families.get(row.family_id)
@@ -155,6 +233,10 @@ async def masters(db: AsyncSession, company: uuid.UUID, as_of: dt.date) -> list[
                 serial_tracked=bool(profile and profile.serial_tracking),
                 minimum_remaining_days=(profile.minimum_remaining_life_days or 0) if profile else 0,
                 replenishment=replenishment,
+                sale_location_mode=item_policies[row.id].selection_mode
+                if row.id in item_policies
+                else "ALLOW_ALL_ACTIVE",
+                sale_location_permissions=item_permissions.get(row.id, {}),
             ).model_dump(mode="json")
         )
     if (

@@ -43,15 +43,23 @@ selling prices and MRP. Complete the missing native support, preserving one Save
 - Services have no batch step. A configured mandatory tracking requirement remains
   enabled. Optional tracking can be selected only within the native type/profile
   capabilities; the selected behavior is pinned when the product activates.
+  Mandatory inventory-template date requirements, shelf-life/remaining-life rules
+  and FEFO also require batches even when the Product Type permits `NONE`.
+  A saved batch-off choice cannot rewrite those requirements into an untracked
+  profile; incompatible retained choices fail validation instead.
 - With batch entry enabled, opening quantities and entered rates belong to each
   row. Each configured selling-price level is a separate column. A positive
-  opening quantity requires its purchase price; value is quantity × purchase price.
+  opening quantity requires an opening unit cost; value is quantity × opening unit cost.
 - Expiry is shown when enabled and required where native policy requires it.
   Manufacture date is also captured if the selected inventory policy requires it.
 - Opening date remains company books-begin date. The existing default opening
   location is used internally; no warehouse-specific pricing or user choice is added.
 - Batch purchase reference rates and posted opening cost are different facts.
   Changing a reference rate must not rewrite posted receipt cost.
+  The `opening_unit_cost` input carries valuation without creating a purchase
+  reference rate or requiring purchase-price grants. Purchase references retain
+  their own optional/required/disabled policy. Legacy requests without the new
+  field retain their original purchase-price-as-cost fallback and retry hashes.
 - An initial physical MRP is retained with the batch and must not be replaced by
   later product-default MRP. Multiple physical declarations within the same batch
   require their own allocation support; silently merging different MRPs is forbidden.

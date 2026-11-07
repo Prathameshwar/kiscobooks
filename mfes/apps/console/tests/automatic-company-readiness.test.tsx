@@ -125,6 +125,21 @@ it('shows a status check while the first setup read is pending', async () => {
   vi.mocked(companyCall).mockReturnValue(new Promise(() => {}));
   mount(<AutomaticCompanySetup company={company} canRetry={false} />);
   expect(screen.getByRole('status')).toHaveTextContent('Checking company setup');
+  expect(screen.getByRole('progressbar', { name: 'Checking company setup…' })).not.toHaveAttribute('aria-valuenow');
+});
+
+it('shows verified step progress and stops the activity indicator when setup needs attention', async () => {
+  vi.useFakeTimers();
+  vi.mocked(companyCall).mockResolvedValueOnce({ company_id: company, status: 'RUNNING', steps: [{ key: 'chart', status: 'READY' }, { key: 'books', status: 'RUNNING' }, { key: 'opening', status: 'AWAITING_OPENING' }] })
+    .mockResolvedValue({ company_id: company, status: 'NEEDS_ACTION', steps: [{ key: 'chart', status: 'READY' }, { key: 'books', status: 'NEEDS_ACTION' }, { key: 'opening', status: 'AWAITING_OPENING' }] });
+  mount(<AutomaticCompanySetup company={company} canRetry openingFinalized={false} />);
+  await act(async () => undefined);
+  const progress = screen.getByRole('progressbar', { name: 'Preparing books' });
+  expect(progress).toHaveAttribute('aria-valuetext', '1 of 3 setup steps ready. You can open your company while setup continues.');
+  expect(progress).not.toHaveAttribute('aria-valuenow');
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(screen.queryByRole('progressbar')).toBeNull();
+  expect(screen.getByRole('button', { name: 'Complete remaining setup' })).toBeEnabled();
 });
 it('distinguishes completed preparation from an outstanding opening decision', async () => {
   vi.mocked(companyCall).mockResolvedValue({ company_id: company, status: 'COMPLETE', steps: [{ key: 'opening', status: 'AWAITING_OPENING' }] });

@@ -23,6 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from reports.config import Settings
 from reports.domain.reporting.contracts import QueryPlan, ResultManifest, fingerprint
+from reports.domain.reporting.history_coverage import InsufficientHistoryError
 from reports.domain.reporting.views import party_balances
 from reports.domain.reporting.views import select as select_view
 from reports.models.core import ReportGeneration
@@ -314,6 +315,8 @@ async def process(
                     else (
                         "REPORT_IMPLEMENTATION_UNAVAILABLE"
                         if isinstance(exc, ImplementationUnavailableError)
+                        else "INSUFFICIENT_ACCOUNTING_HISTORY"
+                        if isinstance(exc, InsufficientHistoryError)
                         else "REPORT_VERIFICATION_FAILED"
                         if blocked
                         else "DEPENDENCY_UNAVAILABLE"

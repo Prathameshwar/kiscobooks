@@ -91,6 +91,14 @@ class SerialPrepare(Reason):
     item_id: uuid.UUID
     lot_id: uuid.UUID | None = None
     identifiers: list[IdentifierInput] = Field(min_length=1, max_length=16)
+    replaces_unit_id: uuid.UUID | None = None
+    expected_replaced_version: int | None = Field(default=None, ge=1, strict=True)
+
+    @model_validator(mode="after")
+    def replacement_pair(self) -> SerialPrepare:
+        if (self.replaces_unit_id is None) != (self.expected_replaced_version is None):
+            raise ValueError("replacement requires the original unit and its current version")
+        return self
 
 
 class SerialIdentityCheck(StrictInput):
@@ -109,6 +117,7 @@ class BatchQuery(ListQuery):
 
 
 class SerialQuery(ListQuery):
+    id: uuid.UUID | None = None
     item_id: uuid.UUID | None = None
     lot_id: uuid.UUID | None = None
     status: Literal["ACTIVE", "RETIRED"] | None = None

@@ -10,6 +10,17 @@ export function allowedWarehouseIdentityLookup(method: string, path: string): bo
 }
 export function allowedWarehouseAction(method: string, path: string): boolean | undefined {
   const route = path.split('?')[0] ?? '';
+  const rootPattern = '^/v1/companies/' + uuid;
+  if (/\/policy-releases|\/warehouse-policy|\/replenishment-policy|\/entities\/catalog[.](catalog_policy_release|item_warehouse_policy|item_warehouse_permission|item_replenishment_policy)\/field-set/i.test(route)) {
+    if (new RegExp(rootPattern + '/entities/catalog[.](catalog_policy_release|item_warehouse_policy|item_warehouse_permission|item_replenishment_policy)/field-set$', 'i').test(route)) {
+      const params = new URLSearchParams(path.split('?')[1] ?? '');
+      return method === 'GET' && path.split('?').length <= 2 && !/[%\\#]/.test(route) && [...params.keys()].length <= 1 && [...params.keys()].every(key => key === 'operation') && (!params.has('operation') || ['update', 'publish'].includes(params.get('operation')!));
+    }
+    if (path.includes('?') || /[%\\#]/.test(path)) return false;
+    if (new RegExp(rootPattern + '/policy-releases$', 'i').test(route)) return ['GET', 'POST'].includes(method);
+    if (new RegExp(rootPattern + '/policy-releases/' + uuid + '$', 'i').test(route)) return method === 'GET';
+    return new RegExp(rootPattern + '/items/' + uuid + '/(warehouse-policy|replenishment-policy)$', 'i').test(route) && ['GET', 'PUT'].includes(method);
+  }
   if (!route.includes('/warehouse-configuration') && !route.includes('/operation-policy') && !/\/entities\/catalog\.(company_warehouse_configuration|warehouse_operation_policy_revision)\/field-set$/.test(route)) return undefined;
   if (new RegExp('^/v1/companies/' + uuid + '/entities/catalog[.](company_warehouse_configuration|warehouse_operation_policy_revision)/field-set$', 'i').test(route)) {
     const params = new URLSearchParams(path.split('?')[1] ?? '');

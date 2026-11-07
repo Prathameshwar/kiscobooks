@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { AdvancedProductWizard } from '../app/components/AdvancedProductWizard';
+import { AdvancedProductChoice } from '../app/components/AdvancedProductChoice';
 import { masterRequest } from '../app/lib/catalog-master-api';
 import { useProductMode } from '../app/components/ProductModeProvider';
 import { COMPANY } from './product-classification-fixtures';
@@ -35,6 +36,7 @@ beforeEach(() => {
 it('shows four steps, focuses validation and saves incomplete work as a private draft', async () => {
   render(<AdvancedProductWizard company={COMPANY} mode={mode} />);
   expect(await screen.findByRole('heading', { name: 'Product Profile', level: 2 })).toBeVisible();
+  expect(screen.getByText(/A SKU is one version/)).toBeVisible();
   expect(screen.getByRole('navigation', { name: 'Product creation steps' })).toBeVisible();
   expect(screen.getByRole('button', { name: /Business setup/ })).toBeDisabled();
   await userEvent.click(screen.getByRole('button', { name: 'Continue to SKUs' }));
@@ -58,12 +60,28 @@ it('freezes the mounted draft after a mode change', async () => {
   expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
 });
 
+it('announces draft saving without describing it as product creation', async () => {
+  const original = vi.mocked(masterRequest).getMockImplementation()!;
+  let finish: () => void = () => {};
+  vi.mocked(masterRequest).mockImplementation(request => request.path.endsWith('/drafts') && request.method === 'POST'
+    ? new Promise(resolve => { finish = () => resolve({ ...saved, content: (request.body as { content: unknown }).content } as never); })
+    : original(request));
+  render(<AdvancedProductWizard company={COMPANY} mode={mode} />);
+  await userEvent.type(await screen.findByRole('textbox', { name: 'Profile name' }), 'Tea');
+  await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  expect(screen.getByRole('progressbar', { name: 'Saving your draft' })).toBeVisible();
+  expect(screen.getByRole('textbox', { name: 'Profile name' })).toBeDisabled();
+  finish();
+  await waitFor(() => expect(screen.queryByRole('progressbar')).toBeNull());
+  expect(screen.getByRole('textbox', { name: 'Profile name' })).toHaveValue('Tea');
+});
+
 it('moves from a published Type and group to the explicit default SKU editor', async () => {
   const user = userEvent.setup();
   render(<AdvancedProductWizard company={COMPANY} mode={mode} />);
   await user.type(await screen.findByRole('textbox', { name: 'Profile name' }), 'Tea');
   await user.type(screen.getByRole('textbox', { name: 'Profile code' }), 'TEA');
-  await user.click(screen.getByRole('combobox', { name: 'Change Product Type' }));
+  await user.click(screen.getByRole('combobox', { name: 'Product Type' }));
   await user.click(await screen.findByRole('option', { name: 'Tea goods' }));
   await user.selectOptions(await screen.findByRole('combobox', { name: 'Published Type revision' }), REVISION);
   await user.click(screen.getByRole('combobox', { name: 'Product group' }));
@@ -73,4 +91,18 @@ it('moves from a published Type and group to the explicit default SKU editor', a
   expect(screen.getByRole('button', { name: /Default SKU/ })).toBeVisible();
   expect(screen.getByRole('textbox', { name: 'SKU code' })).toBeVisible();
   expect(screen.getByRole('button', { name: 'Add SKU' })).toBeDisabled();
+  await user.click(screen.getByRole('combobox', { name: 'Base unit' }));
+  await waitFor(() => expect(vi.mocked(masterRequest).mock.calls.some(([request]) =>
+    request.path.includes('/option-sources/catalog.units?') &&
+    request.path.includes(`product_type_revision_id=${REVISION}`)
+  )).toBe(true));
+});
+
+it('asks Catalog for units permitted by the selected Product Type', async () => {
+  render(<AdvancedProductChoice company={COMPANY} resource="units" label="Base unit" value="" productTypeRevisionId={REVISION} onChange={vi.fn()} />);
+  await userEvent.click(screen.getByRole('combobox', { name: 'Base unit' }));
+  await waitFor(() => expect(vi.mocked(masterRequest).mock.calls.some(([request]) =>
+    request.path.includes(`/option-sources/catalog.units?`) &&
+    request.path.includes(`product_type_revision_id=${REVISION}`)
+  )).toBe(true));
 });

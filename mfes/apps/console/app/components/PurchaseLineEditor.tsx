@@ -45,9 +45,9 @@ export function PurchaseLineEditor({ draft, line: original, ordinal, policy, can
     const Control = quantity ? QuantityField : AmountField;
     return <div data-purchase-line-field={field}><Control label={label} value={line[field]} disabled={!canEdit || field === 'discount' && policy.discountsAllowed === false} error={error(field)}
       precision={field === 'rate' || policy.live && field === 'amount' ? 4 : undefined} unit={quantity ? line.unit : undefined} onChange={value => setLine(current => ({ ...current, [field]: value,
-        ...(field === 'received' && current.kind === 'ITEM' && !current.billed ? { billed: value } : {}),
         ...(field === 'billed' && current.kind === 'ITEM' && !current.received ? { received: value } : {}),
       }))}
+      onCommit={field === 'received' ? value => setLine(current => current.kind === 'ITEM' && !current.billed && value ? { ...current, received: value, billed: value } : current) : undefined}
       onUnstorable={message => setRaw(current => {
         if ((message === null && !(field in current)) || current[field] === message) return current;
         const next = { ...current }; if (message) next[field] = message; else delete next[field]; return next;
@@ -87,7 +87,7 @@ export function PurchaseLineEditor({ draft, line: original, ordinal, policy, can
       {line.subject && policy.stockCompany ? <div className="janso-purchase-subject-tools"><PurchaseSelectionBalance company={policy.stockCompany} kind={line.kind} subject={line.subject} postingDate={draft.postingDate} currency={policy.currency} warehouse={line.kind === 'ITEM' ? line.stock?.warehouseId : undefined} unit={line.unit} permitted={line.kind === 'ITEM' ? !!policy.balanceAccess?.stock : !!policy.balanceAccess?.ledger} />{line.kind === 'ITEM' && policy.supplierHistoryAccess ? <PurchaseProductHistory key={`${policy.stockCompany}:${draft.supplier}:${line.subject}`} company={policy.stockCompany} supplier={draft.supplier} supplierName={policy.suppliers.find(row => row.id === draft.supplier)?.label} product={line.subject} name={line.label || 'Product'} /> : null}</div> : null}
       {line.kind === 'ITEM' ? <><div className="janso-form-grid janso-entry-detail__pair">{number('received', 'Receipt quantity', true)}{number('billed', 'Billed quantity', true)}</div>
         {number('rate', 'Unit rate')}
-        {policy.stockCompany ? <PurchaseStockDetails company={policy.stockCompany} line={line} postingDate={draft.postingDate} canEdit={canEdit} access={policy.stockAccess} canReadBatch={policy.canReadBatch} canPrepareBatch={policy.canPrepareBatch} promptForItem={verifiedItemId} onChange={stock => change({ stock })} /> : null}
+        {policy.stockCompany ? <PurchaseStockDetails company={policy.stockCompany} line={line} postingDate={draft.postingDate} canEdit={canEdit} access={policy.stockAccess} canReadBatch={policy.canReadBatch} canPrepareBatch={policy.canPrepareBatch} canPrepareSerial={policy.canPrepareSerial} promptForItem={verifiedItemId} onChange={stock => change({ stock })} /> : null}
         </> : number('amount', 'Base amount')}
       {number('discount', 'Line discount')}
       <div data-purchase-line-field="description"><TextField label="Line description" value={line.description} disabled={!canEdit} maxLength={1000} onChange={event => change({ description: event.target.value })} /></div>

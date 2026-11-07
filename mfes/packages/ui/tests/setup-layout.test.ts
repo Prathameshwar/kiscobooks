@@ -29,15 +29,14 @@ describe('the wizard scrolls itself', () => {
    * The layout therefore owns its scrolling, the way `.janso-shell` does, instead of trusting
    * the host's `body`.
    */
-  it('is a scroll container of exactly one viewport', () => {
+  it('keeps the frame to one viewport with a separate scrolling row', () => {
     expect(setup).toMatch(/\.janso-setup\s*\{[^}]*block-size:\s*100dvh/);
-    expect(setup).toMatch(/\.janso-setup\s*\{[^}]*overflow-y:\s*auto/);
+    expect(setup).toMatch(/\.janso-setup--wizard\s*\{[^}]*grid-template-rows:\s*minmax\(0, 1fr\) auto/);
+    expect(setup).toMatch(/\.janso-setup__scroll\s*\{[^}]*overflow:\s*auto/);
   });
 
-  it('keeps the pinned action bar clear of whatever a scroll lands on', () => {
-    // On the scroll container, which is the layout — not on `html`, which is not the
-    // scrollport any more.
-    expect(setup).toMatch(/\.janso-setup\s*\{\s*scroll-padding-bottom:/);
+  it('gives focused fields clearance inside the actual scroll container', () => {
+    expect(setup).toMatch(/\.janso-setup__scroll\s*\{[^}]*scroll-padding-block:/);
     expect(setup).not.toMatch(/html:has\(\.janso-setup\)/);
   });
 });

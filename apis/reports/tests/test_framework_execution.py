@@ -42,16 +42,20 @@ async def accepted(app, client, prefix):
     return path, first.json()
 
 
+@pytest.mark.parametrize("insufficient", [False, True])
 async def test_invalid_frozen_filter_is_blocked_without_dependency_retry(
-    app, client, prefix, monkeypatch
+    app, client, prefix, monkeypatch, insufficient
 ):
     from billing_platform.errors import ValidationFailedError
 
+    from reports.domain.reporting.history_coverage import InsufficientHistoryError
     from reports.tasks import framework_worker
 
     path, created = await accepted(app, client, prefix)
 
     async def invalid(*args):
+        if insufficient:
+            raise InsufficientHistoryError("requested history precedes retained owner coverage")
         raise ValidationFailedError("report filter is outside the frozen company source")
 
     async def authority(job):
@@ -68,7 +72,9 @@ async def test_invalid_frozen_filter_is_blocked_without_dependency_retry(
     )
     result = (await client.get(path + "/" + created["id"], headers=headers())).json()
     assert result["status"] == "BLOCKED"
-    assert result["failure_code"] == "REPORT_VERIFICATION_FAILED"
+    assert result["failure_code"] == (
+        "INSUFFICIENT_ACCOUNTING_HISTORY" if insufficient else "REPORT_VERIFICATION_FAILED"
+    )
     assert result["attempt"] == 1
 
 

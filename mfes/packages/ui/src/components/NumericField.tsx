@@ -37,13 +37,15 @@ type SharedProps = Omit<NumericInputOptions, 'kind'> & {
   unit?: string;
   id?: string;
   name?: string;
+  /** Settled canonical value when focus leaves a storable numeric field. */
+  onCommit?: (value: string) => void;
 };
 
 export type AmountFieldProps = SharedProps;
 export type QuantityFieldProps = Omit<SharedProps, 'unit'> & { unit?: string };
 
 export const AmountField = forwardRef<HTMLInputElement, AmountFieldProps>(function AmountField(
-  { label, hint, error, unit, ...rest },
+  { label, hint, error, unit, onCommit, ...rest },
   ref,
 ) {
   const config = useDisplayConfig();
@@ -70,13 +72,13 @@ export const AmountField = forwardRef<HTMLInputElement, AmountFieldProps>(functi
       value={numeric.text}
       onChange={(event) => numeric.onChange(event.target.value)}
       onFocus={numeric.onFocus}
-      onBlur={numeric.onBlur}
+      onBlur={() => { const settled = numeric.onBlur(); if (settled !== null) onCommit?.(settled); }}
     />
   );
 });
 
 export const QuantityField = forwardRef<HTMLInputElement, QuantityFieldProps>(
-  function QuantityField({ label, hint, error, unit, ...rest }, ref) {
+  function QuantityField({ label, hint, error, unit, onCommit, ...rest }, ref) {
     const numeric = useNumericInput({ ...rest, kind: 'quantity' });
     return (
       <TextField
@@ -99,7 +101,7 @@ export const QuantityField = forwardRef<HTMLInputElement, QuantityFieldProps>(
         value={numeric.text}
         onChange={(event) => numeric.onChange(event.target.value)}
         onFocus={numeric.onFocus}
-        onBlur={numeric.onBlur}
+        onBlur={() => { const settled = numeric.onBlur(); if (settled !== null) onCommit?.(settled); }}
       />
     );
   },

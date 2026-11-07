@@ -7,15 +7,18 @@ import uuid
 import httpx
 import pytest
 from billing_platform.actor_authorization import (
+    CREATION_REQUEST_OPERATION,
     REQUEST_OPERATION,
     RESPONSE_OPERATION,
     ActorAuthorizationProof,
     ActorAuthorizationRequest,
 )
+from billing_platform.authz import ScopePath
 from billing_platform.constants import SCOPE_ALL
 from billing_platform.db import tenant_scope
 from billing_platform.db.types import utcnow
 from billing_platform.errors import PermissionDeniedError
+from billing_platform.gateway import decode_actor_context
 from billing_platform.idempotency import canonical_json
 from billing_platform.ids import uuid7
 from billing_platform.service_auth import (
@@ -136,6 +139,60 @@ async def test_service_opt_in_scope_signatures_and_bounded_response(
         assert (await client.post(path, content=raw, headers=headers(path, raw))).status_code == 422
     with tenant_scope(tenant_a):
         assert await session.scalar(select(CatalogSourceGeneration.version)) == 7
+
+
+async def test_creation_context_requires_current_company_grant(
+    app: object,
+    client: httpx.AsyncClient,
+    session: AsyncSession,
+    tenant_a: uuid.UUID,
+    tenant_b: uuid.UUID,
+) -> None:
+    company, foreign, user = await seed(session, tenant_a, tenant_b)
+    application = configure(app, [(tenant_a, company)])
+    credential = application.state.settings.catalog_source_credentials["current"]
+    application.state.settings.catalog_source_credentials["current"] = credential.model_copy(
+        update={"allow_actor_authorization": True}
+    )
+    path = route(tenant_a, company) + "/creation-context"
+    raw = canonical_json({
+        "request_id": str(uuid7()), "user_id": str(user),
+        "permissions": ["item.create"],
+    })
+    signed = headers(path, raw, CREATION_REQUEST_OPERATION)
+    assert (await client.post(path, content=raw)).status_code == 401
+    assert (await client.post(path, content=raw, headers=signed)).status_code == 403
+    with tenant_scope(tenant_a):
+        role = build_role(tenant_id=tenant_a)
+        session.add(role)
+        await session.flush()
+        permission = build_role_permission(
+            tenant_id=tenant_a, role_id=role.id, permission_key="item.create"
+        )
+        unit_permission = build_role_permission(
+            tenant_id=tenant_a, role_id=role.id, permission_key="unit.read"
+        )
+        assignment = build_role_assignment(
+            tenant_id=tenant_a, role_id=role.id,
+            subject_type="user", subject_id=user,
+            scope_type="company", scope_id=company,
+            valid_from=utcnow().date(),
+        )
+        session.add_all([permission, unit_permission, assignment])
+        await session.commit()
+    response = await client.post(path, content=raw, headers=signed)
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    secret = application.state.settings.actor_signing_secret.get_secret_value().encode()
+    actor = decode_actor_context(payload["actor_context"], payload["actor_signature"], secret)
+    assert actor.tenant_id == tenant_a and actor.user_id == user
+    assert actor.allows_scope("item.create", target=ScopePath(company_id=company))
+    assert actor.allows_scope("unit.read", target=ScopePath(company_id=company))
+    assert not actor.allows_scope("item.create", target=ScopePath(company_id=foreign))
+    with tenant_scope(tenant_a):
+        assignment.is_active = False
+        await session.commit()
+    assert (await client.post(path, content=raw, headers=signed)).status_code == 403
 
 
 async def test_native_grants_membership_revocation_scope_and_dates(

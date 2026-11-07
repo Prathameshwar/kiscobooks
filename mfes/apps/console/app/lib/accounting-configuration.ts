@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { masterCodeLength } from './accounting-master-code';
 import {
   serviceCall,
   requestFailure,
@@ -298,6 +299,8 @@ export function accountingBody(
     let value = values[field.key],
       constraints = accountingConstraints(field);
     if (typeof value === 'string') value = value.trim();
+    if (!record && field.key === 'code' && !field.required && field.control.nullable &&
+      (value == null || value === '')) continue;
     if (field.control.write_only && record && value === '') continue;
     if (value === '' && field.control.nullable) value = null;
     if (
@@ -362,15 +365,17 @@ export function accountingBody(
       error = 'Choose an available reference.';
     else if (
       typeof value === 'string' &&
-      (value.length < Number(constraints.minLength ?? 0) ||
-        value.length > Number(constraints.maxLength ?? 4000) ||
+      ((field.key === 'code' ? masterCodeLength(value) : value.length) < Number(constraints.minLength ?? 0) ||
+        (field.key === 'code' ? masterCodeLength(value) : value.length) > Number(constraints.maxLength ?? 4000) ||
         (field.control.kind === 'text' &&
         ['notes', 'description'].includes(field.key)
           ? /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/
           : /[\x00-\x1f\x7f]/
         ).test(value))
     )
-      error = 'Enter printable text within the allowed length.';
+      error = field.key === 'code'
+        ? `Use printable text up to ${constraints.maxLength ?? 40} characters; remove control characters.`
+        : 'Enter printable text within the allowed length.';
     if (!error && field.control.kind === 'decimal' && value != null) {
       const units = decimalUnits(value);
       for (const [key, bound] of Object.entries(

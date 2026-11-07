@@ -23,7 +23,7 @@ beforeEach(() => {
     if (request.path.includes('/options?')) return options as never;
     if (request.path.endsWith('/item-groups/' + GROUP)) return { id: GROUP, name: 'Default' } as never;
     if (request.path.includes('/option-sources/')) return { items: [{ id: UNIT, label: 'Numbers' }], page: { has_more: false } } as never;
-    if (request.path === root || request.path.endsWith('/advance')) return { id: 'job', company_id: COMPANY, code: 'BATCH12345', status: 'COMPLETE', step: 'COMPLETE', opening_posted: true } as never;
+    if (request.path === root || request.path.endsWith('/drive')) return { id: 'job', company_id: COMPANY, code: 'BATCH12345', status: 'COMPLETE', step: 'COMPLETE', opening_posted: true } as never;
     throw new Error(request.path);
   });
 });
@@ -44,23 +44,23 @@ it('uses a second step and saves exact row prices and quantities with one final 
   await user().clear(screen.getByRole('textbox', { name: 'Opening quantity 1' }));
   await user().type(screen.getByRole('textbox', { name: 'Opening quantity 1' }), '3');
   await user().click(screen.getByRole('button', { name: 'Save product' }));
-  expect(screen.getByRole('textbox', { name: 'Purchase price 1' })).toHaveAttribute('aria-invalid', 'true');
-  await user().type(screen.getByRole('textbox', { name: 'Purchase price 1' }), '12.50');
+  expect(screen.getByRole('textbox', { name: 'Opening unit cost 1' })).toHaveAttribute('aria-invalid', 'true');
+  await user().type(screen.getByRole('textbox', { name: 'Opening unit cost 1' }), '12.50');
   await user().type(screen.getByRole('textbox', { name: 'Selling price 1' }), '20');
   await user().click(screen.getByRole('button', { name: 'Save product' }));
   await screen.findByText(/active and ready/);
   const body = api.mock.calls.find(([, request]) => request.path === root)![1].body;
-  expect(body).toMatchObject({ batch_enabled: true, batches: [{ code: 'LOT-A', opening_quantity: '3', purchase_price: '12.50', sale_price: '20' }], opening_date: '2026-04-01' });
+  expect(body).toMatchObject({ batch_enabled: true, batches: [{ code: 'LOT-A', opening_quantity: '3', opening_unit_cost: '12.50', sale_price: '20' }], opening_date: '2026-04-01' });
   expect(body).not.toHaveProperty('purchase_price');
 });
-it('rejects zero Purchase price for a batch opening before any write', async () => {
+it('rejects zero opening unit cost before any write', async () => {
   await show(); await user().click(screen.getByRole('switch', { name: 'Allow batch' }));
   await user().type(screen.getByRole('textbox', { name: 'Batch 1' }), 'LOT-100');
   await user().clear(screen.getByRole('textbox', { name: 'Opening quantity 1' }));
   await user().type(screen.getByRole('textbox', { name: 'Opening quantity 1' }), '100');
-  await user().type(screen.getByRole('textbox', { name: 'Purchase price 1' }), '0');
+  await user().type(screen.getByRole('textbox', { name: 'Opening unit cost 1' }), '0');
   await user().click(screen.getByRole('button', { name: 'Save product' }));
-  expect(await screen.findByText('Enter a positive Purchase price with up to four decimal places.')).toBeVisible();
+  expect(screen.getByRole('textbox', { name: 'Opening unit cost 1' })).toHaveAttribute('aria-invalid', 'true');
   expect(api.mock.calls.some(([, request]) => request.path === root)).toBe(false);
 });
 it('preserves rows when moving back and uses ordinary prices when switched off', async () => {

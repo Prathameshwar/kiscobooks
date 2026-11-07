@@ -33,6 +33,7 @@ from accounting.models.stock import (
     StockOpeningBridge,
     StockPosting,
 )
+from accounting.models.stock_tracking import StockLot
 from accounting.models.voucher_money import VoucherMoneyIntent
 from accounting.stock_resources import STOCK_MOVEMENT, STOCK_POSTING
 from accounting.tasks.access import writable
@@ -69,6 +70,19 @@ class StockEffects:
     features: frozenset[str]
     semantic: dict[str, Any]
     semantic_hash: str
+
+
+def actual_tracking_features(
+    ledger: StockLedger, current: Access, features: frozenset[str],
+) -> frozenset[str]:
+    if any(
+        isinstance(row, StockLot) and row.expires_on is not None
+        for row, _ in ledger.observed.values()
+    ):
+        if "expiry_tracking" not in current.context.features:
+            raise ConflictError("company expiry tracking is required by the selected batches")
+        return features | {"expiry_tracking"}
+    return features
 
 
 def captured(command: ExecutionCommand) -> tuple[StockInput, StockPolicy]:
@@ -630,6 +644,7 @@ async def apply(
         "company_configuration_hash": finance.configuration_hash,
         "account_policy_id": str(policy.id),
     }
+    features = actual_tracking_features(ledger, current, features)
     return StockEffects(
         posting.id,
         tuple(movements),

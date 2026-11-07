@@ -430,10 +430,18 @@
             ]
           },
           "code": {
-            "maxLength": 40,
-            "minLength": 1,
-            "title": "Code",
-            "type": "string"
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Leave blank to generate a unique eight-character code. Manual codes allow printable text up to 40 characters and are fixed after creation.",
+            "title": "Code"
           },
           "currency": {
             "anyOf": [
@@ -588,7 +596,6 @@
           }
         },
         "required": [
-          "code",
           "name",
           "group_id"
         ],
@@ -3851,6 +3858,7 @@
               {
                 "enum": [
                   "INPUT_RECOVERABLE",
+                  "INPUT_PENDING",
                   "OUTPUT_PAYABLE",
                   "RCM_PAYABLE",
                   "DEPOSIT",
@@ -16643,7 +16651,7 @@
             "type": "string"
           },
           "schema_hash": {
-            "default": "c3beeba41f88f5d4596d8d775e473da4e6609c25bafc0f62c2cbb9822391a0bd",
+            "default": "9a362092bb4d010c2aa272805a8ef32ed05c759085a92e80da825ca294e9b930",
             "title": "Schema Hash",
             "type": "string"
           },
@@ -27598,10 +27606,18 @@
             ]
           },
           "code": {
-            "maxLength": 40,
-            "minLength": 1,
-            "title": "Code",
-            "type": "string"
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Leave blank to generate a unique eight-character code. Manual codes allow printable text up to 40 characters and are fixed after creation.",
+            "title": "Code"
           },
           "contact": {
             "anyOf": [
@@ -27687,7 +27703,6 @@
           }
         },
         "required": [
-          "code",
           "name",
           "legal_name",
           "country_code",
@@ -33300,6 +33315,18 @@
       "SerialPrepare": {
         "additionalProperties": false,
         "properties": {
+          "expected_replaced_version": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Replaced Version"
+          },
           "identifiers": {
             "items": {
               "$ref": "#/components/schemas/IdentifierInput"
@@ -33331,6 +33358,18 @@
             "minLength": 3,
             "title": "Reason",
             "type": "string"
+          },
+          "replaces_unit_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replaces Unit Id"
           }
         },
         "required": [
@@ -35589,7 +35628,6 @@
                 "type": "null"
               }
             ],
-            "default": null,
             "title": "Warehouse Id"
           }
         },
@@ -151321,6 +151359,23 @@
           },
           {
             "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            }
+          },
+          {
+            "in": "query",
             "name": "item_id",
             "required": false,
             "schema": {
@@ -159791,6 +159846,7 @@
     },
     "/v1/companies/{company_id}/stock/positions/balance": {
       "get": {
+        "description": "Current company-owned stock physically in warehouses, summed in one indexed read.",
         "operationId": "position_balance_v1_companies__company_id__stock_positions_balance_get",
         "parameters": [
           {

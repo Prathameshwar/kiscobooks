@@ -23,6 +23,7 @@ from reporting_contract.inventory import (
 )
 from sqlalchemy import JSON, LargeBinary, String, cast, func, literal, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from voucher_execution import ExecutionCommand, ExecutionResult
 
 from accounting.models.fiscal import FinancialSetup
 from accounting.models.inventory_reporting import InventoryReportRecord
@@ -38,10 +39,49 @@ from accounting.models.stock import (
     StockUnitPosition,
 )
 from accounting.models.stock_tracking import StockLot, StockUnit, StockUnitIdentifier
+from accounting.models.voucher_execution import VoucherExecution
 from accounting.tasks.inventory_reporting import publish
 from accounting.tasks.reporting_feed import lock
 from accounting.tasks.stock_reconciliation import assert_physical
 from accounting.tasks.stock_unit_reconciliation import assert_units
+
+
+async def recover_committed_movements(
+    db: AsyncSession,
+    *,
+    company: uuid.UUID,
+    postings: dict[uuid.UUID, StockPosting],
+    movements: list[StockMovement],
+    reported: set[uuid.UUID],
+) -> None:
+    """Restore missing report rows only from retained, committed owner executions.
+
+    Older goods bills lacked a pre-issued number. Their posted journal is the number
+    authority. Legacy stock without either number remains explicitly incomplete.
+    """
+    missing = {row.posting_id for row in movements if row.id not in reported}
+    if not missing:
+        return
+    execution_ids = {postings[key].execution_id for key in missing if key in postings}
+    if not execution_ids:
+        return
+    receipts = list(
+        await db.scalars(
+            select(VoucherExecution).where(
+                VoucherExecution.company_id == company,
+                VoucherExecution.execution_id.in_(execution_ids),
+            )
+        )
+    )
+    from accounting.tasks.stock_reporting import capture
+
+    for receipt in receipts:
+        command = ExecutionCommand.model_validate(receipt.command)
+        result = ExecutionResult.model_validate(receipt.result)
+        if command.company_id != company or result.outcome != "COMMITTED":
+            continue
+        await capture(db, command, result)
+    await db.flush()
 
 
 def source_id(company: uuid.UUID, kind: str, identity: object = "complete") -> uuid.UUID:
@@ -133,6 +173,14 @@ async def publish_complete(
             serials[unit_position.position_id].append(choices[0].value)
         if unit_position.position_id and (unit.is_held or unit.status != "ACTIVE"):
             held_units[unit_position.position_id] += 1
+    previous = await bounded(db, InventoryReportRecord, company)
+    await recover_committed_movements(
+        db,
+        company=company,
+        postings=postings,
+        movements=movements,
+        reported={row.id for row in previous if row.payload["kind"] == "MOVEMENT"},
+    )
     previous = await bounded(db, InventoryReportRecord, company)
     coverage_id = source_id(company, "COVERAGE")
     if any(r.payload["kind"] == "COVERAGE" and r.id != coverage_id for r in previous):
@@ -249,7 +297,17 @@ async def publish_complete(
                 custody="TRANSIT" if native.custody_kind == "TRANSIT" else "LOCAL",
                 disposition="HELD" if lot and lot.is_held else "GOOD",
                 quantity=str(balance.quantity),
-                eligible_quantity=str(balance.quantity - held_units[native.id]),
+                eligible_quantity=str(
+                    balance.quantity - held_units[native.id]
+                    if locations[native.warehouse_id].sale_eligible is not False
+                    and not locations[native.warehouse_id].is_group
+                    and items[native.item_id].active
+                    and items[native.item_id].sale_location_permissions.get(
+                        native.warehouse_id,
+                        items[native.item_id].sale_location_mode != "ALLOW_LIST",
+                    )
+                    else Decimal(0)
+                ),
                 minimum_remaining_days=items[native.item_id].minimum_remaining_days,
                 opening_quantity=str(totals["opening"]),
                 inward_quantity=str(totals["inward"]),

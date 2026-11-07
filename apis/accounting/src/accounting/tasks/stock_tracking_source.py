@@ -167,14 +167,30 @@ async def tracking_source(
             "shelf_life_days",
             "minimum_remaining_life_days",
         }
-        if (
-            not source_keys <= profile.keys()
-            or not source_keys <= activated.keys()
-            or any(profile[key] != activated[key] for key in source_keys)
-        ):
+        if not source_keys <= profile.keys() or not source_keys <= activated.keys():
             raise TrackingSourceUnavailableError(
                 "activated tracking requirements are protected or inconsistent"
             )
+        effective_inventory = None
+        if any(profile[key] != activated[key] for key in source_keys):
+            # Optional batch-off legitimately differs from its published template.
+            # Verify the saved choice through Catalog's protected effective facts.
+            facts = await get(f"/items/{item}/effective-facts?as_of={date.isoformat()}")
+            effective_inventory = facts.get("inventory")
+            if (
+                facts.get("company_id") != str(company)
+                or facts.get("item_id") != str(item)
+                or facts.get("as_of") != date.isoformat()
+                or facts.get("base_unit_id") != item_data.get("base_unit_id")
+                or not isinstance(effective_inventory, dict)
+                or effective_inventory.get("template_revision_id") != str(profile_id)
+                or not source_keys <= effective_inventory.keys()
+                or any(effective_inventory[key] != activated[key] for key in source_keys)
+                or profile["serial_tracking"] != activated["serial_tracking"]
+            ):
+                raise TrackingSourceUnavailableError(
+                    "activated tracking requirements are protected or inconsistent"
+                )
         if include_identifiers and profile.get("serial_tracking") is True:
             if activated.get("identifier_profile_id") != profile.get("identifier_profile_id"):
                 raise TrackingSourceUnavailableError(
@@ -255,6 +271,7 @@ async def tracking_source(
                                 "family": family,
                                 "activated": activated,
                                 "profile": profile,
+                                "effective_inventory": effective_inventory,
                                 "requirements": requirements,
                             }
                         )

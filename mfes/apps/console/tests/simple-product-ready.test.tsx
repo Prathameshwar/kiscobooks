@@ -20,7 +20,7 @@ function replies(gst = false) {
     if (request.path.endsWith('/item-groups/' + GROUP)) return { id: GROUP, name: 'Default' } as never;
     if (request.path.includes('/option-sources/')) return { items: [{ id: UNIT, value: UNIT, label: 'Numbers', code: 'NOS' }], page: { has_more: false } } as never;
     if (request.path === base) return saved as never;
-    if (request.path.endsWith('/advance')) return { ...saved, status: 'COMPLETE', step: 'COMPLETE', item_id: UNIT, opening_posted: true } as never;
+    if (request.path.endsWith('/drive')) return { ...saved, status: 'COMPLETE', step: 'COMPLETE', item_id: UNIT, opening_posted: true } as never;
     throw { status: 404, message: 'Missing fixture ' + request.path };
   };
 }
@@ -32,6 +32,7 @@ async function fillProduct() {
   await user.type(await screen.findByRole('textbox', { name: 'Product name' }), 'Tea');
   await user.click(screen.getByRole('combobox', { name: /Base unit/ }));
   await user.click(await screen.findByRole('option', { name: /Numbers/ }));
+  expect(api.mock.calls.some(([, request]) => request.path.includes('/option-sources/catalog.units?') && request.path.includes('product_type_revision_id='))).toBe(true);
   return user;
 }
 
@@ -161,7 +162,7 @@ it('locks detail switches during uncertain saves and retries the exact barcode c
   await screen.findByText('Save response lost');
   expect(screen.getByRole('switch', { name: 'Use Barcode' })).toBeDisabled();
   expect(screen.getByRole('textbox', { name: 'Barcode value' })).toBeDisabled();
-  await user.click(screen.getByRole('button', { name: 'Retry Save' }));
+  await user.click(screen.getByRole('button', { name: 'Continue creation' }));
   await screen.findByText(/active and ready/);
   const writes = api.mock.calls.filter(([, request]) => request.path === base).map(([, request]) => request);
   expect(writes).toHaveLength(2); expect(writes[0]).toEqual(writes[1]);
@@ -291,7 +292,7 @@ it('enforces selling-level field access and preserves the complete uncertain pri
   await user.type(screen.getByRole('textbox', { name: 'Retail' }), '20.1234');
   await user.type(screen.getByRole('textbox', { name: 'Wholesale' }), '18.50');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
-  const retry = await screen.findByRole('button', { name: 'Retry Save' });
+  const retry = await screen.findByRole('button', { name: 'Continue creation' });
   expect(screen.getByRole('textbox', { name: 'Retail' })).toBeDisabled();
   await user.click(retry); await screen.findByText(/active and ready/);
   const requests = api.mock.calls.filter(([, request]) => request.path === base).map(([, request]) => request);
@@ -299,15 +300,16 @@ it('enforces selling-level field access and preserves the complete uncertain pri
   expect(requests[1]).toEqual(requests[0]);
 });
 
-it('one Save sends exact opening quantity and purchase price and finishes ready', async () => {
+it('one Save keeps exact opening valuation separate from purchase reference and finishes ready', async () => {
   renderSimpleProduct(); const user = await fillProduct();
   await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.type(screen.getByRole('textbox', { name: 'Opening unit cost' }), '11.50');
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '3');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
   expect(await screen.findByText(/Product AB12345678 is active and ready/)).toBeVisible();
   const create = api.mock.calls.find(([, request]) => request.path === base)![1];
-  expect(create.body).toMatchObject({ kind: 'GOODS', code: null, purchase_price: '12.50', opening_quantity: '3', opening_date: '2026-04-01' });
+  expect(create.body).toMatchObject({ kind: 'GOODS', code: null, purchase_price: '12.50', opening_unit_cost: '11.50', opening_quantity: '3', opening_date: '2026-04-01' });
   expect(create.body).not.toHaveProperty('opening_cost');
   expect(screen.queryByRole('button', { name: /Approve|Submit|Activate/ })).toBeNull();
   expect(sessionStorage.getItem('simple-product-save:' + COMPANY)).toBeNull();
@@ -316,7 +318,7 @@ it('one Save sends exact opening quantity and purchase price and finishes ready'
 it('waits for the new product to reach Vouchers before finishing its opening', async () => {
   const original = replies(); let advances = 0;
   api.mockImplementation((endpoint, request) => {
-    if (request.path.endsWith('/advance')) {
+    if (request.path.endsWith('/drive')) {
       advances += 1;
       if (advances === 1) return Promise.resolve({ ...saved, step: 'VOUCHER', item_id: UNIT } as never);
       if (advances === 2) return Promise.reject({ status: 409, message: 'voucher master evidence is unavailable or stale' });
@@ -325,6 +327,7 @@ it('waits for the new product to reach Vouchers before finishing its opening', a
   });
   renderSimpleProduct(); const user = await fillProduct();
   await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '1');
+  await user.type(screen.getByRole('textbox', { name: 'Opening unit cost' }), '1');
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '200');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
@@ -336,7 +339,7 @@ it('waits for the new product to reach Vouchers before finishing its opening', a
 it('waits through a stock definition fence and resumes the same saved product automatically', { timeout: 10000 }, async () => {
   const original = replies(); let advances = 0;
   api.mockImplementation((endpoint, request) => {
-    if (request.path.endsWith('/advance') && ++advances === 1) {
+    if (request.path.endsWith('/drive') && ++advances === 1) {
       return Promise.reject({ status: 409, message: 'stock posting is using these definitions; retry after it completes' });
     }
     return original(endpoint, request);
@@ -360,6 +363,7 @@ it('waits for pending stock confirmation before creating one saved product', { t
   });
   renderSimpleProduct(); const user = await fillProduct();
   await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.type(screen.getByRole('textbox', { name: 'Opening unit cost' }), '11.50');
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '3');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
@@ -370,27 +374,27 @@ it('waits for pending stock confirmation before creating one saved product', { t
   expect(writes[0]).toEqual(writes[1]);
 });
 
-it('requires purchase price for positive opening quantity before any write', async () => {
+it('requires opening unit cost for positive opening quantity before any write', async () => {
   renderSimpleProduct(); const user = await fillProduct();
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '3');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
-  expect(await screen.findByText('Enter Purchase price to value opening stock.')).toBeVisible();
-  expect(screen.getByRole('textbox', { name: 'Purchase price' })).toBeRequired();
-  expect(screen.getByRole('textbox', { name: 'Purchase price' })).toHaveFocus();
+  expect(screen.getByRole('textbox', { name: 'Opening unit cost' })).toBeRequired();
+  expect(screen.getByRole('textbox', { name: 'Opening unit cost' })).toHaveAttribute('aria-invalid', 'true');
+  expect(screen.getByRole('textbox', { name: 'Opening unit cost' })).toHaveFocus();
   expect(api.mock.calls.some(([, request]) => request.method === 'POST')).toBe(false);
 });
 
-it('rejects zero purchase price for 100 opening units before creating a product', async () => {
+it('rejects zero opening cost for 100 opening units before creating a product', async () => {
   renderSimpleProduct(); const user = await fillProduct();
-  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '0');
+  await user.type(screen.getByRole('textbox', { name: 'Opening unit cost' }), '0');
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '100');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
-  expect(await screen.findByText('Enter a positive Purchase price to value opening stock.')).toBeVisible();
+  expect(screen.getByRole('textbox', { name: 'Opening unit cost' })).toHaveAttribute('aria-invalid', 'true');
   expect(api.mock.calls.some(([, request]) => request.method === 'POST')).toBe(false);
-  await user.clear(screen.getByRole('textbox', { name: 'Purchase price' }));
-  await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.clear(screen.getByRole('textbox', { name: 'Opening unit cost' }));
+  await user.type(screen.getByRole('textbox', { name: 'Opening unit cost' }), '12.50');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
   expect(await screen.findByText(/active and ready/)).toBeVisible();
   expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
@@ -399,7 +403,7 @@ it('rejects zero purchase price for 100 opening units before creating a product'
 it('refreshes a rejected price preview and resumes the saved product without another create', { timeout: 10000 }, async () => {
   const original = replies(); let advances = 0;
   api.mockImplementation((endpoint, request) => {
-    if (request.path.endsWith('/advance')) {
+    if (request.path.endsWith('/drive')) {
       advances += 1;
       if (advances === 1) return Promise.resolve({ ...saved, step: 'PUBLISH', item_id: UNIT } as never);
       if (advances === 2) return Promise.reject({ status: 409, message: 'pricing policy or Identity source changed; preview again' });
@@ -408,6 +412,7 @@ it('refreshes a rejected price preview and resumes the saved product without ano
   });
   renderSimpleProduct(); const user = await fillProduct();
   await user.type(screen.getByRole('textbox', { name: 'Purchase price' }), '12.50');
+  await user.type(screen.getByRole('textbox', { name: 'Opening unit cost' }), '11.50');
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '100');
   await user.click(screen.getByRole('button', { name: 'Save product' }));
@@ -426,7 +431,7 @@ it('retries an uncertain Save with the original body and key', async () => {
   await user.click(screen.getByRole('button', { name: 'Save product' }));
   expect(await screen.findByText('Connection interrupted')).toBeVisible();
   expect(screen.getByRole('textbox', { name: 'Product name' })).toBeDisabled();
-  await user.click(screen.getByRole('button', { name: 'Retry Save' }));
+  await user.click(screen.getByRole('button', { name: 'Continue creation' }));
   await screen.findByText(/active and ready/);
   const writes = api.mock.calls.filter(([, request]) => request.path === base).map(([, request]) => request);
   expect(writes).toHaveLength(2); expect(writes[0]).toEqual(writes[1]);
@@ -450,9 +455,11 @@ it('allows only the bounded creation routes through the proxy', () => {
   expect(allowedSimpleProductRequest('GET', base + '/options?kind=OTHER')).toBe(false);
   expect(allowedSimpleProductRequest('POST', base)).toBe(true);
   expect(allowedSimpleProductRequest('POST', base + '/' + ID + '/advance')).toBe(true);
+  expect(allowedSimpleProductRequest('POST', base + '/' + ID + '/drive')).toBe(true);
   expect(allowedSimpleProductRequest('GET', base + '/by-key/' + ID)).toBe(true);
   expect(allowedSimpleProductRequest('DELETE', base + '/' + ID)).toBe(false);
   expect(allowedSimpleProductRequest('POST', base + '/' + ID + '/advance?company_id=' + COMPANY)).toBe(false);
+  expect(allowedSimpleProductRequest('POST', base + '/' + ID + '/drive?company_id=' + COMPANY)).toBe(false);
 });
 
 it('keeps the form locked when recovery is unavailable and resumes the same saved job', async () => {
@@ -467,7 +474,7 @@ it('keeps the form locked when recovery is unavailable and resumes the same save
   });
   renderSimpleProduct(); await screen.findByText('Recovery temporarily unavailable');
   expect(await screen.findByRole('textbox', { name: 'Product name' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('button', { name: 'Retry Save' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Continue creation' }));
   await screen.findByText(/active and ready/);
   expect(api.mock.calls.some(([, request]) => request.path === base)).toBe(false);
 });
@@ -475,7 +482,7 @@ it('keeps the form locked when recovery is unavailable and resumes the same save
 it('allows correction only when the owner confirms no product was created', async () => {
   const original = replies(); let corrected = false;
   api.mockImplementation((endpoint, request) => {
-    if (request.path.endsWith('/advance') && !corrected) return Promise.reject({ status: 422, message: 'Check the product name' });
+    if (request.path.endsWith('/drive') && !corrected) return Promise.reject({ status: 422, message: 'Check the product name' });
     if (request.path.includes('/by-key/')) return Promise.resolve({ ...saved, can_edit: true, row_version: 2 } as never);
     if (request.method === 'PATCH') { corrected = true; return Promise.resolve({ ...saved, row_version: 3 } as never); }
     return original(endpoint, request);
@@ -537,12 +544,11 @@ it('blocks a required Model that field access does not allow editing', async () 
   expect(screen.getByText(/field access does not allow all required/)).toBeVisible();
 });
 
-it('explains positive opening stock when Purchase price is unavailable', async () => {
+it('explains positive opening stock when opening unit cost is unavailable', async () => {
   const original = replies();
   api.mockImplementation((endpoint, request) => {
     if (request.path.includes('/options?')) {
-      const options = simpleOptions(); options.fields = options.fields.filter(field => field.key !== 'purchase_price');
-      options.configuration.pricing.purchase_reference_mode = 'DISABLED';
+      const options = simpleOptions(); options.fields = options.fields.filter(field => field.key !== 'opening_unit_cost');
       return Promise.resolve(options as never);
     }
     return original(endpoint, request);
@@ -550,7 +556,7 @@ it('explains positive opening stock when Purchase price is unavailable', async (
   renderSimpleProduct(); const user = await fillProduct();
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '2');
-  expect(await screen.findByText(/Opening stock needs an editable Purchase price/)).toBeVisible();
+  expect(await screen.findByText(/Your stock field access does not allow the opening unit cost/)).toBeVisible();
   expect(screen.getByRole('button', { name: 'Save product' })).toBeDisabled();
   await user.clear(screen.getByRole('textbox', { name: 'Opening quantity' }));
   await user.type(screen.getByRole('textbox', { name: 'Opening quantity' }), '0');
@@ -611,14 +617,14 @@ it('explains a retained posting that takes longer than the foreground wait', asy
   vi.useFakeTimers({ toFake: ['Date'] });
   try {
     const original = replies();
-    api.mockImplementation((endpoint, request) => request.path.endsWith('/advance')
+    api.mockImplementation((endpoint, request) => request.path.endsWith('/drive')
       ? Promise.resolve({ ...saved, step: 'FINALIZE' } as never) : original(endpoint, request));
     renderSimpleProduct(); const user = await fillProduct();
     await user.click(screen.getByRole('button', { name: 'Save product' }));
-    await screen.findByText('Posting opening stock…');
+    await screen.findByText('Posting and verifying opening stock…');
     vi.setSystemTime(Date.now() + 301000);
     expect(await screen.findByText(/Product setup is saved and still processing/, {}, { timeout: 3000 })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Retry Save' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Continue creation' })).toBeEnabled();
     expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
   } finally { vi.useRealTimers(); }
 });
@@ -736,7 +742,7 @@ it('keeps a rejected Save locked until its recovery lookup succeeds', async () =
   await user.click(screen.getByRole('button', { name: 'Save product' }));
   await screen.findByText('Check saved progress');
   expect(screen.getByRole('textbox', { name: 'Product name' })).toBeDisabled();
-  await user.click(screen.getByRole('button', { name: 'Retry Save' }));
+  await user.click(screen.getByRole('button', { name: 'Continue creation' }));
   await screen.findByText(/active and ready/);
   expect(api.mock.calls.filter(([, request]) => request.path === base)).toHaveLength(1);
 });
@@ -773,7 +779,7 @@ it.each(['SERVICE', 'NO_INVENTORY'])('does not send opening stock for %s', async
       options.inventory_enabled = scenario !== 'NO_INVENTORY';
       return Promise.resolve(options as never);
     }
-    if (request.path.endsWith('/advance')) return Promise.resolve({ ...saved, status: 'COMPLETE', step: 'COMPLETE', opening_posted: false } as never);
+    if (request.path.endsWith('/drive')) return Promise.resolve({ ...saved, status: 'COMPLETE', step: 'COMPLETE', opening_posted: false } as never);
     return original(endpoint, request);
   });
   renderSimpleProduct();
@@ -784,6 +790,10 @@ it.each(['SERVICE', 'NO_INVENTORY'])('does not send opening stock for %s', async
   }
   const user = await fillProduct();
   expect(screen.queryByRole('group', { name: 'Opening stock' })).toBeNull();
+  if (scenario === 'SERVICE') {
+    expect(screen.getByRole('button', { name: 'Save product' })).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Clear unavailable details' }));
+  }
   await user.click(screen.getByRole('button', { name: 'Save product' }));
   await screen.findByText(/active and ready/);
   const body = api.mock.calls.find(([, request]) => request.path === base)![1].body;

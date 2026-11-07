@@ -94,12 +94,12 @@ export function UnitsIdentifiersEditor({
         ?.querySelector<HTMLElement>('[aria-invalid="true"]')
         ?.focus();
   }, [errors, command.pending]);
-  const fields = record.fields,
+  const fields = record.fields.map(field => profile && id && field.key === 'code' ? { ...field, writable: false } : field),
     failure = record.failure ?? child.failure,
     loading = record.loading || child.loading || (!initialized && !failure);
   const editable =
     config.resource === 'identifier-types' ||
-    config.resource === 'identifier-namespaces'
+    config.resource === 'identifier-namespaces' || profile
       ? ['name']
       : ['code', 'name'];
   const complete = id

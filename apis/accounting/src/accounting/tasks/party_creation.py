@@ -41,6 +41,7 @@ from accounting.tasks.commands import (
     require_metadata,
     setup_lock,
 )
+from accounting.tasks.master_codes import allocate_code
 from accounting.tasks.party_ledger import (
     account_values,
     activate_role_with_ledger,
@@ -105,7 +106,9 @@ async def create_party_with_details(
                     row = await create_active(db, access, spec, incoming, settings)
                 else:
                     row = await mutate_master(db, access, spec, "create", incoming, settings)
-            except ValidationFailedError as exc:
+            except (ValidationFailedError, ConflictError) as exc:
+                if isinstance(exc, ConflictError) and not exc.extra.get("fields"):
+                    raise
                 group = {
                     "party": "party",
                     "party_role": "party",
@@ -117,7 +120,7 @@ async def create_party_with_details(
                     "party_tax_registration": "tax_registration",
                 }[name]
                 fields = exc.extra.get("fields") or {"section": exc.message}
-                raise ValidationFailedError(
+                raise type(exc)(
                     exc.message,
                     fields={f"{group}.{field}": message for field, message in fields.items()},
                 ) from exc
@@ -126,12 +129,13 @@ async def create_party_with_details(
             protected(row, spec, access)
             return row.id
 
+        party_code = body.code or await allocate_code(db, access.context.company_id, "party")
         # Refuse a ledger that cannot work before creating anything, with every `ledger.*` reason.
         plan = await plan_ledger(
             db,
             access,
             role=body.role,
-            party_code=body.code,
+            party_code=party_code,
             party_name=body.name,
             ledger=body.ledger,
         )
@@ -139,7 +143,8 @@ async def create_party_with_details(
             "party",
             body.model_dump(
                 exclude={"role", "address", "contact", "tax_registration", "ledger", "opening"}
-            ),
+            )
+            | {"code": party_code},
         )
         # The role is active before its account, which the account rules require.
         await create("party_role", {"party_id": party_id, "role": body.role})

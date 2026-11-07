@@ -1,11 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { AdvancedCreationFeedback, advancedReadinessMessage } from './AdvancedCreationFeedback';
 import { Notice } from '@janso/ui';
 import type { components } from '@janso/api-client/catalog';
 import { masterRequest } from '../lib/catalog-master-api';
 import { requestFailure, type RequestFailure } from '../lib/service-call';
 import { retryStockWait } from '../lib/product-stock-wait';
-import { clearIntent, keepIntent, openingBody, setupBody, type AdvancedIntent } from '../lib/advanced-product-api';
+import { acceptDefinitionGeneration, clearIntent, keepIntent, openingBody, setupBody, type AdvancedIntent } from '../lib/advanced-product-api';
 import type { AdvancedOptions } from '../lib/advanced-product-draft';
 
 type Status = components['schemas']['AdvancedDefinitionStatus'];
@@ -17,10 +18,12 @@ const valid = (status: Status, intent: AdvancedIntent) => {
   if (!status || status.company_id !== intent.company || status.id !== intent.creation_id || status.sku_ids.length !== intent.work.skus.length) throw { status: 502, message: 'Product progress did not match the reviewed request.' };
   return status;
 };
-export function AdvancedCreationProgress({ initial, onEdit }: { initial: AdvancedIntent; onEdit: (intent: AdvancedIntent, status: Status, step: number) => void }) {
+export function AdvancedCreationProgress({ initial, onEdit }: { initial: AdvancedIntent; onEdit: (intent: AdvancedIntent, status: Status | null, step: number, fields?: Record<string, string>) => void }) {
   const intent = useRef(initial);
+  const completed = useRef<HTMLElement>(null);
   const running = useRef(false);
   const mounted = useRef(true);
+  const errorScope = useRef('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('Checking product creation…');
   const [failure, setFailure] = useState<RequestFailure | null>(null);
@@ -28,14 +31,25 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
   const [status, setStatus] = useState<Status | null>(null);
   const base = `/v1/companies/${initial.company}/advanced-product-creations`;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  useEffect(() => {
+    if (!status || busy || status.status === 'COMPLETE') return;
+    const timer = setInterval(() => {
+      void readStatus().then(current => {
+        if (current.status === 'COMPLETE') {
+          clearIntent(current.company_id);
+          setFailure(null);
+          note('Product Profile and all requested SKUs are complete.');
+        }
+      }).catch(() => { /* Keep the last verified progress visible. */ });
+    }, 3_000);
+    return () => clearInterval(timer);
+  }, [busy, status?.status, status?.id]);
   const show = (value: Status) => { if (mounted.current) setStatus(valid(value, intent.current)); };
   const note = (value: string) => { if (mounted.current) setMessage(value); };
   const saveIntent = () => keepIntent(intent.current);
   const withStockWait = <T,>(request: () => Promise<T>, action: string) => retryStockWait(request, {
     active: () => mounted.current,
-    onWait: reason => note(reason === 'definitions'
-      ? `Waiting for stock posting to release product definitions before ${action}…`
-      : `Waiting for an earlier stock posting to be confirmed before ${action}…`),
+    onWait: () => note(`Waiting for the current stock posting to finish before ${action}. Work will resume automatically…`),
     onResume: () => note(`Continuing ${action}…`),
   });
   async function command<T>(name: string, path: string, body: unknown): Promise<T> {
@@ -47,7 +61,7 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
     }
     const result = await withStockWait(
       () => masterRequest<T>({ path: frozen.path, method: 'POST', body: frozen.body, key: frozen.key }),
-      name,
+      ({ setup: 'saving SKU setup', publish: 'saving SKU prices', activate: 'activating a SKU', opening: 'saving opening stock' } as Record<string, string>)[name.split(':')[0]!] ?? 'saving product details',
     );
     delete intent.current.commands[name];
     saveIntent();
@@ -58,10 +72,13 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
     show(current);
     return current;
   }
-  async function currentOptions(): Promise<AdvancedOptions> {
+  async function currentOptions(state: Status): Promise<AdvancedOptions> {
     const work = intent.current.work;
     const params = new URLSearchParams({ kind: work.profile.kind, group_id: work.profile.group_id, product_type_revision_id: work.profile.product_type_revision_id });
     const value = await masterRequest<AdvancedOptions>({ path: base + '/options?' + params });
+    if (value.mode.policy_generation !== (intent.current.reviewed_policy_generation ?? intent.current.definition.policy_generation)) {
+      acceptDefinitionGeneration(intent.current, value, !!state.sku_progress?.some(row => row.setup_done));
+    }
     if (value.company_id !== intent.current.company || value.selected_type?.id !== work.profile.product_type_revision_id || !value.mode.product_family_sku_enabled || value.mode.row_version !== (intent.current.reviewed_mode_version ?? intent.current.definition.mode_version) || value.mode.policy_generation !== (intent.current.reviewed_policy_generation ?? intent.current.definition.policy_generation) || value.defaults.configuration.source_version !== (intent.current.reviewed_source_version ?? intent.current.definition.source_version)) throw { status: 409, message: 'Product setup changed. Review the current Product Type and company settings.' };
     return value;
   }
@@ -75,11 +92,12 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
   }
   async function run() {
     if (running.current) return;
+    errorScope.current = '';
     running.current = true; setBusy(true); setFailure(null); setBlockers([]);
     try {
       const current = intent.current;
       if (!current.creation_id) {
-        note('Creating the Product Profile and explicit SKUs…');
+        note('Creating the Product Profile and your SKUs…');
         const result = await withStockWait(
           () => masterRequest<Result>({ path: base + '/definitions', method: 'POST', body: current.definition, key: current.key }),
           'creating the Product Profile',
@@ -94,7 +112,7 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
         const itemId = state.sku_ids[index]!;
         if (state.sku_progress?.[index]?.setup_done) continue;
         note(`Setting up SKU ${index + 1} of ${current.work.skus.length}…`);
-        const options = await skuOptions(await currentOptions(), index);
+        const options = await skuOptions(await currentOptions(state), index);
         const [family, item] = await Promise.all([
           masterRequest<Family>({ path: `/v1/companies/${current.company}/product-families/${state.family_id}` }),
           masterRequest<Item>({ path: `/v1/companies/${current.company}/items/${itemId}` }),
@@ -107,14 +125,14 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
         const itemId = state.sku_ids[index]!;
         const progress = state.sku_progress?.[index];
         if (!progress?.price_draft_ids?.length || (progress.published_price_ids?.length ?? 0) >= progress.price_draft_ids.length) continue;
-        note(`Publishing prices for SKU ${index + 1}…`);
+        note(`Saving prices for SKU ${index + 1}…`);
         state = await command<Status>(`publish:${itemId}`, `${base}/definitions/${id}/skus/${itemId}/publish-prices`, { expected_creation_version: state.row_version });
         show(state);
       }
       for (let index = 0; index < current.work.skus.length; index++) {
         const itemId = state.sku_ids[index]!;
         if (state.sku_progress?.[index]?.activated) continue;
-        note(`Checking SKU ${index + 1} readiness…`);
+        note(`Checking that SKU ${index + 1} is ready to use…`);
         const ready = await masterRequest<Ready>({ path: `${base}/definitions/${id}/skus/${itemId}/readiness`, method: 'POST', body: { as_of: current.definition.as_of } });
         if (ready.item_id !== itemId) throw { status: 502, message: 'SKU readiness did not match the reviewed SKU.' };
         if (!ready.eligible || ready.blockers.length || ready.source_version == null) {
@@ -128,11 +146,12 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
       for (let index = 0; index < current.work.skus.length; index++) {
         const itemId = state.sku_ids[index]!;
         const openingState = state.sku_progress?.[index]?.opening_state ?? 'NOT_REQUESTED';
+        errorScope.current = `opening.skus.${index}.`;
         if (openingState === 'POSTED' || openingState === 'SKIPPED') continue;
         const opening = openingBody(current.work, index);
         if (openingState === 'NOT_REQUESTED') {
           if (opening.decision === 'OPEN') {
-            note(`Checking opening for SKU ${index + 1}…`);
+            note(`Checking opening stock for SKU ${index + 1}…`);
             const checked = await withStockWait(
               () => masterRequest<components['schemas']['AdvancedOpeningCheck']>({ path: `${base}/definitions/${id}/skus/${itemId}/opening-preflight`, method: 'POST', body: opening }),
               `checking SKU ${index + 1} opening`,
@@ -145,7 +164,7 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
         }
         const openingDeadline = Date.now() + 600_000;
         while (state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS' && Date.now() < openingDeadline) {
-          note(`Posting and reconciling opening for SKU ${index + 1}…`);
+          note(`Posting and confirming opening stock for SKU ${index + 1}…`);
           const previousVersion = state.row_version;
           state = await withStockWait(
             () => masterRequest<Status>({ path: `${base}/definitions/${id}/skus/${itemId}/opening/advance`, method: 'POST' }),
@@ -156,22 +175,30 @@ export function AdvancedCreationProgress({ initial, onEdit }: { initial: Advance
             await new Promise(resolve => setTimeout(resolve, 1_500));
           }
         }
-        if (state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS') throw { status: 503, message: `Opening for SKU ${index + 1} remains in progress. Continue this creation to check its retained owner receipts.` };
+        if (state.sku_progress?.[index]?.opening_state === 'IN_PROGRESS') throw { status: 503, message: `Opening for SKU ${index + 1} remains in progress. Choose Continue this creation to check its saved progress.` };
       }
       state = await readStatus();
-      if (state.status !== 'COMPLETE') throw { status: 503, message: 'Product setup is still in progress. Continue to check its saved receipts.' };
+      if (state.status !== 'COMPLETE') throw { status: 503, message: 'Product setup is still in progress. Choose Continue this creation to check its saved progress.' };
       clearIntent(current.company);
       note('Product Profile and all requested SKUs are complete.');
     } catch (error) {
-      if (mounted.current) setFailure(requestFailure(error));
+      if (mounted.current) {
+        const problem = requestFailure(error);
+        const fields = problem.fields && Object.fromEntries(Object.entries(problem.fields).map(([key, value]) => [errorScope.current && !key.startsWith('opening.skus.') ? errorScope.current + key.replace(/^opening\./, '') : key, value]));
+        setFailure({ ...problem, fields });
+      }
       if (intent.current.creation_id) try { await readStatus(); } catch { /* Keep the last verified receipt visible. */ }
     } finally { running.current = false; if (mounted.current) setBusy(false); }
   }
   useEffect(() => { void run(); }, []);
   const complete = status?.status === 'COMPLETE';
-  return <section className="product-wizard__progress" aria-label="Product creation progress"><h2 tabIndex={-1}>Product creation progress</h2><p role="status">{message}</p>{status && <><p>Profile ID: <code>{status.family_id}</code></p><ul>{status.sku_ids.map((itemId, index) => { const progress = status.sku_progress?.[index]; return <li key={itemId}><strong>{intent.current.work.skus[index]?.sku || `SKU ${index + 1}`}</strong> · {progress?.activated ? 'Active' : progress?.setup_done ? 'Setup saved' : 'Definition saved'} · Opening {progress?.opening_state?.toLowerCase().replaceAll('_', ' ') ?? 'not requested'}</li>; })}</ul></>}
-    {blockers.length > 0 && <Notice tone="warning"><strong>Native readiness needs attention</strong><ul>{blockers.map((blocker, index) => <li key={index}>{blocker.path}: {blocker.code.replaceAll('_', ' ')}</li>)}</ul></Notice>}
-    {failure && <Notice tone="warning">{failure.message} {status && <span>Completed steps remain saved.</span>}</Notice>}
-    <div className="product-wizard__actions">{!complete && !busy && <button type="button" className="janso-btn janso-btn--primary" onClick={() => void run()}>Continue this creation</button>}{failure && [409, 422].includes(failure.status) && status && !complete && status.sku_progress?.some(row => !row.setup_done || (row.opening_state ?? 'NOT_REQUESTED') === 'NOT_REQUESTED') && !busy && <button type="button" className="janso-btn janso-btn--secondary" onClick={() => onEdit(intent.current, status, blockers[0]?.step === 'profile' ? 1 : blockers[0]?.step === 'skus' ? 2 : blockers[0]?.step === 'business' ? 3 : status.sku_progress?.every(row => row.setup_done) ? 4 : 3)}>Review remaining setup</button>}{complete && <a className="janso-btn janso-btn--primary" href="/masters/items">Return to products</a>}</div>
+  useEffect(() => { if (complete) completed.current?.focus(); }, [complete]);
+  return <section ref={completed} tabIndex={complete ? -1 : undefined} role={complete ? 'region' : undefined} className="product-wizard__progress" aria-label={complete ? 'Product saved' : undefined}>
+    <AdvancedCreationFeedback status={status} skus={intent.current.work.skus} busy={busy} failed={!!failure} message={message} />
+    {!complete && status?.sku_progress?.some(row => row.opening_error) && <Notice tone="warning"><strong>Opening stock needs attention</strong><ul>{status.sku_progress.map((row, index) => row.opening_error && <li key={index}>SKU {index + 1}: {row.opening_error}</li>)}</ul></Notice>}
+    {!complete && blockers.length > 0 && <Notice tone="warning"><strong>Check these details before activation</strong><ul>{blockers.map((blocker, index) => <li key={index}>{advancedReadinessMessage(blocker, intent.current.work.skus)}</li>)}</ul></Notice>}
+    {!complete && failure && <Notice tone="warning">{failure.message} {status && <span>Completed steps remain saved.</span>}</Notice>}
+    {!busy && !intent.current.creation_id && failure?.status === 422 && <button type="button" className="janso-btn janso-btn--secondary" onClick={() => { clearIntent(intent.current.company); onEdit(intent.current, null, 1, failure.fields); }}>Review product details</button>}
+    <div className="product-wizard__actions">{!complete && !busy && <button type="button" className="janso-btn janso-btn--primary" onClick={() => void run()}>Continue this creation</button>}{failure && [409, 422].includes(failure.status) && status && !complete && status.sku_progress?.some(row => !row.setup_done || (row.opening_state ?? 'NOT_REQUESTED') === 'NOT_REQUESTED') && !busy && <button type="button" className="janso-btn janso-btn--secondary" onClick={() => onEdit(intent.current, status, blockers[0]?.step === 'profile' ? 1 : blockers[0]?.step === 'skus' ? 2 : blockers[0]?.step === 'business' ? 3 : status.sku_progress?.every(row => row.setup_done) ? 4 : 3, failure.fields)}>Review remaining setup</button>}{complete && <><a className="janso-btn janso-btn--primary" href={'/masters/product-families/' + status.family_id + '/created'}>View Product Profile</a><a className="janso-btn janso-btn--secondary" href="/masters/items">Return to products</a></>}</div>
   </section>;
 }

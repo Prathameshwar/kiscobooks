@@ -310,3 +310,27 @@ all-kind registry. Existing Identity capability/first-use and owner enforcement 
 no feature flag, provider, payroll function or runtime capability was enabled.
 
 Decision 2026-10-27: register sales_promotions for bounded Catalog definition authoring. Operational sale application remains unavailable without consumer admission.
+
+Decision 2026-11-07: physical batch/serial registration uses a separate delegated
+Identity reservation over the existing durable reservation lifecycle. Pending
+registration freezes the identity capabilities and their prerequisites against
+disablement. Accounting commits its physical record and confirmation outbox
+together; its posting-delivery worker confirms the first use. A rejected local
+write emits an abort. A lost reserve response remains pending and must be retried
+with the same command key/content; it cannot authorize local creation. An abort
+can seal an operation before a delayed reserve arrives. Registration confirmation
+locks batch/serial and any actual declared expiry, but does not set
+`first_posted_at` or lock inventory merely for an empty identity. Stock posting
+and reversal also include expiry tracking for the actual selected batches even
+when the product profile makes expiry optional.
+
+The signed private routes are `/internal/v1/tenants/{tenant}/companies/{company}/tracking/reservations`
+and `/{operation}/{confirmed|aborted}`. They reuse the enrolled stock Identity
+connection and credentials with distinct operation signatures. Reserve requires
+fresh original-actor company authority and the corresponding Accounting batch or
+serial manage grant; financial posting grants are unnecessary. Terminal delivery
+is restricted to its retained registration owner and exact command hash.
+Confirmed outcomes are immutable. Accounting's existing `posting_delivery`
+worker delivers registration confirmations/aborts with bounded retries and
+backlog reporting. Registration fails closed when this transport is absent.
+Contract versions: identity-posting-client 0.3.3 and API client 0.2.75.

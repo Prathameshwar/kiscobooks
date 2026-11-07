@@ -8,7 +8,7 @@ from billing_platform.db import tenant_scope
 from billing_platform.db.access import company_object
 from billing_platform.errors import AuthenticationRequiredError, PermissionDeniedError
 from billing_platform.gateway import Actor
-from billing_platform.import_engine import scoped_job
+from billing_platform.import_engine import revision, scoped_job
 from billing_platform.import_models import ImportTemplateSnapshot
 from billing_platform.import_routes import router_for
 from fastapi import Request
@@ -36,6 +36,7 @@ async def build(request: Request, current: Actor, company: uuid.UUID) -> SimpleC
         if request.method == "POST" and path.endswith(("/import-templates", "/import-jobs"))
         else {}
     )
+    atomicity = values.get("atomicity", "CHANGE_SET")
     template_id = values.get("template_id")
     template_match = re.search(r"/import-templates/([0-9a-f-]{36})(?:/|$)", path)
     job_match = re.search(r"/(?:import-jobs|simple-product-imports)/([0-9a-f-]{36})(?:/|$)", path)
@@ -47,6 +48,8 @@ async def build(request: Request, current: Actor, company: uuid.UUID) -> SimpleC
                 if job_match:
                     job = await scoped_job(db, adapter, uuid.UUID(job_match.group(1)))
                     selected, template_id = job.definition, str(job.template_id)
+                    stored = await revision(db, job)
+                    atomicity = (stored.batch or {}).get("atomicity")
                 else:
                     await adapter.authorize(db, write=False)
                 if not template_id:
@@ -60,6 +63,10 @@ async def build(request: Request, current: Actor, company: uuid.UUID) -> SimpleC
                     raise PermissionDeniedError("Template belongs to another user")
                 selected = selected or template.definition
                 kind = (template.snapshot or {}).get("parameters", {}).get("kind")
+    if selected == "products" and atomicity == "CHANGE_SET":
+        # Unit, tax and price setup can make even small Advanced files exceed one
+        # command deadline. Continue independent aggregates; ATOMIC stays one transaction.
+        adapter.command_group_limit = 1
     if selected == DEFINITION:
         adapter.command_group_limit = 1
         facts = adapter.context

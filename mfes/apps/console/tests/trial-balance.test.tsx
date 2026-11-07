@@ -673,7 +673,7 @@ it('retries source preparation after both bounded builds fail while keeping comp
  renderWithFilters(<TrialBalanceWorkspace {...props} permissions={[...props.permissions,'report.definition.manage']}/>);
  await screen.findByText('Current assets');
  fireEvent.click(screen.getByRole('button',{name:'Refresh accounting data'}));
- await screen.findByText(/could not be verified after rebuilding/);
+ await screen.findByText(/Accounting source rebuild did not complete/);
  expect(screen.getByText('Grand total')).toBeInTheDocument();
  fireEvent.click(screen.getByRole('button',{name:'Retry'}));
  await waitFor(()=>expect(attempts).toBe(3));

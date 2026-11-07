@@ -91,7 +91,9 @@ async def product_dependency(db: AsyncSession, company: uuid.UUID, warehouse: uu
     return False
 
 
-async def group_dependency(db: AsyncSession, company: uuid.UUID, warehouse: uuid.UUID) -> bool:
+async def group_dependency(
+    db: AsyncSession, company: uuid.UUID, warehouse: uuid.UUID, *, today: dt.date
+) -> bool:
     """Does this location still report to a group?
 
     An open membership interval is a live reporting relationship: every rollup over that group
@@ -105,7 +107,8 @@ async def group_dependency(db: AsyncSession, company: uuid.UUID, warehouse: uuid
             .where(
                 WarehouseGroupAssignment.company_id == company,
                 WarehouseGroupAssignment.warehouse_id == warehouse,
-                WarehouseGroupAssignment.valid_to.is_(None),
+                (WarehouseGroupAssignment.valid_to.is_(None))
+                | (WarehouseGroupAssignment.valid_to >= today),
             )
             .limit(1)
         )
@@ -146,7 +149,7 @@ async def assert_location_retirable(
         raise ConflictError("reassign the product activity default before retiring a location")
     if await product_dependency(db, row.company_id, row.id):
         raise ConflictError("restate the products stocked here before retiring a location")
-    if await group_dependency(db, row.company_id, row.id):
+    if await group_dependency(db, row.company_id, row.id, today=today):
         raise ConflictError("close the location's group membership before retiring it")
     # Deferred: both modules reach the classification pipeline that imports this one. The
     # alternative is restating "which release is in force" and "which policy revision is open"
@@ -252,6 +255,16 @@ async def validate_location(
         elif reactivating:
             # Reactivation is a second usable location just as much as a create is.
             assert_additional_locations(features)
+    if row.tax_registration_id is not None and (
+        not before
+        or any(
+            getattr(row, key) != before.get(key)
+            for key in ("tax_registration_id", "country_code", "state_code", "is_active")
+        )
+    ):
+        from catalog.tasks.warehouse_tax import validate_registration
+
+        validate_registration(row, actor, today=today)
     # Runs after the reserved-row rules, so a built-in still refuses the edit for the reason
     # that matters. On create ``before`` is empty and ``.get`` reads as "nothing named yet", so
     # any code present is a fresh selection; reactivation re-selects the stored pair as it now

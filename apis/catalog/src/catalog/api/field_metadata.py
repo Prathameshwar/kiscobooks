@@ -84,6 +84,7 @@ async def field_set(
         "catalog.attribute_set_revision": "attribute_set.publish",
         "catalog.attribute_set_member": "attribute_set.publish",
         "catalog.product_type_revision": "product_type.publish",
+        "catalog.catalog_policy_release": "warehouse.publish",
     }
     if operation == "publish" and entity_type not in publication_permissions:
         raise ValidationFailedError("publication metadata is unsupported for this entity")
@@ -98,6 +99,8 @@ async def field_set(
         else MANAGE_PERMISSIONS[entity_type],
         target=ScopePath(company_id=company_id),
     )
+    if entity_type == "catalog.warehouse" and operation == "create":
+        writable_resource &= {"inventory", "multi_godown"} <= set(context.features)
     if product and operation is None:
         writable_resource |= current.allows_scope(
             "item.create", target=ScopePath(company_id=company_id)
@@ -125,6 +128,8 @@ async def field_set(
     rules = context.rules(native_values)
     conditional = {row.field_key for row in context.policies if row.predicate_json is not None}
     readonly = {"row_version"}
+    if entity_type == "catalog.catalog_policy_release":
+        readonly |= set(context.native.fields) - {"effective_date", "change_reason"}
     if entity_type in DEFINITION_ENTITIES:
         if "sales_promotions" not in context.features:
             writable_resource = False
@@ -203,6 +208,8 @@ async def field_set(
         readonly.add("is_active")
         if entity_type in {"catalog.identifier_type", "catalog.identifier_namespace"}:
             readonly |= {"code", "is_barcode"}
+        if entity_type == "catalog.identifier_profile":
+            readonly.add("code")
     if operation == "update" and entity_type in {
         "catalog.warehouse_bin",
         "catalog.warehouse_group",

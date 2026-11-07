@@ -2,6 +2,7 @@
 
 import type { components } from '@janso/api-client/catalog';
 import { Button, FieldGroup, Notice, TextField } from '@janso/ui';
+import { trimSerialIdentifier, validateSerialIdentifiers } from '../lib/serial-identity';
 
 type Options = components['schemas']['SimpleCreationOptions'];
 type Input = components['schemas']['SimpleSerialInput'];
@@ -18,26 +19,18 @@ function columns(options: Options) {
 
 export function serialInputs(rows: SerialRow[], options: Options, prefix = 'serials', seen = new Set<string>()): { serials: Input[]; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
+  if (rows.length > 200) errors[prefix] = 'Enter no more than 200 serial units.';
   const fields = columns(options);
   const serials = rows.map((row, index) => {
     const identifiers: Input['identifiers'] = [];
     for (const field of fields) {
-      const value = row.values[field.key]?.trim() ?? '';
+      const value = trimSerialIdentifier(row.values[field.key] ?? '');
       const path = `${prefix}.${index}.${field.key}`;
       if (!value) { if (field.required) errors[path] = `${field.label} is required.`; continue; }
-      if (value.length > 120 || /\p{C}/u.test(value)) errors[path] = 'Enter a printable identifier up to 120 characters.';
-      if (field.type === 'IMEI') {
-        const digits = value.normalize('NFKC');
-        const checksum = [...digits].reduce((sum, char, position) => { const number = Number(char) * (position % 2 ? 2 : 1); return sum + Math.floor(number / 10) + number % 10; }, 0);
-        if (!/^\d{15}$/.test(digits) || checksum % 10 !== 0) errors[path] = 'Enter a valid 15-digit IMEI.';
-      }
-      const key = field.type + ':' + value.normalize('NFKC').toLocaleLowerCase('en-US');
-      if (seen.has(key)) errors[path] = 'This identifier is already entered for another unit.';
-      seen.add(key);
       identifiers.push({ identifier_type: field.type, slot: field.slot, value });
     }
-    if (!identifiers.length) errors[`${prefix}.${index}.identifiers`] = 'Enter an identifier for this unit or remove the row.';
-    for (const rule of options.serial?.requirements ?? []) if (identifiers.filter(value => value.identifier_type === rule.identifier_type).length < rule.min_count) errors[`${prefix}.${index}.identifiers`] = `Enter at least ${rule.min_count} ${rule.identifier_type === 'SERIAL' ? 'serial number' : 'IMEI'} identifier(s) for this unit.`;
+    const validated = validateSerialIdentifiers(identifiers, options.serial?.requirements ?? [], { prefix: `${prefix}.${index}.identifiers`, seen });
+    Object.assign(errors, validated.errors);
     if (Object.entries(row.values).some(([key, value]) => value && !fields.some(field => field.key === key))) errors[`${prefix}.${index}.identifiers`] = 'An entered identifier is no longer configured. Restore the settings or remove the row.';
     return { identifiers };
   });
@@ -61,7 +54,7 @@ export function SimpleProductSerials({ options, rows, onRows, locked, errors, pr
       <table className="janso-product-batch-grid"><caption className="janso-visually-hidden">{title}</caption><thead><tr><th scope="col">Unit</th>{fields.map(field => <th scope="col" key={field.key}>{field.label}{field.required ? ' *' : ''}</th>)}<th scope="col">Action</th></tr></thead><tbody>
         {rows.map((row, index) => <tr key={row.key}><th scope="row">{index + 1}</th>{fields.map(field => {
           const nativeIndex = prepared[index].identifiers.findIndex(value => value.identifier_type === field.type && value.slot === field.slot);
-          return <td key={field.key}><TextField hideLabel label={`${field.label}, unit ${index + 1}`} value={row.values[field.key] ?? ''} maxLength={120} required={field.required} disabled={locked || !writable}
+          return <td key={field.key}><TextField hideLabel label={`${field.label}, unit ${index + 1}`} value={row.values[field.key] ?? ''} maxLength={240} required={field.required} disabled={locked || !writable}
             error={errors[`${prefix}.${index}.${field.key}`] ?? errors[`${prefix}.${index}.identifiers.${nativeIndex}.value`]}
             onChange={event => onRows(rows.map(entry => entry.key === row.key ? { ...entry, values: { ...entry.values, [field.key]: event.target.value } } : entry))} /></td>;
         })}<td><Button type="button" variant="ghost" disabled={locked} onClick={() => onRows(rows.filter(entry => entry.key !== row.key))}>Remove unit {index + 1}</Button></td></tr>)}

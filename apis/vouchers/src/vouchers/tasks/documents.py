@@ -351,11 +351,11 @@ async def validate_masters(
                 m.VoucherMasterEvidence.source_id == source,
             )
         )
-        if (
-            row is None
-            or row.status != "ACTIVE"
-            or (version is not None and row.source_version != version)
+        if row is None or (
+            row.status == "ACTIVE" and version is not None and row.source_version < version
         ):
+            raise ConflictError("voucher master evidence is still syncing")
+        if row.status != "ACTIVE" or (version is not None and row.source_version != version):
             raise ConflictError("voucher master evidence is unavailable or stale")
         if (owner, entity, source) == ledger_key:
             party_ledger = row

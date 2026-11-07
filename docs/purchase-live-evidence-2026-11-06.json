@@ -1,0 +1,819 @@
+{
+  "company": "01a1b12c-b4fb-71fc-9006-3891ad1cb076",
+  "date": "2026-11-06",
+  "generation": "01a1b1f7-9bd5-7226-8dd2-1200da5d394d",
+  "positive": [
+    {
+      "case": "01",
+      "scenario": "No-tax tea expense, no classification",
+      "voucher_id": "01a1b1d9-a302-7527-8b48-79d53c2b2442",
+      "reference": "QA-PUR-0611-01",
+      "status": "POSTED",
+      "payable": "500.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "02",
+      "scenario": "Goods 5 percent GST",
+      "voucher_id": "01a1b1da-9597-75ff-a884-6c57b1e5da00",
+      "reference": "QA-PUR-0611-02",
+      "status": "POSTED",
+      "payable": "191.6200",
+      "tax": "9.1200"
+    },
+    {
+      "case": "03",
+      "scenario": "Goods 18 percent GST not claimable",
+      "voucher_id": "01a1b1da-c3ac-735f-a469-18032a125a47",
+      "reference": "QA-PUR-0611-03",
+      "status": "POSTED",
+      "payable": "30090.0000",
+      "tax": "4590.0000"
+    },
+    {
+      "case": "04",
+      "scenario": "Batch goods 5 percent GST",
+      "voucher_id": "01a1b1da-e58f-7512-9d78-70f3cd65f31a",
+      "reference": "QA-PUR-0611-04",
+      "status": "POSTED",
+      "payable": "141.7600",
+      "tax": "6.7600"
+    },
+    {
+      "case": "05",
+      "scenario": "Service 18 percent GST",
+      "voucher_id": "01a1b1db-14fa-7678-86dc-12b1bca0a6d2",
+      "reference": "QA-PUR-0611-05",
+      "status": "POSTED",
+      "payable": "1180.0000",
+      "tax": "180.0000"
+    },
+    {
+      "case": "06",
+      "scenario": "Nil-rated goods",
+      "voucher_id": "01a1b1e0-802b-7063-8e60-89002613783a",
+      "reference": "QA-PUR-0611-06",
+      "status": "POSTED",
+      "payable": "72.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "07",
+      "scenario": "Exempt goods",
+      "voucher_id": "01a1b1e0-aeec-74fb-aa1f-26165da311c4",
+      "reference": "QA-PUR-0611-07",
+      "status": "POSTED",
+      "payable": "105.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "08",
+      "scenario": "Service GST 5 percent",
+      "voucher_id": "01a1b1e0-c9cb-75fd-bc24-0df819e5eb8c",
+      "reference": "QA-PUR-0611-08",
+      "status": "POSTED",
+      "payable": "1680.0000",
+      "tax": "80.0000"
+    },
+    {
+      "case": "09",
+      "scenario": "Nil-rated service",
+      "voucher_id": "01a1b1e0-dd7a-76bf-b621-780d318ad26c",
+      "reference": "QA-PUR-0611-09",
+      "status": "POSTED",
+      "payable": "200.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "10",
+      "scenario": "Reverse-charge service",
+      "voucher_id": "01a1b1e0-f5e4-7367-92d3-da87ebba9207",
+      "reference": "QA-PUR-0611-10",
+      "status": "POSTED",
+      "payable": "1000.0000",
+      "tax": "180.0000"
+    },
+    {
+      "case": "11",
+      "scenario": "Goods with discount and freight",
+      "voucher_id": "01a1b1e9-72b2-7303-ad6f-85b7f5484efb",
+      "reference": "QA-PUR-0611-11",
+      "status": "POSTED",
+      "payable": "997.5000",
+      "tax": "47.5000"
+    },
+    {
+      "case": "12",
+      "scenario": "Computer GST eligible",
+      "voucher_id": "01a1b1e9-9080-70a4-961c-f261c20603c3",
+      "reference": "QA-PUR-0611-12",
+      "status": "POSTED",
+      "payable": "23600.0000",
+      "tax": "3600.0000"
+    },
+    {
+      "case": "13",
+      "scenario": "Interstate goods IGST",
+      "voucher_id": "01a1b1e9-acd1-740e-b831-6a56d85cb0d6",
+      "reference": "QA-PUR-0611-13",
+      "status": "POSTED",
+      "payable": "11800.0000",
+      "tax": "1800.0000"
+    },
+    {
+      "case": "14",
+      "scenario": "GST-inclusive service price",
+      "voucher_id": "01a1b1e9-c956-7704-9052-332a37cc77ff",
+      "reference": "QA-PUR-0611-14",
+      "status": "POSTED",
+      "payable": "1180.0000",
+      "tax": "180.0000"
+    },
+    {
+      "case": "15",
+      "scenario": "Two no-tax expense accounts",
+      "voucher_id": "01a1b1e9-e180-7721-9c41-a030fb97972a",
+      "reference": "QA-PUR-0611-15",
+      "status": "POSTED",
+      "payable": "750.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "16",
+      "scenario": "No-tax expense with discount",
+      "voucher_id": "01a1b1e9-f5c1-7578-b0b6-9da404a6fe9c",
+      "reference": "QA-PUR-0611-16",
+      "status": "POSTED",
+      "payable": "950.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "17",
+      "scenario": "GST 5 service discount",
+      "voucher_id": "01a1b1ea-96c2-7552-9dd2-54dea1959a39",
+      "reference": "QA-PUR-0611-17",
+      "status": "POSTED",
+      "payable": "1575.0000",
+      "tax": "75.0000"
+    },
+    {
+      "case": "18",
+      "scenario": "GST service with billed charge",
+      "voucher_id": "01a1b1ea-af03-71cb-87a2-79964d9ea2da",
+      "reference": "QA-PUR-0611-18",
+      "status": "POSTED",
+      "payable": "1298.0000",
+      "tax": "198.0000"
+    },
+    {
+      "case": "19",
+      "scenario": "Nil-rated goods second receipt",
+      "voucher_id": "01a1b1ea-c788-7252-8da2-6a0a5de4f3ab",
+      "reference": "QA-PUR-0611-19",
+      "status": "POSTED",
+      "payable": "36.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "20",
+      "scenario": "Exempt goods second receipt",
+      "voucher_id": "01a1b1ea-e011-74e2-b5ba-c83fe9cd977c",
+      "reference": "QA-PUR-0611-20",
+      "status": "POSTED",
+      "payable": "70.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "21",
+      "scenario": "No-tax utilities expense",
+      "voucher_id": "01a1b1ea-fcea-7596-bb4e-406efe41f361",
+      "reference": "QA-PUR-0611-21",
+      "status": "POSTED",
+      "payable": "250.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "22",
+      "scenario": "No-tax rent bill",
+      "voucher_id": "01a1b1eb-16ac-733e-a231-3215ca984c2e",
+      "reference": "QA-PUR-0611-22",
+      "status": "POSTED",
+      "payable": "2000.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "23",
+      "scenario": "No-tax expense with paise",
+      "voucher_id": "01a1b1eb-2a97-709f-975d-671ee16ab837",
+      "reference": "QA-PUR-0611-23",
+      "status": "POSTED",
+      "payable": "350.5000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "24",
+      "scenario": "No-tax larger discount",
+      "voucher_id": "01a1b1eb-4222-702f-af7c-102f7cf305e4",
+      "reference": "QA-PUR-0611-24",
+      "status": "POSTED",
+      "payable": "900.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "25",
+      "scenario": "GST service rounding in paise",
+      "voucher_id": "01a1b1eb-55fc-752e-8594-4b97aa3077bb",
+      "reference": "QA-PUR-0611-25",
+      "status": "POSTED",
+      "payable": "1800.3900",
+      "tax": "274.6400"
+    },
+    {
+      "case": "26",
+      "scenario": "Goods tax component rounding",
+      "voucher_id": "01a1b1eb-72e7-73d3-ab42-4ad5a258c983",
+      "reference": "QA-PUR-0611-26",
+      "status": "POSTED",
+      "payable": "95.8100",
+      "tax": "4.5600"
+    },
+    {
+      "case": "27",
+      "scenario": "Batch goods repeat receipt",
+      "voucher_id": "01a1b1eb-8fd4-722c-b40a-8ad3b8532709",
+      "reference": "QA-PUR-0611-27",
+      "status": "POSTED",
+      "payable": "94.5000",
+      "tax": "4.5000"
+    },
+    {
+      "case": "28",
+      "scenario": "Computer GST standard eligible",
+      "voucher_id": "01a1b1eb-bed5-7309-9a4f-c2b95207dfe4",
+      "reference": "QA-PUR-0611-28",
+      "status": "POSTED",
+      "payable": "30090.0000",
+      "tax": "4590.0000"
+    },
+    {
+      "case": "29",
+      "scenario": "Nil-rated service second bill",
+      "voucher_id": "01a1b1eb-db5d-70d4-ab1b-2ece455c4e52",
+      "reference": "QA-PUR-0611-29",
+      "status": "POSTED",
+      "payable": "350.0000",
+      "tax": "0.0000"
+    },
+    {
+      "case": "30",
+      "scenario": "No-tax bill exact supplier declared total",
+      "voucher_id": "01a1b1ec-584b-7343-944b-f1aba53a8ead",
+      "reference": "QA-PUR-0611-30",
+      "status": "POSTED",
+      "payable": "500.0000",
+      "tax": "0.0000"
+    }
+  ],
+  "negative": [
+    {
+      "key": "taxable-default-with-no-tax",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: tax-bearing or unclassified supplies require their statutory profile"
+      },
+      "voucher_id": "01a1b1ec-680f-7023-b6ca-b317d7aa68b8"
+    },
+    {
+      "key": "taxed-without-default",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: service has no account tax default at its legal tax point"
+      },
+      "voucher_id": "01a1b1ec-6a35-7231-8265-60cac3e03a24"
+    },
+    {
+      "key": "missing-company-registration",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: service tax requires the company registration and place of supply"
+      },
+      "voucher_id": "01a1b1ec-6c3c-7739-b0bc-9cb85687578f"
+    },
+    {
+      "key": "unknown-company-registration",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: the voucher's tax analysis has unresolved exceptions"
+      },
+      "voucher_id": "01a1b1ec-6e9e-76b0-9ddc-8e5d8829fc37"
+    },
+    {
+      "key": "missing-supplier-registration",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: this supplier-invoice profile requires a regular GST supplier"
+      },
+      "voucher_id": "01a1b1ec-70c4-71a3-a3da-2c31a4706a11"
+    },
+    {
+      "key": "missing-service-date",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: ordinary service tax requires a service and completion date"
+      },
+      "voucher_id": "01a1b1ec-72b7-756b-8766-e320e259879b"
+    },
+    {
+      "key": "goods-quantity-mismatch",
+      "stage": "create",
+      "status": 422,
+      "error": {
+        "code": "validation_failed",
+        "message": "request validation failed"
+      }
+    },
+    {
+      "key": "goods-wrong-inventory-account",
+      "stage": "calculate",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "invoice calculation was refused: purchased goods post to the company's inventory account"
+      },
+      "voucher_id": "01a1b1ec-76d4-7636-9946-b897767e06be"
+    },
+    {
+      "key": "zero-goods-quantity",
+      "stage": "create",
+      "status": 422,
+      "error": {
+        "code": "validation_failed",
+        "message": "request validation failed"
+      }
+    },
+    {
+      "key": "float-money",
+      "stage": "create",
+      "status": 422,
+      "error": {
+        "code": "validation_failed",
+        "message": "request validation failed"
+      }
+    },
+    {
+      "key": "closed-or-unavailable-period",
+      "stage": "post",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "refresh fiscal evidence and open the posting period"
+      },
+      "voucher_id": "01a1b1ee-ce72-7418-9610-7fee112984ee"
+    },
+    {
+      "key": "stale-expense-version",
+      "stage": "create",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "voucher master evidence is still syncing"
+      }
+    },
+    {
+      "key": "wrong-payable-account",
+      "stage": "create",
+      "status": 422,
+      "error": {
+        "code": "validation_failed",
+        "message": "invoice.party_account_id is not the ledger of the SUPPLIER in parties[]: the account belongs to another party or to none"
+      }
+    },
+    {
+      "key": "stale-preview",
+      "stage": "invoice-preview",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "voucher version changed; reload before retrying"
+      },
+      "voucher_id": "01a1b1ee-d54f-76d7-87fb-cbbb05f60245"
+    },
+    {
+      "key": "unaccepted-submit",
+      "stage": "submit",
+      "status": 422,
+      "error": {
+        "code": "validation_failed",
+        "message": "invoice calculation must be accepted before submission"
+      },
+      "voucher_id": "01a1b1ee-d54f-76d7-87fb-cbbb05f60245"
+    },
+    {
+      "key": "unissued-post",
+      "stage": "post",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "accepted account/service invoice and posting date are required"
+      },
+      "voucher_id": "01a1b1ee-d54f-76d7-87fb-cbbb05f60245"
+    },
+    {
+      "key": "wrong-calculation-hash",
+      "stage": "invoice-acceptance",
+      "status": 409,
+      "error": {
+        "code": "conflict",
+        "message": "the invoice calculation differs from the owner's current calculation; preview the revision again before accepting it"
+      },
+      "voucher_id": "01a1b1ee-d54f-76d7-87fb-cbbb05f60245"
+    },
+    {
+      "key": "batch-goods-without-batch",
+      "stage": "post",
+      "status": 409,
+      "error": {
+        "code": "CONTENT_REJECTED"
+      },
+      "voucher_id": "01a1b1ef-a505-76f4-a75d-8d27ec68b8c7",
+      "operation_id": "01A1B1EFB34F730DAED0C74E42A66679",
+      "evidence": "Unique supplier bill; calculation accepted; only batch selection omitted; owner rejected POST"
+    }
+  ],
+  "post_replay": {
+    "status": 202,
+    "replayed": "true",
+    "operation_id": "01a1b1da-86e7-7574-ac37-0b4e7ce5763f"
+  },
+  "stock_receipts": [
+    {
+      "key": "02",
+      "quantity": "2.0000",
+      "cost": "182.5000"
+    },
+    {
+      "key": "03",
+      "quantity": "1.0000",
+      "cost": "30090.0000"
+    },
+    {
+      "key": "04",
+      "quantity": "3.0000",
+      "cost": "135.0000"
+    },
+    {
+      "key": "06",
+      "quantity": "4.0000",
+      "cost": "72.0000"
+    },
+    {
+      "key": "07",
+      "quantity": "3.0000",
+      "cost": "105.0000"
+    },
+    {
+      "key": "11",
+      "quantity": "10.0000",
+      "cost": "950.0000"
+    },
+    {
+      "key": "12",
+      "quantity": "1.0000",
+      "cost": "20000.0000"
+    },
+    {
+      "key": "13",
+      "quantity": "1.0000",
+      "cost": "10000.0000"
+    },
+    {
+      "key": "19",
+      "quantity": "2.0000",
+      "cost": "36.0000"
+    },
+    {
+      "key": "20",
+      "quantity": "2.0000",
+      "cost": "70.0000"
+    },
+    {
+      "key": "26",
+      "quantity": "1.0000",
+      "cost": "91.2500"
+    },
+    {
+      "key": "27",
+      "quantity": "2.0000",
+      "cost": "90.0000"
+    },
+    {
+      "key": "28",
+      "quantity": "1.0000",
+      "cost": "25500.0000"
+    }
+  ],
+  "report_reconciliation": {
+    "tax": [
+      {
+        "key": "01",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "02",
+        "tax": "9.1200",
+        "pending": "9.1200",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "03",
+        "tax": "4590.0000",
+        "pending": "0.0000",
+        "blocked": "4590.0000"
+      },
+      {
+        "key": "04",
+        "tax": "6.7600",
+        "pending": "6.7600",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "05",
+        "tax": "180.0000",
+        "pending": "180.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "06",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "07",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "08",
+        "tax": "80.0000",
+        "pending": "80.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "09",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "10",
+        "tax": "180.0000",
+        "pending": "180.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "11",
+        "tax": "47.5000",
+        "pending": "47.5000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "12",
+        "tax": "3600.0000",
+        "pending": "3600.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "13",
+        "tax": "1800.0000",
+        "pending": "1800.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "14",
+        "tax": "180.0000",
+        "pending": "180.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "15",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "16",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "17",
+        "tax": "75.0000",
+        "pending": "75.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "18",
+        "tax": "198.0000",
+        "pending": "198.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "19",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "20",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "21",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "22",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "23",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "24",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      },
+      {
+        "key": "25",
+        "tax": "274.6400",
+        "pending": "274.6400",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "26",
+        "tax": "4.5600",
+        "pending": "4.5600",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "27",
+        "tax": "4.5000",
+        "pending": "4.5000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "28",
+        "tax": "4590.0000",
+        "pending": "4590.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "29",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0.0000"
+      },
+      {
+        "key": "30",
+        "tax": "0.0000",
+        "pending": "0.0000",
+        "blocked": "0"
+      }
+    ],
+    "stock": [
+      {
+        "item": "QA-MIX-0611-01-SKU",
+        "quantity": "23.0000",
+        "ledger_quantity": "23.0000",
+        "valuation_status": "UNAVAILABLE"
+      },
+      {
+        "item": "QA-MIX-0611-02-SKU",
+        "quantity": "17.0000",
+        "ledger_quantity": "17.0000",
+        "valuation_status": "UNAVAILABLE"
+      },
+      {
+        "item": "QA-MIX-0611-03-SKU",
+        "quantity": "6.0000",
+        "ledger_quantity": "6.0000",
+        "valuation_status": "UNAVAILABLE"
+      },
+      {
+        "item": "QA-MIX-0611-05-SKU",
+        "quantity": "6.0000",
+        "ledger_quantity": "6.0000",
+        "valuation_status": "UNAVAILABLE"
+      },
+      {
+        "item": "QA-MIX-0611-07-SKU",
+        "quantity": "5.0000",
+        "ledger_quantity": "5.0000",
+        "valuation_status": "UNAVAILABLE"
+      }
+    ],
+    "limitations": [
+      "Stock Summary and Item Ledger valuation are unavailable under the current complete-company coverage contract when multiple batch positions share a warehouse cost pool. Native stock quantity and cost receipts reconcile separately; no batch values were fabricated."
+    ],
+    "verified": true
+  },
+  "reports": [
+    {
+      "code": "PURCHASE_REGISTER",
+      "job_id": "01a1b1f7-e132-7667-b561-ab4b3689f5ca",
+      "status": "COMPLETE",
+      "rows": 31
+    },
+    {
+      "code": "STOCK_SUMMARY",
+      "job_id": "01a1b1f7-f70e-75eb-a483-cf1777b76f99",
+      "status": "COMPLETE",
+      "rows": 13
+    },
+    {
+      "code": "INVOICE_TAX_REGISTER",
+      "job_id": "01a1b1f8-0d79-74f8-bced-50240ec18ea4",
+      "status": "COMPLETE",
+      "rows": 41
+    },
+    {
+      "code": "INVOICE_CREDIT_REGISTER",
+      "job_id": "01a1b1f8-2345-73de-b92a-9dc561cfc157",
+      "status": "COMPLETE",
+      "rows": 41
+    },
+    {
+      "code": "ITEM_LEDGER",
+      "job_id": "01a1b1f8-397f-74d4-8aaa-f60663515df3",
+      "status": "COMPLETE",
+      "rows": 5
+    },
+    {
+      "code": "ITEM_LEDGER",
+      "job_id": "01a1b1f8-488a-7485-a904-862f84864cc0",
+      "status": "COMPLETE",
+      "rows": 6
+    },
+    {
+      "code": "ITEM_LEDGER",
+      "job_id": "01a1b1f8-5791-73f6-b5ae-d294a30b2abb",
+      "status": "COMPLETE",
+      "rows": 6
+    },
+    {
+      "code": "ITEM_LEDGER",
+      "job_id": "01a1b1f8-6d7d-7077-aded-753e707ed310",
+      "status": "COMPLETE",
+      "rows": 3
+    },
+    {
+      "code": "ITEM_LEDGER",
+      "job_id": "01a1b1f8-7c84-7276-a48d-0b5b738d7f3b",
+      "status": "COMPLETE",
+      "rows": 3
+    }
+  ],
+  "totals": {
+    "payable": "113848.0800",
+    "tax": "15820.0800"
+  },
+  "release": {
+    "source": "/opt/kiscobooks/releases/mixed-import-continuation-20261106-163127",
+    "candidate": "/opt/kiscobooks/releases/purchase-readiness-20261106-172200",
+    "status": "ACTIVE",
+    "activated_units": [
+      "kiscobooks-api@accounting.service",
+      "kiscobooks-api@vouchers.service",
+      "kiscobooks-console.service",
+      "kiscobooks-vouchers-sources.service",
+      "kiscobooks-vouchers-executions.service"
+    ]
+  }
+}

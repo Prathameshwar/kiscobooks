@@ -94,7 +94,7 @@ export function VoucherTypeRules({
         />
       </FieldGroup>
 
-      <FieldGroup title="Sections" hint="Parts of the voucher this type insists on, and parts it hides. A section cannot be both.">
+      <FieldGroup title="Sections" hint="Required means the section must contain data before submission. Selecting Charges requires an entered charge or discount on every bill. These choices do not enable charge entry or tax masters; configure invoice features separately. A section cannot be both required and forbidden.">
         <FieldGroup title="Required">{choices(sections, draft.requiredSections, 'requiredSections')}</FieldGroup>
         {errors.requiredSections ? <Notice tone="danger">{errors.requiredSections}</Notice> : null}
         <FieldGroup title="Forbidden">{choices(sections, draft.forbiddenSections, 'forbiddenSections')}</FieldGroup>

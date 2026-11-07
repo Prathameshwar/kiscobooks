@@ -104,6 +104,7 @@ STOCK_RESOURCES = (
 )
 STOCK_SAFE_FIELDS = frozenset(
     {
+        "id",
         "status",
         "is_held",
         "manufactured_on",

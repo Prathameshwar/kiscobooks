@@ -33,6 +33,10 @@ from tests.conftest import COMPANY, TENANT, USER
         "requirement_range",
         "activated_owner",
         "protected_optional",
+        "nonbatch",
+        "nonbatch_owner",
+        "nonbatch_mismatch",
+        "nonbatch_protected",
     ],
 )
 async def test_verified_product_source(monkeypatch: pytest.MonkeyPatch, fault: str | None) -> None:
@@ -135,6 +139,39 @@ async def test_verified_product_source(monkeypatch: pytest.MonkeyPatch, fault: s
         routes[f"inventory-templates/{owner}/revisions/{profile}"].pop(
             "minimum_remaining_life_days"
         )
+    if fault and fault.startswith("nonbatch"):
+        routes[f"inventory-templates/{owner}/revisions/{profile}"].update(serial_tracking=False)
+        routes[f"item-inventory-profiles/{activated}"].update(
+            lot_tracking=False,
+            serial_tracking=False,
+            expiry_required=False,
+            manufacture_date_required=False,
+        )
+        inventory = {
+            key: routes[f"item-inventory-profiles/{activated}"][key]
+            for key in (
+                "lot_tracking",
+                "serial_tracking",
+                "expiry_required",
+                "manufacture_date_required",
+                "shelf_life_days",
+                "minimum_remaining_life_days",
+                "template_revision_id",
+            )
+        }
+        routes[f"items/{item}/effective-facts"] = {
+            "company_id": company,
+            "item_id": str(item),
+            "base_unit_id": str(unit),
+            "as_of": day.isoformat(),
+            "inventory": inventory,
+        }
+        if fault == "nonbatch_owner":
+            routes[f"items/{item}/effective-facts"]["company_id"] = str(uuid7())
+        if fault == "nonbatch_mismatch":
+            inventory["lot_tracking"] = True
+        if fault == "nonbatch_protected":
+            inventory.pop("expiry_required")
     calls = []
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -177,7 +214,7 @@ async def test_verified_product_source(monkeypatch: pytest.MonkeyPatch, fault: s
         if fault == "owner"
         else TrackingSourceUnavailableError
     )
-    if fault:
+    if fault and fault != "nonbatch":
         with pytest.raises(expected):
             await tracking_source(
                 settings, access, item, day, "Bearer ephemeral-test-caller", "ephemeral-test-proof"
@@ -187,19 +224,25 @@ async def test_verified_product_source(monkeypatch: pytest.MonkeyPatch, fault: s
             settings, access, item, day, "Bearer ephemeral-test-caller", "ephemeral-test-proof"
         )
         assert result.item_id == item and result.company_id == COMPANY
-        assert result.lot_tracking and result.serial_tracking
-        assert result.requirements[0].namespace_rule == "COMPANY"
-        assert len(calls) == 9 and len(result.source_digest) == 64
+        if fault == "nonbatch":
+            assert not result.lot_tracking and not result.serial_tracking
+            assert not result.expiry_required and not result.manufacture_date_required
+            assert result.requirements == [] and len(calls) == 7
+        else:
+            assert result.lot_tracking and result.serial_tracking
+            assert result.requirements[0].namespace_rule == "COMPANY"
+            assert len(calls) == 9
+        assert len(result.source_digest) == 64
         assert not any("/configuration" in call for call in calls)
 
 
 def test_tracking_gateway_prefix_is_supported_but_signed_stock_owner_requires_origin():
     from pydantic import ValidationError
 
-    settings = dict(
-        database_url="sqlite+aiosqlite:///:memory:",
-        actor_signing_secret=SecretStr("ephemeral-stock-origin-test-secret"),
-    )
+    settings = {
+        "database_url": "sqlite+aiosqlite:///:memory:",
+        "actor_signing_secret": SecretStr("ephemeral-stock-origin-test-secret"),
+    }
     assert Settings(
         **settings, stock_catalog_url="http://127.0.0.1:8090/catalog"
     ).stock_catalog_url.endswith("/catalog")

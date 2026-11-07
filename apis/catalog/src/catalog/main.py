@@ -373,6 +373,17 @@ def create_app(settings: Settings | None = None, *, engine: AsyncEngine | None =
     @app.exception_handler(RequestValidationError)
     async def validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
         # Pydantic's input/context may contain secrets; never serialize it to the caller.
+        if request.url.path.startswith("/v1/companies/") and "/warehouses" in request.url.path:
+            if any(error.get("loc") == ("body", "timezone") for error in exc.errors()):
+                value = ErrorEnvelope(
+                    error=ErrorBody(
+                        code="validation_failed",
+                        message="Choose a valid warehouse timezone",
+                        fields={"timezone": "Choose a valid IANA timezone, such as Asia/Kolkata"},
+                        trace_id=_trace_id(request),
+                    )
+                )
+                return JSONResponse(status_code=422, content=value.model_dump(exclude_none=True))
         return _error(request, 422, "validation_failed", "request validation failed")
 
     @app.exception_handler(HTTPException)

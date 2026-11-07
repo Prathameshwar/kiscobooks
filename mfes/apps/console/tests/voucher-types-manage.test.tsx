@@ -508,7 +508,7 @@ describe('one voucher type', () => {
 describe('changing the entry rules', () => {
   const mount = () => render(<VoucherTypeRulesEditor company={COMPANY} id={RETAIL} />);
   // "Accounts" and "Items" are both an entry mode and a section, so a box is found through its group.
-  const group = (title: string) => within(screen.getByText(title, { selector: 'legend' }).closest('fieldset')!);
+  const group = (title: string) => within(screen.getByRole('group', { name: title }));
   const stocked = () => detail({ policy: { ...fullPolicy, schema_version: 2, stock: { reserve: true } } });
 
   it('starts from the rules in force, with nothing to save', async () => {
@@ -578,8 +578,8 @@ describe('changing the entry rules', () => {
     vi.mocked(serviceCall).mockImplementation(service());
     const user = userEvent.setup();
     mount();
-    const required = (await screen.findByText('Required', { selector: 'legend' })).closest('fieldset')!;
-    const forbidden = screen.getByText('Forbidden', { selector: 'legend' }).closest('fieldset')!;
+    const required = await screen.findByRole('group', { name: 'Required' });
+    const forbidden = screen.getByRole('group', { name: 'Forbidden' });
     await user.click(within(required).getByRole('checkbox', { name: 'Tax' }));
     await user.click(within(forbidden).getByRole('checkbox', { name: 'Tax' }));
 
@@ -640,7 +640,7 @@ describe('changing the entry rules', () => {
   it('offers a Receipt only the sections a Receipt has, and starts it only in Accounts', async () => {
     vi.mocked(serviceCall).mockImplementation(service({ one: detail({ kind: 'RECEIPT', policy: { ...fullPolicy, default_mode: 'ACCOUNTS' } }) }));
     mount();
-    const required = within((await screen.findByText('Required', { selector: 'legend' })).closest('fieldset')!);
+    const required = within(await screen.findByRole('group', { name: 'Required' }));
 
     expect(required.getByRole('checkbox', { name: 'Parties' })).toBeInTheDocument();
     for (const name of ['Items', 'Charges', 'Tax']) expect(required.queryByRole('checkbox', { name }), name).not.toBeInTheDocument();
@@ -651,7 +651,7 @@ describe('changing the entry rules', () => {
   it('offers a Sales voucher every section and every starting mode', async () => {
     vi.mocked(serviceCall).mockImplementation(service());
     mount();
-    const required = within((await screen.findByText('Required', { selector: 'legend' })).closest('fieldset')!);
+    const required = within(await screen.findByRole('group', { name: 'Required' }));
 
     for (const name of ['Items', 'Charges', 'Tax']) expect(required.getByRole('checkbox', { name }), name).toBeInTheDocument();
     expect(within(screen.getByRole('combobox', { name: 'Starts in' })).getAllByRole('option')).toHaveLength(3);
@@ -662,7 +662,7 @@ describe('changing the entry rules', () => {
     const user = userEvent.setup();
     mount();
     const lines = await screen.findByRole('textbox', { name: /Most lines/ });
-    const required = within(screen.getByText('Required', { selector: 'legend' }).closest('fieldset')!);
+    const required = within(screen.getByRole('group', { name: 'Required' }));
     await user.click(required.getByRole('checkbox', { name: 'Items' }));
     await user.clear(lines);
     await user.type(lines, '0');

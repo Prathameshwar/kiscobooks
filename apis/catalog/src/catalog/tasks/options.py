@@ -153,6 +153,20 @@ async def list_options(
 ) -> Page[OptionItem]:
     stmt, context = await option_query(db, actor, company, source_key, query.parent_id, query.as_of)
     model: Any = MODELS[source_key]
+    if query.product_type_revision_id is not None:
+        if source_key != "catalog.units":
+            raise ValidationFailedError("product type filter is available only for units")
+        if "dimension" not in context.readable():
+            raise PermissionDeniedError("unit dimension is protected")
+        from catalog.models.commercial import ProductTypeRevision
+        from catalog.tasks.configuration_access import ConfigurationAccess
+
+        revision = await ConfigurationAccess(db, actor, company).reference(
+            ProductTypeRevision, query.product_type_revision_id
+        )
+        if revision.published_at is None:
+            raise ValidationFailedError("select a published product type")
+        stmt = stmt.where(model.dimension.in_(revision.unit_dimensions))
     readable = context.readable() | {"id"}
     label = model.description if model is TaxClassification else model.name
     if model is TaxClassification and "description" in readable:

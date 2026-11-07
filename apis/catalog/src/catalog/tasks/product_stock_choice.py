@@ -15,6 +15,18 @@ from catalog.tasks.pricing_commands import protected
 from catalog.tasks.product_commands import ProductWork
 
 
+def mandatory_batches(template: InventoryProfileTemplateRevision) -> bool:
+    """A product choice cannot relax its template's physical requirements."""
+    return (
+        template.serial_tracking
+        or template.expiry_required
+        or template.manufacture_date_required
+        or template.shelf_life_days is not None
+        or template.minimum_remaining_life_days is not None
+        or template.issue_strategy == "FEFO"
+    )
+
+
 async def available(
     access: ConfigurationAccess, config: EffectiveConfiguration, type_id: Any, kind: str
 ) -> dict[str, Any]:
@@ -42,7 +54,7 @@ async def available(
         "available": enabled,
         "required": enabled
         and (
-            template.serial_tracking
+            mandatory_batches(template)
             or "NONE" not in product_type.tracking_modes
             or product_type.require_expiry
         ),
@@ -102,6 +114,11 @@ def profile_values(
         )
     }
     if choice is not None and not choice.batch_enabled:
+        if mandatory_batches(template):
+            raise ValidationFailedError(
+                "Batch tracking is mandatory for this inventory profile",
+                fields={"batch_enabled": "Keep batches enabled for the required physical rules"},
+            )
         values.update(
             lot_tracking=False,
             expiry_required=False,

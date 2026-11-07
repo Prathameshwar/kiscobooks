@@ -18,6 +18,7 @@ import {
   formatQuantity,
   Notice,
   PageNavigation,
+  PreparationProgress,
   resolvedDisplay,
   ReviewList,
   Select,
@@ -708,7 +709,7 @@ export function CompanyWizard({ session, canBootstrapBooks, returnTo }: { sessio
       reached={reached}
       onStep={running || tasks ? undefined : (target) => setStep(target)}
       progress={`Step ${step + 1} of ${STEPS.length}`}
-      title={tasks ? preparing ? 'Preparing your company' : 'Creating your company' : STEPS[step].label}
+      title={tasks ? running && created.current ? 'Opening your company' : preparing ? 'Preparing your company' : 'Creating your company' : STEPS[step].label}
       subtitle={tasks ? created.current
         ? 'Company saved. We will open it when automatic preparation finishes.'
         : 'Waiting for confirmation that your company and setup request are saved.' : SUBTITLES[step]}
@@ -748,7 +749,9 @@ export function CompanyWizard({ session, canBootstrapBooks, returnTo }: { sessio
     >
       {tasks ? (
         <>
-          {preparing && created.current && <AutomaticCompanySetup company={created.current} canRetry notifyInitialComplete onComplete={() => void openCreatedCompany()} />}
+          {running && <PreparationProgress autoScroll label="Company creation progress" title={created.current ? 'Opening your company' : 'Saving your company'}
+            detail={created.current ? 'Your company is saved. Opening your workspace.' : 'Saving your company and setup request. This may take a moment.'} />}
+          {preparing && created.current && <AutomaticCompanySetup company={created.current} canRetry autoScroll notifyInitialComplete onComplete={() => void openCreatedCompany()} />}
           <ol className="console-wizard__tasks">
             {tasks.map((task) => (
               <li key={task.id} data-state={task.state}>

@@ -77,7 +77,7 @@ it('uses the shared accessible field group for attribute values', () => {
   render(<Form patch={{ is_required: true }} />);
   const group = screen.getByRole('group', { name: 'Material (required before activation)' });
   expect(group).toHaveClass('janso-fieldgroup');
-  expect(screen.getByLabelText('Material').closest('.janso-fieldgroup__fields')).not.toBeNull();
+  expect(screen.getByLabelText('Material', { selector: 'input, select' }).closest('.janso-fieldgroup__fields')).not.toBeNull();
 });
 it.each([
   ['TEXT', 'cotton', 'value_text'],
@@ -86,26 +86,26 @@ it.each([
   ['DATE', '2026-09-15', 'value_date'],
 ])('edits and clears exact %s values', (type, value, key) => {
   render(<Form patch={{ value_type: type, is_required: true }} />);
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value } });
   expect(screen.getByTestId('value')).toHaveTextContent(
     JSON.stringify({ definition_id: 'definition', value_type: type, [key]: value, unit_id: null }),
   );
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: '' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: '' } });
   expect(screen.getByTestId('value')).toHaveTextContent('null');
 });
 it('preserves false and distinguishes unset boolean', () => {
   render(<Form patch={{ value_type: 'BOOLEAN' }} />);
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: 'false' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: 'false' } });
   expect(screen.getByTestId('value')).toHaveTextContent('"value_boolean":false');
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: 'true' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: 'true' } });
   expect(screen.getByTestId('value')).toHaveTextContent('"value_boolean":true');
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: '' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: '' } });
   expect(screen.getByTestId('value')).toHaveTextContent('null');
 });
 it('supports measured values and retains the unit when the number changes', () => {
   render(<Form patch={{ value_type: 'INTEGER', measurement_dimension: 'COUNT' }} />);
   fireEvent.change(screen.getByLabelText('Material unit'), { target: { value: 'choice' } });
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: '3' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: '3' } });
   expect(screen.getByTestId('value')).toHaveTextContent('"unit_id":"choice"');
 });
 it('uses family choices for variant axes, labels saved values and disables retired options', () => {
@@ -123,17 +123,17 @@ it('uses family choices for variant axes, labels saved values and disables retir
   );
   expect(screen.getByRole('option', { name: 'Retired' })).toBeDisabled();
   expect(screen.getByText('Blue', { selector: 'span' })).toBeInTheDocument();
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: '' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: '' } });
   expect(screen.getByTestId('value')).toHaveTextContent('null');
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: 'choice' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: 'choice' } });
   expect(screen.getByTestId('value')).toHaveTextContent('"option_id":"choice"');
 });
 it('switches between free values and lookup options with an explicit clear', () => {
   render(<Form optionMode />);
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: 'old' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: 'old' } });
   fireEvent.change(screen.getByLabelText('Material entry'), { target: { value: 'option' } });
   expect(screen.getByTestId('value')).toHaveTextContent('null');
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: 'choice' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: 'choice' } });
   expect(screen.getByTestId('value')).toHaveTextContent('"option_id":"choice"');
   fireEvent.change(screen.getByLabelText('Material entry'), { target: { value: 'scalar' } });
   expect(screen.getByTestId('value')).toHaveTextContent('null');
@@ -146,7 +146,7 @@ it('locks protected values and displays resolved historical labels', () => {
       optionMode
     />,
   );
-  expect(screen.getByLabelText('Material')).toBeDisabled();
+  expect(screen.getByLabelText('Material', { selector: 'input, select' })).toBeDisabled();
   expect(screen.getByText('Historic')).toBeInTheDocument();
 });
 it('renders a saved measured unit label and can clear it', () => {
@@ -237,6 +237,6 @@ it("hides the unit control when the caller's metadata hides it", () => {
     />,
   );
   expect(screen.queryByLabelText('Material unit')).not.toBeInTheDocument();
-  fireEvent.change(screen.getByLabelText('Material'), { target: { value: '4' } });
+  fireEvent.change(screen.getByLabelText('Material', { selector: 'input, select' }), { target: { value: '4' } });
   expect(screen.getByTestId('value')).toHaveTextContent('"unit_id":"choice"');
 });

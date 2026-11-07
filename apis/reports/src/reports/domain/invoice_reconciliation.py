@@ -171,11 +171,10 @@ def reconcile_invoices(live: Live) -> None:
                     expected.add("OUTPUT_" + tax["code"])
                 elif row["kind"] == "PURCHASE":
                     supply = supplies_by_id[tax["supply_id"]]
-                    expected.add(
-                        ("PENDING_" + tax["code"])
-                        if supply["credit_state"] == "PENDING_EVIDENCE"
-                        else "NONRECOVERABLE"
-                    )
+                    if supply["credit_state"] == "PENDING_EVIDENCE":
+                        expected.add("PENDING_" + tax["code"])
+                    elif supply["supply_kind"] != "GOODS":
+                        expected.add("NONRECOVERABLE")
                     if not tax["supplier_charged"]:
                         expected.add("RCM_" + tax["code"])
                 else:
@@ -183,6 +182,30 @@ def reconcile_invoices(live: Live) -> None:
             observed = tax_links.get(tax_id, [])
             if len(observed) != len(expected) or set(observed) != expected:
                 raise ConflictError("invoice tax GL purposes differ from their source components")
+        if row["kind"] == "PURCHASE":
+            for supply_id, supply in supplies:
+                if supply["supply_kind"] != "GOODS" or supply["credit_state"] == "PENDING_EVIDENCE":
+                    continue
+                capitalised = sum(
+                    (Fraction(tax["amount"]) for _, tax in taxes if tax["supply_id"] == supply_id),
+                    Fraction(),
+                )
+                if not capitalised:
+                    continue
+                # D02: non-claimable goods GST is included in the inventory principal.
+                principal = [
+                    require("journal_line", link["journal_line_id"])
+                    for _, link in links
+                    if link["line_key"] == supply["line_key"] and not link["tax_component_id"]
+                ]
+                if len(principal) != 1 or (
+                    principal[0]["account_id"] != supply["account_id"]
+                    or principal[0]["side"] != "DEBIT"
+                    or principal[0]["currency"] != row["currency"]
+                    or Fraction(principal[0]["amount"])
+                    != Fraction(supply["commercial"]) + capitalised
+                ):
+                    raise ConflictError("goods inventory principal differs from capitalised tax")
         for field, value in (
             ("commercial_total", sum((Fraction(r["commercial"]) for _, r in supplies), Fraction())),
             ("tax_total", sum((Fraction(r["amount"]) for _, r in taxes), Fraction())),

@@ -50,8 +50,8 @@ export const classificationDefinitions = {
     ],
   },
   'product-families': {
-    title: 'Product families',
-    singular: 'product family',
+    title: 'Product Profiles',
+    singular: 'Product Profile',
     entity: 'catalog.product_family',
     permission: 'item',
     description:
@@ -205,6 +205,7 @@ export type ClassificationAccess = Record<ClassificationResource, boolean> & {
   stock?: boolean;
   openingStock?: boolean;
   warehouses?: boolean;
+  warehousePolicies?: boolean;
   companyConfiguration?: boolean;
   attributeSets?: boolean;
   manageGroups?: boolean;

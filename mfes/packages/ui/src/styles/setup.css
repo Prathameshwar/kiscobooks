@@ -1,21 +1,6 @@
 /* First-run layout uses the same tokens and palettes as every JANSO application. */
-/*
- * The wizard owns the viewport and scrolls inside itself, exactly as `.janso-shell` does
- * (shell.css: `height: 100dvh` on the frame, `overflow-y: auto` on the region that grows).
- *
- * **Why it cannot leave the scrolling to the document.** The console sets
- * `body { overflow: hidden }` so the shell's own main region is the only scrollbar on a page —
- * right for a shell, and inherited by every full-page route that has no shell. `/companies/new`
- * is one: a six-step form taller than a 768px viewport on five of its six steps, inside a body
- * that had been told not to scroll. `overflow: hidden` on the body propagates to the viewport,
- * which does not clip the content and does not stop `scrollTo` — so the page was its full
- * height (1940px on the Presentation step) with everything past the first screen unreachable by
- * wheel, trackpad or scrollbar, while Tab still scrolled focus into view.
- *
- * Making the layout its own scroll container fixes it in every host, rather than depending on
- * what an app's `globals.css` says about the body — the same reason the shell does not rely on
- * it either.
- */
+/* Full-page setup must own scrolling because the console disables document scrolling.
+ * The base retains the hand-composed auth setup; WizardLayout separates its scroll and footer. */
 .janso-setup {
   block-size: 100dvh;
   overflow-y: auto;
@@ -25,6 +10,23 @@
 .janso-setup__header { display: flex; align-items: center; justify-content: space-between; gap: var(--janso-space-4); padding: var(--janso-space-5); border-bottom: 1px solid var(--janso-line); }
 .janso-setup__layout { display: grid; grid-template-columns: var(--janso-rail-w) minmax(0, 1fr); gap: var(--janso-space-6); max-width: var(--janso-page-max); margin: auto; padding: var(--janso-space-6); }
 .janso-setup__content { min-width: 0; display: grid; align-content: start; gap: var(--janso-space-5); }
+/* The footer keeps its own row so short screens never push actions below the form. */
+.janso-setup--wizard { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-width: 0; overflow: hidden; }
+.janso-setup__scroll { min-height: 0; overflow: auto; scroll-padding-block: var(--janso-space-5); }
+.janso-setup--wizard .janso-setup__header { flex-wrap: wrap; }
+.janso-setup__footer { border-top: 1px solid var(--janso-line); background: var(--janso-paper); }
+.janso-setup__footer .janso-setup__actions {
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: var(--janso-page-max);
+  margin: 0 auto;
+  padding: var(--janso-space-4) var(--janso-space-6);
+  padding-inline-start: calc(var(--janso-rail-w) + var(--janso-space-6) * 2);
+  padding-bottom: calc(var(--janso-space-4) + env(safe-area-inset-bottom, 0px));
+}
+.janso-setup__footer .janso-btn { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.janso-setup--wizard .janso-setup__fields,
+.janso-setup--wizard .janso-choices { min-width: 0; overflow-wrap: anywhere; }
 .janso-setup__title { font: 600 var(--janso-text-xl)/1.3 var(--janso-font-display); color: var(--janso-ink); margin: 0; }
 .janso-setup__subtitle { color: var(--janso-ink-soft); margin: var(--janso-space-2) 0 0; }
 .janso-setup__fields { display: grid; gap: var(--janso-space-4); }
@@ -33,44 +35,6 @@ fieldset.janso-setup__fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 .janso-setup__fields > .janso-field + .janso-field { margin-top: 0; }
 .janso-setup__fields > p { margin: 0; }
 .janso-setup__actions { display: flex; justify-content: space-between; gap: var(--janso-space-3); margin-top: var(--janso-space-6); }
-/* A long step must not hide its own Next button below the fold. The bar sits on the paper
- * rather than floating, so the card's last field stays readable behind nothing. */
-/*
- * The pinned action bar, and the room the form needs to pass under it.
- *
- * It is sticky so Next is always in reach on a long step, which is right. What was missing is
- * the consequence: a 68px bar pinned to the bottom of the viewport sits over whatever field
- * happens to be behind it — one at a time, measured on the Presentation step. No field is
- * hidden *by the bar*, because at full scroll it returns to its static position, but you could
- * be reading one with its lower half behind it, and `scrollIntoView` on a validation
- * failure could park the invalid field underneath it.
- *
- * `scroll-padding-bottom` fixes the second, which is the one that matters: every programmatic
- * scroll, and every browser scroll-to-focus, now stops short of the bar. The clearance padding
- * fixes the first. The top border is the other half — a bar that content passes beneath has to
- * read as a surface, not as the end of the form.
- */
-.janso-setup__actions--sticky {
-  position: sticky;
-  bottom: 0;
-  margin-top: var(--janso-space-5);
-  padding: var(--janso-space-4) 0;
-  border-top: 1px solid var(--janso-line);
-  background: var(--janso-paper);
-}
-
-/*
- * The scroll padding belongs on the scroll container, which is the layout itself — it was on
- * `html` while the document was assumed to scroll, and `html` is not the scrollport any more.
- */
-.janso-setup {
-  scroll-padding-bottom: 7rem;
-}
-
-.janso-setup__content:has(> form > .janso-setup__actions--sticky),
-.janso-setup__content:has(> .janso-setup__actions--sticky) {
-  padding-bottom: var(--janso-space-6);
-}
 .janso-setup__progress { margin: 0 0 var(--janso-space-2); font-size: var(--janso-text-overline); letter-spacing: 0.09em; text-transform: uppercase; color: var(--janso-ink-soft); }
 .janso-stepper__text { display: grid; gap: 1px; min-width: 0; overflow-wrap: anywhere; }
 .janso-stepper__note { font-size: var(--janso-text-xs); color: var(--janso-ink-soft); }
@@ -101,6 +65,8 @@ fieldset.janso-setup__fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 .janso-stepper--horizontal ol { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
 @media (max-width: 720px) {
   .janso-setup__layout { grid-template-columns: 1fr; padding: var(--janso-space-4); gap: var(--janso-space-5); }
+  .janso-setup__footer .janso-setup__actions { padding-inline: var(--janso-space-4); }
+  .janso-setup--wizard .janso-card__body { padding: var(--janso-space-4); }
   .janso-stepper ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .janso-stepper--horizontal ol { grid-auto-flow: row; grid-auto-columns: auto; }
   .janso-stepper button { font-size: var(--janso-text-sm); padding: var(--janso-space-2); }

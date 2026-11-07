@@ -177,7 +177,9 @@ async def test_options_expose_pinned_required_attributes(client, factory, tenant
     ]
 
 
-async def test_options_accept_published_type_shared_by_goods_and_services(client, factory, tenant_a):
+async def test_options_accept_published_type_shared_by_goods_and_services(
+    client, factory, tenant_a
+):
     company, _, auth, base, body = await prepared(client, factory, tenant_a)
     revision_id = uuid.UUID(body["profile"]["product_type_revision_id"])
     with tenant_scope(tenant_a):
@@ -185,6 +187,8 @@ async def test_options_accept_published_type_shared_by_goods_and_services(client
             revision = await db.get(ProductTypeRevision, revision_id)
             assert revision is not None
             revision.kind = "BOTH"
+            revision.inventory_modes = [*revision.inventory_modes, "NON_STOCK"]
+            revision.tracking_modes = [*revision.tracking_modes, "NONE"]
     response = await client.get(
         base + "/options?kind=GOODS&product_type_revision_id=" + str(revision_id),
         headers=auth,

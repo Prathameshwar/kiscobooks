@@ -11,7 +11,7 @@ export const inventoryWorkspaces: Record<InventoryReportCode, InventoryDefinitio
     lede:'Opening stock, stock movements and closing balances from a verified inventory snapshot.',
     focus:'Search the full result by item code or name',empty:'No stock items match the applied filters.',
     primaryFilters:['as_of','location_id','group_id','search'],
-    columns:['item_name','unit','opening','inward','outward','quantity','carrying_value'],
+    columns:['item_name','unit','opening','inward','outward','quantity','eligible','reserved','available','carrying_value'],
   },
   ITEM_LEDGER: {
     code:'ITEM_LEDGER',title:'Item Stock Ledger',overline:'Item transaction history',resultNoun:'ledger rows',
@@ -24,9 +24,9 @@ export const inventoryWorkspaces: Record<InventoryReportCode, InventoryDefinitio
   LOCATION_STOCK: {
     code:'LOCATION_STOCK',title:'Warehouse Stock',overline:'Stock by location',resultNoun:'warehouse stock rows',
     lede:'Find stock across warehouses, with opening, movement and closing balances by item.',
-    focus:'Parent warehouse selections include their descendants once.',empty:'No warehouse stock matches the applied filters.',
+    focus:'Warehouse group selections include their member warehouses once, using membership effective on the stock date.',empty:'No warehouse stock matches the applied filters.',
     primaryFilters:['as_of','location_id','item_id','search'],
-    columns:['location_name','item_name','unit','opening','inward','outward','quantity','carrying_value'],
+    columns:['location_name','item_name','unit','opening','inward','outward','quantity','eligible','reserved','available','carrying_value'],
   },
   STOCK_VALUATION: {
     code:'STOCK_VALUATION',title:'Stock Valuation',overline:'Inventory carrying value',resultNoun:'valuation rows',

@@ -73,7 +73,9 @@ class NativeContext:
             or query.date_to is None
             or (query.date_from < self.coverage and not includes_ytd(self.data.rows, query))
         ):
-            raise ConflictError("requested history precedes retained owner coverage")
+            from reports.domain.reporting.history_coverage import InsufficientHistoryError
+
+            raise InsufficientHistoryError("requested history precedes retained owner coverage")
         if query.basis == "BASE" and query.currency not in {None, self.data.currency}:
             raise ValidationFailedError("base reporting currency differs from the company")
         for name, entity in (

@@ -341,6 +341,10 @@ async def test_source_versions_cover_snapshots_replays_and_multiple_flushes(
             session, company_id=company, request_id=request_id, ttl_seconds=60
         )
         assert replay == first
+        another = await create_snapshot(
+            session, company_id=company, request_id=uuid7(), ttl_seconds=60
+        )
+        assert another.source_version == first.source_version
         row = await session.get(Company, company)
         assert row is not None
         row.display_name = "First flush"
@@ -355,14 +359,13 @@ async def test_source_versions_cover_snapshots_replays_and_multiple_flushes(
             )
         )
         versions = [event.payload["source_version"] for event in events]
-        assert versions == list(range(first.source_version, first.source_version + 4))
+        assert versions == [first.source_version + 1, first.source_version + 2]
         assert all(
             event.payload["previous_version"] == event.payload["source_version"] - 1
             for event in events
         )
-        assert [event.payload["records"] for event in events[:2]] == [[], []]
-        assert events[-2].payload["records"][0]["data"]["display_name"] == "First flush"
-        assert events[-1].payload["records"][0]["data"]["display_name"] == "Second flush"
+        assert events[0].payload["records"][0]["data"]["display_name"] == "First flush"
+        assert events[1].payload["records"][0]["data"]["display_name"] == "Second flush"
         with pytest.raises(ValidationFailedError, match="tracked ORM"):
             await session.execute(update(Company).values(display_name="uncaptured"))
         with pytest.raises(ValidationFailedError, match="source capture"):

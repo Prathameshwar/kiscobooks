@@ -16,12 +16,14 @@ from billing_platform.db import tenant_scope
 from billing_platform.db.types import utcnow
 from billing_platform.idempotency import canonical_json
 from billing_platform.ids import uuid7
+from reporting_contract.inventory import Movement
 from sqlalchemy import func, select
 from voucher_execution.contracts import DelegatedAuthority
 from voucher_execution.stock_facts import StockFenceFacts
 from voucher_execution.transport import command_digest
 
 from accounting.models.invoice import InvoiceRecord
+from accounting.models.inventory_reporting import InventoryReportRecord
 from accounting.models.ledger import Journal, JournalLine
 from accounting.models.stock import StockBalance, StockPosting
 from accounting.models.subledger import OpenItem
@@ -187,6 +189,10 @@ async def test_a_goods_bill_posts_landed_stock_input_gst_and_the_supplier_bill_o
             assert balances == [Decimal("5"), Decimal("10")]
             journal = await db.scalar(select(Journal).where(Journal.status == "POSTED"))
             assert journal is not None
+            reported = list(await db.scalars(select(InventoryReportRecord)))
+            movements = [Movement.model_validate(row.payload) for row in reported if row.payload["kind"] == "MOVEMENT"]
+            assert len(movements) == 2
+            assert all(movement.voucher_number == journal.number for movement in movements)
             lines = list(
                 await db.scalars(select(JournalLine).where(JournalLine.journal_id == journal.id))
             )

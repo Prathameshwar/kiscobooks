@@ -46,6 +46,7 @@ from catalog.tasks.pricing_commands import PricingWork, purpose_access
 from catalog.tasks.pricing_commands import row as pricing_row
 from catalog.tasks.product_commands import ProductWork
 from catalog.tasks.product_creation_review import configuration_fingerprint
+from catalog.tasks.configuration_context import family_group
 from catalog.tasks.product_initial import apply_initial
 
 Factory = async_sessionmaker[AsyncSession]
@@ -239,6 +240,11 @@ async def setup(
         ):
             raise ConflictError("Company product policy changed; review setup again")
         if body.setup.expected_source_version is not None or body.setup.configuration_fingerprint:
+            assigned = await family_group(access, family.id, body.setup.effective_from)
+            # The default SKU is about to create this dated group assignment.
+            # Resolve the proposed group before that write without claiming the
+            # still-unassigned family already belongs to it.
+            pending_group = body.setup.group_id is not None and assigned is None
             current = await resolve(
                 db,
                 actor,
@@ -246,8 +252,8 @@ async def setup(
                 EffectiveQuery(
                     as_of=body.setup.effective_from,
                     kind=cast(Literal["GOODS", "SERVICE"], family.kind),
-                    family_id=family.id,
-                    item_id=item.id,
+                    family_id=None if pending_group else family.id,
+                    item_id=None if pending_group else item.id,
                     product_type_revision_id=family.product_type_revision_id,
                     group_id=body.setup.group_id or row.request.get("group_id"),
                 ),

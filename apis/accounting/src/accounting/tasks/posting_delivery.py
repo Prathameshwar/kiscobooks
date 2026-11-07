@@ -16,7 +16,13 @@ from billing_platform.delivery import OutgoingMessage, PublishResult, publish_ba
 from billing_platform.messages import MessageEnvelope
 from billing_platform.outbox_ops import inventory
 from identity_posting import PostingClient, ReservationRejectedError
-from identity_posting.stock import StockPostingClient, StockReservationIntent, StockTerminalRequest
+from identity_posting.stock import (
+    StockPostingClient,
+    StockReservationIntent,
+    StockTerminalRequest,
+    TrackingTerminalRequest,
+    tracking_root,
+)
 from pydantic import Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -27,6 +33,9 @@ from accounting.schemas.masters import Input
 EVENT_TYPES = frozenset({"accounting.company_posting.confirm", "accounting.company_posting.abort"})
 STOCK_EVENT_TYPES = frozenset(
     {"accounting.stock_posting.confirm", "accounting.stock_posting.abort"}
+)
+TRACKING_EVENT_TYPES = frozenset(
+    {"accounting.tracking_feature.confirm", "accounting.tracking_feature.abort"}
 )
 LOG = logging.getLogger("accounting.posting_delivery")
 
@@ -111,7 +120,7 @@ async def deliver(
     stock_client: StockPostingClient | None = None,
 ) -> PublishResult:
     selected_events = (EVENT_TYPES if client is not None else frozenset()) | (
-        STOCK_EVENT_TYPES if stock_client is not None else frozenset()
+        STOCK_EVENT_TYPES | TRACKING_EVENT_TYPES if stock_client is not None else frozenset()
     )
 
     async def send(message: OutgoingMessage) -> bool:
@@ -122,6 +131,26 @@ async def deliver(
             or envelope.event_type not in selected_events
         ):
             raise ValueError("unsupported company posting event")
+        if envelope.event_type in TRACKING_EVENT_TYPES:
+            assert stock_client is not None
+            company_id = uuid.UUID(envelope.payload["company_id"])
+            terminal = TrackingTerminalRequest.model_validate({
+                key: value for key, value in envelope.payload.items() if key != "company_id"
+            })
+            tracking_outcome = (
+                "confirmed" if envelope.event_type.endswith(".confirm") else "aborted"
+            )
+            if (terminal.committed_at is not None) != (tracking_outcome == "confirmed"):
+                raise ValueError("tracking terminal evidence differs from its outcome")
+            receipt = await stock_client.request(
+                tracking_root(envelope.tenant_id, company_id)
+                + f"/{terminal.intent.operation_id}/{tracking_outcome}",
+                "tracking-" + tracking_outcome, terminal,
+            )
+            if (receipt.operation_id != terminal.intent.operation_id
+                or receipt.status != tracking_outcome):
+                raise ValueError("tracking terminal receipt differs")
+            return True
         is_stock = envelope.event_type in STOCK_EVENT_TYPES
         payload = (
             StockIntentPayload.model_validate(envelope.payload)
@@ -221,7 +250,8 @@ async def run(settings: Settings, *, once: bool) -> None:
             if now - last_backlog_check >= 60:
                 last_backlog_check = now
                 routes = (EVENT_TYPES if client is not None else frozenset()) | (
-                    STOCK_EVENT_TYPES if stock_client is not None else frozenset()
+                    STOCK_EVENT_TYPES | TRACKING_EVENT_TYPES
+                    if stock_client is not None else frozenset()
                 )
                 status = await inventory(factory, routes, maximum_attempts=12, sample_limit=5)
                 if status["pending"] and status["oldest_age_seconds"] >= 60:

@@ -31,7 +31,7 @@ beforeEach(() => {
       return { items: choices.map(([id, label]) => ({ id, value: id, label })), page: { has_more: false } } as never;
     }
     if (request.path === base) return { id: JOB, company_id: COMPANY, code: 'TEA1234567', status: 'RUNNING', step: 'CREATE' } as never;
-    if (request.path.endsWith('/advance')) return { id: JOB, company_id: COMPANY, code: 'TEA1234567', status: 'COMPLETE', step: 'COMPLETE' } as never;
+    if (request.path.endsWith('/drive')) return { id: JOB, company_id: COMPANY, code: 'TEA1234567', status: 'COMPLETE', step: 'COMPLETE' } as never;
     throw new Error('Unexpected classification request ' + request.path);
   });
 });

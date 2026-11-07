@@ -402,7 +402,7 @@ wheels = [
 
 [[package]]
 name = "identity-posting-client"
-version = "0.3.2"
+version = "0.3.3"
 source = { editable = "../../clients/identity-posting" }
 dependencies = [
     { name = "billing-platform" },
@@ -756,7 +756,7 @@ wheels = [
 
 [[package]]
 name = "reporting-contract"
-version = "0.14.0"
+version = "0.14.2"
 source = { editable = "../../clients/reporting" }
 dependencies = [
     { name = "billing-platform", extra = ["crypto", "mariadb"] },
@@ -896,7 +896,7 @@ wheels = [
 
 [[package]]
 name = "voucher-execution-client"
-version = "0.6.1"
+version = "0.6.2"
 source = { editable = "../../clients/voucher-execution" }
 dependencies = [
     { name = "billing-platform" },

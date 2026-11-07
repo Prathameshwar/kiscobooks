@@ -42,7 +42,9 @@ def invalid_identifier() -> ColumnElement[bool]:
         .correlate(revision)
         .exists()
     )
-    return revision.identifier_profile_id.is_not(None) & ~valid
+    return (
+        revision.serial_tracking.is_(True) & revision.identifier_profile_id.is_(None)
+    ) | (revision.identifier_profile_id.is_not(None) & ~valid)
 
 
 async def requirements(

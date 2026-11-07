@@ -1,6 +1,6 @@
 [project]
 name = "reporting-contract"
-version = "0.14.0"
+version = "0.14.2"
 description = "Versioned committed Accounting export contracts for Reports."
 requires-python = "==3.12.*"
 dependencies = ["billing-platform[crypto,mariadb]", "httpx==0.28.1"]

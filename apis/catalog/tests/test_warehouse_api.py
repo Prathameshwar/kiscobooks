@@ -15,6 +15,7 @@ from tests.commercial_factories import reference_data
 from tests.test_api import headers
 from tests.test_commercial_api import command_headers
 from tests.warehouse_factories import RETIRE, auth, retire
+from tests.test_warehouse_tax_context import registration_headers
 
 
 async def test_bootstrap_provisions_one_built_in_set_and_replays(
@@ -546,8 +547,10 @@ async def test_warehouse_tax_registration_linkage(
 ) -> None:
     company, user = uuid7(), uuid7()
     tax_reg_id = uuid7()
+    new_tax_reg_id = uuid7()
     await reference_data(factory)
     current = await auth(factory, tenant_a, company, user)
+    current = registration_headers(current, tenant_a, company, user, [tax_reg_id, new_tax_reg_id])
     route = f"/v1/companies/{company}/warehouses"
     created = await client.post(
         route,
@@ -571,7 +574,6 @@ async def test_warehouse_tax_registration_linkage(
     assert detail.json()["tax_registration_id"] == str(tax_reg_id)
 
     # Update tax_registration_id
-    new_tax_reg_id = uuid7()
     updated = await client.patch(
         f"{route}/{wh_id}",
         headers=command_headers(current),

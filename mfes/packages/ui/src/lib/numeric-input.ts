@@ -64,7 +64,7 @@ export type NumericInputState = {
   readonly problem: string | null;
   readonly onChange: (next: string) => void;
   readonly onFocus: () => void;
-  readonly onBlur: () => void;
+  readonly onBlur: () => string | null;
   /** Drops what was typed and shows the stored value again — what `Escape` means in a cell. */
   readonly revert: () => void;
   /** Spread onto the `input` for the attributes that are always the same. */
@@ -264,11 +264,12 @@ export function useNumericInput(options: NumericInputOptions): NumericInputState
     if (storable(tidy, { allowNegative })) {
       setDraft(null);
       if (tidy !== value) onChange(tidy);
-      return;
+      return tidy;
     }
     // Unstorable text is **kept**, not reverted. `MeasureField` reverts because its value is a
     // number with a usable previous state; here the text is the value, and silently discarding
     // what someone typed into a money field is how a wrong figure gets committed unnoticed.
+    return null;
   }, [allowNegative, config, draft, onChange, value]);
 
   return {

@@ -38,6 +38,36 @@ async function fillBill(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('the Purchase page against the real wire rules', () => {
+  it('shows the Accounting refusal when Create and Submit saves a draft but cannot calculate it', { timeout: 90000 }, async () => {
+    services = installFakeServices({ approvalRequired: false });
+    services.failNext((method, path) => method === 'POST' && path.endsWith('/invoice-preview'), 409,
+      'invoice calculation was refused: tax-bearing or unclassified supplies require their statutory profile');
+    const user = userEvent.setup();
+    render(<PurchaseEntryConnected {...props} />);
+    await screen.findByRole('heading', { level: 1, name: 'New purchase' });
+    await fillBill(user);
+    await user.click(screen.getByRole('button', { name: 'Purchase actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Create and Submit' }));
+    expect(await screen.findByText(/tax-bearing or unclassified supplies require their statutory profile/)).toBeVisible();
+    expect([...services.vouchers.values()].map(row => row.status)).toEqual(['DRAFT']);
+    expect(services.requests.some(row => row.path.endsWith('/submit'))).toBe(false);
+  });
+
+  it('retries a transient product source delay with the original Purchase creation key', { timeout: 90000 }, async () => {
+    const user = userEvent.setup();
+    services.failNext((method, path) => method === 'POST' && path.endsWith('/vouchers'), 409, 'product unit evidence is unavailable');
+    render(<PurchaseEntryConnected {...props} />);
+    await screen.findByRole('heading', { level: 1, name: 'New purchase' });
+    await fillBill(user);
+    await user.click(screen.getByRole('button', { name: /^(Create|Update)$/ }));
+    expect(await screen.findByText(/Waiting for the selected accounts and products/)).toBeVisible();
+    await screen.findByRole('heading', { name: 'Purchase bill · revision 1' }, { timeout: 10000 });
+    const creates = wrote().filter(row => row.method === 'POST' && row.path.endsWith('/vouchers'));
+    expect(creates).toHaveLength(2);
+    expect(creates[0]?.key).toBeTruthy();
+    expect(creates[1]?.key).toBe(creates[0]?.key);
+  });
+
   it('creates and submits a default Purchase through the split action, then confirms POSTED', { timeout: 90000 }, async () => {
     const user = userEvent.setup();
     services = installFakeServices({ approvalRequired: false });

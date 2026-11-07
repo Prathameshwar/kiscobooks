@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { components } from '@janso/api-client/catalog';
 import { Button, Card, CardBody, CustomFields, FieldGroup, FieldPair, Notice, PageHeader, PageNavigation, SearchSelect, Select, TextField, Toggle, customCondition, customPatch, useFormatters, type SearchSelectLoader, type SearchSelectOption } from '@janso/ui';
+import { SimpleProductProgress } from './SimpleProductProgress';
 import { masterRequest } from '../lib/catalog-master-api';
 import { masterCustomFields } from '../lib/catalog-masters';
 import { requestFailure, type RequestFailure } from '../lib/service-call';
@@ -22,10 +23,14 @@ type Choice = { id: string; code?: string; name?: string; description?: string; 
 type Choices = { items: Choice[]; page: { has_more: boolean; next_cursor?: string | null } };
 type CategoryRow = { key: string; scheme_id: string; category_id: string; is_primary: boolean };
 const categoryRow = (scheme_id = ''): CategoryRow => ({ key: crypto.randomUUID(), scheme_id, category_id: '', is_primary: false });
+function verifiedCreation(status: Status, company: string, expectedId?: string): Status {
+  if (status.company_id !== company || !status.id || (expectedId && status.id !== expectedId)) throw { status: 503, message: 'Product progress could not be verified.' } satisfies RequestFailure;
+  return status;
+}
 
-function ProductChoice({ company, field, resource, value, onChange, kind, date, parent, disabled, error, selectedLabel }: {
+function ProductChoice({ company, field, resource, value, onChange, kind, date, parent, typeRevision, disabled, error, selectedLabel }: {
   company: string; field: Field; resource: string; value: string | null;
-  onChange: (value: string | null) => void; kind?: Input['kind']; date?: string; parent?: string | null; disabled: boolean; error?: string; selectedLabel?: string;
+  onChange: (value: string | null) => void; kind?: Input['kind']; date?: string; parent?: string | null; typeRevision?: string | null; disabled: boolean; error?: string; selectedLabel?: string;
 }) {
   const [selected, setSelected] = useState<SearchSelectOption | null>(null);
   const tax = resource.startsWith('tax-');
@@ -38,12 +43,13 @@ function ProductChoice({ company, field, resource, value, onChange, kind, date, 
     if (resource === 'tax-classifications' && date) params.set('as_of', date);
     if (resource === 'tax-rules') params.set('is_active', 'true');
     if (parent) params.set('parent_id', parent);
+    if (resource === 'units' && typeRevision) params.set('product_type_revision_id', typeRevision);
     const page = await masterRequest<Choices>({ path: path + '?' + params, signal });
     return { items: page.items.map(row => {
       const label = row.label ?? row.name ?? row.description ?? row.code ?? 'Choice';
       return { id: row.value ?? row.id, label: tax && row.code && label !== row.code ? `${row.code} · ${label}` : label, meta: tax ? undefined : row.code };
     }), nextCursor: page.page.has_more ? page.page.next_cursor ?? null : null };
-  }, [path, kind, date, tax, resource, parent]);
+  }, [path, kind, date, tax, resource, parent, typeRevision]);
   useEffect(() => {
     if (!value || selected?.id === value) return;
     const controller = new AbortController();
@@ -53,8 +59,8 @@ function ProductChoice({ company, field, resource, value, onChange, kind, date, 
     return () => controller.abort();
   }, [company, resource, value, selected?.id]);
   return <SearchSelect label={field.label} error={error} value={value} selected={selected?.id === value ? selected : value ? { id: value, label: selectedLabel ?? 'Loading choice…' } : null}
-    loadOptions={load} scopeKey={path + ':' + kind + ':' + parent} minQueryLength={0} required={field.required} clearable={!field.required}
-    disabled={disabled || !field.writable || field.conditional_access} onChange={(id, option) => { setSelected(option); onChange(id); }} />;
+    loadOptions={load} scopeKey={path + ':' + kind + ':' + parent + ':' + typeRevision} minQueryLength={0} required={field.required} clearable={!field.required}
+    disabled={disabled || (resource === 'units' && !typeRevision) || !field.writable || field.conditional_access} onChange={(id, option) => { setSelected(option); onChange(id); }} />;
 }
 
 const decimals = /^(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/;
@@ -98,7 +104,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   const feedback = useRef<HTMLDivElement>(null);
   const completed = useRef<HTMLDivElement>(null);
   const locked = loading || busy || !!recoverKey || (!!job && !editing) || !!intent;
-  useUnsavedChanges(() => job?.status !== 'COMPLETE' && (dirty || !!intent || !!job || !!recoverKey || busy));
+  useUnsavedChanges(() => (!job && (dirty || !!intent || !!recoverKey || busy)) || (editing && dirty));
   const change = (key: string, value: string | null, authored = true) => {
     if (authored) setDirty(true);
     setValues(before => ({ ...before, [key]: value ?? '' }));
@@ -121,6 +127,21 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   useEffect(() => { if (job?.status === 'COMPLETE') completed.current?.focus(); }, [job?.status]);
 
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  useEffect(() => {
+    if (!job || busy) return;
+    const timer = setInterval(() => {
+      void masterRequest<Status>({ path: root + '/' + job.id }).then(current => {
+        if (!alive.current || current.company_id !== company || current.id !== job.id) return;
+        setJob(current);
+        if (current.status === 'COMPLETE') {
+          sessionStorage.removeItem(storageKey);
+          setIntent(null);
+          setFailure(null);
+        }
+      }).catch(() => { /* Retain the last verified status until the next poll. */ });
+    }, 3_000);
+    return () => clearInterval(timer);
+  }, [job?.id, busy, root, company, storageKey]);
   useEffect(() => {
     const controller = new AbortController(); setLoading(true);
     const query = new URLSearchParams({ kind });
@@ -146,18 +167,19 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   }, [options]);
 
   const continueSave = useCallback(async (initial: Status) => {
-    let current = initial;
+    let current = verifiedCreation(initial, company);
+    if (current.can_edit) return;
     const started = Date.now();
     let budget = 60000;
     let refreshingPrice = false;
     while (alive.current && current.status !== 'COMPLETE') {
-      if (current.step.startsWith('BATCH') || current.step === 'SERIAL' || ['OPENING', 'VOUCHER', 'SUBMIT', 'ISSUE', 'POST', 'FINALIZE'].includes(current.step)) budget = 300000;
+      if (current.step.startsWith('BATCH') || current.step === 'SERIAL' || ['OPENING', 'SOURCE', 'VOUCHER', 'SUBMIT', 'ISSUE', 'POST', 'FINALIZE'].includes(current.step)) budget = 300000;
       if (Date.now() - started > budget) throw { status: 503, message: refreshingPrice
         ? 'Product setup is saved, but its pricing source keeps changing. Retry Save to check its current price preview.'
         : 'Product setup is saved and still processing. Retry Save to check its progress.' } satisfies RequestFailure;
       try {
         current = await retryStockWait(
-          () => masterRequest<Status>({ path: root + '/' + current.id + '/advance', method: 'POST' }),
+          () => masterRequest<Status>({ path: root + '/' + current.id + '/drive', method: 'POST' }),
           { active: () => alive.current, onWait: () => { budget = 300000; setWaitingForStock(true); }, onResume: () => { if (alive.current) setWaitingForStock(false); } },
         );
       } catch (error) {
@@ -171,10 +193,10 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
       }
       refreshingPrice = false;
       if (alive.current) setWaitingForPricing(false);
-      if (current.company_id !== company || current.id !== initial.id) throw new Error('Product progress could not be verified.');
+      verifiedCreation(current, company, initial.id);
       if (!alive.current) return;
       setJob(current);
-      if (current.status !== 'COMPLETE') await new Promise(resolve => setTimeout(resolve, current.step === 'FINALIZE' ? 1500 : current.step === 'SERIAL' ? 600 : 100));
+      if (current.status !== 'COMPLETE' && current.step === 'FINALIZE') await new Promise(resolve => setTimeout(resolve, 1500));
     }
     if (current.status === 'COMPLETE') { sessionStorage.removeItem(storageKey); setIntent(null); }
   }, [root, company, storageKey]);
@@ -185,7 +207,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     active.current = true; setBusy(true);
     masterRequest<Status>({ path: root + '/by-key/' + key }).then(async saved => {
       if (!alive.current) return;
-      setJob(saved); await continueSave(saved);
+      setJob(verifiedCreation(saved, company)); await continueSave(saved);
     }).catch(error => {
       if (!alive.current) return;
       const problem = requestFailure(error);
@@ -199,7 +221,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
     if (stockStep && step === 0 && !job && !intent && !recoverKey) {
       setFailure(null);
       const problems: Record<string, string> = {};
-      for (const key of requiredKeys.filter(key => !key.includes('price') && key !== 'mrp')) if (!values[key]?.trim()) problems[key] = `${field(key)?.label ?? key} is required.`;
+      for (const key of requiredKeys.filter(key => !key.includes('price') && !['mrp', 'opening_unit_cost'].includes(key))) if (!values[key]?.trim()) problems[key] = `${field(key)?.label ?? key} is required.`;
       setErrors(problems); if (!Object.keys(problems).length) setStep(1); return;
     }
     if (active.current || !options || ((!job || editing) && (blocked || openingBlocked))) return;
@@ -208,7 +230,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
       active.current = true; setBusy(true);
       try {
         const saved = await masterRequest<Status>({ path: root + '/by-key/' + recoverKey });
-        setRecoverKey(null); setJob(saved); await continueSave(saved);
+        setJob(verifiedCreation(saved, company)); setRecoverKey(null); await continueSave(saved);
       } catch (error) {
         const problem = requestFailure(error); setFailure(problem);
         if (problem.status === 404) { sessionStorage.removeItem(storageKey); setRecoverKey(null); }
@@ -226,8 +248,15 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
         const definitions = customs(key + '.');
         const resolved = { ...Object.fromEntries(definitions.filter(field => field.custom?.is_active).map(field => [field.key, field.custom?.default_value])), ...entered };
         const numeric = new Set(definitions.filter(field => ['decimal', 'integer'].includes(field.custom?.data_type ?? '')).map(field => field.key));
-        const visible = definitions.filter(field => field.visible && field.writable && field.custom?.is_active && field.custom.data_type !== 'auto_number' && customCondition(field.custom.visibility, { ...values, kind, ...resolved }, numeric));
-        for (const field of visible) if (field.required && (resolved[field.key] == null || resolved[field.key] === '')) problems[key + '.' + field.key] = `${field.label} is required.`;
+        const applicable = definitions.filter(field => field.custom?.is_active && field.custom.data_type !== 'auto_number' && customCondition(field.custom.visibility, { ...values, kind, ...resolved }, numeric));
+        const allowed = (definition: typeof definitions[number]) => definition.visible && definition.writable && !options.fields?.find(field => field.key === key + '.' + definition.key)?.conditional_access;
+        const visible = applicable.filter(allowed);
+        for (const field of applicable) {
+          const value = resolved[field.key];
+          const missing = value == null || typeof value === 'string' && !value.trim() || Array.isArray(value) && !value.length;
+          if (field.required && missing) problems[key + '.' + field.key] = `${field.label} is required.`;
+          if (field.required && !allowed(field)) problems[key] = `${field.label} access is required to continue.`;
+        }
         try { input[key] = customPatch(visible, resolved, {}); } catch (error) { problems[key] = error instanceof Error ? error.message : 'Check additional information.'; }
       }
       if (options.gst_enabled) {
@@ -268,11 +297,15 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
         const quantity = serialEnabled ? String(serials.length) : values.opening_quantity || '0';
         if (serialEnabled) { const prepared = serialInputs(serials, options); input.serials = prepared.serials; Object.assign(problems, prepared.errors); }
         if (!decimals.test(quantity)) problems.opening_quantity = 'Enter a quantity of zero or more with up to four decimal places.';
-        if (nonzero(quantity) && (!input.purchase_price || !nonzero(String(input.purchase_price)))) problems.purchase_price = values.purchase_price ? 'Enter a positive Purchase price to value opening stock.' : 'Enter Purchase price to value opening stock.';
+        if (nonzero(quantity)) {
+          const cost = values.opening_unit_cost?.trim() ?? '';
+          if (!writable('opening_unit_cost') || !decimals.test(cost) || !nonzero(cost)) problems.opening_unit_cost = 'Enter an allowed positive opening unit cost.';
+          else input.opening_unit_cost = cost;
+        }
         input.opening_quantity = quantity;
         if (nonzero(quantity)) input.opening_date = options.opening_date;
       }
-      if (Object.keys(problems).length) { setErrors(problems); if (stockStep && Object.keys(problems).some(key => !key.startsWith('batches') && !key.startsWith('serials') && !key.includes('price') && !['mrp', 'opening_quantity'].includes(key))) setStep(0); return; }
+      if (Object.keys(problems).length) { setErrors(problems); if (stockStep && Object.keys(problems).some(key => !key.startsWith('batches') && !key.startsWith('serials') && !key.includes('price') && !['mrp', 'opening_quantity', 'opening_unit_cost'].includes(key))) setStep(0); return; }
       command = { key: crypto.randomUUID(), body: input, ...(editing && job ? { revision: job.row_version } : {}) };
       setIntent(command); if (!job) sessionStorage.setItem(storageKey, command.key);
     }
@@ -285,7 +318,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
         { active: () => alive.current, onWait: () => setWaitingForStock(true), onResume: () => { if (alive.current) setWaitingForStock(false); } },
       );
       if (!alive.current) return;
-      setEditing(false); setJob(saved); await continueSave(saved);
+      setJob(verifiedCreation(saved, company, job?.id)); setEditing(false); await continueSave(saved);
     } catch (error) {
       if (!alive.current) return;
       const problem = requestFailure(error); setFailure(problem);
@@ -293,7 +326,7 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
         const key = sessionStorage.getItem(storageKey);
         try {
           const saved = await masterRequest<Status>({ path: root + '/by-key/' + key });
-          setJob(saved); setEditing(false);
+          setJob(verifiedCreation(saved, company, job?.id)); setEditing(false);
           if (saved.can_edit) setIntent(null);
         } catch (lookupError) {
           if (requestFailure(lookupError).status === 404) { setIntent(null); sessionStorage.removeItem(storageKey); }
@@ -332,14 +365,19 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   const writable = (key: string) => shown(key) && field(key)?.writable && !field(key)?.conditional_access;
   const hasOpening = kind === 'GOODS' && (batchEnabled ? batches.some(row => nonzero(row.values.opening_quantity ?? '0')) : serialEnabled ? serials.length > 0 : nonzero(values.opening_quantity ?? '0'));
   const requiredKeys = ['name', 'base_unit_id', 'group_id', ...(options?.gst_enabled ? ['classification_id', 'rule_id'] : []),
+    ...(!batchEnabled && hasOpening ? ['opening_unit_cost'] : []),
     ...(Object.keys(detailFields) as Detail[]).filter(detailEnabled).flatMap(key => [...detailFields[key]]),
     ...(batchEnabled ? [] : saleLevels.filter(level => level.required).map(level => saleKey(level.price_level_id))),
     ...(batchEnabled ? [] : Object.entries({ purchase_price: options?.configuration.pricing.purchase_reference_mode, sale_price: saleLevels.length ? 'DISABLED' : options?.configuration.pricing.sale_price_mode,
       mrp: kind === 'GOODS' ? options?.configuration.pricing.mrp_mode : 'DISABLED' }).filter(([, mode]) => mode === 'REQUIRED').map(([key]) => key))];
   const selectedDetails = (Object.keys(detailFields) as Detail[]).filter(key => details[key] !== false && !!values[detailFields[key][0]]);
-  const unavailableEntries = ['purchase_price', 'sale_price', 'mrp', ...Object.keys(values).filter(key => key.startsWith('sale_prices.')), ...selectedDetails.flatMap(key => [...detailFields[key]]),
+  const unavailableEntries = ['purchase_price', 'sale_price', 'mrp', 'opening_unit_cost', ...Object.keys(values).filter(key => key.startsWith('sale_prices.')), ...selectedDetails.flatMap(key => [...detailFields[key]]),
     ...(selectedDetails.includes('brand') ? ['series_id'] : [])]
     .filter(key => !!values[key] && !writable(key) && !requiredKeys.includes(key));
+  if (nonzero(values.opening_quantity ?? '0') && (!options?.inventory_enabled || !writable('opening_quantity'))) {
+    unavailableEntries.push('opening_quantity');
+    if (values.opening_unit_cost && !writable('opening_unit_cost')) unavailableEntries.push('opening_unit_cost');
+  }
   if (selectedDetails.includes('manufacturer') && values.manufacturer_site_id && !writable('manufacturer_site_id')) unavailableEntries.push('manufacturer_site_id');
   if (categoryOn !== false && categoryEntered && (categoryMode === 'DISABLED' || !categoryWritable)) unavailableEntries.push('categories');
   if (categories.some(row => row.is_primary) && !accessible('category_is_primary') && categoryOn !== false) unavailableEntries.push('category_is_primary');
@@ -370,10 +408,10 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   const customErrors = (prefix: string) => Object.fromEntries(Object.entries(validation).filter(([key]) => key.startsWith(prefix)).map(([key, message]) => [key.slice(prefix.length), message]));
   const textField = (key: string, label: string, required = false, hint?: string) => shown(key) && <TextField key={key} label={field(key)?.label || label} value={values[key] ?? ''} required={required}
     disabled={locked || !writable(key)} error={fieldError(key)} hint={hint}
-    inputMode={key.includes('price') || key === 'mrp' || key === 'opening_quantity' ? 'decimal' : undefined} maxLength={key === 'code' ? 30 : key === 'name' || key === 'model_code' ? 100 : key === 'barcode_value' ? 128 : undefined}
+    inputMode={key.includes('price') || key === 'mrp' || key === 'opening_quantity' || key === 'opening_unit_cost' ? 'decimal' : undefined} maxLength={key === 'code' ? 30 : key === 'name' || key === 'model_code' ? 100 : key === 'barcode_value' ? 128 : undefined}
     onChange={event => change(key, event.target.value)} />;
-  const choice = (key: string, resource: string, label: string, required = false, parent?: string) => shown(key) && <ProductChoice company={company} field={{ ...field(key)!, label, required }} resource={resource} value={values[key] || null}
-    onChange={value => { change(key, value); if (key === 'brand_id') change('series_id', null); if (key === 'manufacturer_id') change('manufacturer_site_id', null); }} kind={kind} date={options?.today} parent={parent} disabled={locked} error={fieldError(key)} />;
+  const choice = (key: string, resource: string, label: string, required = false, parent?: string) => shown(key) && <ProductChoice company={company} field={{ ...field(key)!, label, required }} resource={resource} value={values[key] || null} typeRevision={resource === 'units' ? options?.product_type_revision_id : undefined}
+    onChange={value => { if (value === (values[key] || null)) return; change(key, value); if (key === 'group_id') change('base_unit_id', null); if (key === 'brand_id') change('series_id', null); if (key === 'manufacturer_id') change('manufacturer_site_id', null); }} kind={kind} date={options?.today} parent={parent} disabled={locked} error={fieldError(key)} />;
   const detailSection = (key: Detail, label: string, children: ReactNode) => detailMode(key) && detailMode(key) !== 'DISABLED' && detailFields[key].some(value => field(value)?.visible) &&
     <FieldGroup title={label} hint={detailMode(key) === 'REQUIRED' ? 'Required by Product Configuration.' : !detailWritable(key) ? 'Your field access does not allow these details.' : undefined}
       headerEnd={<label className="janso-check"><Toggle label={'Use ' + label} checked={detailEnabled(key)}
@@ -396,24 +434,30 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
   if ((!serialEnabled || batchEnabled) && serials.length) unavailableEntries.push('serials');
   if (serialEnabled && nonzero(values.opening_quantity ?? '0')) unavailableEntries.push('opening_quantity');
   const blocked = (hasOpening && serialEnabled && !accessible('serial_identifiers')) || blockedByAccess || unavailableEntries.length > 0 || (batchAvailable && !accessible('batch_enabled'));
-  const openingBlocked = hasOpening && !writable('purchase_price');
+  const openingBlocked = hasOpening && !writable('opening_unit_cost');
+  const priceEntries = batchEnabled ? batches.map(row => row.values) : [values];
+  const capturedPricing = intent
+    ? [intent.body, ...(intent.body.batches ?? [])].some(body => body.purchase_price != null || body.sale_price != null || body.mrp != null || !!body.sale_prices?.length)
+    : priceEntries.some(row => Object.entries(row).some(([key, value]) => !!value.trim() && (['purchase_price', 'sale_price', 'mrp'].includes(key) || key.startsWith('sale_prices.'))));
   const another = '/masters/items/new' + (back === '/masters/items' ? '' : '?returnTo=' + encodeURIComponent(back));
 
   if (mode?.data?.product_family_sku_enabled) return <Notice>This company uses Product profiles and SKUs. Simple product creation is available when that mode is disabled in Product Configuration.</Notice>;
   return <section className={'janso-page janso-simple-product' + (batchAvailable && step === 1 && batchEnabled ? ' janso-simple-product--batches' : '')}>
     <PageNavigation back={{ href: back, label: 'products' }} breadcrumbs={[{ label: 'Products', href: back }, { label: 'New product' }]} />
     <PageHeader title="New product" lede="Add a product or service and make it ready to use." />
+    {job?.status !== 'COMPLETE' && (busy || job || intent || recoverKey) && <SimpleProductProgress job={job} busy={busy} failed={!!failure} editing={editing} pricing={capturedPricing} tracking={!!(intent?.body.batches?.length || intent?.body.serials?.length || batches.length || serials.length)} opening={hasOpening} waitingForStock={waitingForStock} waitingForPricing={waitingForPricing} />}
     {(failure || Object.keys(errors).length > 0) && <div ref={feedback} tabIndex={-1}><Notice tone="danger">{failure?.message ?? 'Check the highlighted fields and save again.'}</Notice></div>}
     {blockedByAccess && <Notice tone="warning">Your field access does not allow all required product details. Ask your administrator to review product access.</Notice>}
     {unavailableEntries.length > 0 && <Notice tone="warning" action={<Button type="button" variant="ghost" disabled={locked} onClick={clearUnavailable}>Clear unavailable details</Button>}>Some entered details are no longer available under current settings or field access. Clear these entries to continue, or restore the settings.</Notice>}
-    {job?.status === 'COMPLETE' ? <div ref={completed} role="region" aria-label="Product saved" tabIndex={-1}><Card><CardBody><Notice tone="success">Product {job.code} is active and ready.{job.opening_posted ? ' Opening stock has been posted.' : ''}</Notice><div className="janso-form-actions"><a className="janso-btn janso-btn--primary" href={another}>Create another product</a><a className="janso-btn janso-btn--ghost" href={back}>Back to products</a></div></CardBody></Card></div> : loading && !options ? <p role="status">Loading product settings…</p> : !options ? <Button onClick={() => { setFailure(null); setReload(value => value + 1); }}>Retry loading settings</Button> :
+    {job?.status === 'COMPLETE' ? <div ref={completed} role="region" aria-label="Product saved" tabIndex={-1}><Card><CardBody><SimpleProductProgress job={job} pricing={capturedPricing} tracking={!!(batches.length || serials.length)} opening={hasOpening} /><div className="janso-form-actions"><a className="janso-btn janso-btn--primary" href={another}>Create another product</a><a className="janso-btn janso-btn--ghost" href={back}>Back to products</a></div></CardBody></Card></div> : loading && !options ? <p role="status">Loading product settings…</p> : !options ? <Button onClick={() => { setFailure(null); setReload(value => value + 1); }}>Retry loading settings</Button> :
       <form ref={form} onSubmit={save} noValidate className="janso-flow" aria-busy={busy}>
         {stockStep && <nav className="janso-form-actions" aria-label="Product creation steps"><Button type="button" variant="ghost" aria-current={step === 0 ? 'step' : undefined} disabled={locked} onClick={() => setStep(0)}>1. Product details</Button><Button type="button" variant="ghost" aria-current={step === 1 ? 'step' : undefined} disabled={locked} onClick={() => setStep(1)}>2. Stock and prices</Button></nav>}
         <Card><CardBody><div className="janso-flow">
           <div data-product-step={0} hidden={stockStep && step !== 0}><div className="janso-flow">
           <FieldGroup title="Product">
             {shown('kind') && <FieldPair><Select label="Type" value={kind} options={[{ value: 'GOODS', label: 'Goods' }, { value: 'SERVICE', label: 'Services' }]} disabled={locked || !writable('kind')} onChange={value => {
-              setDirty(true); setKind(value as 'GOODS' | 'SERVICE'); setBatchOn(null); setBatches([]); setSerials([]); setStep(0); setValues(before => ({ ...before, base_unit_id: '', classification_id: '', rule_id: '', opening_quantity: '0', mrp: '' })); setOptions(null); setErrors({}); setFailure(null);
+              if (value === kind) return;
+              setDirty(true); setKind(value as 'GOODS' | 'SERVICE'); setStep(0); setValues(before => ({ ...before, base_unit_id: '', classification_id: '', rule_id: '' })); setOptions(null); setErrors({}); setFailure(null);
             }} /></FieldPair>}
             <FieldPair>{textField('name', 'Product name', true)}{textField('code', 'Product code', false, 'Optional. Leave blank to generate a unique 10-character code.')}</FieldPair>
             <FieldPair>{choice('group_id', 'item_groups', 'Product group', true)}{choice('base_unit_id', 'units', 'Base unit', true)}</FieldPair>
@@ -452,23 +496,22 @@ export function SimpleProductCreate({ company, returnTo }: { company: string; re
           {batchAvailable && <SimpleProductBatches options={options} enabled={batchEnabled} rows={batches} locked={locked} errors={validation} onToggle={enabled => { setDirty(true); setBatchOn(enabled); setErrors({}); if (enabled && !batches.length) setBatches([batchRow()]); }} onRows={rows => { setDirty(true); setBatches(rows); setErrors({}); }} />}
           {!batchEnabled && (['purchase_price', 'sale_price', 'mrp'].some(shown) || saleLevels.some(level => shown(saleKey(level.price_level_id)))) && <FieldGroup title="Prices" hint={`Prices are per base unit in ${options.currency}.`}>
             {['purchase_price', 'sale_price', ...(saleLevels.length ? ['mrp'] : [])].some(shown) && <FieldPair>
-              {textField('purchase_price', 'Purchase price', !!hasOpening || options.configuration.pricing.purchase_reference_mode === 'REQUIRED', hasOpening ? 'Required to value the opening stock entered below.' : undefined)}
+              {textField('purchase_price', 'Purchase reference', options.configuration.pricing.purchase_reference_mode === 'REQUIRED')}
               {saleLevels.length ? textField('mrp', 'MRP', options.configuration.pricing.mrp_mode === 'REQUIRED') : textField('sale_price', 'Selling price', options.configuration.pricing.sale_price_mode === 'REQUIRED')}
             </FieldPair>}
             {!saleLevels.length && shown('mrp') && <FieldPair>{textField('mrp', 'MRP', options.configuration.pricing.mrp_mode === 'REQUIRED')}</FieldPair>}
             {saleLevels.length > 0 && <FieldGroup title="Selling prices"><FieldPair>{saleLevels.map(level => textField(saleKey(level.price_level_id), level.name, level.required, level.tax_basis === 'INCLUSIVE' ? 'Including tax.' : 'Excluding tax.'))}</FieldPair></FieldGroup>}
             {validation.sale_prices && <Notice tone="danger">{validation.sale_prices}</Notice>}
           </FieldGroup>}
-          {!batchEnabled && kind === 'GOODS' && options.inventory_enabled && shown('opening_quantity') && <FieldGroup title="Opening stock" hint={serialEnabled ? "Opening value is Purchase price times serial unit count." : "Opening value is Purchase price × Opening quantity. Leave quantity at zero if there is no opening stock."}><FieldPair>{serialEnabled ? <TextField label="Opening quantity" value={String(serials.length)} readOnly error={fieldError('opening_quantity')} hint="One unit per serial row." /> : textField('opening_quantity', 'Opening quantity')}<TextField label="Opening date" value={format.date(options.opening_date)} readOnly hint="Company books begin date." /></FieldPair></FieldGroup>}
-          {openingBlocked && <Notice tone="warning">Opening stock needs an editable Purchase price. Set opening quantity to zero, or enable Purchase price in Product Configuration and check your field access.</Notice>}
+          {!batchEnabled && kind === 'GOODS' && options.inventory_enabled && shown('opening_quantity') && <FieldGroup title="Opening stock" hint="Opening value is Opening unit cost × Opening quantity. Leave quantity at zero if there is no opening stock."><FieldPair>{serialEnabled ? <TextField label="Opening quantity" value={String(serials.length)} readOnly error={fieldError('opening_quantity')} hint="One unit per serial row." /> : textField('opening_quantity', 'Opening quantity')}{textField('opening_unit_cost', 'Opening unit cost', !!hasOpening)}</FieldPair><TextField label="Opening date" value={format.date(options.opening_date)} readOnly hint="Company books begin date." /></FieldGroup>}
+          {openingBlocked && <Notice tone="warning">Your stock field access does not allow the opening unit cost. Review access or set the opening quantity to zero.</Notice>}
           {!batchEnabled && serialEnabled && <SimpleProductSerials options={options} rows={serials} onRows={rows => { setDirty(true); setSerials(rows); setErrors({}); }} locked={locked} errors={validation} />}
           </div></div>
           <div data-product-step={0} hidden={stockStep && step !== 0}>
           {(customs('custom_fields.').length > 0 || customs('shared_custom_fields.').length > 0) && <FieldGroup title="Additional information"><CustomFields fields={customs('custom_fields.')} values={custom} onChange={value => { setDirty(true); setCustom(value); }} nativeValues={{ ...values, kind }} creating disabled={locked} errors={customErrors('custom_fields.')} loadOptions={customOptions} currencies={[options.currency]} /><CustomFields fields={customs('shared_custom_fields.')} values={shared} onChange={value => { setDirty(true); setShared(value); }} nativeValues={{ ...values, kind }} creating disabled={locked} errors={customErrors('shared_custom_fields.')} loadOptions={customOptions} currencies={[options.currency]} />{validation.custom_fields && <Notice tone="danger">{validation.custom_fields}</Notice>}{validation.shared_custom_fields && <Notice tone="danger">{validation.shared_custom_fields}</Notice>}</FieldGroup>}
           </div>
         </div></CardBody></Card>
-        {busy && <p role="status">{waitingForStock ? 'Waiting for the current stock posting to finish; product setup will resume automatically…' : waitingForPricing ? 'Refreshing the price preview after a source change; product setup will resume automatically…' : job?.step === 'FINALIZE' ? 'Posting opening stock…' : 'Saving product and preparing it for use…'}</p>}
-        <div className="janso-form-actions">{stockStep && step === 1 && <Button type="button" variant="ghost" disabled={locked} onClick={() => setStep(0)}>Back to product details</Button>}<Button type="submit" disabled={busy || loading || ((!job || editing) && (!!blocked || !!openingBlocked))}>{stockStep && step === 0 && !job && !intent && !recoverKey ? 'Next: Stock and prices' : busy ? 'Saving…' : editing ? 'Save corrected product' : job || intent || recoverKey ? 'Retry Save' : 'Save product'}</Button>{job?.can_edit && !busy && !editing && !recoverKey && <Button type="button" variant="ghost" onClick={() => { setEditing(true); setIntent(null); setFailure(null); }}>Correct details</Button>}{!locked && <a className="janso-btn janso-btn--ghost" href={back}>Cancel</a>}</div>
+        <div className="janso-form-actions">{stockStep && step === 1 && <Button type="button" variant="ghost" disabled={locked} onClick={() => setStep(0)}>Back to product details</Button>}<Button type="submit" disabled={busy || loading || ((!job || editing) && (!!blocked || !!openingBlocked))}>{stockStep && step === 0 && !job && !intent && !recoverKey ? 'Next: Stock and prices' : busy ? 'Saving…' : editing ? 'Save corrected product' : job || intent || recoverKey ? 'Continue creation' : 'Save product'}</Button>{job?.can_edit && !busy && !editing && !recoverKey && <Button type="button" variant="ghost" onClick={() => { setEditing(true); setIntent(null); setFailure(null); }}>Correct details</Button>}{!locked && <a className="janso-btn janso-btn--ghost" href={back}>Cancel</a>}</div>
       </form>}
   </section>;
 }

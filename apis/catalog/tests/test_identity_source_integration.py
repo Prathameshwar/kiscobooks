@@ -86,12 +86,12 @@ async def test_real_identity_bulk_worker_continues_without_idle_gap_and_stops_re
     )
     cursors: dict[tuple[uuid.UUID, uuid.UUID], uuid.UUID] = {}
     assert await run_once(factory, config, cursors) == 1
-    # The real producer advances its stream for lease refresh barriers even when
-    # the company facts and actor grants are unchanged. A long job must survive.
+    # Refreshing an unchanged snapshot renews the lease without invalidating
+    # product drafts or advancing the source event stream.
     renewed = await fetch_identity_snapshot(
         settings, tenant_id=tenant, company_id=company, request_id=uuid7()
     )
-    assert renewed.manifest.source_version > source.manifest.source_version
+    assert renewed.manifest.source_version == source.manifest.source_version
     with tenant_scope(tenant):
         async with factory.begin() as db:
             await activate_snapshot(db, renewed)

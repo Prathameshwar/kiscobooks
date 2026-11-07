@@ -43,6 +43,8 @@ import {
 import { signInUrl } from '../lib/navigate';
 import type { ServicePage, useServiceList } from '../lib/service-resource';
 import { configurationTrail } from '../lib/configuration-navigation';
+import { cleanGstin } from '../lib/gstin';
+import { limitMasterCode } from '../lib/accounting-master-code';
 import { administrationBackLabel } from '../lib/administration-navigation';
 
 export function AccountingNavigation({
@@ -651,9 +653,9 @@ export function AccountingFields({
                       .join(' and ') +
                     '.'
                   : !disabled && field.editable && field.key === 'code'
-                    ? 'Choose a unique code, up to ' +
+                    ? String(accountingConstraints(field).description ?? ('Choose a unique code, up to ' +
                       (accountingConstraints(field).maxLength ?? 40) +
-                      ' characters. It is fixed after creation.'
+                        ' characters. It is fixed after creation.'))
                     : !disabled && field.editable && field.key === 'legal_name'
                       ? 'Use the legal registered name. The display name can be different.'
                       : !disabled &&
@@ -872,6 +874,7 @@ export function AccountingFields({
                 )}
               </div>
             );
+          const masterCode = field.key === 'code' && ['accounts', 'parties'].includes(resource);
           return (
             <TextField
               key={field.key}
@@ -892,7 +895,7 @@ export function AccountingFields({
               }
               autoComplete={control.write_only ? 'off' : undefined}
               value={String(value ?? '')}
-              maxLength={definition.maxLength}
+              maxLength={masterCode && definition.maxLength ? definition.maxLength * 2 : definition.maxLength}
               hint={
                 common.hint ??
                 (control.write_only
@@ -903,7 +906,14 @@ export function AccountingFields({
                       ? 'UTC date/time, for example 2026-10-25T00:00:00Z.'
                       : undefined)
               }
-              onChange={(event) => onChange(field.key, event.target.value)}
+              onChange={(event) => onChange(
+                field.key,
+                masterCode ? limitMasterCode(event.target.value, definition.maxLength ?? 40)
+                  : resource === 'party-tax-registrations' && field.key === 'registration_number'
+                  && values.scheme === 'GST_IN'
+                  ? cleanGstin(event.target.value)
+                  : event.target.value,
+              )}
             />
           );
         })}

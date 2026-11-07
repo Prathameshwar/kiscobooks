@@ -39,6 +39,7 @@ from accounting.resources import BY_NAME, Resource
 from accounting.schemas.masters import ExpectedVersion
 from accounting.tasks.access import authorize, readable, writable
 from accounting.tasks.group_metadata import guard_group_change, normalize_group
+from accounting.tasks.master_codes import allocate_code, check_code_available
 from accounting.tasks.validation import (
     guard_child_intervals,
     guard_registration_links,
@@ -272,6 +273,10 @@ async def mutate_master(
     except ValidationError as exc:
         raise ValidationFailedError("master values are invalid") from exc
     values = parsed.model_dump()
+    if row is None and spec.name in {"account", "party"} and values["code"] is None:
+        values["code"] = await allocate_code(
+            db, access.context.company_id, "party" if spec.name == "party" else "account"
+        )
     if spec.name == "party_drug_licence":
         if row is None:
             if values["closure_reason"] is not None:
@@ -301,6 +306,13 @@ async def mutate_master(
             else "DRAFT"
         )
     changed = writable(access, spec, policy_before, policy_after)
+    if row is None and spec.name in {"account", "party"}:
+        await check_code_available(
+            db,
+            access.context.company_id,
+            "party" if spec.name == "party" else "account",
+            values["code"],
+        )
     semantics = changed - {"status"}
     if row is not None:
         if changed & spec.immutable:

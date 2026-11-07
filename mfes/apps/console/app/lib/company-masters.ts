@@ -1,4 +1,4 @@
-import type { Session } from '../session';
+﻿import type { Session } from '../session';
 import { companyPermission } from './company-permissions';
 import { inventoryGroups, productStructureGroup } from './inventory-navigation';
 import { accountingMasters, accountingDescriptions } from './accounting-masters';
@@ -15,10 +15,12 @@ const manufacturingGroup: CompanyMasterGroup = { key: 'manufacturing', label: 'M
 export const companyMasterGroups: CompanyMasterGroup[] = [
   { key: 'promotion-definitions', label: 'Sales promotion definitions', kind: 'catalog', description: 'Reviewed offer combinations and commercial definition history.', items: [{ label: 'Promotion stacking policies', href: '/masters/promotion-stack-policies', permission: 'promotion_stack_policy.read', description: 'Order offer groups and explicitly permit the combinations that may be applied.' }] },
   ...inventoryGroups.flatMap(group => {
-    const section = { ...group, kind: 'catalog' as const, items: group.items.filter(item => item.href.startsWith('/masters/')) };
+    const section = { ...group, kind: 'catalog' as const, items: group.items.filter(item => item.href.startsWith('/masters/') || item.href === '/products/attributes') };
     return group.key === 'pricing' ? [section, manufacturingGroup] : [section];
   }),
   { key: 'stock-tracking', label: 'Stock and tracking', kind: 'accounting', description: 'Warehouse quantities and costs, physical tracking, controlled dates and history.', items: [
+    { label: 'Batches', href: '/inventory/batches', permission: 'accounting.batch.read', description: 'Register batches, review date corrections, holds and audit history.' },
+    { label: 'Serials', href: '/inventory/serials', permission: 'accounting.serial.read', description: 'Register immutable physical identifiers and manage holds and lifecycle history.' },
     { label: 'Stock', href: '/inventory/stock', permission: 'accounting.stock.read', description: 'Review warehouse balances, carrying values, movements and stock account configuration.' },
   ] },
   { key: 'accounting', label: 'Accounting', description: 'Chart of accounts, parties and dated financial policies.', kind: 'accounting',
@@ -29,7 +31,7 @@ export const companyMasterGroups: CompanyMasterGroup[] = [
       description: accountingDescriptions[resource]!,
     }))] },
   { key: 'vouchers', label: 'Vouchers', description: 'How each kind of voucher is entered.', kind: 'accounting',
-    items: [{ label: 'Voucher types', href: '/masters/voucher-types', permission: 'vouchers.read', description: 'Name versions of a kind of voucher — Retail sales, Export sales — and set the entry rules each one follows.' }] },
+    items: [{ label: 'Voucher types', href: '/masters/voucher-types', permission: 'vouchers.read', description: 'Name versions of a kind of voucher â€” Retail sales, Export sales â€” and set the entry rules each one follows.' }] },
   { key: 'tax', label: 'Tax', description: 'Tax categories, classifications, rules and dated rates.', kind: 'tax',
     items: taxConfigs.map(config => ({ label: config.title, href: '/tax/' + config.key, permission: 'tax_rule.read', description: config.description })) },
 ];

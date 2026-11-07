@@ -1,6 +1,6 @@
 [project]
 name = "identity-posting-client"
-version = "0.3.2"
+version = "0.3.3"
 description = "Authenticated Identity reservation adapter for Accounting and Billing workers."
 requires-python = "==3.12.*"
 dependencies = ["billing-platform>=0.44.0,<0.45", "httpx==0.28.1"]

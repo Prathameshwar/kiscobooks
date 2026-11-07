@@ -11,9 +11,9 @@ from billing_platform.idempotency import canonical_json
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from reporting_contract.base import Contract as Contract
-from reporting_contract.inventory import InventoryRecord
 from reporting_contract.gst import GstJournalTaxEvidence, GstReturnRecord
 from reporting_contract.gst_outward import GstOutwardRecord
+from reporting_contract.inventory import InventoryRecord
 from reporting_contract.invoice import INVOICE_FACT_MODELS
 
 
@@ -419,6 +419,11 @@ NATIVE_INVENTORY_SCHEMA_HASH = "41b82e465f9915cb3f4eb9ec7587d385db4194fd2dc9d006
 NATIVE_UNIT_SCHEMA_HASH = "5f19751054fd02aad737ea9c7b23de005dcb4d66461100556400cba44054864b"
 # Reporting-contract 0.9.0 complete native cuts predate replenishment definitions.
 NATIVE_COMPLETE_SCHEMA_HASH = "062c58aae7d9da22d70131fcdf8cdcebc54c6263a6f484ab3f438ebca656371a"
+# Version 0.14.0 predates additive warehouse groups and sale-location permissions.
+# Retained cuts keep this identity; new optional fields validate with safe defaults.
+PRE_WAREHOUSE_POLICY_SCHEMA_HASH = (
+    "c3beeba41f88f5d4596d8d775e473da4e6609c25bafc0f62c2cbb9822391a0bd"
+)
 
 FACT_MODELS["inventory_report_record"] = InventoryRecord
 SCHEMA_HASH = hashlib.sha256(
@@ -515,6 +520,7 @@ class Manifest(Contract):
             NATIVE_INVENTORY_SCHEMA_HASH,
             NATIVE_UNIT_SCHEMA_HASH,
             NATIVE_COMPLETE_SCHEMA_HASH,
+            PRE_WAREHOUSE_POLICY_SCHEMA_HASH,
             PRE_OPENING_SCHEMA_HASH,
             OPENING_NO_INVENTORY_SCHEMA_HASH,
             PRE_GST_SCHEMA_HASH,
@@ -531,9 +537,10 @@ class Manifest(Contract):
 
     @model_validator(mode="after")
     def legacy_grains(self) -> Self:
-        if self.schema_hash in {LEGACY_SCHEMA_HASH, "847c81a317188828f3715ce306c069593debb4c539d520cb0d94a6573e499c4e"} and self.control.counts.get(
-            "inventory_report_record", 0
-        ):
+        if self.schema_hash in {
+            LEGACY_SCHEMA_HASH,
+            "847c81a317188828f3715ce306c069593debb4c539d520cb0d94a6573e499c4e",
+        } and self.control.counts.get("inventory_report_record", 0):
             raise ValueError("legacy financial schema cannot carry stock facts")
         return self
 

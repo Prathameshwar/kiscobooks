@@ -26,28 +26,42 @@ async def multiple_enabled(access: ConfigurationAccess, config: EffectiveConfigu
 
 
 async def sale_choices(
-    access: ConfigurationAccess, config: EffectiveConfiguration, today: dt.date
+    access: ConfigurationAccess,
+    config: EffectiveConfiguration,
+    today: dt.date,
+    *,
+    include_default: bool = False,
 ) -> list[SimpleSalePriceOption]:
-    if config.pricing.sale_price_mode == "DISABLED" or not await multiple_enabled(access, config):
+    if config.pricing.sale_price_mode == "DISABLED":
+        return []
+    multiple = await multiple_enabled(access, config)
+    if not multiple and not include_default:
         return []
     policy = await effective(access, CompanyPricingPolicy, today)
     if policy is None:
+        if include_default and not multiple and config.pricing.sale_price_mode == "OPTIONAL":
+            return []
         raise ConflictError("Complete company pricing defaults before entering selling prices")
     await protected(access, PriceLevel)
     await protected(access, PricePlan)
-    levels = list(
-        await access.db.scalars(
-            select(PriceLevel)
-            .where(PriceLevel.company_id == access.company, PriceLevel.is_active.is_(True))
-            .order_by(PriceLevel.ordinal)
-            .limit(65)
-        )
+    level_query = (
+        select(PriceLevel)
+        .where(PriceLevel.company_id == access.company, PriceLevel.is_active.is_(True))
+        .order_by(PriceLevel.ordinal)
+        .limit(65)
     )
+    if not multiple:
+        level_query = level_query.where(PriceLevel.id == policy.default_level_id)
+    levels = list(await access.db.scalars(level_query))
     if len(levels) > 64:
         raise ConflictError("Selling-price levels exceed the supported limit")
     required = config.pricing.sale_price_mode == "REQUIRED"
     count = config.pricing.sale_level_count or 1
-    if required and not set(range(1, count + 1)) <= {level.ordinal for level in levels}:
+    if (
+        required
+        and multiple
+        and not set(range(1, count + 1)) <= {level.ordinal for level in levels}
+    ):
         raise ConflictError("Set up the required active selling-price levels in company pricing")
     if policy.default_level_id not in {level.id for level in levels}:
         raise ConflictError("Choose an active default selling-price level in company pricing")
@@ -68,7 +82,9 @@ async def sale_choices(
     choices = []
     for level in levels:
         await access.require(level)
-        needed = required and (level.ordinal <= count or level.id == policy.default_level_id)
+        needed = required and (
+            not multiple or level.ordinal <= count or level.id == policy.default_level_id
+        )
         plan = by_level.get(level.id)
         if plan is None:
             if needed or level.id == policy.default_level_id:

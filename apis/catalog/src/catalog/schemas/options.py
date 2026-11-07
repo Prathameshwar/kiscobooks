@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict
 class OptionQuery(ListQuery):
     parent_id: uuid.UUID | None = None
     as_of: dt.date | None = None
+    product_type_revision_id: uuid.UUID | None = None
 
 
 class OptionItem(BaseModel):

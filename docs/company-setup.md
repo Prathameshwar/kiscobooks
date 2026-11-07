@@ -39,6 +39,14 @@ Details and validation: [Product Configuration starter plan](product-configurati
 
 ## Automatic setup delivery (2026-11-03)
 
+The 2026-11-06 progress follow-up reuses the financial reports' animated preparation
+feedback from saving the creation request through checking setup and opening the
+company. Verified setup responses supply the current operation and ready-step count.
+Waits, access failures and steps needing review retain their existing explanation
+without an activity bar. New creation phases scroll into view on short screens;
+the existing **Open while setup continues** action remains available after saving.
+See the [progress review](company-create-progress-review-2026-11-06.md).
+
 The user approved [automatic readiness](company-automatic-readiness-plan.md) through
 all phases and two final reviews. Company creation accepts an optional bounded
 `setup` intent (selected features, explicit opening choice/reason). Legacy callers
@@ -255,6 +263,15 @@ URL. Full FX billing and a pharmacy posting workflow are separate capabilities, 
 by this setup API.
 
 ## Decision log
+
+- 2026-11-06: Reuse the existing Profit and loss progress treatment as the shared
+  `PreparationProgress`. Company creation shows immediate saving feedback and
+  verified setup step progress, scrolls new phases into view, and keeps explicit
+  background opening. Polling, completion callbacks, retry permissions, creation
+  idempotency and opening-balance declarations retain their existing contracts.
+  Verification: 257 unit tests, 384 browser layout checks, Console/UI TypeScript
+  checks and task-file whitespace checks passed. Two pre-existing report-test
+  error-message expectations were corrected; financial behavior did not change.
 
 - 2026-11-04: Commit selected capabilities with company creation, then provision
   and verify a minimal published Product Configuration and company pricing policy.

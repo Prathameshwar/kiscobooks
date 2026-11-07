@@ -20,6 +20,33 @@ export function putBusiness(work: AdvancedWork, sku: ProductSkuValues, next: Bus
   return { ...work, business: { ...work.business, skus: { ...old, [sku.key]: next } } };
 }
 const decimal = /^(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/;
+export function unavailableBusinessKeys(work: AdvancedWork, options: AdvancedOptions, index: number): string[] {
+  const sku = work.skus[index]!;
+  const value = businessSku(work, sku), pricing = options.defaults.configuration.pricing;
+  const keys: string[] = [];
+  if (value.purchase_amount && (!sku.purchasable || pricing.purchase_reference_mode === 'DISABLED')) keys.push('purchase_amount');
+  if (value.mrp_amount && (work.profile.kind !== 'GOODS' || pricing.mrp_mode === 'DISABLED')) keys.push('mrp_amount');
+  if (!options.gst_enabled) { if (value.classification_id) keys.push('classification_id'); if (value.rule_id) keys.push('rule_id'); }
+  if (value.batch_enabled && !options.batch?.available) keys.push('batch_enabled');
+  const plans = new Set((options.sale_price_levels ?? []).map(level => level.plan_id));
+  for (const [plan, amount] of Object.entries(value.sale_prices)) if (amount && (!sku.sellable || pricing.sale_price_mode === 'DISABLED' || !options.price_levels_accessible || !plans.has(plan))) keys.push('sale_prices.' + plan);
+  return keys;
+}
+
+export function clearUnavailableBusiness(work: AdvancedWork, options: AdvancedOptions, index: number): AdvancedWork {
+  const sku = work.skus[index]!;
+  const value = { ...businessSku(work, sku), sale_prices: { ...businessSku(work, sku).sale_prices } };
+  for (const key of unavailableBusinessKeys(work, options, index)) {
+    if (key.startsWith('sale_prices.')) delete value.sale_prices[key.slice('sale_prices.'.length)];
+    else if (key === 'purchase_amount') { value.purchase_amount = ''; value.purchase_source = ''; }
+    else if (key === 'mrp_amount') { value.mrp_amount = ''; value.mrp_source = ''; value.mrp_jurisdiction = ''; }
+    else if (key === 'batch_enabled') value.batch_enabled = null;
+    else if (key === 'classification_id') value.classification_id = '';
+    else if (key === 'rule_id') value.rule_id = '';
+  }
+  return putBusiness(work, sku, value);
+}
+
 export function businessErrors(work: AdvancedWork, options: AdvancedOptions): Record<string, string> {
   const errors: Record<string, string> = {};
   work.skus.forEach((sku, index) => {
@@ -35,10 +62,15 @@ export function businessErrors(work: AdvancedWork, options: AdvancedOptions): Re
     }
     const pricing = options.defaults.configuration.pricing;
     if (sku.purchasable && pricing.purchase_reference_mode === 'REQUIRED' && !decimal.test(value.purchase_amount)) errors[path + 'purchase_amount'] = 'Enter a purchase reference amount.';
-    if (value.purchase_amount && (!decimal.test(value.purchase_amount) || !/[1-9]/.test(value.purchase_amount) || !value.purchase_source.trim())) errors[path + 'purchase_amount'] = 'Enter a positive amount and its source reference.';
+    if (value.purchase_amount && (!decimal.test(value.purchase_amount) || !/[1-9]/.test(value.purchase_amount))) errors[path + 'purchase_amount'] = 'Enter a positive purchase reference amount with up to four decimals.';
+    if (value.purchase_amount && !value.purchase_source.trim()) errors[path + 'purchase_source'] = 'Enter the purchase source reference.';
     if (work.profile.kind === 'GOODS' && pricing.mrp_mode === 'REQUIRED' && !decimal.test(value.mrp_amount)) errors[path + 'mrp_amount'] = 'Enter MRP.';
-    if (value.mrp_amount && (!decimal.test(value.mrp_amount) || !/[1-9]/.test(value.mrp_amount) || !value.mrp_source.trim() || !/^[A-Z][A-Z0-9_-]{1,19}$/.test(value.mrp_jurisdiction))) errors[path + 'mrp_amount'] = 'Enter positive MRP, jurisdiction and source reference.';
+    if (value.mrp_amount && (!decimal.test(value.mrp_amount) || !/[1-9]/.test(value.mrp_amount))) errors[path + 'mrp_amount'] = 'Enter positive MRP with up to four decimals.';
+    if (value.mrp_amount && !value.mrp_source.trim()) errors[path + 'mrp_source'] = 'Enter the MRP source reference.';
+    if (value.mrp_amount && !/^[A-Z][A-Z0-9_-]{1,19}$/.test(value.mrp_jurisdiction)) errors[path + 'mrp_jurisdiction'] = 'Enter the MRP jurisdiction code, such as IN.';
     if (options.batch?.required && value.batch_enabled === false) errors[path + 'batch_enabled'] = 'Batch tracking is required for this Product Type.';
+    if (sku.sellable && pricing.sale_price_mode === 'REQUIRED' && (!options.price_levels_accessible || !(options.sale_price_levels ?? []).length)) errors[path + 'sale_prices'] = 'Required selling prices are unavailable. Review price-level access and company pricing setup.';
+    for (const key of unavailableBusinessKeys(work, options, index)) errors[path + key] = 'This saved detail is no longer available. Remove unavailable SKU details before continuing.';
   });
   return errors;
 }

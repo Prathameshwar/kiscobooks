@@ -10,20 +10,29 @@
       {
         "key": "code",
         "label": "Code",
-        "required": true,
+        "required": false,
         "visible": true,
         "readable": true,
         "writable": true,
         "definition": {
-          "maxLength": 40,
-          "minLength": 1,
-          "title": "Code",
-          "type": "string"
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Leave blank to generate a unique eight-character code. Manual codes allow printable text up to 40 characters and are fixed after creation.",
+          "title": "Code"
         },
         "reference": null,
         "control": {
           "kind": "text",
-          "nullable": false,
+          "nullable": true,
           "choices": [],
           "reference": null,
           "write_only": false,
@@ -2106,20 +2115,29 @@
       {
         "key": "code",
         "label": "Code",
-        "required": true,
+        "required": false,
         "visible": true,
         "readable": true,
         "writable": true,
         "definition": {
-          "maxLength": 40,
-          "minLength": 1,
-          "title": "Code",
-          "type": "string"
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Leave blank to generate a unique eight-character code. Manual codes allow printable text up to 40 characters and are fixed after creation.",
+          "title": "Code"
         },
         "reference": null,
         "control": {
           "kind": "text",
-          "nullable": false,
+          "nullable": true,
           "choices": [],
           "reference": null,
           "write_only": false,

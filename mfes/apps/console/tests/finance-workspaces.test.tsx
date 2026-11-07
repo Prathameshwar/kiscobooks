@@ -63,7 +63,7 @@ it('stops recovery after one refresh and one rejected full rebuild',async()=>{
   if(args[1]==='POST'&&args[2].endsWith('/report-generations'))return {id:uuid(30),status:'QUARANTINED'};
   return mock(...args);
  });
- mount();await screen.findByText(/could not be verified after rebuilding/);
+ mount();await screen.findByText(/Accounting source rebuild did not complete/);
  expect(api.mock.calls.filter(call=>call[1]==='POST'&&call[2].endsWith('/report-generations'))).toHaveLength(2);
  expect(screen.queryByText('Verified account')).not.toBeInTheDocument();
 });

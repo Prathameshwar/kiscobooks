@@ -1,0 +1,228 @@
+[
+  {
+    "scenario": 1,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S1",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {}
+    }
+  },
+  {
+    "scenario": 2,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S2",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "tax": {
+        "classification_id": "33333333-3333-4333-8333-333333333333",
+        "rule_id": "33333333-3333-4333-8333-333333333333",
+        "directions": [
+          "SALE",
+          "PURCHASE"
+        ]
+      },
+      "purchase_price": "85",
+      "sale_price": "120",
+      "mrp": "150",
+      "opening_unit_cost": "80",
+      "opening_quantity": "20",
+      "opening_date": "2026-04-01"
+    }
+  },
+  {
+    "scenario": 3,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S3",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "opening_quantity": "0"
+    }
+  },
+  {
+    "scenario": 4,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S4",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "brand_id": "33333333-3333-4333-8333-333333333333",
+      "model_code": "MODEL-4",
+      "manufacturer_id": "33333333-3333-4333-8333-333333333333",
+      "categories": [
+        {
+          "scheme_id": "77777777-7777-4777-8777-777777777777",
+          "category_id": "33333333-3333-4333-8333-333333333333",
+          "is_primary": false
+        }
+      ],
+      "barcode": {
+        "value": "SIM004",
+        "symbology": "CODE128"
+      },
+      "opening_quantity": "0"
+    }
+  },
+  {
+    "scenario": 5,
+    "body": {
+      "kind": "SERVICE",
+      "name": "SIM-S5",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "tax": {
+        "classification_id": "33333333-3333-4333-8333-333333333333",
+        "rule_id": "33333333-3333-4333-8333-333333333333",
+        "directions": [
+          "SALE",
+          "PURCHASE"
+        ]
+      },
+      "sale_price": "750"
+    }
+  },
+  {
+    "scenario": 6,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S6",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "purchase_price": "70",
+      "sale_prices": [
+        {
+          "price_level_id": "55555555-5555-4555-8555-555555555551",
+          "amount": "120"
+        },
+        {
+          "price_level_id": "55555555-5555-4555-8555-555555555552",
+          "amount": "100"
+        }
+      ],
+      "opening_quantity": "0"
+    }
+  },
+  {
+    "scenario": 7,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S7",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "batch_enabled": true,
+      "batches": [
+        {
+          "code": "LOT-1",
+          "opening_quantity": "10",
+          "manufactured_on": "2026-03-01",
+          "expires_on": "2027-03-01",
+          "opening_unit_cost": "50",
+          "purchase_price": "60",
+          "sale_price": "90"
+        },
+        {
+          "code": "LOT-2",
+          "opening_quantity": "20",
+          "manufactured_on": "2026-03-01",
+          "expires_on": "2027-03-01",
+          "opening_unit_cost": "55",
+          "purchase_price": "65",
+          "sale_price": "90"
+        }
+      ],
+      "opening_date": "2026-04-01"
+    }
+  },
+  {
+    "scenario": 8,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S8",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "serials": [
+        {
+          "identifiers": [
+            {
+              "identifier_type": "SERIAL",
+              "slot": 1,
+              "value": "SER-1"
+            }
+          ]
+        },
+        {
+          "identifiers": [
+            {
+              "identifier_type": "SERIAL",
+              "slot": 1,
+              "value": "SER-2"
+            }
+          ]
+        }
+      ],
+      "opening_unit_cost": "20000",
+      "opening_quantity": "2",
+      "opening_date": "2026-04-01"
+    }
+  },
+  {
+    "scenario": 9,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S9",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {},
+      "shared_custom_fields": {},
+      "purchase_price": "45",
+      "sale_price": "60",
+      "opening_unit_cost": "42.5",
+      "opening_quantity": "12.345",
+      "opening_date": "2026-04-01"
+    }
+  },
+  {
+    "scenario": 10,
+    "body": {
+      "kind": "GOODS",
+      "name": "SIM-S10",
+      "code": null,
+      "base_unit_id": "33333333-3333-4333-8333-333333333333",
+      "group_id": "44444444-4444-4444-8444-444444444444",
+      "custom_fields": {
+        "cf_note": "Fixture note",
+        "cf_count": 0,
+        "cf_flag": false
+      },
+      "shared_custom_fields": {},
+      "opening_quantity": "0"
+    }
+  }
+]

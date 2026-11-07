@@ -193,9 +193,8 @@ export function MasterImport({
   const actionable =
     !!job && canManage && !terminal && !expired && !locked && !files.length;
   const ownerPending =
-    !!profile.readyProducts &&
-    (['VALIDATING', 'IMPORTING'].includes(job?.state ?? '') ||
-      (job?.state === 'PARTIAL' && pendingOwner !== false));
+    ['VALIDATING', 'IMPORTING'].includes(job?.state ?? '') ||
+    (!!profile.readyProducts && job?.state === 'PARTIAL' && pendingOwner !== false);
   const canReadDetails = !profile.detailsRequireManage || canManage;
   const here =
     profile.path +
@@ -442,6 +441,23 @@ export function MasterImport({
               );
             }
           : undefined,
+    });
+  }
+  async function continueImport() {
+    if (!job || !canManage || locked || !actionable || profile.readyProducts ||
+        !['VALIDATING', 'IMPORTING'].includes(job.state) || command.failure) return;
+    const name = job.state === 'VALIDATING' ? 'validate' : 'commit';
+    if (name === 'commit' && !job.review_digest) return;
+    await execute({
+      kind: 'job',
+      request: {
+        path: base + '/import-jobs/' + job.id + '/' + name,
+        method: 'POST',
+        body: {expected_version: job.row_version,
+          ...(name === 'commit' ? {review_digest: job.review_digest} : {})},
+      },
+      message: name === 'validate' ? 'Remaining products checked. Review the results below.' :
+        'Reviewed import continued. Review the results below.',
     });
   }
   async function download(
@@ -747,6 +763,12 @@ export function MasterImport({
                         and configuration. {profile.lifecycle}
                       </p>
                       <div className="janso-form-actions">
+                        {!profile.readyProducts && ownerPending && canManage && (
+                          <Button disabled={!actionable || !!command.failure}
+                            onClick={() => void continueImport()}>
+                            {job.state === 'VALIDATING' ? 'Continue validation' : 'Continue import'}
+                          </Button>
+                        )}
                         {canManage &&
                           !terminal &&
                           !expired &&

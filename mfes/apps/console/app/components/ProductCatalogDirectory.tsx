@@ -110,7 +110,7 @@ export function ProductCatalogDirectory({
   const failure = metadata.failure ?? list.failure,
     loading = metadata.loading || list.loading || (!list.data && !list.failure);
   const rowActions = (row: MasterRow) => [
-    ...(!product ? [
+    ...([
     {
       id: 'view',
       label: 'View details',
@@ -126,7 +126,7 @@ export function ProductCatalogDirectory({
           },
         ]
       : []),
-    ] : []),
+    ]),
     ...catalogRelatedLinks(resource, row, visible, access, here),
   ];
   const columns: Column<MasterRow>[] = [
@@ -156,7 +156,7 @@ export function ProductCatalogDirectory({
       render: (row) =>
         !(key in row) ? (
           'Protected'
-        ) : [identity, 'name'].includes(key) ? (product ? String(row[key]) : (
+        ) : [identity, 'name'].includes(key) ? ((
           <a
             className="janso-link"
             href={catalogLink(root + '/' + row.id, here)}
@@ -285,7 +285,7 @@ export function ProductCatalogDirectory({
           ) : undefined
         }
       />
-      {product && <ProductCreationCard company={company} href={catalogLink('/masters/items/new', here)} canCreate={access.createProduct} />}
+      {product && <ProductCreationCard company={company} href={catalogLink(root + '/new', here)} canCreate={access.createProduct} />}
       {!canManage && <Notice>Read-only access.</Notice>}
       {adjusted && (
         <Notice tone="warning">

@@ -1,4 +1,4 @@
-import type { Session } from '../session';
+﻿import type { Session } from '../session';
 import { companyPermission } from './company-permissions';
 
 export type InventoryDestination = {
@@ -28,6 +28,10 @@ const master = (
 
 /** Real, company-scoped destinations shared by the menu and its overview cards. */
 export const inventoryGroups: InventoryGroup[] = [
+  { key: 'tracking', label: 'Batches and serials', href: '/inventory/tracking', description: 'Physical tracking registration, controlled changes and history.', items: [
+    { label: 'Batches', href: '/inventory/batches', permission: 'accounting.batch.read', description: 'Register batches, correct dates and review holds and history.' },
+    { label: 'Serials', href: '/inventory/serials', permission: 'accounting.serial.read', description: 'Register physical identifiers, manage holds and review history.' },
+  ] },
   {
     key: 'products',
     label: 'Products and classification',
@@ -42,7 +46,7 @@ export const inventoryGroups: InventoryGroup[] = [
       ),
       master(
         'product-families',
-        'Product families',
+        'Product Profiles',
         'item',
         'Organize related SKUs into product families.',
       ),
@@ -160,6 +164,7 @@ export const inventoryGroups: InventoryGroup[] = [
     href: '/inventory/attributes',
     description: 'Attribute definitions, options and sets or templates.',
     items: [
+      { label: 'Product attributes and variants', href: '/products/attributes', permission: 'item.read', description: 'Maintain typed product specifications, Profile declarations and additional SKUs.' },
       master(
         'attribute-definitions',
         'Attribute definitions',

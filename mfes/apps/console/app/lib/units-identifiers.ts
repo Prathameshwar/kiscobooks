@@ -182,7 +182,7 @@ export function identifierBody(
       : {};
   const keys =
     previous &&
-    ['identifier-types', 'identifier-namespaces'].includes(config.resource)
+    ['identifier-types', 'identifier-namespaces', 'identifier-profiles'].includes(config.resource)
       ? ['name']
       : config.resource === 'unit-conversions'
         ? ['from_unit_id', 'canonical_unit_id', 'numerator', 'denominator']

@@ -288,8 +288,15 @@ def validate_content(
         if allowed is not None and not values.keys() <= allowed:
             raise ValidationFailedError("custom field is not bound to this voucher type")
     if stage != "DRAFT":
-        if not policy.required_sections <= present:
-            raise ValidationFailedError("required voucher sections are missing")
+        missing_sections = policy.required_sections - present
+        if missing_sections:
+            labels = {
+                "ITEMS": "Items", "PARTIES": "Parties", "REFERENCES": "References",
+                "ATTACHMENTS": "Attachments", "ACCOUNTS": "Accounts", "CHARGES": "Charges",
+                "TAX": "Tax", "TENDERS": "Tenders", "BILL_ALLOCATIONS": "Bill allocations",
+            }
+            missing = ", ".join(labels[key] for key in sorted(missing_sections))
+            raise ValidationFailedError(f"Required voucher sections are missing: {missing}.")
         if policy.narration_required and not content.narration.strip():
             raise ValidationFailedError("narration is required")
         if policy.line_description_required and any(

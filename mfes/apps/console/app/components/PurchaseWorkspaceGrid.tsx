@@ -123,6 +123,7 @@ export function PurchaseWorkspaceGrid({ draft, policy, dispatch, problems, disab
     <EntryGrid<PurchaseLine> label="Purchase lines" rows={draft.lines} columns={columns} rowKey={line => line.key} disabled={disabled}
       readOnlyNote="Read-only line entry. You can review the saved quantities and amounts."
       onCellChange={(key, field, value) => dispatch({ type: 'line', key, patch: { [field]: value } })}
+      onCellCommit={(key, field, value) => { if (field === 'received') dispatch({ type: 'receipt_commit', key, value }); }}
       onAddRow={() => dispatch({ type: 'add' })} onInsertRow={after => dispatch({ type: 'add', after })}
       onRemoveRow={key => dispatch({ type: 'remove', key })} onDuplicateRow={key => dispatch({ type: 'duplicate', key })}
       onMoveRow={(key, by) => dispatch({ type: 'move', key, by })} isRowBlank={isBlankPurchaseLine}

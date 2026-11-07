@@ -543,7 +543,8 @@ async def test_a_product_activity_default_must_serve_its_own_operation(
 
 
 async def test_a_stocked_product_blocks_the_locations_retirement(
-    client: httpx.AsyncClient, factory: async_sessionmaker[AsyncSession], tenant_a: uuid.UUID
+    client: httpx.AsyncClient, factory: async_sessionmaker[AsyncSession], tenant_a: uuid.UUID,
+    native_retirement,
 ) -> None:
     """The fence works both ways: an active membership refuses the retirement, and a
     stranded activity default says so in its own words rather than failing later (§5)."""

@@ -112,7 +112,19 @@ async def opening_preflight(
     company: uuid.UUID,
     date: str,
     warehouse_id: uuid.UUID | None = None,
+    *,
+    require_cost_capture: bool = False,
 ) -> dict[str, Any]:
+    if require_cost_capture:
+        metadata = await owners.call(
+            "accounting", "GET", f"/v1/companies/{company}/stock/openings/capture-fields"
+        )
+        fields = {field["key"]: field for field in metadata["fields"]}
+        if any(
+            key not in fields or not fields[key]["readable"] or not fields[key]["writable"]
+            for key in ("quantity", "received_value", "opening")
+        ):
+            raise PermissionDeniedError("Opening valuation capture must be readable and writable")
     root = f"/v1/companies/{company}"
     ready = await owners.call("accounting", "GET", root + "/stock/openings/readiness")
     if ready.get("blockers"):
@@ -164,6 +176,7 @@ async def next_command(
     request: SimpleCreationInput,
     progress: dict[str, Any],
     item_id: uuid.UUID | None,
+    tenant_id: uuid.UUID | None = None,
 ) -> dict[str, Any] | None:
     root = f"/v1/companies/{company}"
 
@@ -300,6 +313,7 @@ async def next_command(
             },
         )
     if step == "OPENING":
+        progress["source_delivery"] = getattr(owners, "source_delivery", None) is not None
         facts = await owners.call(
             "catalog", "GET", root + product + "/effective-facts?as_of=" + progress["opening_date"]
         )
@@ -323,7 +337,7 @@ async def next_command(
                 "unit_revision_id": base["revision_id"],
                 "entered_quantity": str(entry.opening_quantity),
                 "cost_mode": "RATE",
-                "unit_cost": str(entry.purchase_price),
+                "unit_cost": str(entry.valuation_cost),
                 "priced_quantity": "1",
                 "history_known": False,
             }
@@ -366,6 +380,14 @@ async def next_command(
                 "reason": "Opening stock entered with product creation",
             },
         )
+    if step == "SOURCE":
+        if tenant_id is None:
+            raise ConflictError("Product source scope is unavailable")
+        return {
+            "service": "source",
+            "path": "/internal/v1/sources",
+            "body": await owners.item_source_bundle(tenant_id, company, item_id, identity),
+        }
     if step == "VOUCHER":
         current = await owners.call(
             "catalog", "GET", root + product + "/effective-facts?as_of=" + progress["opening_date"]
@@ -488,6 +510,9 @@ def after_command(
         step = "SERIAL" if progress["serial_index"] < len(serial_entries(body)) else "OPENING"
     elif step == "OPENING":
         progress.update(control_id=result["id"], manifest=command["body"])
+        step = "SOURCE" if progress.get("source_delivery") else "VOUCHER"
+    elif step == "SOURCE":
+        progress["source_delivered"] = True
         step = "VOUCHER"
     elif step == "VOUCHER":
         progress["voucher_id"] = result["id"]

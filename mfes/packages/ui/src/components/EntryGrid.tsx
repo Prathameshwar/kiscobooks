@@ -151,6 +151,8 @@ export type EntryGridProps<Row> = {
   columns: readonly EntryColumn<Row>[];
   rowKey: (row: Row) => string;
   onCellChange: (rowKey: string, columnKey: string, value: string) => void;
+  /** The settled canonical value after a numeric cell loses focus. */
+  onCellCommit?: (rowKey: string, columnKey: string, value: string) => void;
   onAddRow: () => void;
   onRemoveRow: (rowKey: string) => void;
   onDuplicateRow?: (rowKey: string) => void;
@@ -207,6 +209,7 @@ export function EntryGrid<Row>({
   columns,
   rowKey,
   onCellChange,
+  onCellCommit,
   onAddRow,
   onRemoveRow,
   onDuplicateRow,
@@ -228,10 +231,14 @@ export function EntryGrid<Row>({
    * passing inline arrows — the ordinary way to write one — would otherwise defeat the memo
    * on every render, and a stale closure is impossible because the ref is read at call time.
    */
-  const latest = useRef({ onCellChange, onRemoveRow, onDuplicateRow, onExpandRow, onCellUnstorable });
-  latest.current = { onCellChange, onRemoveRow, onDuplicateRow, onExpandRow, onCellUnstorable };
+  const latest = useRef({ onCellChange, onCellCommit, onRemoveRow, onDuplicateRow, onExpandRow, onCellUnstorable });
+  latest.current = { onCellChange, onCellCommit, onRemoveRow, onDuplicateRow, onExpandRow, onCellUnstorable };
   const stableCellChange = useCallback(
     (key: string, column: string, value: string) => latest.current.onCellChange(key, column, value),
+    [],
+  );
+  const stableCellCommit = useCallback(
+    (key: string, column: string, value: string) => latest.current.onCellCommit?.(key, column, value),
     [],
   );
   const stableRemove = useCallback((key: string) => latest.current.onRemoveRow(key), []);
@@ -532,6 +539,7 @@ export function EntryGrid<Row>({
                 register={register}
                 noteId={note ? `${gridId}-note-${index + 1}` : undefined}
                 onCellChange={stableCellChange}
+                onCellCommit={stableCellCommit}
                 onCellUnstorable={stableUnstorable}
                 onRemoveRow={rows.length > 1 ? stableRemove : undefined}
                 onDuplicateRow={onDuplicateRow ? stableDuplicate : undefined}
@@ -577,6 +585,7 @@ function EntryRow<Row>({
   noteId,
   register,
   onCellChange,
+  onCellCommit,
   onCellUnstorable,
   onRemoveRow,
   onDuplicateRow,
@@ -597,6 +606,7 @@ function EntryRow<Row>({
   noteId: string | undefined;
   register: (key: string) => (element: HTMLElement | null) => void;
   onCellChange: (rowKey: string, columnKey: string, value: string) => void;
+  onCellCommit: (rowKey: string, columnKey: string, value: string) => void;
   onCellUnstorable: (rowKey: string, columnKey: string, problem: string | null) => void;
   onRemoveRow?: (rowKey: string) => void;
   onDuplicateRow?: (rowKey: string) => void;
@@ -622,6 +632,7 @@ function EntryRow<Row>({
               register={register}
               noteId={noteId}
               onCellChange={onCellChange}
+              onCellCommit={onCellCommit}
               onCellUnstorable={onCellUnstorable}
               disabled={disabled}
             />
@@ -688,6 +699,7 @@ const MemoEntryRow = memo(EntryRow, (before, after) =>
   before.expandLabel === after.expandLabel &&
   before.register === after.register &&
   before.onCellChange === after.onCellChange &&
+  before.onCellCommit === after.onCellCommit &&
   before.onCellUnstorable === after.onCellUnstorable &&
   before.onRemoveRow === after.onRemoveRow &&
   before.onDuplicateRow === after.onDuplicateRow &&
@@ -702,6 +714,7 @@ function EntryCell<Row>({
   register,
   noteId,
   onCellChange,
+  onCellCommit,
   onCellUnstorable,
   disabled,
 }: {
@@ -712,6 +725,7 @@ function EntryCell<Row>({
   register: (key: string) => (element: HTMLElement | null) => void;
   noteId: string | undefined;
   onCellChange: (rowKey: string, columnKey: string, value: string) => void;
+  onCellCommit: (rowKey: string, columnKey: string, value: string) => void;
   onCellUnstorable: (rowKey: string, columnKey: string, problem: string | null) => void;
   disabled: boolean;
 }) {
@@ -788,6 +802,7 @@ function EntryCell<Row>({
         describedBy={describedBy}
         register={register}
         onChange={(next) => onCellChange(rowKey, column.key, next)}
+        onCommit={(next) => onCellCommit(rowKey, column.key, next)}
         onUnstorable={(message) => onCellUnstorable(rowKey, column.key, message)}
         unitKeys={column.unitKeys}
         onUnitKey={column.onUnitKey ? (typed) => column.onUnitKey?.(row, typed) : undefined}
@@ -836,6 +851,7 @@ function NumericCell({
   describedBy,
   register,
   onChange,
+  onCommit,
   onUnstorable,
   unitKeys,
   onUnitKey,
@@ -856,6 +872,7 @@ function NumericCell({
   describedBy: string | undefined;
   register: (key: string) => (element: HTMLElement | null) => void;
   onChange: (value: string) => void;
+  onCommit: (value: string) => void;
   onUnstorable: (problem: string | null) => void;
   unitKeys?: readonly string[] | undefined;
   onUnitKey?: ((key: string) => void) | undefined;
@@ -913,7 +930,7 @@ function NumericCell({
           selectOnPaint.current = true;
           numeric.onFocus();
         }}
-        onBlur={numeric.onBlur}
+        onBlur={() => { const settled = numeric.onBlur(); if (settled !== null) onCommit(settled); }}
         {...cellProps}
         aria-label={unit ? `${name} in ${unit}` : name}
       />

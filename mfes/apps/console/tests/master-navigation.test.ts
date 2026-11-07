@@ -118,6 +118,7 @@ it('offers related records only with read permission and readable verified refer
   ).toEqual([]);
   const links = catalogRelatedLinks('items', row, () => true, access, family);
   expect(links.map((link) => link.id)).toEqual([
+    'related-family_id',
     'related-base_unit_id',
   ]);
   expect(

@@ -7,8 +7,12 @@ AUDIT_EVENTS = frozenset(
         "catalog.simple_product_creation.create",
         "catalog.simple_product_creation.revise",
         "catalog.simple_product_creation.complete",
+        "catalog.simple_product_creation.defer",
         *(f"catalog.advanced_product_draft.{action}" for action in ("create", "update", "delete")),
-        *(f"catalog.advanced_product_creation.{action}" for action in ("create", "update")),
+        *(
+            f"catalog.advanced_product_creation.{action}"
+            for action in ("create", "update", "defer")
+        ),
         "catalog.stock_source_fence.acquire",
         "catalog.stock_source_fence.release",
         *(

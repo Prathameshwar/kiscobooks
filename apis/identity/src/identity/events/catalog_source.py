@@ -184,6 +184,17 @@ def record_for(kind: str, row: Any, *, deleted: bool = False) -> SnapshotRecord:
 
 
 def lock_generation(session: Session, tenant_id: uuid.UUID) -> int:
+    current = lock_current_generation(session, tenant_id)
+    if current >= 2**63 - 1:
+        raise ConflictError("Identity source generation is exhausted")
+    table = cast(Table, CatalogSourceGeneration.__table__)
+    session.connection().execute(
+        update(table).where(table.c.tenant_id == tenant_id).values(version=current + 1)
+    )
+    return current + 1
+
+
+def lock_current_generation(session: Session, tenant_id: uuid.UUID) -> int:
     if tenant_id != require_current_tenant() or tenant_id == SCOPE_ALL:
         raise ValidationFailedError("source generation requires the current real tenant")
     connection = session.connection()
@@ -197,12 +208,7 @@ def lock_generation(session: Session, tenant_id: uuid.UUID) -> int:
     current = connection.execute(
         select(table.c.version).where(table.c.tenant_id == tenant_id).with_for_update()
     ).scalar_one()
-    if current >= 2**63 - 1:
-        raise ConflictError("Identity source generation is exhausted")
-    connection.execute(
-        update(table).where(table.c.tenant_id == tenant_id).values(version=current + 1)
-    )
-    return int(current + 1)
+    return int(current)
 
 
 @event.listens_for(Session, "before_flush")

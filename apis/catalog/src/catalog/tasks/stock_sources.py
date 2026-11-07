@@ -231,7 +231,17 @@ async def build(
     warehouse_facts = []
     for identity, warehouse in sorted(warehouses.items()):
         revision = policies[identity]
-        visible(contexts["warehouse"], warehouse, {"kind", "is_active"})
+        location_fields = {
+            "country_code",
+            "state_code",
+            "tax_registration_id",
+            "timezone",
+            "address_line1",
+            "address_line2",
+            "city",
+            "postal_code",
+        }
+        visible(contexts["warehouse"], warehouse, {"kind", "is_active"} | location_fields)
         visible(contexts["warehouse_operation_policy_revision"], revision, set(OPERATIONS.values()))
         warehouse_facts.append(
             {
@@ -240,6 +250,7 @@ async def build(
                 "kind": warehouse.kind,
                 "is_active": warehouse.is_active,
                 "department_id": warehouse.department_id,
+                **{key: getattr(warehouse, key) for key in location_fields},
                 "policy_revision_id": revision.id,
                 "allowed_operations": tuple(
                     operation for operation, flag in OPERATIONS.items() if getattr(revision, flag)

@@ -8,8 +8,9 @@ import type { MasterRow } from '../lib/catalog-masters';
 import { defaultLabels, useWarehouseCommand, useWarehouseRead, type WarehouseConfiguration } from '../lib/warehouse-ui';
 import { useUnsavedChanges } from '../lib/use-unsaved-changes';
 import { CatalogMasterError } from './CatalogMasterDirectory';
+import { WarehousePolicyReleases } from './WarehousePolicyReleases';
 
-export function WarehouseSettings({ company, canManage, canPublish, returnTo }: { company: string; canManage: boolean; canPublish: boolean; returnTo?: string }) {
+export function WarehouseSettings({ company, canManage, canPublish, canReadReleases = false, returnTo }: { company: string; canManage: boolean; canPublish: boolean; canReadReleases?: boolean; returnTo?: string }) {
   const root = `/v1/companies/${company}`, read = useWarehouseRead<WarehouseConfiguration>(company, root + '/warehouse-configuration', 'catalog.company_warehouse_configuration', canPublish), command = useWarehouseCommand();
   const [draft, setDraft] = useState<Record<string, string | null>>({}), [labels, setLabels] = useState<Record<string, SearchSelectOption>>({}), [confirm, setConfirm] = useState<'bootstrap' | 'defaults' | null>(null), [message, setMessage] = useState('');
   const dirty = useRef(false);
@@ -50,6 +51,7 @@ export function WarehouseSettings({ company, canManage, canPublish, returnTo }: 
       {!editable ? <Notice>These settings are read-only with your current access or the available configuration.</Notice> : null}
       <div className="janso-form-actions">{canPublish ? <Button disabled={!editable || !dirty.current} onClick={() => setConfirm('defaults')}>Review default changes</Button> : null}<Button variant="ghost" disabled={command.pending || command.uncertain} onClick={reload}>Reload settings</Button></div>
     </div></CardBody></Card> : null}
+    {read.data?.company_id === company && (canReadReleases ? <WarehousePolicyReleases company={company} canPublish={canManage && canPublish} generation={read.data.policy_generation} /> : <Notice>Company policy release management requires Catalog release read access. Ask an administrator to review that access before warehouse retirement.</Notice>)}
     <ConfirmDialog open={!!confirm && dialogOpen} title={confirm === 'bootstrap' ? 'Initialize company warehouses?' : 'Save reviewed warehouse defaults?'} confirmLabel={command.uncertain ? 'Retry same change' : confirm === 'bootstrap' ? 'Initialize locations' : 'Save defaults'} busy={command.pending} error={command.failure ? command.failure.message + (command.failure.status === 409 ? ' Cancel and reload settings to review the latest configuration before trying again.' : '') : null} onCancel={() => { if (command.uncertain) setDialogOpen(false); else { setConfirm(null); command.clear(); } }} onConfirm={async () => {
       if (!confirm || confirm === 'bootstrap' && !canManage || confirm === 'defaults' && !editable) return;
       const body = confirm === 'bootstrap' ? {} : { ...draft, expected_generation: read.data!.policy_generation, expected_source_version: read.data!.source_version };

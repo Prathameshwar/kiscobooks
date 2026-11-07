@@ -1,7 +1,7 @@
 """Environment-only settings; no flag can enable an unimplemented Catalog capability."""
 
 from billing_platform.owner_snapshot import SnapshotCredential
-from pydantic import Field, SecretStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from reporting_contract.enrollment import EnrollmentSource
 from voucher_execution.retirement_transport import RetirementConnection
@@ -10,8 +10,17 @@ from voucher_execution.stock_policy_transport import PolicyConnection
 from catalog.tasks.identity_source import IdentitySourceSettings
 
 
+class VoucherSourceDelivery(BaseModel):
+    """Catalog's narrowly scoped signed push credential for fresh item evidence."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
+    key_id: str = Field(pattern=r"^[a-z][a-z0-9_.-]{0,119}$")
+    secret: SecretStr = Field(min_length=32, repr=False)
+
+
 class Settings(BaseSettings):
     simple_creation_origins: dict[str, str] = Field(default_factory=dict, max_length=2)
+    voucher_source_delivery: VoucherSourceDelivery | None = None
     report_enrollment_source: EnrollmentSource | None = None
     stock_report_credentials: dict[str, SnapshotCredential] = Field(
         default_factory=dict, max_length=12

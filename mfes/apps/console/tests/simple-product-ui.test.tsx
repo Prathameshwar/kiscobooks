@@ -195,10 +195,10 @@ it('shows a readable variant blocker without a setting save action', async () =>
   ).not.toBeInTheDocument();
 });
 const basicAccess = { ...access, initialSetup: false, configuration: false };
-it('offers simple creation while record pages remain retired', async () => {
+it('offers simple creation and links restored product record pages', async () => {
   render(<SimpleProductDirectory company={COMPANY} access={access} />);
   expect(await screen.findByText('Tea')).toBeVisible();
-  expect(screen.queryByRole('link', { name: 'Tea' })).toBeNull();
+  expect(screen.getByRole('link', { name: 'Tea' })).toHaveAttribute('href', expect.stringContaining('/masters/items/'));
   expect(screen.getByRole('link', { name: 'Create product' })).toHaveAttribute('href', expect.stringContaining('/masters/items/new'));
   expect(screen.queryByText('Product families')).not.toBeInTheDocument();
   expect(screen.getByText('Product code')).toBeVisible();
@@ -434,7 +434,9 @@ it('retries an unconfirmed settings review unchanged after another operator chan
   };
   view.rerender(<ProductStructureSettings company={COMPANY} canManage />);
   await user.click(screen.getByRole('button', { name: 'Retry same review' }));
-  await screen.findByRole('button', { name: 'Refresh review' });
+  await screen.findByText('Settings changed; review again.');
+  expect(screen.getByRole('button', { name: 'Retry same review' })).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Refresh review' })).toBeNull();
   const calls = api.mock.calls
     .map((call) => call[1])
     .filter((request) => request.path.endsWith('/authoring/preview'));

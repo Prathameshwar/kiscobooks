@@ -367,11 +367,27 @@ async def gateway_authorize(request: Request, current: Actor = Depends(actor)) -
                     0
                 ].split("/")[5:6] in (
                     ["simple-product-creations"],
+                    ["advanced-product-creations"],
                     ["simple-product-imports"],
                     ["import-templates"],
                     ["import-jobs"],
                 )
-                if simple_creation or path.startswith(("/accounting/", "/vouchers/", "/reports/")):
+                batch_pricing = path.startswith("/catalog/v1/companies/") and path.split("?", 1)[
+                    0
+                ].split("/")[5:] in (
+                    ["prices", "resolve"],
+                    ["prices", "coverage"],
+                    ["batch-prices"],
+                )
+                if (
+                    simple_creation
+                    or batch_pricing
+                    or (
+                        path.startswith("/catalog/v1/companies/")
+                        and path.split("?", 1)[0].split("/")[5:6] == ["warehouses"]
+                    )
+                    or path.startswith(("/accounting/", "/vouchers/", "/reports/"))
+                ):
                     from billing_platform.company_context import sign_company_context
 
                     from identity.services.accounting_context import company_context
@@ -381,7 +397,7 @@ async def gateway_authorize(request: Request, current: Actor = Depends(actor)) -
                         current,
                         selected_company,
                         entity_prefix="vouchers."
-                        if simple_creation or path.startswith("/vouchers/")
+                        if simple_creation or batch_pricing or path.startswith("/vouchers/")
                         else "reports."
                         if path.startswith("/reports/")
                         else "accounting.",

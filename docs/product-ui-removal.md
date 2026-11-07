@@ -1,4 +1,4 @@
-> Current UI (2026-11-04): [Simple Product creation](simple-product-ready-plan.md) is available at `/masters/items/new`. Product edit/detail, advanced creation and batch/serial pages remain retired. The implementation below is historical.
+> Superseded 2026-11-06: the user authorized [page-by-page product management restoration](product-management-ui-restoration.md). The retirement record below is historical; the restoration record tracks which pages have been implemented and verified.
 
 # Product authoring UI removal
 

@@ -1,10 +1,11 @@
 """Bounded initial party setup; related owners are assigned by the server."""
 
 import uuid
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
+from accounting.domain.master_codes import optional_code
 from accounting.schemas.master_opening import MasterOpeningInput
 from accounting.schemas.masters import (
     ExpectedVersion,
@@ -25,6 +26,12 @@ class PartyLedgerInput(Input):
     """
 
     code: str | None = Field(None, min_length=1, max_length=40)
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, value: Any) -> str | None:
+        return optional_code(value, field="ledger.code")
+
     name: str | None = Field(None, min_length=1, max_length=160)
     group_id: uuid.UUID | None = Field(None)
     currency_mode: Literal["BASE", "FIXED", "MULTI"] = Field("BASE")
@@ -37,6 +44,11 @@ def no_choices() -> PartyLedgerInput:
 
 
 class PartyCreation(PartyCreate):
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, value: Any) -> str | None:
+        return optional_code(value, field="party.code")
+
     role: Literal["CUSTOMER", "SUPPLIER", "OTHER", "BROKER"]
     address: PartyAddressInput | None = None
     contact: PartyContactInput | None = None

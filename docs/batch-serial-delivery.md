@@ -4,6 +4,21 @@ Started 2026-10-28. Scope approved by the user: complete the seven phases, maint
 this checklist, and perform two final reviews with fixes. Existing stock design,
 owner boundaries and activation gates continue to apply.
 
+## Serial repair decision, 2026-11-07
+
+The user selected audited replacement of an unused serial while preserving its
+old identifiers and history. A replacement is one Accounting registration command
+that retires the never-received original and creates the new unit atomically.
+Identifiers remain reserved; both native histories and audits link the units.
+Held, retired, received, stale-version and different-SKU/batch replacements fail.
+Superseded units cannot be reactivated. This adds no stock quantity or value.
+
+Standalone bounded scanner queues and Purchase inline registration reuse the same
+native serial owner. Queues retain each command key and progress before sending;
+Purchase rechecks receipt eligibility before selecting the registered units.
+The [repair ledger](serial-fixes-todo.md) records scope, tests and release gates.
+VM updates are deferred; nonproduction data does not weaken the selected policy.
+
 Completed implementation and both final reviews on 2026-10-28. Review findings
 were fixed and verified; current evidence is summarized below and recorded in
 [stock-posting-delivery](stock-posting-delivery.md). Normal installation admission

@@ -88,6 +88,8 @@ class Item(Evidence):
     pending_supply: Positive | None = None
     pending_demand: Positive | None = None
     replenishment: list[Replenishment] = Field(default_factory=list, max_length=200)
+    sale_location_mode: Literal["ALLOW_ALL_ACTIVE", "ALLOW_LIST"] | None = None
+    sale_location_permissions: dict[uuid.UUID, bool] = Field(default_factory=dict, max_length=200)
 
     @model_validator(mode="after")
     def thresholds(self) -> Self:
@@ -113,6 +115,8 @@ class Location(Evidence):
     code: str = Field(min_length=1, max_length=40)
     name: str = Field(min_length=1, max_length=200)
     parent_id: uuid.UUID | None = None
+    is_group: bool = False
+    sale_eligible: bool | None = None
 
 
 class Group(Evidence):

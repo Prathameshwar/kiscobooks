@@ -13,12 +13,13 @@ from accounting.api.auth import Access
 from accounting.models.ledger import Journal
 from accounting.models.masters import Account
 from accounting.models.stock import StockPosition, StockPosting
+from accounting.models.stock_tracking import StockLot
 from accounting.models.voucher_money import VoucherMoneyIntent
 from accounting.stock_resources import STOCK_POSTING
 from accounting.tasks.access import writable
 from accounting.tasks.financial_commands import financial_context
 from accounting.tasks.journal_drafts import lines as journal_lines
-from accounting.tasks.stock_effects import StockEffects, permitted
+from accounting.tasks.stock_effects import StockEffects, actual_tracking_features, permitted
 from accounting.tasks.stock_ledger import StockLedger
 from accounting.tasks.stock_quote import semantic_effects, semantic_hash
 from accounting.tasks.stock_reversal import guard, reverse_leg
@@ -129,6 +130,8 @@ async def apply(
     movements = []
     for movement in await guard(ledger, original):
         position = await ledger.scoped(StockPosition, movement.position_id)
+        if position.lot_id is not None:
+            await ledger.scoped(StockLot, position.lot_id)
         warehouse = warehouses.get(position.warehouse_id)
         item = old_items.get(position.item_id)
         if warehouse is None or item is None:
@@ -178,6 +181,7 @@ async def apply(
         "company_configuration_hash": finance.configuration_hash,
         "reverses_id": str(original.id),
     }
+    features = actual_tracking_features(ledger, current, features)
     return StockEffects(
         posting.id, tuple(movements), money, features, semantic, semantic_hash(semantic)
     )

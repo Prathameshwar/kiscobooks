@@ -31,6 +31,17 @@ it('shows the discounted net amount consistently in item and account grids', asy
 });
 
 describe('Purchase presentation state and exact preview', () => {
+  it('copies a completed desktop receipt quantity into an empty billed quantity on blur', async () => {
+    const user = userEvent.setup();
+    const draft = reduce(purchaseExample(today), { type: 'line', key: 'p1', patch: { received: '', billed: '' } });
+    mount(draft);
+    const received = within(table()).getByRole('textbox', { name: /Receipt qty, line 1/ });
+    const billed = within(table()).getByRole('textbox', { name: /Billed qty, line 1/ });
+    await user.type(received, '123');
+    expect(billed).toHaveValue('');
+    await user.tab();
+    expect(billed).toHaveValue('123');
+  });
   it('matches the approved sample and invalidates supplied tax when financial inputs change', () => {
     const draft = purchaseExample(today);
     expect(purchaseWorkspacePreview(draft)).toMatchObject({ gross: 50000000n, discount: 2500000n, net: 47500000n, freight: 1000000n, tax: 8730000n, total: 57230000n });

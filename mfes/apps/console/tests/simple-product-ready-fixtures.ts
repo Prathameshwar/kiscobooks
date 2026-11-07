@@ -5,9 +5,10 @@ export function simpleOptions(kind = 'GOODS', gst = false) {
   return {
     company_id: COMPANY, kind, today: '2026-11-04', opening_date: '2026-04-01', currency: 'INR', inventory_enabled: true, gst_enabled: gst,
     default_group_id: GROUP,
+    product_type_revision_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
     configuration: { options: { brand_mode: 'DISABLED', model_mode: 'DISABLED' }, pricing: { sale_price_mode: 'OPTIONAL', purchase_reference_mode: 'OPTIONAL', mrp_mode: 'DISABLED' } },
     fields: [field('kind', 'Type'), field('name', 'Product name'), field('code', 'Product code'), field('group_id', 'Product group'), field('base_unit_id', 'Base unit'), field('purchase_price', 'Purchase price'), field('sale_price', 'Selling price'), field('brand_id', 'Brand'), field('model_code', 'Model'),
-      ...(kind === 'GOODS' ? [field('opening_quantity', 'Opening quantity')] : []),
+      ...(kind === 'GOODS' ? [field('opening_quantity', 'Opening quantity'), field('opening_unit_cost', 'Opening unit cost')] : []),
       ...(gst ? [field('classification_id', kind === 'GOODS' ? 'HSN' : 'SAC'), field('rule_id', 'GST treatment / rate')] : [])],
   };
 }

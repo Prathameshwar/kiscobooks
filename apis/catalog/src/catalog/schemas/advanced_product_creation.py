@@ -18,8 +18,8 @@ from catalog.schemas.product_initial import InitialProductSetup
 from catalog.schemas.product_mode import ProductModeDetail
 from catalog.schemas.products import FamilyDetail, ItemDetail
 from catalog.schemas.simple_product_creation import (
-    SimpleBatchOptions,
     SimpleBatchInput,
+    SimpleBatchOptions,
     SimpleRequiredCategoryScheme,
     SimpleSalePriceOption,
     SimpleSerialInput,
@@ -209,6 +209,7 @@ class AdvancedSkuProgress(StrictInput):
     opening_control_id: uuid.UUID | None = None
     opening_voucher_id: uuid.UUID | None = None
     opening_operation_id: uuid.UUID | None = None
+    opening_error: str | None = None
 
 
 class AdvancedDefinitionStatus(StrictInput):
@@ -306,6 +307,9 @@ class AdvancedOpeningInput(StrictInput):
     warehouse_id: uuid.UUID | None = None
     opening_quantity: ExactDecimal = Field(default=Decimal("0"), ge=0)
     purchase_price: ExactDecimal | None = Field(default=None, ge=0)
+    opening_unit_cost: ExactDecimal | None = Field(
+        default=None, gt=0, exclude_if=lambda value: value is None,
+    )
     batches: list[SimpleBatchInput] = Field(default_factory=list, max_length=64)
     serials: list[SimpleSerialInput] = Field(default_factory=list, max_length=200)
 
@@ -317,6 +321,7 @@ class AdvancedOpeningInput(StrictInput):
                 or self.warehouse_id is not None
                 or self.opening_quantity
                 or self.purchase_price is not None
+                or self.opening_unit_cost is not None
                 or self.batches
                 or self.serials
             ):
@@ -325,10 +330,13 @@ class AdvancedOpeningInput(StrictInput):
         if self.opening_date is None:
             raise ValueError("select the books-begin date for opening stock")
         if self.batches and (
-            self.opening_quantity or self.purchase_price is not None or self.serials
+            self.opening_quantity or self.purchase_price is not None
+            or self.opening_unit_cost is not None or self.serials
         ):
             raise ValueError("enter opening quantity and identifiers on batch rows")
-        if not self.batches and (not self.opening_quantity or self.purchase_price is None):
+        if not self.batches and (
+            not self.opening_quantity or self.valuation_cost is None
+        ):
             raise ValueError("opening stock requires quantity and purchase cost")
         if self.batches and any(not row.opening_quantity for row in self.batches):
             raise ValueError("opening batches require a positive quantity")
@@ -343,6 +351,10 @@ class AdvancedOpeningInput(StrictInput):
         if len(json.dumps(self.model_dump(mode="json"), allow_nan=False).encode()) > 65536:
             raise ValueError("submit up to 64 KiB of one SKU opening")
         return self
+
+    @property
+    def valuation_cost(self) -> Decimal | None:
+        return self.opening_unit_cost if self.opening_unit_cost is not None else self.purchase_price
 
 
 class AdvancedOpeningSubmit(StrictInput):

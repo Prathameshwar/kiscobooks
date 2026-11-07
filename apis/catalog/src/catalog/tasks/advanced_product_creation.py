@@ -48,6 +48,7 @@ def status(row: AdvancedProductCreation) -> AdvancedDefinitionStatus:
                               "opening_control_id",
                               "opening_voucher_id",
                               "opening_operation_id",
+                              "opening_error",
                         )
                         if key in entries.get(value, {})
                     },

@@ -25,7 +25,23 @@ from billing_platform.permissions import PERMISSIONS
 CONTRACT = "identity.company_actor_authorization.v1"
 REQUEST_OPERATION = "catalog.actor.authorize"
 RESPONSE_OPERATION = "catalog.actor.authorization.response"
+CREATION_REQUEST_OPERATION = "catalog.creation.authority"
+CREATION_RESPONSE_OPERATION = "catalog.creation.authority.response"
 MAX_LEASE_SECONDS = 30
+
+# The Catalog product coordinator may request only these existing native permissions.
+# Identity still resolves the initiating user's current grants for the exact company.
+CREATION_PERMISSIONS = frozenset({
+    "item.create", "item.read", "item.update", "item.activate",
+    "price_plan.read", "price_plan.manage", "price_plan.publish",
+    "purchase_price.manage", "tax_rule.publish",
+    "accounting.batch.read", "accounting.batch.manage",
+    "accounting.serial.read", "accounting.serial.manage",
+    "accounting.finance.manage", "accounting.stock.configure",
+    "accounting.stock.read", "accounting.stock.post", "period.post",
+    "vouchers.read", "vouchers.create", "vouchers.submit",
+    "vouchers.issue", "vouchers.post",
+})
 
 
 class ActorAuthorizationRequest(BaseModel):

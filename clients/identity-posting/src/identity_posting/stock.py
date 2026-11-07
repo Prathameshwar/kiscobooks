@@ -32,6 +32,9 @@ OPERATIONS = frozenset(
         "accounting-stock.reserve",
         "accounting-stock.confirmed",
         "accounting-stock.aborted",
+        "accounting-stock.tracking-reserve",
+        "accounting-stock.tracking-confirmed",
+        "accounting-stock.tracking-aborted",
     }
 )
 # A stock execution can prepare a financial journal as part of the same operation.
@@ -106,6 +109,40 @@ class StockTerminalRequest(Contract):
     )
     posted_at: dt.datetime | None = None
     intent: StockReservationIntent | None = None
+
+
+class TrackingReservationIntent(Contract):
+    operation_id: uuid.UUID
+    actor_user_id: uuid.UUID
+    command_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    resource: Literal["BATCH", "SERIAL"]
+    features: tuple[str, ...] = Field(min_length=1, max_length=3)
+    authority: StockAuthority = Field(repr=False)
+
+    @model_validator(mode="after")
+    def identity_features(self) -> Self:
+        required = "batch_tracking" if self.resource == "BATCH" else "serial_tracking"
+        if (
+            not self.operation_id.int or not self.actor_user_id.int
+            or required not in self.features
+            or not set(self.features) <= {"batch_tracking", "serial_tracking", "expiry_tracking"}
+            or len(set(self.features)) != len(self.features)
+            or (self.resource == "BATCH" and "serial_tracking" in self.features)
+            or ("expiry_tracking" in self.features and "batch_tracking" not in self.features)
+        ):
+            raise ValueError("tracking reservation requires its physical identity capabilities")
+        return self
+
+
+class TrackingTerminalRequest(Contract):
+    intent: TrackingReservationIntent
+    committed_at: dt.datetime | None = None
+
+
+def tracking_root(tenant: uuid.UUID, company: uuid.UUID) -> str:
+    if not tenant.int or not company.int:
+        raise ValueError("tracking reservation requires real company scope")
+    return f"/internal/v1/tenants/{tenant}/companies/{company}/tracking/reservations"
 
 
 class StockPostingClient:

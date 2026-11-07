@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Notice, SearchSelect, useFormatters, type SearchSelectLoader } from '@janso/ui';
+import { Button, Modal, Notice, SearchSelect, useFormatters, type SearchSelectLoader } from '@janso/ui';
+import { SerialRegistration } from './SerialRegistration';
 import { StockReference } from './VoucherStock';
 import { PurchaseBatchChooser } from './PurchaseBatchChooser';
 import { productFieldRequest as request } from '../lib/product-fields';
@@ -13,10 +14,10 @@ import type { components as Accounting } from '@janso/api-client/accounting';
 type Page<T> = { items: T[]; page: { has_more: boolean; next_cursor: string | null } };
 
 /** One destination and batch per Purchase row. Duplicate the row to split a receipt. */
-export function PurchaseStockDetails({ company, line, postingDate, canEdit, access, canReadBatch, canPrepareBatch, promptForItem, onChange }: {
+export function PurchaseStockDetails({ company, line, postingDate, canEdit, access, canReadBatch, canPrepareBatch, canPrepareSerial, promptForItem, onChange }: {
   company: string; line: PurchaseLine; postingDate: string; canEdit: boolean;
   access?: { warehouse: boolean; bin: boolean; batch: boolean; serial: boolean };
-  canReadBatch?: boolean; canPrepareBatch?: boolean; promptForItem?: string | null;
+  canReadBatch?: boolean; canPrepareBatch?: boolean; canPrepareSerial?: boolean; promptForItem?: string | null;
   onChange: (stock: PurchaseStock) => void;
 }) {
   const format = useFormatters();
@@ -25,10 +26,11 @@ export function PurchaseStockDetails({ company, line, postingDate, canEdit, acce
   const [failure, setFailure] = useState(''), [loading, setLoading] = useState(false);
   const [batch, setBatch] = useState<PurchaseBatch | null>(null), [batchError, setBatchError] = useState('');
   const [chooserOpen, setChooserOpen] = useState(false);
+  const [serialChooserOpen, setSerialChooserOpen] = useState(false), [serialRevision, setSerialRevision] = useState(0);
 
   useEffect(() => {
     const abort = new AbortController();
-    setChooserOpen(false); setBatch(null); setBatchError(''); setProfile(null); setFailure(''); setLoading(true);
+    setChooserOpen(false); setSerialChooserOpen(false); setBatch(null); setBatchError(''); setProfile(null); setFailure(''); setLoading(true);
     if (!trackingId.test(line.subject)) { setLoading(false); return () => abort.abort(); }
     void Promise.all([
       purchaseTracking(company, line.subject),
@@ -85,7 +87,9 @@ export function PurchaseStockDetails({ company, line, postingDate, canEdit, acce
         {batchError ? <p className="janso-error">{batchError}</p> : null}
       </div> : null}
     </div>
-    {profile?.serialTracking ? <SearchSelect multiple label="Prepared serials" value={stock.unitIds} loadOptions={serials} scopeKey={[company, line.subject, stock.lotId].join(':')} minQueryLength={0} maxOptions={200} disabled={!canEdit || !access?.serial || !!failure || profile.lotTracking && !stock.lotId} onChange={unitIds => onChange({ ...stock, unitIds })} hint={`Select one serial per received unit. ${stock.unitIds.length} selected${requested ? ` for ${requested} units` : ''}.`} /> : null}
+    {profile?.serialTracking ? <SearchSelect multiple label="Prepared serials" value={stock.unitIds} loadOptions={serials} scopeKey={[company, line.subject, stock.lotId, String(serialRevision)].join(':')} minQueryLength={0} maxOptions={200} disabled={!canEdit || !access?.serial || !!failure || profile.lotTracking && !stock.lotId} onChange={unitIds => onChange({ ...stock, unitIds })} hint={`Select one serial per received unit. ${stock.unitIds.length} selected${requested ? ` for ${requested} units` : ''}.`} /> : null}
+    {profile?.serialTracking && canEdit && access?.serial && canPrepareSerial ? <Button type="button" variant="ghost" disabled={!!failure || profile.lotTracking && !stock.lotId} onClick={() => setSerialChooserOpen(true)}>Create or scan serials for this purchase</Button> : null}
+    {serialChooserOpen && profile?.serialTracking && canEdit && canPrepareSerial ? <Modal open title="Register serials for this purchase" size="lg" onClose={() => setSerialChooserOpen(false)}><SerialRegistration key={[company, line.subject, stock.lotId].join(':')} company={company} item={line.subject} lot={stock.lotId || undefined} forReceipt onRegistered={ids => { onChange({ ...stock, unitIds: [...new Set([...stock.unitIds, ...ids])] }); setSerialRevision(value => value + 1); setSerialChooserOpen(false); }} /></Modal> : null}
     {profile?.lotTracking && !stock.lotId ? <p className="janso-error">Select a batch for this product before saving the Purchase.</p> : null}
     {serialCountWrong ? <p className="janso-error">Select exactly one prepared serial for each received unit.</p> : null}
     {profile && !profile.lotTracking && !profile.serialTracking ? <p className="janso-entry-workspace__caption">This product does not require batch or serial tracking.</p> : null}

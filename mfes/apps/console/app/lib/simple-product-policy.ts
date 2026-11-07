@@ -38,7 +38,7 @@ export function allowedSimpleProductRequest(
     if (!['GET', 'PATCH'].includes(method)) return false;
   } else if (new RegExp(base + '/simple-product-creations/by-key/' + uuid + '$', 'i').test(route)) {
     if (method !== 'GET') return false;
-  } else if (new RegExp(base + '/simple-product-creations/' + uuid + '/advance$', 'i').test(route)) {
+  } else if (new RegExp(base + '/simple-product-creations/' + uuid + '/(?:advance|drive)$', 'i').test(route)) {
     if (method !== 'POST') return false;
   } else if (new RegExp(base + '/product-configuration/authoring$', 'i').test(route)) {
     if (!['GET', 'PATCH'].includes(method)) return false;

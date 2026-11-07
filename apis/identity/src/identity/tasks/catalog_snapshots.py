@@ -31,8 +31,7 @@ from identity.events.catalog_source import (
     CONTRACT,
     SOURCE_SPECS,
     _wire,
-    lock_generation,
-    source_outbox,
+    lock_current_generation,
 )
 from identity.models import Company
 from identity.models.catalog_source import CatalogSourcePage, CatalogSourceSnapshot
@@ -80,10 +79,9 @@ async def create_snapshot(
     if company_id == SCOPE_ALL or request_id == SCOPE_ALL or not 15 <= ttl_seconds <= 300:
         raise ValidationFailedError("invalid source snapshot scope or lifetime")
     # The same lock precedes participating native writes, including deletes.
-    version = await db.run_sync(lambda sync: lock_generation(sync, tenant))
-    # A no-change barrier fills this generation in the event stream. Consumers can
-    # detect every gap, including snapshots requested by another company.
-    db.add(source_outbox(tenant, version, []))
+    # Snapshot reads share the source writer lock, but do not change the source.
+    # Repeated snapshot refreshes must not invalidate unchanged product drafts.
+    version = await db.run_sync(lambda sync: lock_current_generation(sync, tenant))
     existing = await db.scalar(
         select(CatalogSourceSnapshot).where(
             CatalogSourceSnapshot.company_id == company_id,

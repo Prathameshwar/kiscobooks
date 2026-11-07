@@ -21,6 +21,8 @@ class ReadyPartyCreate(PartyCreate):
     Which columns belong together is checked by the opening rules, so each error names its column.
     """
 
+    code: str = Field(..., min_length=1, max_length=40)
+
     opening_balance_type: BalanceType | None = Field(
         None,
         title="Opening balance type",

@@ -555,7 +555,9 @@ def calculate_data(
     """Same financial rules for a frozen reference or a verified native aggregate input."""
     assert query.date_from and query.date_to
     if query.date_from < coverage_start and not includes_ytd(data.rows, query):
-        raise ConflictError("requested history precedes retained owner coverage")
+        from reports.domain.reporting.history_coverage import InsufficientHistoryError
+
+        raise InsufficientHistoryError("requested history precedes retained owner coverage")
     if query.basis == "BASE" and query.currency not in {None, data.currency}:
         raise ValidationFailedError("base reporting currency differs from the company")
     for name, table in (

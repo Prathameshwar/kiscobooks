@@ -8,6 +8,8 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, WithJsonSchema, field_validator, model_validator
 
+from accounting.domain.master_codes import CODE_DESCRIPTION, optional_code
+
 DecimalInput = Annotated[Decimal, WithJsonSchema({"type": "string"}, mode="validation")]
 
 
@@ -135,7 +137,13 @@ class AccountGroupClosureDetail(Detail):
 
 
 class PartyCreate(Input):
-    code: str = Field(..., min_length=1, max_length=40)
+    code: str | None = Field(None, min_length=1, max_length=40, description=CODE_DESCRIPTION)
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, value: Any) -> str | None:
+        return optional_code(value)
+
     name: str = Field(..., min_length=1, max_length=160)
     legal_name: str = Field(..., min_length=1, max_length=200)
     party_type: Literal["ORGANISATION", "PERSON"] = Field("ORGANISATION")
@@ -222,7 +230,13 @@ class PaymentTermLineDetail(Detail):
 
 
 class AccountCreate(Input):
-    code: str = Field(..., min_length=1, max_length=40)
+    code: str | None = Field(None, min_length=1, max_length=40, description=CODE_DESCRIPTION)
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, value: Any) -> str | None:
+        return optional_code(value)
+
     name: str = Field(..., min_length=1, max_length=160)
     group_id: uuid.UUID = Field(...)
     kind: Literal[

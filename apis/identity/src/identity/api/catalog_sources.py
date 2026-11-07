@@ -8,7 +8,7 @@ from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Any
 
-from billing_platform.actor_authorization import REQUEST_OPERATION
+from billing_platform.actor_authorization import CREATION_REQUEST_OPERATION, REQUEST_OPERATION
 from billing_platform.db import tenant_scope
 from billing_platform.errors import (
     AuthenticationRequiredError,
@@ -119,7 +119,8 @@ async def authenticate_source_request(request: Request, *, operation: str) -> Ve
             "catalog",
             "identity",
             OPERATIONS
-            | ({REQUEST_OPERATION} if entry.allow_actor_authorization else set())
+            | ({REQUEST_OPERATION, CREATION_REQUEST_OPERATION}
+               if entry.allow_actor_authorization else set())
             | ({"catalog.enrollment.read"} if entry.allow_enrolled_companies else set()),
             entry.secret.get_secret_value().encode(),
         )

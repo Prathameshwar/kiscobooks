@@ -14,14 +14,17 @@ import { useAccessDraft } from './AccessCommon';
 import { ProductCatalogField, ProductCatalogFailure, ProductCatalogNavigation, ProductCatalogReference } from './ProductCatalogCommon';
 import { ProductTypeHistory } from './ProductTypeRevision';
 import { ProductCatalogCustomFields } from './ProductCatalogCustomFields';
+import { ProductInventoryActions } from './ProductInventoryActions';
+import { ProductDetailHeader, ProductDetailView } from './ProductDetailView';
 type SchemePreview = components['schemas']['SchemeTransitionPreview'];
-export function ProductCatalogDetail({ company, config, id, returnTo, canManage, access, }: {
+export function ProductCatalogDetail({ company, config, id, returnTo, canManage, access, completed = false }: {
   company: string;
   config: MasterConfig;
   id: string;
   returnTo?: string;
   canManage: boolean;
   access: ClassificationAccess;
+  completed?: boolean;
 }) {
   const resource = config.resource as ClassificationResource, definition = classificationDefinitions[resource], root = '/masters/' + resource, back = catalogBack(returnTo, root);
   const metadata = useCatalogFields(company, config.entity), fields = metadata.data?.fields ?? [], record = useServiceRead<MasterRow>(catalogBase(company, resource + '/' + id), masterRequest, (row) => catalogReceipt(row, company, id));
@@ -141,7 +144,7 @@ export function ProductCatalogDetail({ company, config, id, returnTo, canManage,
     ? 'Finish the current action first.'
     :
     undefined;
-  const title = row?.name ?? definition.singular + ' details';
+  const title = completed ? (resource === 'product-families' ? 'Product Profile saved' : 'Product saved') : row?.name ?? definition.singular + ' details';
   const related: {
     resource: string;
     key: string;
@@ -182,18 +185,22 @@ export function ProductCatalogDetail({ company, config, id, returnTo, canManage,
     const value = row?.[field.key];
     return value == null ? 'Not set' : String(value).replaceAll('_', ' ').toLowerCase();
   }
-  return (<div className="janso-page">
+  const productRecord = resource === 'items' || resource === 'product-families';
+  const Header = productRecord ? ProductDetailHeader : PageHeader;
+  return (<div className={'janso-page' + (productRecord ? ' janso-product-management' : '')}>
     <ProductCatalogNavigation resource={resource} title={title} back={back} access={access} onLeave={guard.leave} />
-    <PageHeader title={title} lede={definition.description} actions={row &&
+    <Header title={title} fields={fields} row={row} family={resource === 'product-families'} completed={completed} lede={definition.description} actions={row &&
       !failure &&
       !metadata.loading &&
       !record.loading &&
-      (canEdit ||
+      (productRecord || canEdit ||
         canLifecycle ||
         canTransition ||
         canMove ||
         relatedActions.length > 0) && (<>
 
+          {productRecord && canEdit && <a className="janso-btn janso-btn--ghost" href={catalogLink(root + '/' + id + '/edit', here)} onClick={guard.leave}>Edit details</a>}
+          {productRecord && <ProductInventoryActions triggerLabel={resource === 'product-families' ? 'Manage profile' : 'Manage product'} company={company} row={row} family={resource === 'product-families'} access={access} returnTo={here} items={access.attributes ? [{ id: 'attributes', label: 'Manage attributes', href: '/products/attributes?' + new URLSearchParams(resource === 'items' ? { item_id: id } : { family_id: id }) }] : []} />}
           {(canEdit ||
             canLifecycle ||
             canTransition ||
@@ -259,12 +266,13 @@ export function ProductCatalogDetail({ company, config, id, returnTo, canManage,
       Retry same action
     </Button>)}
     {message && <Notice tone="success">{message}</Notice>}
+    {completed && row && !failure && !record.loading && <Notice tone="info">The product is saved. Review its current status and setup below. Creation does not by itself confirm stock or tax posting.</Notice>}
     {metadata.loading || record.loading ? (<p role="status">Loading record...</p>) : row && !failure ? (<div className="janso-flow">
       {row.is_active === false && (<Notice tone="warning">
         This record is inactive. Existing references remain available.
       </Notice>)}
 
-      <div role="region" aria-label="Record details" tabIndex={-1}>
+      {productRecord ? <ProductDetailView company={company} fields={fields} row={row} access={access} returnTo={here} family={resource === 'product-families'} onLeave={guard.leave} /> : <div role="region" aria-label="Record details" tabIndex={-1}>
         <Card>
           <CardBody>
             <div className="janso-flow">
@@ -308,7 +316,7 @@ export function ProductCatalogDetail({ company, config, id, returnTo, canManage,
             </div>
           </CardBody>
         </Card>
-      </div>
+      </div>}
       {resource === 'product-types' && (<ProductTypeHistory company={company} parentId={id} active={row.is_active === true} here={here} canManage={canManage} blocked={!!action || command.blocked} onLeave={guard.leave} />)}
 
     </div>) : null}

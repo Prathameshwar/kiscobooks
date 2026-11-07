@@ -108,11 +108,19 @@ async def activate_snapshot(db: AsyncSession, source: VerifiedSnapshot) -> Proje
     if baseline > manifest.source_version:
         raise ConflictError("a newer complete Identity snapshot is already active")
     if baseline == manifest.source_version:
-        if (
-            checkpoint.snapshot_id != manifest.snapshot_id
-            or checkpoint.snapshot_sha256 != manifest.content_sha256
-        ):
+        if checkpoint.source_version > baseline and checkpoint.snapshot_id != manifest.snapshot_id:
+            raise ConflictError("Identity snapshot is older than applied source changes")
+        if checkpoint.snapshot_id == manifest.snapshot_id and checkpoint.snapshot_sha256 != manifest.content_sha256:
             raise ConflictError("Identity snapshot generation content changed")
+        # A fresh signed snapshot has a new page digest because page identity is
+        # part of its hash, even when the native facts and source version agree.
+        # Renew the lease without replacing or versioning the projected facts.
+        if checkpoint.snapshot_id != manifest.snapshot_id:
+            checkpoint.snapshot_id = manifest.snapshot_id
+            checkpoint.snapshot_sha256 = manifest.content_sha256
+            checkpoint.generated_at = manifest.generated_at
+            checkpoint.expires_at = max(checkpoint.expires_at or manifest.expires_at, manifest.expires_at)
+            await db.flush()
         await apply_buffered_changes(db, checkpoint)
         return checkpoint
     for model in PROJECTION_MODELS.values():

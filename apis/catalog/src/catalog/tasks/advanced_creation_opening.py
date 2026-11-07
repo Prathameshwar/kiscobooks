@@ -193,13 +193,7 @@ async def local_preflight(
             )
             if requirement.namespace_rule == "COMPANY":
                 company_types.add(requirement.identifier_type)
-        seen: set[tuple[str, str]] = set()
-        for _, _, serial in serial_entries_for_opening(opening):
-            for value, normalized in validate_identifier_inputs(native, serial.identifiers):
-                identity = value.identifier_type, normalized
-                if identity in seen:
-                    raise ValidationFailedError("This serial or IMEI appears on another unit")
-                seen.add(identity)
+        validate_opening_identifiers(opening, native)
     request = SimpleCreationInput.model_validate(
         {
             "kind": "GOODS",
@@ -208,7 +202,7 @@ async def local_preflight(
             "batch_enabled": bool(opening.batches),
             "opening_date": opening.opening_date,
             "opening_quantity": opening.opening_quantity,
-            "purchase_price": opening.purchase_price,
+            "opening_unit_cost": opening.valuation_cost,
             "batches": opening.batches,
             "serials": opening.serials,
         }
@@ -229,6 +223,23 @@ async def local_preflight(
         )
         plans = await prepare_batches(access, defaults, request, today, opening.opening_date)
     return request, plans, total, company_types
+
+
+def validate_opening_identifiers(
+    opening: AdvancedOpeningInput, requirements: list[IdentifierRequirement]
+) -> None:
+    seen: set[tuple[str, str]] = set()
+    for batch_index, index, serial in serial_entries_for_opening(opening):
+        prefix = "" if batch_index is None else f"batches.{batch_index}."
+        path = f"{prefix}serials.{index}.identifiers"
+        try:
+            for value, key in validate_identifier_inputs(requirements, serial.identifiers):
+                identity = value.identifier_type, key
+                if identity in seen:
+                    raise ValidationFailedError("This serial or IMEI appears on another unit")
+                seen.add(identity)
+        except ValidationFailedError as error:
+            raise ValidationFailedError(error.message, fields={path: error.message}) from error
 
 
 def serial_entries_for_opening(
@@ -257,9 +268,7 @@ async def advanced_serial_preflight(
         "accounting", "GET", root + "/stock-tracking/serials/field-set?action=prepare"
     )
     fields = {value["key"]: value for value in metadata["fields"]}
-    needed = {"item_id", "identifiers", "reason"} | (
-        {"lot_id"} if request.batch_enabled else set()
-    )
+    needed = {"item_id", "identifiers", "reason"} | ({"lot_id"} if request.batch_enabled else set())
     if any(
         key not in fields or not fields[key]["readable"] or not fields[key]["writable"]
         for key in needed
@@ -333,6 +342,13 @@ async def preflight(
         quantity_field.get("readable") and quantity_field.get("writable")
     ):
         raise PermissionDeniedError("Opening quantity is protected by Accounting")
+    if request.opening_unit_cost is not None or any(
+        row.opening_unit_cost is not None for row in request.batches
+    ):
+        fields = {field["key"]: field for field in capture.get("fields", [])}
+        if any(key not in fields or not fields[key].get("readable")
+               or not fields[key].get("writable") for key in ("received_value", "opening")):
+            raise PermissionDeniedError("Opening valuation is protected by Accounting")
     owner_options = await opening_preflight(
         owners, company, opening.opening_date.isoformat(), opening.warehouse_id
     )
@@ -355,6 +371,7 @@ async def preflight(
         "warehouse_id": str(warehouse),
         "type_revision_id": type_revision_id,
         "batch_plan": plans,
+        "source_delivery": owners.source_delivery is not None,
         "receipts": [],
     }
     return (
@@ -483,7 +500,14 @@ async def advance(
             pending = progress.get("pending")
             if pending is None:
                 pending = await next_command(
-                    owners, company, opening_identity, step, request, progress, item_id
+                    owners,
+                    company,
+                    opening_identity,
+                    step,
+                    request,
+                    progress,
+                    item_id,
+                    actor.tenant_id,
                 )
                 if pending is not None:
                     parts = (
@@ -507,7 +531,9 @@ async def advance(
                         row.updated_at, row.updated_by = utcnow(), actor.user_id
                         audit(db, row, actor, "update")
             result = (
-                await owners.call(
+                await owners.deliver_source(pending["body"])
+                if pending and pending["service"] == "source"
+                else await owners.call(
                     pending["service"], "POST", pending["path"], pending["body"], pending["key"]
                 )
                 if pending
@@ -523,6 +549,10 @@ async def advance(
                 latest = sku_progress(row, item_id)
                 if pending and result is not None:
                     next_step, _ = after_command(step, request, progress, pending, result)
+                    progress.pop("last_error", None)
+                    progress.pop("worker_retry_at", None)
+                    progress.pop("worker_attempt", None)
+                    latest.pop("opening_error", None)
                     progress.setdefault("receipts", []).append(
                         {
                             "step": step,

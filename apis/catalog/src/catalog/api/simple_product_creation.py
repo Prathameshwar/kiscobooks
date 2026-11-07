@@ -69,7 +69,10 @@ def context(request: Request, company: uuid.UUID, current: Actor) -> CompanyCont
 
 def owners(request: Request) -> CreationOwners:
     return CreationOwners(
-        request.app, request.headers, request.app.state.settings.simple_creation_origins
+        request.app,
+        request.headers,
+        request.app.state.settings.simple_creation_origins,
+        request.app.state.settings.voucher_source_delivery,
     )
 
 
@@ -231,6 +234,7 @@ async def options(
                 field_set=basic,
                 configuration=configuration,
                 default_group_id=group,
+                product_type_revision_id=defaults.product_type_revision_id,
                 inventory_enabled="inventory" in facts.features,
                 gst_enabled=profile.default_tax_system == "gst_in",
                 fields=fields,
@@ -258,6 +262,23 @@ async def options(
                     visible=quantity["visible"] and quantity["readable"],
                     order=100,
                     writable=quantity["writable"],
+                    conditional_access=False,
+                )
+            )
+        cost = next(
+            (field for field in metadata["fields"] if field["key"] == "received_value"), None
+        )
+        capture = next((field for field in metadata["fields"] if field["key"] == "opening"), None)
+        if cost and capture:
+            result.fields.append(
+                FieldMetadata(
+                    key="opening_unit_cost",
+                    source="native",
+                    label="Opening unit cost",
+                    required=False,
+                    order=101,
+                    visible=cost["visible"] and cost["readable"] and capture["readable"],
+                    writable=cost["writable"] and capture["writable"],
                     conditional_access=False,
                 )
             )
@@ -390,6 +411,28 @@ async def advance(
     no_query(request)
     limit(request, current, company_id)
     return await tasks.advance(
+        request.app.state.session_factory,
+        current,
+        context(request, company_id, current),
+        creation_id,
+        owners(request),
+    )
+
+
+@router.post(
+    "/{creation_id}/drive",
+    response_model=SimpleCreationStatus,
+    operation_id="drive_simple_product_creation",
+)
+async def drive(
+    company_id: uuid.UUID,
+    creation_id: uuid.UUID,
+    request: Request,
+    current: Actor = Depends(actor),
+) -> SimpleCreationStatus:
+    no_query(request)
+    limit(request, current, company_id)
+    return await tasks.drive(
         request.app.state.session_factory,
         current,
         context(request, company_id, current),

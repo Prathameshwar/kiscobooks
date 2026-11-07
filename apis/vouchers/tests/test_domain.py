@@ -60,6 +60,15 @@ def test_configured_capture_is_enforced(policy, content, stage):
         )
 
 
+def test_missing_sections_error_names_the_required_inputs():
+    with pytest.raises(ValidationFailedError, match="Charges, References"):
+        validate_content(
+            VoucherInput.model_validate(BASE),
+            Policy(required_sections={"CHARGES", "REFERENCES"}),
+            kind="PURCHASE", profile="STANDARD", stage="SUBMITTED", today=DAY,
+        )
+
+
 def test_kind_sections_and_invalid_configurations():
     with pytest.raises(ValidationFailedError):
         validate_content(

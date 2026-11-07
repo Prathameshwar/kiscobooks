@@ -217,7 +217,8 @@ def field_set(access: Access, spec: Resource) -> FieldSet:
             FieldDescription(
                 key=key,
                 label=layout.get("label_override") or key.replace("_", " ").capitalize(),
-                required=key in required or bool(layout.get("is_required")),
+                required=(key in required or bool(layout.get("is_required")))
+                and not (key == "code" and spec.name in {"account", "party"}),
                 visible=layout.get("is_visible") is not False,
                 readable=key in allowed
                 if key in spec.detail.model_fields or spec.name in BY_NAME

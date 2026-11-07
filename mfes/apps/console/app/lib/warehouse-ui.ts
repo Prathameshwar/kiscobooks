@@ -41,16 +41,16 @@ export function useWarehouseRead<T>(company: string, path: string, entity: strin
 export function useWarehouseCommand() {
   const busy = useRef(false), retry = useRef<{ payload: string; key: string } | null>(null);
   const [pending, setPending] = useState(false), [failure, setFailure] = useState<RequestFailure | null>(null);
-  const uncertain = !!failure && failure.status >= 500;
-  async function execute(path: string, body: unknown): Promise<boolean> {
+  const uncertain = !!failure && (failure.status >= 500 || failure.status === 0);
+  async function execute(path: string, body: unknown, method: 'POST' | 'PUT' = 'POST'): Promise<boolean> {
     if (busy.current) return false;
-    const payload = JSON.stringify({ path, body });
+    const payload = JSON.stringify({ path, method, body });
     if (uncertain && retry.current?.payload !== payload) return false;
     if (retry.current?.payload !== payload) retry.current = { payload, key: crypto.randomUUID() };
     busy.current = true; setPending(true); setFailure(null);
-    try { await masterRequest({ path, method: 'POST', body, key: retry.current.key }); retry.current = null; return true; }
+    try { await masterRequest({ path, method, body, key: retry.current.key }); retry.current = null; return true; }
     catch (error) { setFailure(requestFailure(error, 'warehouse service')); return false; }
     finally { busy.current = false; setPending(false); }
   }
-  return { execute, pending, failure, uncertain, clear: () => { if (!busy.current) { retry.current = null; setFailure(null); } } };
+  return { execute, pending, failure, uncertain, clear: () => { if (!busy.current && !uncertain) { retry.current = null; setFailure(null); } } };
 }

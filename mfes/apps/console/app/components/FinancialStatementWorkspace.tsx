@@ -2,7 +2,7 @@
 import {prepareFinanceSource,financeRunFailure,financeSourceStale,FinanceSourceError} from '../lib/finance-source';
 
 import {useCallback,useEffect,useId,useRef,useState} from 'react';
-import {Button,Checkbox,FilterIcon,PageNavigation,SegmentedControl,Select,SplitButton,TextField,businessToday,formatDate,formatMoney,resolvedDisplay,useDisplayConfig,useFormatters} from '@janso/ui';
+import {Button,Checkbox,FilterIcon,PageNavigation,PreparationProgress,SegmentedControl,Select,SplitButton,TextField,businessToday,formatDate,formatMoney,resolvedDisplay,useDisplayConfig,useFormatters} from '@janso/ui';
 import type {components} from '@janso/api-client/reports';
 import type {FiscalYearChoice} from '../lib/company-context';
 import {productFieldRequest as request,ProductFieldError} from '../lib/product-fields';
@@ -73,6 +73,7 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
   const retainedSource=useRef(false);
   const [sourceRetry,setSourceRetry]=useState(false);
   const [verifiedAt,setVerifiedAt]=useState<string|null>(null);
+  const [periodNotice,setPeriodNotice]=useState('');
   const [definition,setDefinition]=useState<S['DefinitionDetail']|null>(null),[generation,setGeneration]=useState(''),[coverageStart,setCoverageStart]=useState('');
   const [run,setRun]=useState<Job|null>(null),[candidate,setCandidate]=useState<Job|null>(null),[rows,setRows]=useState<Row[]>([]);
   const [cursors,setCursors]=useState<(string|null)[]>([null]),[page,setPage]=useState(0),[next,setNext]=useState<string|null>(null);
@@ -132,7 +133,7 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
     const result=await request<S['ResultPage']>('reports','GET',base+'/report-runs/'+job.id+'/rows?limit=200'+(cursor?'&cursor='+encodeURIComponent(cursor):''),undefined,undefined,signal);
     signal.throwIfAborted();setRows(result.items);setCollapsed([]);setNext(result.page.next_cursor);setPage(index);
   },[base]);
-  const finish=useCallback(async(initial:Job,signal:AbortSignal,recovered=false,restoreComparison=false):Promise<void>=>{
+  const finish=useCallback(async(initial:Job,signal:AbortSignal,recovered=false,restoreComparison=false,automaticFloor=''):Promise<void>=>{
     let current=initial;setCandidate(current);
     while(pending(current)){
       setBusy(current.status==='QUEUED'?(''+title+' queued'):('Calculating '+title+''));await wait(signal);
@@ -140,9 +141,20 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
       if(current.id!==initial.id)throw new Error('The report response changed. Retry the report.');
       setCandidate(current);
     }
+    if(current.status==='BLOCKED'&&current.failure_code==='INSUFFICIENT_ACCOUNTING_HISTORY'&&!balance&&!recovered&&automaticFloor&&current.view!=='comparison'&&String(current.parameters.date_from)<automaticFloor&&automaticFloor<=String(current.parameters.date_to)){
+      setFrom(automaticFloor);
+      setPeriodNotice('Showing available accounting history from '+format.date(automaticFloor)+'. This is a partial financial-year report.');
+      const retry=await command<Job>('/report-runs',{code:reportCode,version:6,generation_id:current.generation_id,parameters:{...current.parameters,date_from:automaticFloor},view:'default'},signal);
+      await finish(retry,signal,true);return;
+    }
+    if(current.status==='BLOCKED'&&current.failure_code==='INSUFFICIENT_ACCOUNTING_HISTORY'){
+      setFiltersOpen(true);setFilterFocus(current.view==='comparison'?'comparisonPreset':'from');
+      const floor=automaticFloor||coverageStart;
+      throw new Error(floor?'Accounting history is available from '+format.date(floor)+'. Set From and comparison From to this date or later. Earlier periods need verified imported year-to-date balances.':financeRunFailure(current.failure_code,title));
+    }
     if(current.status==='BLOCKED'&&current.failure_code==='REPORT_VERIFICATION_FAILED'&&canPrepare&&!recovered){
       const source=await prepare(current.generation_id,signal),floor=coverage(source),start=balance?String(current.parameters.date_to):String(current.parameters.date_from);
-      if((balance&&floor&&(start<floor||String(current.parameters.comparative_to??start)<floor))||start>String(current.parameters.date_to))throw new Error('Accounting records begin on '+format.date(floor)+'. Choose a later period.');
+      if((floor&&(start<floor||String(current.parameters[balance?'comparative_to':'comparative_from']??start)<floor))||start>String(current.parameters.date_to))throw new Error('Accounting records begin on '+format.date(floor)+'. Choose a later period.');
       setGeneration(source.id);setCoverageStart(floor);setFrom(start);setVerifiedAt(source.verified_at??null);
       const parameters=balance?current.parameters:{...current.parameters,date_from:start};
       const retry=await command<Job>('/report-runs',{code:reportCode,version:6,generation_id:source.id,parameters,view:current.view??'default'},signal);
@@ -156,8 +168,8 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
     await readPage(current,null,0,signal);setCursors([null]);setCollapsed([]);setRun(current);setCandidate(null);setStopped(false);setLegacy(false);
     setGeneration(current.generation_id);setFrom(String(balance?current.parameters.date_to:current.parameters.date_from));setTo(String(current.parameters.date_to));setMode(current.view==='comparison'?'comparison':'default');setShowZero(Boolean(current.parameters.show_zero));
     if(restoreComparison&&typeof current.parameters.comparative_to==='string'){setPreset('CUSTOM');setComparisonFrom(String(current.parameters.comparative_from??current.parameters.comparative_to));setComparisonTo(String(current.parameters.comparative_to));}
-  },[base,balance,reportCode,title,canPrepare,prepare,command,readPage,format]);
-  const launch=useCallback(async(source:string,start:string,end:string,view:ProfitMode,zero:boolean,comparative:{from:string;to:string}|null,signal:AbortSignal)=>{
+  },[base,balance,reportCode,title,canPrepare,prepare,command,readPage,format,coverageStart]);
+  const launch=useCallback(async(source:string,start:string,end:string,view:ProfitMode,zero:boolean,comparative:{from:string;to:string}|null,signal:AbortSignal,automaticFloor='')=>{
     const invalid=(message:string,field='comparisonPreset'):never=>{if(balance){setFiltersOpen(true);setFilterFocus(field);}throw new Error(message);};
     if(balance&&!end)invalid('Choose an as-of date.','asOf');
     if(!source)throw new Error('Accounting data is being prepared. Retry shortly.');
@@ -165,10 +177,10 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
     if(view==='comparison'&&(!comparative?.from||!comparative.to||comparative.from>comparative.to))invalid(balance?'Choose an available comparison date in Filters.':'Choose a valid comparison period.');
     if(balance&&view==='comparison'&&comparative!.to>=end)invalid('Comparison date must be earlier than the as-of date.');
     if(balance&&coverageStart&&(end<coverageStart||(view==='comparison'&&comparative!.to<coverageStart)))invalid('Accounting records begin on '+format.date(coverageStart)+'. Choose a date within available history.',end<coverageStart?'asOf':'comparisonPreset');
-    if(canPrepare&&(retainedSource.current||financeSourceStale(verifiedAt))){const fresh=await prepare(source,signal);retainedSource.current=false;source=fresh.id;setGeneration(source);setCoverageStart(coverage(fresh));setVerifiedAt(fresh.verified_at??null);}
+    if(canPrepare&&!automaticFloor&&(retainedSource.current||financeSourceStale(verifiedAt))){const fresh=await prepare(source,signal);retainedSource.current=false;source=fresh.id;setGeneration(source);setCoverageStart(coverage(fresh));setVerifiedAt(fresh.verified_at??null);}
     exportController.current?.abort();setExportJob(null);
     const parameters=balance?{date_to:end,show_zero:zero,...(view==='comparison'?{comparative_to:comparative!.to}:{})}:{date_from:start,date_to:end,show_zero:zero,...(view==='comparison'?{comparative_from:comparative!.from,comparative_to:comparative!.to}:{})};
-    const created=await command<Job>('/report-runs',{code:reportCode,version:6,generation_id:source,parameters,view},signal);await finish(created,signal);
+    const created=await command<Job>('/report-runs',{code:reportCode,version:6,generation_id:source,parameters,view},signal);await finish(created,signal,false,false,automaticFloor);
   },[balance,reportCode,coverageStart,format,command,finish,canPrepare,verifiedAt,prepare]);
   useEffect(()=>{
     setOwner(company+':'+actor);setBlocked(false);setDefinition(null);setRun(null);setCandidate(null);setRows([]);setHistory(null);setExportJob(null);setError('');setStopped(false);setLegacy(false);candidateSource.current=null;retainedSource.current=false;
@@ -181,9 +193,10 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
       if((!source||financeSourceStale(source.verified_at))&&canPrepare&&detail.run_enabled)source=await prepare(source?.id??'',signal);
       setVerifiedAt(source?.verified_at??null);
       signal.throwIfAborted();const floor=source?coverage(source):'';setGeneration(source?.id??'');setCoverageStart(floor);
-      const start=balance?to:from;if(start!==from)setFrom(start);
-      if((balance&&floor&&to<floor)||start>to){setFiltersOpen(true);throw new Error('Accounting records begin on '+format.date(floor)+'. Choose a later period.');}
-      if(source&&detail.run_enabled&&detail.definition.version===6)await launch(source.id,start,to,'default',false,null,signal);
+      const start=balance?to:floor&&from<floor?floor:from;if(start!==from)setFrom(start);
+      if(!balance&&start!==from)setPeriodNotice('From defaults to '+format.date(start)+' because earlier detailed accounting history is unavailable. This is a partial financial-year report.');
+      if((balance&&floor&&to<floor)||start>to){setFiltersOpen(true);setFilterFocus('asOf');throw new Error('No accounting history is available through the selected To date. Records begin on '+format.date(floor)+'. Choose To on or after that date.');}
+      if(source&&detail.run_enabled&&detail.definition.version===6)await launch(source.id,start,to,'default',false,null,signal,floor);
     });
     return()=>{controller.current?.abort();exportController.current?.abort();};
   },[base,actor,reportCode,canRead,permissions.join('|'),initialRun,reload]);
@@ -235,12 +248,16 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
       </div>}
     </header>
     {exportJob&&<section className="janso-profit-export" aria-label={title+' export'} role="status">{exportJob.status==='COMPLETE'?<><strong>{String(exportJob.parameters.format)} ready</strong><a className="janso-btn janso-btn--primary" href={reportDownloadHref(company,exportJob.id)} download>Download {String(exportJob.parameters.format)}</a>{canPreviewReportExport(exportJob)&&<a href={reportDownloadHref(company,exportJob.id,true)} target="_blank" rel="noopener noreferrer">Print preview</a>}</>:pending(exportJob)?<><strong>Preparing {String(exportJob.parameters.format)}…</strong><Button variant="ghost" onClick={()=>{exportController.current?.abort();void work('Cancelling export',async signal=>setExportJob(await command<Job>('/report-exports/'+exportJob.id+'/cancel',{},signal)));}}>Cancel export</Button></>:<><strong>Export {exportJob.status.toLowerCase()}</strong>{exportJob.status==='FAILED'&&<Button variant="ghost" onClick={()=>exportReport(exportJob.parameters.format as ReportExportFormat)}>Retry export</Button>}</>}</section>}
-    {!blocked&&stage&&<section className="janso-profit-progress" role="region" aria-label={title+' progress'} data-stage={stage}><div role="status"><strong>{stageText[0]}</strong><span>{stageText[1]}</span></div><div className="janso-profit-meter" role="progressbar" aria-label={stageText[0]} aria-valuetext={stageText[1]}><span className="janso-profit-meter__track"><span/></span><ol><li data-state={stage==='source'||stage==='preparing'?'current':'done'}>Accounting data</li><li data-state={stage==='QUEUED'?'current':stage==='RUNNING'?'done':'waiting'}>In queue</li><li data-state={stage==='RUNNING'?'current':'waiting'}>Calculate</li></ol></div>{(stage==='QUEUED'||stage==='RUNNING')&&<Button variant="ghost" className="janso-profit-stop" aria-label={"Stop "+title+" report"} onClick={stop}><svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>Stop</Button>}</section>}
+    {!blocked&&stage&&<PreparationProgress label={title+' progress'} title={stageText[0]!} detail={stageText[1]!} active={stage!=='stopped'} steps={stage==='stopped'?[]:[
+      {label:'Accounting data',state:stage==='source'||stage==='preparing'?'current':'done'},
+      {label:'In queue',state:stage==='QUEUED'?'current':stage==='RUNNING'?'done':'waiting'},
+      {label:'Calculate',state:stage==='RUNNING'?'current':'waiting'},
+    ]} action={(stage==='QUEUED'||stage==='RUNNING')&&<Button variant="ghost" className="janso-profit-stop" aria-label={"Stop "+title+" report"} onClick={stop}><svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>Stop</Button>}/>}
     {error&&<div role="alert" className="janso-profit-error"><p>{error}</p>{!blocked&&<Button variant="ghost" onClick={()=>{if(sourceRetry){refresh();return;}if(!definition||!generation)setReload(value=>value+1);else apply();}}>Retry</Button>}</div>}
     {blocked?<p role="alert">Your report access is unavailable. Reload after checking your permissions.</p>:<>
       <section id={filtersId} className="janso-profit-filters" role="region" aria-label={title+' filters'} hidden={!filtersOpen} onKeyDown={event=>{if(event.key==='Escape'){setFiltersOpen(false);filterTrigger.current?.focus();}}}>{filtersOpen&&<form ref={filterForm} onSubmit={event=>{event.preventDefault();apply();}}>
         {years.length>0&&<Select label="Financial year" value={years.find(item=>balance?item.startDate<=to&&to<=item.endDate:item.startDate===from)?.id??'custom'} options={[...years.map(item=>({value:item.id,label:item.code})),{value:'custom',label:'Custom dates'}]} onChange={value=>{const chosen=years.find(item=>item.id===value);if(chosen){setFrom(chosen.startDate);setTo(chosen.current&&today<=chosen.endDate?today:chosen.endDate);}}}/>}
-        {!balance&&<TextField label="From date" type="date" value={from} onChange={event=>setFrom(event.target.value)} required/>}
+        {!balance&&<TextField name="from" label="From date" type="date" value={from} onChange={event=>setFrom(event.target.value)} required/>}
         <TextField name="asOf" min={balance?coverageStart||undefined:undefined} label={balance?'As-of date':'To date'} type="date" value={to} onChange={event=>setTo(event.target.value)} required/>
         {mode==='comparison'&&<><Select name="comparisonPreset" label="Compare with" value={preset} options={balance?[{value:'YEAR_END',label:'Previous financial year end'},{value:'MONTH_END',label:'Previous month end'},{value:'LAST_YEAR',label:'Same date last year'},{value:'CUSTOM',label:'Custom date'}]:[{value:'PREVIOUS',label:'Previous period'},{value:'LAST_YEAR',label:'Same period last year'},{value:'CUSTOM',label:'Custom period'}]} onChange={value=>setPreset(value as ComparisonPreset|BalanceComparisonPreset)}/>{preset==='CUSTOM'&&<>{!balance&&<TextField label="Comparison from" type="date" value={comparisonFrom} onChange={event=>setComparisonFrom(event.target.value)} required/>}<TextField min={balance?coverageStart||undefined:undefined} label={balance?'Comparison date':'Comparison to'} type="date" value={comparisonTo} onChange={event=>setComparisonTo(event.target.value)} required/></>}</>}
         <Checkbox checked={showZero} onChange={event=>setShowZero(event.target.checked)}>Include zero accounts</Checkbox>
@@ -248,6 +265,7 @@ export function FinancialStatementWorkspace({company,companyName,actor,permissio
         {balance&&mode==='comparison'&&<p className="janso-balance-filter-note" role="note">{selectedComparison.to?'Comparison as at '+format.date(selectedComparison.to):'Choose a custom comparison date or a financial year with an available previous year end.'}</p>}
       </form>}</section>
       {coverageStart&&year?.startDate&&coverageStart>year.startDate&&<p role="note">Detailed accounting records begin on {format.date(coverageStart)}. {balance?'Earlier dates are unavailable in this accounting source.':'Earlier periods require an eligible imported YTD summary.'}</p>}
+      {periodNotice&&run&&String(run.parameters.date_from)===coverageStart&&<p role="note">{periodNotice}</p>}
       {!generation&&!busy&&<p>No prepared accounting snapshot is available.{canPrepare?' Refresh accounting data to prepare one.':' Ask an administrator to prepare accounting data.'}</p>}
       <div className="janso-profit-viewbar"><SegmentedControl label={title+' view'} value={mode} disabled={!!busy||!definition?.run_enabled||!generation} options={[{value:'default',label:standardLabel},{value:'comparison',label:comparisonLabel}]} onChange={changeMode}/>{run&&<p>{balance?'As at ':resultDate(String(run.parameters.date_from))+' to '}{resultDate(String(run.parameters.date_to))}{resultMode==='comparison'&&run.parameters.comparative_to?' \u00b7 versus '+(balance?'':resultDate(String(run.parameters.comparative_from))+' to ')+resultDate(String(run.parameters.comparative_to)):''} · {display.currency}{verifiedAt&&run.generation_id===generation?' / Snapshot verified '+format.dateTime(verifiedAt):''}</p>}</div>
       {run&&(busy||error||stopped||mode!==resultMode)&&<p role="note" className="janso-profit-note">Showing the last completed report ({resultMode==='comparison'?comparisonLabel:standardLabel}). Its dates and amounts remain visible until a new report completes.</p>}

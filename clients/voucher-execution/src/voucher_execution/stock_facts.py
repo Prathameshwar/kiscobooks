@@ -107,6 +107,14 @@ class StockWarehouseFact(Contract):
     department_id: uuid.UUID | None
     policy_revision_id: uuid.UUID
     allowed_operations: tuple[StockOperation, ...] = Field(max_length=8)
+    country_code: str | None = Field(default=None, pattern=r"^[A-Z]{2}$")
+    state_code: str | None = Field(default=None, max_length=6)
+    tax_registration_id: uuid.UUID | None = None
+    timezone: str | None = Field(default=None, max_length=64)
+    address_line1: str | None = Field(default=None, max_length=120)
+    address_line2: str | None = Field(default=None, max_length=120)
+    city: str | None = Field(default=None, max_length=60)
+    postal_code: str | None = Field(default=None, max_length=20)
 
 
 class StockBinFact(Contract):

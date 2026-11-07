@@ -393,15 +393,17 @@ narrow widths. Company configuration uses it to retain readable company names.
 
 ### 4.4 The wizard — the same rule, its own frame
 
-`WizardLayout` is a full-page route with no shell beside it, and it follows §4.1's rule rather
-than the document's: **the layout is the scroll container.**
+`WizardLayout` is a full-page route with no shell beside it. Its form owns the viewport,
+with one scrolling region and a separate footer row that retains the actions' height.
+Step and activity-title changes focus the heading. An active preparation panel is
+brought into view so a long review's scroll position cannot hide new work.
 
 ```
-.janso-setup    block-size:100dvh; overflow-y:auto    — the only scroller
-                scroll-padding-bottom: 7rem           — clearance for the pinned bar
+.janso-setup--wizard            block-size:100dvh; grid: minmax(0,1fr) auto
+.janso-setup__scroll            overflow:auto; min-height:0 — the only scroller
 .janso-setup__header            masthead, scrolls with the content
 .janso-setup__layout            grid: var(--janso-rail-w) minmax(0,1fr) — Stepper · content
-.janso-setup__actions--sticky   position:sticky; bottom:0
+.janso-setup__footer            actions outside the scroller, wrap within available width
 ```
 
 **It must not leave the scrolling to the document.** `apps/console` sets
@@ -412,8 +414,10 @@ at its full 1940px with everything below the fold unreachable by wheel, trackpad
 while Tab-into-view still worked. A host's `globals.css` is not where this layout's scrolling
 is decided, for the same reason the shell does not let it be either.
 
-`scroll-padding-bottom` belongs on whatever scrolls — it was on `html` while the document was
-assumed to scroll, and `html` is not the scrollport.
+Fields and footer actions remain inside the same form, so Enter and the primary button
+submit the same step. The footer reserves its actual height, including wrapped buttons
+and the bottom safe area, so it cannot cover the final field. The older hand-composed
+auth setup retains `.janso-setup`'s original scrolling behavior.
 
 ---
 
@@ -488,6 +492,7 @@ central styles remove the browser frame while retaining the shared field spacing
 | `Badge` | `tone` × `variant: 'tint'\|'outline'\|'mono'` |
 | `ListRow` | `rank` or `icon` · `primary` · `meta` · `figure` · `share` (renders a `Meter`) · `href` |
 | `Meter` | `value` 0–1, `tone`; `role="progressbar"` with aria bounds |
+| `PreparationProgress` | `label` · `title` · `detail` · `active` · optional stage `steps`, `action`, and `autoScroll`. Announces current work and shows an indeterminate bar; paused work has no progressbar. Uses shared `data.css`, respects reduced motion and wraps on phones. |
 | `Disclosure` | Native `<details>/<summary>` — keyboard and AT support for free |
 | `Select` | Fixed choices from a real `<select>`, not a div: label, hint, error, groups, loading. See §5.7 |
 | `SearchSelect` | Entity lookup: type to search, single or multiple selection, remote paging, optional create-new. See §5.5 |
@@ -1426,6 +1431,9 @@ Live available-master results are recorded in the tenant-admin execution ledger.
 | 86 | `.janso-fieldpair` and `.janso-fieldgroup__fields` reset `.janso-field + .janso-field`'s `margin-top`, and a pair is `align-items: start` | The grid gap already spaces them, so the stacked-column margin was additive: it put the second field of every pair 16px below the first — "Incorporation date" beside "Entity type" and visibly lower — and doubled a group's 16px gap to 32px. `.janso-form-grid` carried this reset from the day it was written; the two containers added for the wizard did not, and nothing in a `css: false` suite can see the difference |
 | 87 | `GroupedBarChart` joins `BarChart`: several series per category on one scale, always with a text legend, built on the same geometry helpers | The business overview needs income beside expenses. A second single-series chart would have repeated the scale, grid and label thinning; two charts side by side cannot share a scale, so the comparison the page exists to make would have been by eye. No chart library was added (decision 8): the interaction needed is still hover only. Palette slots 1 and 2 are already validated adjacent pairs (decision 13), so no token changed |
 | 88 | `ContextSwitcher` scrolls its options between a search field and footer that retain their height | Six company rows exceeded the bounded popup and painted over Create company. The list now clips and scrolls its rows; keyboard focus scrolls the chosen row into view while footer actions remain visible. Version 0.1.59; verified in the browser and with the 44 switcher/picker unit tests. |
+| 89 | `WizardLayout` keeps its actions in a separate footer row inside the same form; preview tracks shrink to available width | Company Presentation's fixed preview minimum pushed Next off phone screens. A sticky footer inside the content also began below short viewports, and unwrapped Create/retry actions overflowed with enlarged text. Version 0.1.68; see [mobile review and verification](company-create-mobile-review-2026-11-06.md). |
+| 90 | Business overview cards stack heading controls when the card is at most 28rem wide, allow row labels to reflow beside amounts, and align footers to the card bottom | Bills by age and Who owes you headings were squeezed by fixed-width segmented controls on phones and beside the desktop sidebar. Scoped container queries follow actual card width; large KPI figures may wrap without truncation. Version 0.1.69; see [review and verification](business-overview-mobile-review-2026-11-06.md). |
+| 91 | Share financial-statement loading feedback as `PreparationProgress` and use it throughout company creation | Saving, checking setup, active preparation and opening need visible activity. Setup counts come from verified server steps; no percentage or duration is invented. Company creation scrolls new work into view, retains explicit background opening, and pauses activity during retry waits or failures. UI 0.1.70; [review](company-create-progress-review-2026-11-06.md). |
 
 ## 10. Open questions
 
@@ -2212,6 +2220,13 @@ reader may take; no verified snapshot explains how to prepare one.
 Business dates stay strings end to end; money is summed with exact integer arithmetic; the figure's
 symbol comes from the display config only when its currency matches the source's. The plan, phases
 and evidence are in [business-overview-redesign-plan.md](business-overview-redesign-plan.md).
+
+The 2026-11-06 alignment follow-up (shared UI 0.1.69, decision 90) uses the card's
+available width rather than the viewport: at 28rem or less, headings use the full
+row and controls sit beneath them. List labels and amounts can occupy separate
+lines; footer links wrap and stay at the bottom of stretched cards. Extremely
+long KPI figures wrap instead of overflowing, preserving the full formatted
+amount. These styles are scoped to Business overview and reuse existing tokens.
 
 ### Create from the field — Purchase supplier, expense account and product (2026-11-01; updated 2026-11-05)
 

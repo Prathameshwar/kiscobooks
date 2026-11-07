@@ -237,6 +237,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/v1/tenants/{tenant_id}/companies/{company_id}/tracking/reservations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reserve */
+        post: operations["reserve_internal_v1_tenants__tenant_id__companies__company_id__tracking_reservations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/v1/tenants/{tenant_id}/companies/{company_id}/tracking/reservations/{operation_id}/{outcome}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Terminal */
+        post: operations["terminal_internal_v1_tenants__tenant_id__companies__company_id__tracking_reservations__operation_id___outcome__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/internal/v1/voucher-enrollments": {
         parameters: {
             query?: never;
@@ -3821,11 +3855,14 @@ export interface components {
             features?: string[];
             /**
              * Opening Choice
-             * @default DECIDE_LATER
+             * @default ZERO_CONFIRMED
              * @enum {string}
              */
             opening_choice?: "ZERO_CONFIRMED" | "IMPORT_EXISTING" | "DECIDE_LATER";
-            /** Opening Reason */
+            /**
+             * Opening Reason
+             * @default New company; individual product openings will be entered during product creation
+             */
             opening_reason?: string | null;
         };
         /** CompanySetupReadiness */
@@ -8776,6 +8813,227 @@ export interface operations {
                     posted_at?: string | null;
                     /** Terminal Reference */
                     terminal_reference: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostingReceipt"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    reserve_internal_v1_tenants__tenant_id__companies__company_id__tracking_reservations_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "x-source-key-id": string;
+                "x-source-issued-at": string;
+                "x-source-signature": string;
+            };
+            path: {
+                tenant_id: string;
+                company_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Actor User Id
+                     * Format: uuid
+                     */
+                    actor_user_id: string;
+                    /** StockAuthority */
+                    authority: {
+                        /** Actor Context */
+                        actor_context: string;
+                        /** Actor Signature */
+                        actor_signature: string;
+                        /** Company Context */
+                        company_context: string;
+                        /** Company Signature */
+                        company_signature: string;
+                    };
+                    /** Command Hash */
+                    command_hash: string;
+                    /** Features */
+                    features: string[];
+                    /**
+                     * Operation Id
+                     * Format: uuid
+                     */
+                    operation_id: string;
+                    /**
+                     * Resource
+                     * @enum {string}
+                     */
+                    resource: "BATCH" | "SERIAL";
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostingReceipt"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    terminal_internal_v1_tenants__tenant_id__companies__company_id__tracking_reservations__operation_id___outcome__post: {
+        parameters: {
+            query?: never;
+            header: {
+                "x-source-key-id": string;
+                "x-source-issued-at": string;
+                "x-source-signature": string;
+            };
+            path: {
+                tenant_id: string;
+                company_id: string;
+                operation_id: string;
+                outcome: "confirmed" | "aborted";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Committed At */
+                    committed_at?: string | null;
+                    /** TrackingReservationIntent */
+                    intent: {
+                        /**
+                         * Actor User Id
+                         * Format: uuid
+                         */
+                        actor_user_id: string;
+                        /** StockAuthority */
+                        authority: {
+                            /** Actor Context */
+                            actor_context: string;
+                            /** Actor Signature */
+                            actor_signature: string;
+                            /** Company Context */
+                            company_context: string;
+                            /** Company Signature */
+                            company_signature: string;
+                        };
+                        /** Command Hash */
+                        command_hash: string;
+                        /** Features */
+                        features: string[];
+                        /**
+                         * Operation Id
+                         * Format: uuid
+                         */
+                        operation_id: string;
+                        /**
+                         * Resource
+                         * @enum {string}
+                         */
+                        resource: "BATCH" | "SERIAL";
+                    };
                 };
             };
         };

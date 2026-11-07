@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, type MouseEventHandler } from 'react';
 import { Menu, businessToday, useDisplayConfig, type MenuItem } from '@janso/ui';
 import type { MasterRow } from '../lib/catalog-masters';
@@ -108,8 +108,15 @@ export function useProductInventoryActions({
       label: 'Manage stock',
       ...(!restriction && activeSku && access.stock ? { href: '/inventory/stock?item_id=' + row.id } : { disabledReason: restriction ?? (family ? 'Open a product / SKU to manage physical stock.' : !activeSku ? 'Activate this product before managing stock.' : 'Stock read access is required for this company.') }),
     });
+    if (!family && activeSku) {
+      for (const tracking of [{ kind: 'batches', label: 'Manage batches', enabled: selectedProfile?.lot_tracking, allowed: access.batches }, { kind: 'serials', label: 'Manage serials', enabled: selectedProfile?.serial_tracking, allowed: access.serials }]) {
+        actions.push({ id: 'product-' + tracking.kind, label: tracking.label, ...(!restriction && tracking.enabled === true && tracking.allowed ? { href: '/inventory/' + tracking.kind + '?item_id=' + row.id } : { disabledReason: restriction ?? (!tracking.allowed ? 'Tracking read access is required for this company.' : 'This product does not use ' + tracking.kind + '.') }) });
+      }
+    }
     if (!family && !restriction && access.openingStock && activeSku)
       actions.push({ id: 'product-opening', label: 'Record opening stock', href: '/inventory/stock/opening?item_id=' + row.id });
+    if (!family && !restriction && access.warehousePolicies && access.warehouses)
+      actions.push({ id: 'product-warehouse-policy', label: 'Warehouse and replenishment policies', href: '/products/warehouse-policy?item_id=' + row.id });
 
   }
   return { actions, configuration: configuration.data, restriction: capabilities.features.restriction ??

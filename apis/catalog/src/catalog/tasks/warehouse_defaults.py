@@ -18,7 +18,6 @@ from catalog.events.evidence import changes
 from catalog.models.projections import CompanyProjection
 from catalog.tasks.policy_state import company_policy_state
 from catalog.tasks.projections import require_identity_context
-from catalog.tasks.unit_defaults import inventory_enabled
 from catalog.tasks.warehouse_foundation import locations, policies
 
 Row = TypeVar("Row", bound=Base)
@@ -41,7 +40,7 @@ async def ensure_warehouse_defaults(
     )
     if profile is None:
         raise ConflictError("verified company settings are unavailable")
-    if profile.status != "active" or not await inventory_enabled(db, company):
+    if profile.status != "active":
         return WarehouseDefaultsResult("NOT_APPLICABLE")
     state = await company_policy_state(db, tenant, company, lock=True)
     assert state is not None

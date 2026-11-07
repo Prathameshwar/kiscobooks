@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+﻿import { render, screen } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { CatalogMasterPage } from '../app/components/CatalogMasterPage';
 import { pageContext } from '../app/lib/page-context';
@@ -108,14 +108,10 @@ it.each(classificationResources)(
       [[RECORD], 'Detail'],
       [[RECORD, 'edit'], 'Editor'],
     ] as const) {
-      if (product && record.length && !(resource === 'items' && record[0] === 'new')) {
-        await expect(CatalogMasterPage({ resource, record: [...record] })).rejects.toThrow('not found');
-        continue;
-      }
       const view = render(
         await CatalogMasterPage({ resource, record: [...record] }),
       );
-      expect(screen.getByText(new RegExp((resource === 'items' && record[0] === 'new' ? 'Creation' : label) + ' ' + COMPANY))).toBeVisible();
+      expect(screen.getByText(new RegExp((product && record[0] === 'new' ? 'Creation' : label) + ' ' + COMPANY))).toBeVisible();
       view.unmount();
     }
     expect(flattenNavigation(navigationFor(session).flatMap(section => section.items)).some(link => link.href === '/masters')).toBe(true);
@@ -195,12 +191,12 @@ it('rejects completion paths for classification resources or invalid identifiers
 });
 
 it.each(['items', 'product-families'])(
-  'retains only the supported %s creation route', async resource => {
+  'opens restored %s creation and record routes', async resource => {
     await actor(['item.read', 'item.create', 'item.update', 'item.activate']);
-    for (const record of [...(resource === 'items' ? [] : [['new']]), [RECORD], [RECORD, 'edit'], [RECORD, 'created']]) {
-      await expect(CatalogMasterPage({ resource, record })).rejects.toThrow('not found');
+    for (const record of [['new'], [RECORD], [RECORD, 'edit'], [RECORD, 'created']]) {
+      expect(await CatalogMasterPage({ resource, record })).toBeTruthy();
     }
-    if (resource === 'items') {
+    {
       const view = render(await CatalogMasterPage({ resource, record: ['new'] }));
       expect(screen.getByText('Creation ' + COMPANY)).toBeVisible();
       view.unmount();

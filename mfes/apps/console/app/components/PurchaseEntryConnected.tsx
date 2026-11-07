@@ -16,6 +16,7 @@ import { VoucherSummary } from './VoucherSummary';
 import { purchaseFileBase, purchaseFileCall, verifyPurchaseFile, type PurchaseStoredFile } from '../lib/purchase-files';
 import { nativeProperties, PURCHASE_GOODS_UNAVAILABLE, purchaseAvailability, purchaseGoodsAllowed, purchaseGoodsType, purchaseLookup, purchaseModes, purchaseSource, supplierPayables } from '../lib/purchase-entry';
 import { purchaseGoodsContext, purchaseItem, purchaseItemLookup } from '../lib/purchase-goods';
+import { retryPurchaseSource } from '../lib/purchase-source-wait';
 import { customFields, type FieldSet } from '../lib/voucher-fields';
 import { serviceCall, requestFailure, type ServiceRequest } from '../lib/service-call';
 import { useDraftNavigation } from '../lib/use-draft-navigation';
@@ -312,6 +313,7 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
   const livePolicy = useMemo(() => ({ ...policy, live: true, subjectLookup, itemLookup, supplierBalance, balanceAccess,
     canReadBatch: permissions.includes('accounting.batch.read'),
     canPrepareBatch: permissions.includes('accounting.batch.read') && permissions.includes('accounting.batch.manage'),
+    canPrepareSerial: permissions.includes('accounting.serial.read') && permissions.includes('accounting.serial.manage'),
     supplierHistoryAccess: permissions.includes('vouchers.read') }), [policy, subjectLookup, itemLookup, supplierBalance, balanceAccess, permissions]);
   // Presentation only: Accounting authorizes each create. A supplier needs its payable account too; an expense account needs the groups to choose from.
   const canQuickSupplier = permissions.includes('accounting.party.manage') && permissions.includes('accounting.account.manage');
@@ -461,7 +463,14 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
         setNotice('Execution request received. Refresh execution to confirm its owner result and reconciliation.');
         return { kind: 'operation', value };
       }
-      const value = await call<PurchaseVoucher>(command.request);
+      const voucherRequest = () => call<PurchaseVoucher>(command.request);
+      const value = !command.operation && command.request.method === 'POST' && command.request.path === base + '/vouchers'
+        ? await retryPurchaseSource(voucherRequest, {
+          active: () => alive.current,
+          onWait: () => { if (alive.current) setNotice('Waiting for the selected accounts and products to become ready for Purchase…'); },
+          onResume: () => { if (alive.current) setNotice(''); },
+        })
+        : await voucherRequest();
       const body = command.request.body as { expected_version?: number; calculation_hash?: string; content?: { type_revision_id: string }; type_revision_id?: string };
       const pathId = command.request.path.match(/\/vouchers\/([a-f0-9-]{36})(?:\/|$)/i)?.[1];
       verifyPurchaseVoucher(value, company, { id: pathId, type: body.type_revision_id ?? body.content?.type_revision_id, version: body.expected_version });
@@ -522,7 +531,15 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
     } catch (error) { setFailure((error as Error).message); return null; }
   }
   async function completePurchase() {
-    if (completeRun.current || locked || !editable) return;
+    if (completeRun.current || locked || !editable) {
+      setFailure(!editable ? 'This bill cannot be edited. Open its latest draft revision before submitting.' : 'A Purchase action or recovery is still pending. Resolve it before submitting again.');
+      return;
+    }
+    const requiredSections = binding.current.metadata.configuration.policy.required_sections ?? [];
+    if (requiredSections.includes('CHARGES') && !draft.details.components.length) {
+      setFailure('This voucher type requires Charges. Open Purchase details → Discounts & charges, enter a charge or discount, and apply it before submitting.');
+      return;
+    }
     const approvalRequired = binding.current.metadata.configuration.policy.approval_required !== false;
     const executionReady = ready.capabilities.invoice_execution && ready.capabilities.kinds.some(row => row.kind === 'PURCHASE' && row.execution_ready);
     if (!approvalRequired && (!executionReady || !allowed('post') || !allowed('operation.read'))) {
@@ -575,7 +592,7 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
       }
       if (alive.current) setNotice('Posting is still in progress. Refresh the execution before treating this Purchase as posted.');
     } catch (error) {
-      if (alive.current) setFailure(error instanceof Error ? error.message : 'Purchase completion could not be confirmed. Review its saved status before trying again.');
+      if (alive.current) setFailure(error instanceof Error ? error.message : requestFailure(error, 'Purchase').message);
     } finally { completeRun.current = false; if (alive.current) setCompleting(false); }
   }
   function startReplacement(source: PurchaseVoucher) {
@@ -744,6 +761,7 @@ function PurchaseSession({ company, currency, actor, year, permissions, canCreat
         {retained ? <Notice tone="warning" title="Confirm the previous request"><p>The outcome is not confirmed. Your exact request and idempotency key are retained for this actor, company and year. Retry the same request before making another change.</p><Button disabled={pending} onClick={() => void perform(retained)}>Retry previous request</Button></Notice> : null}
       </>,
       sections: <>
+        {binding.current.metadata.configuration.policy.required_sections?.some(section => ['CHARGES', 'TAX'].includes(section)) ? <Notice title="Required by this voucher type">{binding.current.metadata.configuration.policy.required_sections.includes('CHARGES') ? 'Charges must be entered under Purchase details → Discounts & charges before submitting. ' : ''}{binding.current.metadata.configuration.policy.required_sections.includes('TAX') ? 'Tax details are required. Review the GST choice and registrations under Bill details & terms.' : ''}</Notice> : null}
         <PurchaseTermsCard draft={draft} taxConfirmed={draft.tax.choice === 'NONE'} taxError={taxError && !taxedBill} editable={editable} locked={locked} onEdit={openDetails} taxHint={taxHint}
           onTaxConfirmed={confirmed => changeTax({ choice: confirmed ? 'NONE' : taxAvailable && taxFacts.facts.companies !== null ? 'FORWARD' : '' })}>
           {taxedBill ? taxEnabled

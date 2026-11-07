@@ -107,7 +107,7 @@ export function SimpleProductDirectory({
             key: 'name',
             header: 'Product name',
             type: 'custom' as const,
-            render: (row: Row) => row.name ?? 'Protected product',
+            render: (row: Row) => <a className="janso-link" href={simpleRoot + '/' + row.id + '?returnTo=' + encodeURIComponent(here)}>{row.name ?? 'Protected product'}</a>,
           },
         ]
       : []),

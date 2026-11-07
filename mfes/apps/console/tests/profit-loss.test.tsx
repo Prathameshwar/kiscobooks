@@ -41,6 +41,24 @@ it('derives exact comparison dates including leap days',()=>{
   expect(comparisonDates('2024-02-29','2024-03-31','LAST_YEAR')).toEqual({from:'2023-02-28',to:'2023-03-31'});
 });
 
+it('defaults to available P&L history before requesting a run',async()=>{
+  const posts:Record<string,unknown>[]=[];
+  api.mockImplementation((async(service,method,path,body)=>{
+    if(path.endsWith('/report-generations/'+uuid(9)))return {id:uuid(9),status:'READY',verified_at:new Date().toISOString(),manifest:{control:{coverage_start:'2026-11-06'}}};
+    if(path.endsWith('/report-runs')&&method==='POST'){
+      const input=body as {parameters:{date_from:string};view:string};posts.push(input);
+      return {...job,id:uuid(31+posts.length),parameters:input.parameters,view:input.view,status:input.parameters.date_from<'2026-11-06'?'BLOCKED':'COMPLETE',failure_code:input.parameters.date_from<'2026-11-06'?'INSUFFICIENT_ACCOUNTING_HISTORY':null};
+    }
+    return mock(service,method,path,body);
+  }) as typeof productFieldRequest);
+  render(<ProfitLossWorkspace {...props}/>);
+  await screen.findByText(/This is a partial financial-year report/);
+  await screen.findByText('Sales revenue');
+  expect(posts).toHaveLength(1);
+  expect((posts[0]!.parameters as {date_from:string}).date_from).toBe('2026-11-06');
+  expect(api.mock.calls.some(([,method,path])=>method==='POST'&&path.endsWith('/report-generations'))).toBe(false);
+});
+
 it('opens the statement with zero accounts unchecked and collapsible groups',async()=>{
   render(<ProfitLossWorkspace {...props}/>);
   await screen.findByText('Sales revenue');
@@ -132,10 +150,13 @@ it('closes applied filters and returns keyboard focus to their trigger',async()=
   expect(screen.getByRole('button',{name:'Filters'})).toHaveFocus();
 });
 
-it('preserves the fiscal-year start when detailed history starts after imported YTD',async()=>{
+it('allows choosing the fiscal-year start explicitly for verified imported YTD',async()=>{
  api.mockImplementation(async(service,method,path,body)=>path.includes('/report-generations/')?{id:uuid(9),status:'READY',manifest:{control:{coverage_start:'2026-10-31'}}}:mock(service,method,path,body));
  render(<ProfitLossWorkspace {...props}/>);await screen.findByText('Sales revenue');
- expect(api.mock.calls.find(call=>call[1]==='POST'&&call[2].endsWith('/report-runs'))?.[3]).toMatchObject({parameters:{date_from:'2026-04-01'}});
+ fireEvent.click(screen.getByRole('button',{name:'Filters'}));
+ fireEvent.change(screen.getByLabelText('From date'),{target:{value:'2026-04-01'}});
+ fireEvent.click(screen.getByRole('button',{name:'Apply filters'}));
+ await waitFor(()=>expect(api.mock.calls.filter(call=>call[1]==='POST'&&call[2].endsWith('/report-runs')).at(-1)?.[3]).toMatchObject({parameters:{date_from:'2026-04-01'}}));
 });
 
 it('loads older history pages with a company-scoped cursor',async()=>{

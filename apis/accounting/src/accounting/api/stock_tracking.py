@@ -28,6 +28,7 @@ from accounting.tasks.access import authority_fingerprint, authorize, readable
 from accounting.tasks.reads import field_set
 from accounting.tasks.stock_tracking import command, command_identity, detail, listing
 from accounting.tasks.stock_tracking_source import TrackingSourceUnavailableError, tracking_source
+from accounting.tasks.tracking_features import protected_command
 
 router = APIRouter(
     prefix="/v1/companies/{company_id}/stock-tracking",
@@ -251,8 +252,8 @@ async def prepare_batch(
     )
     return response(
         request,
-        await command(
-            request.app.state.session_factory, current, BATCH, body, key, "prepare", source=facts
+        await protected_command(
+            request, current, BATCH, body, key, "prepare", source=facts
         ),
     )
 
@@ -276,8 +277,8 @@ async def prepare_serial(
     facts = None if retained else await source(request, current, body.item_id)
     return response(
         request,
-        await command(
-            request.app.state.session_factory, current, SERIAL, body, key, "prepare", source=facts
+        await protected_command(
+            request, current, SERIAL, body, key, "prepare", source=facts
         ),
     )
 
@@ -296,8 +297,8 @@ async def correct_batch(
     no_query(request)
     return response(
         request,
-        await command(
-            request.app.state.session_factory, current, BATCH, body, key, "correct", object_id
+        await protected_command(
+            request, current, BATCH, body, key, "correct", object_id
         ),
     )
 

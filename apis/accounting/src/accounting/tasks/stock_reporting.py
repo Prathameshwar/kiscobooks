@@ -12,16 +12,33 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from voucher_execution import ExecutionCommand, ExecutionResult
 
+from accounting.models.ledger import Journal
 from accounting.models.stock import StockMovement, StockPosition, StockPosting, StockValueEntry
 from accounting.tasks.inventory_reporting import publish
 
 
 async def capture(db: AsyncSession, command: ExecutionCommand, result: ExecutionResult) -> None:
-    if result.outcome != "COMMITTED" or not command.voucher_number:
+    if result.outcome != "COMMITTED":
         return
     stock = [effect.effect_id for effect in result.effects if effect.effect_kind == "STOCK"]
     if not stock:
         return
+    number = command.voucher_number
+    if not number:
+        journals = [effect.effect_id for effect in result.effects if effect.effect_kind == "JOURNAL"]
+        if len(journals) != 1:
+            # Legacy stock commands may have no issued number or posted journal.
+            # Retain their original wire; a verified backfill is needed for history.
+            return
+        journal = await db.scalar(
+            select(Journal).where(
+                Journal.company_id == command.company_id,
+                Journal.id == journals[0],
+            )
+        )
+        if journal is None or journal.status != "POSTED" or not journal.number:
+            raise ConflictError("inventory reporting requires its posted journal number")
+        number = journal.number
     if len(stock) != 1 or result.committed_generation is None:
         raise ConflictError("inventory reporting requires one committed native stock effect")
     posting = await db.scalar(
@@ -52,7 +69,7 @@ async def capture(db: AsyncSession, command: ExecutionCommand, result: Execution
         raise ConflictError("inventory movement handoff exceeds its native execution bound")
     records = []
     for ordinal, (movement, position, value) in enumerate(rows, 1):
-        action = posting.action
+        action = "RECEIPT" if posting.action == "PURCHASE_INVOICE" else posting.action
         transfer = None
         if action in {"TRANSFER", "TRANSFER_DISPATCH", "TRANSFER_RECEIPT"}:
             action = "TRANSFER_IN" if movement.leg == "IN" else "TRANSFER_OUT"
@@ -85,7 +102,7 @@ async def capture(db: AsyncSession, command: ExecutionCommand, result: Execution
                         "action": action,
                         "voucher_id": str(command.voucher_id),
                         "line_id": str(movement.line_id),
-                        "voucher_number": command.voucher_number,
+                        "voucher_number": number,
                         "lot_id": str(position.lot_id) if position.lot_id else None,
                         "quantity_delta": str(movement.quantity),
                         "value_delta": str(value.amount),

@@ -3,11 +3,13 @@
 import time
 from typing import Any
 
+from billing_platform.db import tenant_scope
 from billing_platform.errors import (
     AuthenticationRequiredError,
 )
 from billing_platform.service_auth import ServiceKey, service_request_bytes, verify_service_body
 from fastapi import APIRouter, Request
+from sqlalchemy import select
 
 from vouchers.api.auth import limit_service_ingress
 from vouchers.schemas.sources import SourceBundle
@@ -47,10 +49,25 @@ async def apply_sources(body: SourceBundle, request: Request) -> dict[str, Any]:
         body=framed,
         now=int(time.time()),
     )
-    if not any(
+    allowed = any(
         scope.tenant_id == body.tenant_id and scope.company_id == body.company_id
         for scope in credential.scopes
-    ):
+    )
+    if not allowed and credential.allow_enrolled_companies:
+        from vouchers.models import core as m
+
+        with tenant_scope(body.tenant_id):
+            async with request.app.state.session_factory() as db:
+                allowed = (await db.scalar(
+                    select(m.VoucherMasterEvidence.id).where(
+                        m.VoucherMasterEvidence.company_id == body.company_id,
+                        m.VoucherMasterEvidence.owner == "identity",
+                        m.VoucherMasterEvidence.entity_type == "company",
+                        m.VoucherMasterEvidence.source_id == body.company_id,
+                        m.VoucherMasterEvidence.status == "ACTIVE",
+                    ).limit(1)
+                )) is not None
+    if not allowed:
         raise AuthenticationRequiredError("source company scope is not authorized")
     limit_service_ingress(request, key_id, body.tenant_id, body.company_id)
     from vouchers.tasks.sources import apply_bundle

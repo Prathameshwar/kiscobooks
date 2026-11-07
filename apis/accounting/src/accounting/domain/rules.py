@@ -222,7 +222,7 @@ def validate_party_registration(values: dict[str, Any]) -> None:
         except ValidationFailedError:
             raise ValidationFailedError("invalid GST registration number") from None
         if normalized != number:
-            raise ValidationFailedError("GST registration numbers are stored without separators")
+            raise ValidationFailedError("Enter the GSTIN in uppercase without spaces or hyphens")
     elif not re.fullmatch(r"[0-9]{2}[0-9A-Z]{13}", number) or number[:2] != code:
         # UIN and NRTP identifiers are not PAN-based; the shared helper documents no pattern
         # for them yet, so only the fifteen-character state-prefixed shape is checked.

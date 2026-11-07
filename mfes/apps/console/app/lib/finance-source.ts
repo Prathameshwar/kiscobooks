@@ -58,6 +58,7 @@ export async function prepareFinanceSource(base:string,previous:string,signal:Ab
 }
 
 export function financeRunFailure(code:string|null|undefined,title:string):string{
+  if(code==='INSUFFICIENT_ACCOUNTING_HISTORY')return 'The selected period starts before available accounting history. Choose a later From or comparison date in Filters. Earlier periods require verified imported year-to-date coverage.';
   if(code==='REPORT_IMPLEMENTATION_UNAVAILABLE')return 'The report service was updated. Refresh the page and run the report again.';
   if(code==='AUTHORITY_REVOKED')return 'Your access changed. Refresh the page to check your current authority.';
   if(code==='REPORT_VERIFICATION_FAILED')return 'The accounting snapshot could not be verified. Retry the report.';

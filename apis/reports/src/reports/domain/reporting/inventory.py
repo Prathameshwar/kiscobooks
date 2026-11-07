@@ -255,6 +255,14 @@ class Inventory:
 
     def eligibility(self, position: Position) -> tuple[Decimal, list[str]]:
         reasons: list[str] = []
+        location = self.locations[str(position.location_id)]
+        item = self.items[str(position.item_id)]
+        if location.sale_eligible is False or location.is_group:
+            reasons.append("WAREHOUSE_POLICY")
+        if not item.active or not item.sale_location_permissions.get(
+            position.location_id, item.sale_location_mode != "ALLOW_LIST"
+        ):
+            reasons.append("PRODUCT_POLICY")
         as_of = self.coverage.as_of
         if position.disposition != "GOOD":
             reasons.append(position.disposition)

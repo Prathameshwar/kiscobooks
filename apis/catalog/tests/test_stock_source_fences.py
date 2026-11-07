@@ -14,7 +14,7 @@ from catalog.models.stock_source import StockSourceFence
 from catalog.models.units import UnitOfMeasure
 
 
-async def prepared(factory, tenant):
+async def prepared(factory, tenant, *, purpose=None):
     company, user = uuid7(), uuid7()
     now = utcnow()
     unit_id, fence_id = uuid7(), uuid7()
@@ -47,7 +47,7 @@ async def prepared(factory, tenant):
                     request_hash="a" * 64,
                     expires_at=now + dt.timedelta(seconds=60),
                     closed_at=None,
-                    facts={},
+                    facts={"purpose": purpose} if purpose else {},
                     created_by=user,
                     updated_by=user,
                 )
@@ -76,6 +76,16 @@ async def test_live_fence_blocks_source_changes_until_owner_release(factory, ten
             unit = await db.get(UnitOfMeasure, unit_id)
             assert unit.name == "Changed after release"
             assert await db.scalar(select(StockSourceFence.id)) == fence_id
+
+
+async def test_report_snapshot_fence_does_not_block_unrelated_master_edit(factory, tenant_a):
+    company, unit_id, fence_id = await prepared(factory, tenant_a, purpose="REPORT")
+    with tenant_scope(tenant_a):
+        async with factory.begin() as db:
+            unit = await db.get(UnitOfMeasure, unit_id)
+            unit.name = "Changed after report captured its records"
+        async with factory() as db:
+            assert (await db.get(UnitOfMeasure, unit_id)).name == "Changed after report captured its records"
 
 
 async def test_fence_history_cannot_be_changed_reopened_or_deleted(factory, tenant_a):

@@ -45,6 +45,8 @@ export function masterColumns(config: MasterConfig, fields: readonly MasterField
   });
 }
 export function CatalogMasterDirectory({ company, config, canManage, initialQuery = '', canReadWarehouseGroups = false, canReadWarehouseBins = false, identifierAccess }: { company: string; config: MasterConfig; canManage: boolean; initialQuery?: string; canReadWarehouseGroups?: boolean; canReadWarehouseBins?: boolean; identifierAccess?: IdentifierAccess }) {
+  const [warehouseCreateAllowed, setWarehouseCreateAllowed] = useState(false);
+  const canCreate = canManage && (config.resource !== 'warehouses' || warehouseCreateAllowed);
   const [data, setData] = useState<MasterPage>({ items: [], page: { limit: 50, has_more: false, next_cursor: null } });
   const [fields, setFields] = useState<MasterField[]>([]), [loading, setLoading] = useState(true), [failure, setFailure] = useState<RequestFailure | null>(null), [revision, setRevision] = useState(0);
   const [accessMessage, setAccessMessage] = useState('');
@@ -60,12 +62,17 @@ export function CatalogMasterDirectory({ company, config, canManage, initialQuer
   const back = address(query.queryString), href = (path: string) => masterLink(path, back);
   const create = <a className="janso-btn janso-btn--primary" href={href(root + '/new')}>New {config.singular}</a>;
   useEffect(() => {
-    const controller = new AbortController(), number = ++requestNumber.current; setLoading(true); setFailure(null);
+    const controller = new AbortController(), number = ++requestNumber.current; setLoading(true); setFailure(null); setWarehouseCreateAllowed(false);
     masterRequest<import('../lib/catalog-masters').MasterFieldSet>({ path: `/v1/companies/${company}/entities/${config.entity}/field-set`, signal: controller.signal })
       .then(async metadata => {
         if (controller.signal.aborted || number !== requestNumber.current) return;
         const resolved = assertMasterFields(metadata, company, config.entity);
         setFields(resolved);
+        if (config.resource === 'warehouses' && canManage) {
+          const creation = await masterRequest<import('../lib/catalog-masters').MasterFieldSet>({ path: `/v1/companies/${company}/entities/${config.entity}/field-set?operation=create`, signal: controller.signal });
+          if (controller.signal.aborted || number !== requestNumber.current) return;
+          setWarehouseCreateAllowed(assertMasterFields(creation, company, config.entity).some(field => field.visible && field.writable && field.source === 'native'));
+        }
         const available = new Set(resolved.filter(field => field.source === 'native' && field.visible).map(field => field.key));
         const requested = parseListQuery(new URLSearchParams(params), { filterKeys: ['is_active', config.resource === 'units' ? 'dimension' : 'allowed_kind'] });
         const allowed = { ...requested, q: available.has('code') && available.has('name') ? requested.q : '',
@@ -80,16 +87,17 @@ export function CatalogMasterDirectory({ company, config, canManage, initialQuer
         setData(page); setLoading(false);
       }).catch(error => { if (!controller.signal.aborted && number === requestNumber.current) { setData({ items: [], page: { limit: 50, has_more: false, next_cursor: null } }); setFailure(requestFailure(error, 'master service')); setLoading(false); } });
     return () => controller.abort();
-  }, [company, config, params, revision, query.adopt]);
+  }, [company, config, params, revision, query.adopt, canManage]);
   const refresh = () => { query.restart(); setRevision(value => value + 1); };
   const available = (key: string) => fields.some(field => field.source === 'native' && field.visible && field.key === key);
   return <div className="janso-page">
     {config.resource === 'units' && identifierAccess && <IdentifierNavigation title={config.title} back={origin} access={identifierAccess} />}
     {config.resource === 'warehouses' && <nav className="janso-page-navigation" aria-label="Warehouse structure">{canReadWarehouseGroups && <a className="janso-link" href="/masters/warehouse-groups">Warehouse groups</a>}{canReadWarehouseBins && <a className="janso-link" href="/masters/warehouse-bins">Bins / racks</a>}</nav>}
     {!(config.resource === 'units' && identifierAccess) && <PageNavigation back={{ href: origin, label: 'previous page' }} breadcrumbs={inventoryBreadcrumbs(group.key, config.title)} />}
-    <PageHeader title={config.title} lede={`Find and maintain ${config.title.toLowerCase()} in the company currently open.`} actions={<>{config.resource === 'warehouses' ? <a className="janso-btn janso-btn--ghost" href={masterLink('/masters/warehouses/settings', back)}>Warehouse settings</a> : null}{canManage ? create : null}</>} />
+    <PageHeader title={config.title} lede={`Find and maintain ${config.title.toLowerCase()} in the company currently open.`} actions={<>{config.resource === 'warehouses' ? <a className="janso-btn janso-btn--ghost" href={masterLink('/masters/warehouses/settings', back)}>Warehouse settings</a> : null}{canCreate ? create : null}</>} />
     {config.resource === 'warehouses' ? <Notice>Warehouses describe physical stock locations. Main is maintained by the system; internal transit is reserved for transfers. Stock quantities and movements are managed through their own workflows.</Notice> : null}
     {!canManage ? <Notice>Read-only access. Ask a company administrator if you need to maintain these records.</Notice> : null}
+    {config.resource === 'warehouses' && canManage && !loading && !failure && !warehouseCreateAllowed ? <Notice>Creating additional warehouses requires inventory, multiple godowns and writable warehouse fields. Review company features and field access.</Notice> : null}
     {accessMessage ? <Notice tone="warning">{accessMessage}</Notice> : null}
     {failure?.fields?.cursor ? <Notice tone="warning">Your page position has expired. <Button variant="ghost" onClick={refresh}>Return to first page</Button></Notice> : null}
     <Card><CardHeader title={config.title + ' directory'} />
@@ -103,7 +111,7 @@ export function CatalogMasterDirectory({ company, config, canManage, initialQuer
       </FilterBar>
       <DataTable caption={config.title + ' directory'} columns={masterColumns(config, fields, row => href(root + '/' + row.id))} rows={data.items} rowId={row => row.id} rowLabel={row => row.name ?? row.code ?? config.singular}
         loading={loading} error={failure ? asErrorStatus(failure.status) : null} errorDetail={failure?.message} onRetry={refresh} sort={query.sort} onSortChange={query.setSort}
-        filtered={query.filtered} onClearFilters={query.clearFilters} emptyTitle={query.filtered ? `No ${config.title.toLowerCase()} match these filters` : `No ${config.title.toLowerCase()} yet`} emptyBody={query.filtered ? 'Clear the search or filters to see other records in this company.' : canManage ? `Create a ${config.singular} to start using it in this company.` : `Ask a company administrator to add ${config.title.toLowerCase()} for this company.`} emptyAction={canManage ? create : undefined}
+        filtered={query.filtered} onClearFilters={query.clearFilters} emptyTitle={query.filtered ? `No ${config.title.toLowerCase()} match these filters` : `No ${config.title.toLowerCase()} yet`} emptyBody={query.filtered ? 'Clear the search or filters to see other records in this company.' : canCreate ? `Create a ${config.singular} to start using it in this company.` : `Ask a company administrator to review features and access for ${config.title.toLowerCase()}.`} emptyAction={canCreate ? create : undefined}
         rowActions={row => [{ id: 'view', label: 'View details', href: href(root + '/' + row.id) }, ...(canManage ? [{ id: 'edit', label: 'Edit details', href: href(root + '/' + row.id + '/edit') }] : [])]} />
       <Pager count={loading || failure ? 0 : data.items.length} from={query.page.from} limit={query.limit} hasPrevious={query.page.hasPrevious} hasNext={query.page.hasNext} onPrevious={query.previousPage} onNext={query.nextPage} onLimitChange={query.setLimit} busy={loading} noun={config.singular} nounPlural={config.title.toLowerCase()} />
     </Card>

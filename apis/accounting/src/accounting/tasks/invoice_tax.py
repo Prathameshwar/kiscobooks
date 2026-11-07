@@ -73,8 +73,9 @@ async def resolve_line(
     if context.profile == "UNTAXED_ACCOUNT":
         defaults = await _defaults(db, access, {line.account_id}, direction, request.document_date)
         default = defaults.get(line.account_id)
+        declared_no_tax_purchase = request.kind == "PURCHASE" and line.supply_kind == "ACCOUNT"
         if (default is not None and default.treatment != "NON_GST") or (
-            access.context.registrations and default is None
+            access.context.registrations and default is None and not declared_no_tax_purchase
         ):
             raise ValidationFailedError(
                 "tax-bearing or unclassified supplies require their statutory profile"
@@ -289,7 +290,22 @@ async def resolve_goods_line(
     stock date and are checked against Accounting's own replicas; the dated rates are
     Accounting's. The tax point of a supplier's goods invoice is its invoice date.
     """
-    _, item = goods.item(line)
+    stock_line, item = goods.item(line)
+    warehouse = goods.warehouses.get(stock_line.warehouse_id)
+    if warehouse is None:
+        raise ConflictError("the purchased goods warehouse facts are unavailable")
+    if (
+        warehouse.tax_registration_id is not None
+        and context.company_registration_id != warehouse.tax_registration_id
+    ):
+        raise ValidationFailedError(
+            "Choose the company tax registration configured for the goods receiving warehouse",
+            fields={
+                "company_registration_id": (
+                    "The selected registration differs from the receiving warehouse"
+                )
+            },
+        )
     base: dict[str, Any] = {
         "line_key": str(line.line_key),
         "profile": context.profile,
@@ -297,6 +313,19 @@ async def resolve_goods_line(
         "account_id": str(line.account_id),
         "item_id": str(item.item_id),
         "item_version": item.item_version,
+        "receiving_warehouse": {
+            "warehouse_id": str(warehouse.warehouse_id),
+            "row_version": warehouse.row_version,
+            "country_code": warehouse.country_code,
+            "state_code": warehouse.state_code,
+            "tax_registration_id": str(warehouse.tax_registration_id)
+            if warehouse.tax_registration_id
+            else None,
+            "address_line1": warehouse.address_line1,
+            "address_line2": warehouse.address_line2,
+            "city": warehouse.city,
+            "postal_code": warehouse.postal_code,
+        },
     }
     if context.profile == "UNTAXED_ACCOUNT":
         # A company without GST registration pays the supplier's GST as part of the price.

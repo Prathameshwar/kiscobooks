@@ -433,6 +433,7 @@ def implementation_hash() -> str:
         "tasks/inventory_source.py",
         "domain/reporting/opening.py",
         "domain/reporting/opening_coverage.py",
+        "domain/reporting/history_coverage.py",
         "domain/reporting/views.py",
         "domain/reporting/finance_views.py",
         "domain/reporting/navigation.py",

@@ -1,0 +1,53 @@
+/* Product detail surfaces share the application palette, type and spacing tokens. */
+.janso-product-detail__hero { display:flex; align-items:flex-start; gap:var(--janso-space-5); padding:var(--janso-space-6); border:1px solid var(--janso-brand-line); border-radius:var(--janso-radius-md); background:linear-gradient(120deg,var(--janso-brand-tint),var(--janso-panel)); margin-block:var(--janso-space-4) var(--janso-space-5); }
+.janso-product-detail__hero .janso-page-header { flex:1; min-inline-size:0; margin:0; padding:0; }
+.janso-product-detail__hero .janso-h1 { font-size:var(--janso-text-2xl); line-height:1.2; letter-spacing:-.035em; overflow-wrap:anywhere; }
+.janso-product-detail__hero .janso-lede { max-inline-size:60ch; font-size:var(--janso-text-base); }
+.janso-product-detail__mark { display:grid; place-items:center; flex:none; padding:var(--janso-space-3); border:1px solid var(--janso-brand-line); border-radius:var(--janso-radius-md); color:var(--janso-brand-ink); background:var(--janso-panel); }
+.janso-product-detail__mark svg { inline-size:var(--janso-space-7); block-size:var(--janso-space-7); }
+.janso-product-detail__code { display:inline-flex; padding:var(--janso-space-1) var(--janso-space-2); border:1px solid var(--janso-brand-line); border-radius:var(--janso-radius-sm); color:var(--janso-brand-ink); background:var(--janso-panel); font:600 var(--janso-text-xs)/1.5 var(--janso-font-mono); overflow-wrap:anywhere; }
+.janso-product-detail { min-inline-size:0; }
+.janso-product-detail__navigation { display:flex; flex-wrap:wrap; gap:var(--janso-space-2); margin-block-end:var(--janso-space-5); padding-block:var(--janso-space-2); border-bottom:1px solid var(--janso-line); }
+.janso-product-detail__navigation a { padding:var(--janso-space-2) var(--janso-space-3); border-radius:var(--janso-radius-sm); color:var(--janso-ink-soft); text-decoration:none; font-size:var(--janso-text-sm); font-weight:600; }
+.janso-product-detail__navigation a:hover { background:var(--janso-brand-tint); color:var(--janso-brand-ink); }
+.janso-product-detail__layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(15rem,20rem); align-items:start; gap:var(--janso-space-5); }
+.janso-product-detail__main,.janso-product-detail__aside { display:grid; gap:var(--janso-space-5); min-inline-size:0; }
+.janso-product-detail__section { min-inline-size:0; overflow-wrap:anywhere; padding:var(--janso-space-5); border:1px solid var(--janso-line); border-radius:var(--janso-radius-md); background:var(--janso-panel); box-shadow:var(--janso-shadow-card); scroll-margin-block-start:var(--janso-space-5); }
+.janso-product-detail__section-heading { padding-block-end:var(--janso-space-4); margin-block-end:var(--janso-space-4); border-bottom:1px solid var(--janso-line); }
+.janso-product-detail__section-heading h2 { margin:0; color:var(--janso-ink); font-size:var(--janso-text-lg); font-weight:650; letter-spacing:-.02em; }
+.janso-product-detail__section-heading p { margin:var(--janso-space-1) 0 0; color:var(--janso-ink-soft); font-size:var(--janso-text-sm); line-height:1.6; }
+.janso-product-detail__facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--janso-space-5) var(--janso-space-6); margin:0; }
+.janso-product-detail__facts > div { min-inline-size:0; }
+.janso-product-detail__facts dt { margin-block-end:var(--janso-space-1); color:var(--janso-ink-soft); font-size:var(--janso-text-xs); line-height:1.5; }
+.janso-product-detail__facts dd { margin:0; color:var(--janso-ink); font-weight:550; line-height:1.6; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+.janso-product-detail__aside .janso-product-detail__facts { grid-template-columns:1fr; gap:var(--janso-space-4); }
+.janso-product-detail__aside .janso-product-detail__facts > div + div { padding-block-start:var(--janso-space-3); border-top:1px solid var(--janso-line); }
+.janso-product-detail__description { margin-block-start:var(--janso-space-5); padding-block-start:var(--janso-space-4); border-top:1px solid var(--janso-line); }
+.janso-product-detail__description h3 { margin:0; font-size:var(--janso-text-xs); font-weight:500; color:var(--janso-ink-soft); }
+.janso-product-detail__description p { margin:var(--janso-space-2) 0 0; line-height:1.8; white-space:pre-wrap; overflow-wrap:anywhere; }
+.janso-product-detail__empty { color:var(--janso-ink-soft); font-weight:400; }
+.janso-product-detail__boolean { display:inline-flex; align-items:center; gap:var(--janso-space-2); color:var(--janso-ink-soft); }
+.janso-product-detail__boolean::before { content:''; inline-size:var(--janso-space-2); block-size:var(--janso-space-2); border-radius:var(--janso-radius-pill); background:var(--janso-ink-soft); }
+.janso-product-detail__boolean[data-enabled='true'] { color:var(--janso-success-ink); }
+.janso-product-detail__boolean[data-enabled='true']::before { background:var(--janso-success-ink); }
+.janso-product-detail__references { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--janso-space-5); }
+.janso-product-detail__references > * { min-inline-size:0; }
+.janso-product-detail__references :is(input,button[role='combobox']):disabled { opacity:1; color:var(--janso-ink); background:var(--janso-panel-2); }
+.janso-product-detail__custom .janso-form-grid { margin:0; }
+.janso-product-detail__navigation a:focus-visible { outline:2px solid var(--janso-brand); outline-offset:2px; }
+@media (max-width:1000px) {
+  .janso-product-detail__layout { grid-template-columns:minmax(0,1fr); }
+  .janso-product-detail__aside { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:600px) {
+  .janso-product-detail__hero { padding:var(--janso-space-4); gap:var(--janso-space-3); }
+  .janso-product-detail__mark { padding:var(--janso-space-2); }
+  .janso-product-detail__mark svg { inline-size:var(--janso-space-6); block-size:var(--janso-space-6); }
+  .janso-product-detail__hero .janso-h1 { font-size:var(--janso-text-xl); }
+  .janso-product-detail__hero .janso-page-header { flex-direction:column; align-items:stretch; }
+  .janso-product-detail__hero .janso-page-header__actions { justify-content:flex-start; }
+  .janso-product-detail__facts,.janso-product-detail__references,.janso-product-detail__aside { grid-template-columns:minmax(0,1fr); }
+  .janso-product-detail__section { padding:var(--janso-space-4); }
+  .janso-product-detail__navigation { gap:var(--janso-space-1); }
+  .janso-product-detail__navigation a { padding:var(--janso-space-2); }
+}

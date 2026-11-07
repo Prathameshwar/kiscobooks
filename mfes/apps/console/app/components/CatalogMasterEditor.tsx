@@ -24,11 +24,11 @@ export function CatalogMasterEditor({ company, config, id, returnTo, canReadPart
   const back = masterReturnTo(config, returnTo), directory = masterDirectoryReturn(config.resource, back), detailHref = (masterId: string) => masterLink(`/masters/${config.resource}/${masterId}`, back);
   useEffect(() => { if (record.row && !changed.current) setDraft(record.row); }, [record.row]);
   useUnsavedChanges(() => changed.current || busy.current);
-  const uncertain = !!embedded && !!retry.current && !!failure && (failure.status >= 500 || failure.status === 0);
+  const uncertain = !!retry.current && !!failure && (failure.status >= 500 || failure.status === 0);
   useEffect(() => { embedded?.onStateChange({ dirty: changed.current, busy: saving || uncertain }); }, [embedded?.onStateChange, draft, saving, uncertain]);
   const change = (key: string, value: unknown) => { if (uncertain) return; changed.current = true; setDraft(current => ({ ...current, [key]: value })); setErrors({}); setFailure(null); setSaved(false); setUnchanged(false); };
-  const navigate = (href: string) => { if (busy.current) return; if (changed.current) setLeave(href); else goTo(href); };
-  const onNavigate = (event: React.MouseEvent<HTMLAnchorElement>) => { if (busy.current || changed.current) { event.preventDefault(); navigate(event.currentTarget.getAttribute('href')!); } };
+  const navigate = (href: string) => { if (busy.current || uncertain) return; if (changed.current) setLeave(href); else goTo(href); };
+  const onNavigate = (event: React.MouseEvent<HTMLAnchorElement>) => { if (busy.current || uncertain || changed.current) { event.preventDefault(); navigate(event.currentTarget.getAttribute('href')!); } };
   const focusError = () => requestAnimationFrame(() => form.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
   async function save() {
     if (busy.current || record.loading || record.failure || savedId || (id && !record.row)) return;
@@ -55,6 +55,7 @@ export function CatalogMasterEditor({ company, config, id, returnTo, canReadPart
     && (config.inputs[field.key]?.type !== 'tax-registration' || canReadCompany))
     || masterCustomDraft(config, record.fields, draft, !id).fields.length > 0;
   return <div className="janso-page">
+    {uncertain && <Notice tone="warning">The save result could not be confirmed. It may already be saved. Retry the same save to recover its result before changing this record.</Notice>}
     {!embedded && <><PageNavigation back={{ href: id ? detailHref(id) : back, label: id ? `${config.singular} details` : config.title.toLowerCase() }} onNavigate={onNavigate}
       breadcrumbs={[...inventoryBreadcrumbs(inventoryGroupForPath('/masters/' + config.resource)!.key, '').slice(0, -1), { label: config.title, href: directory }, ...(id ? [{ label: record.row?.name ?? 'Details', href: detailHref(id) }] : []), { label: id ? `Edit ${config.singular}` : `New ${config.singular}` }]} />
     <PageHeader title={id ? `Edit ${config.singular}` : `New ${config.singular}`} lede="Changes apply to the company currently open. Required fields are marked." /></>}
@@ -68,7 +69,7 @@ export function CatalogMasterEditor({ company, config, id, returnTo, canReadPart
       <a className="janso-link" href={back}>Return to {config.title.toLowerCase()}</a>
     </div></CardBody></Card> : <FormLayout aside={<><SectionHeader title="Before you save" /><p className="janso-fine">Codes must be unique within this company. Locked fields keep their existing values. Changes are checked and audited by the service.</p>
       {config.resource === 'units' ? <p className="janso-fine">Changing quantity rules may be restricted when a unit is already in use.</p> : null}
-      {!hasWritable ? <Notice tone="warning">Your field access does not allow changes to this record.</Notice> : null}</>}>
+      {!hasWritable ? <Notice tone="warning">{config.resource === 'warehouses' && !id ? 'Creating additional warehouses requires inventory, multiple godowns and writable warehouse fields. Review company features and field access.' : 'Your field access does not allow changes to this record.'}</Notice> : null}</>}>
       <form ref={form} noValidate onSubmit={event => { event.preventDefault(); void save(); }}><Card><CardBody><div className="janso-flow">
         <SectionHeader title="Details" />
         <div className="janso-form-grid">{visible.map(field => {

@@ -1,6 +1,6 @@
 {
   "name": "@janso/ui",
-  "version": "0.1.67",
+  "version": "0.1.75",
   "private": true,
   "description": "KiscoBooks shared design system and component primitives, reused across micro-frontends.",
   "type": "module",

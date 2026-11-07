@@ -32,6 +32,17 @@ export function readIntent(company: string): AdvancedIntent | null {
 }
 export function keepIntent(intent: AdvancedIntent) { sessionStorage.setItem(intentStorage(intent.company), JSON.stringify(intent)); }
 export function clearIntent(company: string) { sessionStorage.removeItem(intentStorage(company)); }
+/** Creating the submitted Profile and SKUs advances Catalog's generation once. */
+export function acceptDefinitionGeneration(intent: AdvancedIntent, options: AdvancedOptions, setupStarted: boolean): boolean {
+  const reviewed = intent.reviewed_policy_generation ?? intent.definition.policy_generation;
+  if (!intent.creation_id || setupStarted || options.mode.policy_generation !== reviewed + 1) return false;
+  if (options.defaults.configuration.source_version !== (intent.reviewed_source_version ?? intent.definition.source_version)
+    || options.mode.row_version !== (intent.reviewed_mode_version ?? intent.definition.mode_version)
+    || options.selected_type?.id !== intent.work.profile.product_type_revision_id) return false;
+  intent.reviewed_policy_generation = options.mode.policy_generation;
+  keepIntent(intent);
+  return true;
+}
 /** Never turn a submitted creation back into a new definition after session recovery fails. */
 export function checkRecoveryIntent(pending: AdvancedIntent | null, editingId: string | null): void {
   if (editingId && (!pending?.creation_id || pending.creation_id !== editingId)) throw { status: 409, message: 'The saved creation receipt is missing or changed. Reload this product before continuing.' };
@@ -110,7 +121,7 @@ export function setupBody(work: AdvancedWork, options: AdvancedOptions, skuIndex
         ...sku.units.map(row => ({ expected_version: 1, code: row.code, unit_id: row.unit_id, role: row.role, ...(row.pack_type_id ? { pack_type_id: row.pack_type_id } : {}), conversion_mode: 'FIXED' as const, numerator: row.numerator, denominator: row.denominator, quantity_decimal_places: Number(row.quantity_decimal_places), quantity_increment: row.quantity_increment, fractional_entry: Number(row.quantity_decimal_places) > 0, valid_from: unitFrom })),
       ],
       barcodes: sku.barcode.trim() ? [{ expected_version: 1, value: sku.barcode.trim(), symbology: sku.barcode_symbology }] : [],
-      ...(business.batch_enabled !== null || options.batch?.required ? { batch_enabled: business.batch_enabled ?? true } : {}),
+      ...(options.batch?.available ? { batch_enabled: business.batch_enabled ?? !!options.batch.required } : {}),
       ...(tax ? { tax } : {}),
       prices,
       expected_generation: options.mode.policy_generation,

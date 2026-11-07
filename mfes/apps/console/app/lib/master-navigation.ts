@@ -1,4 +1,4 @@
-import { classificationResources, type ClassificationAccess } from './product-classification-resources';
+﻿import { classificationResources, type ClassificationAccess } from './product-classification-resources';
 import type { MasterRow } from './catalog-masters';
 import { identifierResources } from './units-identifiers-resources';
 import { attributeResources } from './attribute-resources';
@@ -77,7 +77,6 @@ export function masterReturnQuery(url: URL): URLSearchParams | null {
   let supported = false;
   if (url.pathname === '/masters' || inventoryOverviewPath(url.pathname))
     return url.search ? null : new URLSearchParams();
-  if (parts[0] === 'masters' && ['items', 'product-families'].includes(parts[1] ?? '') && parts.length > 2 && !(parts[1] === 'items' && parts.length === 3 && ['new', 'import'].includes(parts[2]!))) return null;
   if (parts[0] === 'masters' && resources.includes(parts[1] ?? '')) {
     supported =
       (parts.length === 4 &&
@@ -93,7 +92,7 @@ export function masterReturnQuery(url: URL): URLSearchParams | null {
           (parts[1] === 'warehouses' && parts[2] === 'settings'))) ||
       (parts.length === 4 &&
         uuid.test(parts[2]!) &&
-        parts[3] === 'edit' &&
+        (parts[3] === 'edit' || (['items', 'product-families'].includes(parts[1]!) && parts[3] === 'created')) &&
         parts[1] !== 'unit-conversions') ||
       (parts.length === 4 &&
         uuid.test(parts[2]!) &&
@@ -110,7 +109,7 @@ export function masterReturnQuery(url: URL): URLSearchParams | null {
         parts[3] === 'revisions' &&
         (parts[4] === 'new' || uuid.test(parts[4]!)));
   } else if (
-    url.pathname === '/products/custom-fields'
+    url.pathname === '/products/custom-fields' || url.pathname === '/products/attributes'
   )
     supported = true;
   else if (parts[0] === 'products' && parts[1] === 'configuration') {
@@ -121,6 +120,8 @@ export function masterReturnQuery(url: URL): URLSearchParams | null {
       (parts.length === 4 &&
         ['scopes', 'drafts', 'revisions'].includes(parts[2]!) &&
         uuid.test(parts[3]!));
+  } else if (parts[0] === 'inventory' && ['batches', 'serials'].includes(parts[1] ?? '')) {
+    supported = parts.length === 2 || parts.length === 3 && (parts[2] === 'new' || uuid.test(parts[2]!)) || parts.length === 4 && uuid.test(parts[2]!) && ['edit', 'history'].includes(parts[3]!) || parts.length === 5 && uuid.test(parts[2]!) && parts[3] === 'history' && uuid.test(parts[4]!);
   } else if (parts[0] === 'accounting' && parts[1] === 'parties') {
     supported =
       parts.length === 2 || (parts.length === 3 && uuid.test(parts[2]!));
@@ -226,7 +227,8 @@ export function masterReferencePath(
   id: string,
   parentId?: string | null,
 ): string | null {
-  if (!uuid.test(id) || ['items', 'product-families'].includes(source)) return null;
+  if (!uuid.test(id)) return null;
+  if (['items', 'product-families'].includes(source)) return '/masters/' + source + '/' + id;
   if (source === 'parties') return '/accounting/parties/' + id;
   if (Object.hasOwn(direct, source))
     return '/masters/' + direct[source] + '/' + id;

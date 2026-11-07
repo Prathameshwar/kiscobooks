@@ -79,6 +79,34 @@ async def test_setup_replay_progress_and_readiness(client, factory, tenant_a):
     assert all(entry["path"] for entry in readiness.json()["blockers"])
 
 
+async def test_initial_group_setup_can_verify_proposed_assignment(client, factory, tenant_a):
+    company, auth, base, body, created = await definition(client, factory, tenant_a)
+    from tests.test_classification_api import create
+
+    group = await create(client, company, auth, "item-groups", {
+        "code": "ADV_GROUP", "name": "Advanced group", "valid_from": "2020-01-01"
+    })
+    assert group.status_code == 201, group.text
+    body["group_id"] = group.json()["id"]
+    item = created["skus"][0]["id"]
+    current = await client.get(base + "/options?kind=GOODS", headers=auth)
+    assert current.status_code == 200, current.text
+    options = current.json()
+    request = setup_body(body, created)
+    request["setup"].update({
+        "group_id": body["group_id"],
+        "expected_generation": options["mode"]["policy_generation"],
+        "expected_source_version": options["defaults"]["configuration"]["source_version"],
+    })
+    saved = await client.post(
+        base + "/definitions/" + created["creation"]["id"] + "/skus/" + item + "/setup",
+        headers={**auth, "Idempotency-Key": str(uuid7())},
+        json=request,
+    )
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["sku_progress"][0]["setup_done"] is True
+
+
 async def test_invalid_setup_rolls_back_and_recovery_works(client, factory, tenant_a):
     _, auth, base, body, created = await definition(client, factory, tenant_a)
     item = created["skus"][0]["id"]

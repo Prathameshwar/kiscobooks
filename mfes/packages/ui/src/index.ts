@@ -128,6 +128,7 @@ export { Badge } from './components/Badge';
 export type { Tone } from './components/Badge';
 export { ListRow } from './components/ListRow';
 export { Meter } from './components/Meter';
+export { PreparationProgress } from './components/PreparationProgress';
 export { Disclosure } from './components/Disclosure';
 export { Select } from './components/Select';
 export type { SelectOption, SelectOptionGroup, SelectItem } from './components/Select';
