@@ -7,7 +7,8 @@
   Idempotent one-shot bootstrap. Re-running only fills gaps. nginx and Redis are
   fetched as SHA-256-verified ZIPs into start\win\bin\ (no service install, no
   admin). Python dependencies are resolved with `uv sync` per service. Dev env
-  files are generated once and preserved across runs.
+  files are generated once and preserved across runs. After a successful full
+  setup, you can optionally provision databases and apply migrations.
 
   MySQL, RabbitMQ and Azurite are NOT installed here. MySQL is expected to be an
   installed instance; RabbitMQ and Azurite have their own launchers in this
@@ -43,6 +44,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'lib\install-redis.ps1')
 . (Join-Path $PSScriptRoot 'lib\setup-python.ps1')
 . (Join-Path $PSScriptRoot 'lib\write-envs.ps1')
+. (Join-Path $PSScriptRoot 'lib\database-setup-prompt.ps1')
 
 Write-Host ""
 Write-Host "==================== Bill dev-env setup ====================" -ForegroundColor Cyan
@@ -94,10 +96,22 @@ Write-Host "  $portsLine" -ForegroundColor DarkGray
 
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "  1. Ensure MySQL is running and the service databases exist." -ForegroundColor White
+Write-Host "  1. Ensure MySQL is running." -ForegroundColor White
 Write-Host "  2. Start everything:   .\start\win\start-all.bat" -ForegroundColor White
 Write-Host "  3. Check status:       .\start\win\status.bat" -ForegroundColor White
 Write-Host "  4. Nginx health:       curl http://localhost:8090/nginx-health" -ForegroundColor White
 Write-Host ""
+
+if (-not $hadError -and $components -contains 'python' -and $components -contains 'envs') {
+    try {
+        $provisionScript = Join-Path $PSScriptRoot 'provision-databases.ps1'
+        [void](Invoke-BillOfferDatabaseProvisioning -ProvisionScriptPath $provisionScript)
+    } catch {
+        Write-BillLog $_ 'ERROR'
+        exit 1
+    }
+} elseif (-not $hadError) {
+    Write-Host 'To provision databases later, run: .\start\win\provision-databases.bat' -ForegroundColor White
+}
 
 if ($hadError) { exit 1 } else { exit 0 }

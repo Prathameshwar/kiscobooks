@@ -12,6 +12,17 @@ ignored `.tools/`; the installed Windows services were left unchanged.
   Extract to `.tools/erlang/`.
 - [Supported Erlang versions](https://www.rabbitmq.com/docs/which-erlang).
 
+Run `start\win\install-rabbitmq.bat` to install the archives. The installer first
+reuses a checksum-verified copy in `.tools/downloads/`, your user Downloads folder,
+or the temp directory. New downloads are verified and retained in `.tools/downloads/`
+so a retry after an extraction error does not download them again. If you already
+have an archive, place it in your Downloads folder using the documented filename.
+The installer does not install or modify a Windows service or global PATH.
+The Erlang archive contains both `bin/erl.exe` and
+`erts-15.2.7.13/bin/erl.exe`; installation uses the archive root launcher and copies
+the complete OTP directory tree.
+After installation, start the broker as below.
+
 Run from the repository root:
 
 ```powershell

@@ -34,7 +34,9 @@ migration heads, model comparisons and the checks to repeat after schema changes
 
 | Script | Behavior |
 |---|---|
-| `setup.bat` | Download and verify pinned nginx/Redis archives, sync Python dependencies, generate development environment files. |
+| `setup.bat` | Download and verify pinned nginx/Redis archives, sync Python dependencies, and generate development environment files. After a successful full setup, optionally prompt to provision databases and run migrations; declining leaves databases unchanged. |
+| `install-rabbitmq.bat` | Reuse a checksum-verified archive from `.tools/downloads/` or your Downloads folder, otherwise download it; install Erlang 27.3.4.17 and RabbitMQ 4.3.5 under the ignored `.tools/` directory. Does not install a Windows service or change global PATH. |
+| `provision-databases.bat` | Prompt securely for the local MySQL root password, create any missing configured service databases, and apply each service's Alembic migrations to `head`. Saves the resulting URLs in ignored `env/<service>.env` files; the password is not stored in tracked config or printed. Supports `-WhatIf`; does not run automatically during setup or startup. |
 | `start-all.bat` | With `AUTH_PROVIDER=authentik`, start or reuse the Authentik SSH tunnel (the VM must already be running); with `local` (the default) there is nothing to tunnel to and that step is skipped. Then Redis, local RabbitMQ, APIs and nginx; check readiness and return 1 if any component fails. |
 | `start-services.bat` | Start all eight APIs and wait for HTTP readiness. Accepts `-TimeoutSeconds 45` (default). |
 | `start-nginx.bat` / `stop-nginx.bat` | Validate/start nginx or gracefully quit the verified managed master. |
@@ -119,10 +121,15 @@ the tunnel and the separate VM controls for the guest.
 ## Prerequisites and setup
 
 - Windows PowerShell 5.1, Python 3.12 and `uv` on PATH.
-- MySQL running with valid per-service connection settings and migrated schemas.
-- Portable RabbitMQ/Erlang archives installed as described in
-  [local-rabbitmq.md](../../docs/local-rabbitmq.md). Setup does not install these;
-  start-all uses their existing launcher and checks the local node.
+- MySQL running at the host and port in `start\win\conf\services.json` (defaults:
+  `localhost:3306`, user `root`). Provisioning prompts for the password and saves
+  service connection URLs only in the ignored local env files.
+- Run `start\win\provision-databases.bat` to create the configured service databases
+  and apply migrations before starting the APIs. Existing databases and data are
+  preserved; only pending Alembic upgrades are applied.
+- Run `start\win\install-rabbitmq.bat` once to download and install the verified
+  portable RabbitMQ/Erlang archives. `setup.bat` does not install them;
+  start-all uses the local launcher and checks the broker.
 - Node/pnpm are needed only for UI. Azurite, Authentik and background workers are
   separately managed; these scripts start the HTTP APIs, not their worker fleet.
 
@@ -133,6 +140,8 @@ start\win\setup.bat -Component nginx
 start\win\setup.bat -Component redis
 start\win\setup.bat -Component python
 start\win\setup.bat -Component envs
+start\win\provision-databases.bat -WhatIf
+start\win\provision-databases.bat
 ```
 
 Existing database/encryption values are preserved. Gateway verification keys are
